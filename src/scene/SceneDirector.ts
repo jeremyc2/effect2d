@@ -34,7 +34,7 @@ const stackSnapshot = (
 		return {
 			activeSceneId: active.scene.id,
 			entries: stack.map((entry) => ({
-				layer: entry.layer,
+				level: entry.level,
 				sceneId: entry.scene.id,
 			})),
 		};
@@ -68,7 +68,7 @@ export class SceneDirector extends ServiceMap.Service<
 				const startScene = yield* sceneRegistry.get(startSceneId);
 				const stack = yield* Ref.make<ReadonlyArray<SceneStackEntry>>([
 					{
-						layer: "primary",
+						level: "primary",
 						scene: startScene,
 					},
 				]);
@@ -97,7 +97,7 @@ export class SceneDirector extends ServiceMap.Service<
 
 					yield* Ref.set(stack, [
 						{
-							layer: "primary",
+							level: "primary",
 							scene: nextScene,
 						},
 					]);
@@ -113,7 +113,7 @@ export class SceneDirector extends ServiceMap.Service<
 					yield* Ref.set(stack, [
 						...currentStack,
 						{
-							layer: "overlay",
+							level: "overlay",
 							scene: overlayScene,
 						},
 					]);
@@ -124,7 +124,7 @@ export class SceneDirector extends ServiceMap.Service<
 					const currentStack = yield* Ref.get(stack);
 					const currentEntry = yield* topScene(currentStack);
 
-					if (currentEntry.layer !== "overlay") {
+					if (currentEntry.level !== "overlay") {
 						return yield* new OverlayStackUnderflowError({
 							reason:
 								"Cannot pop the primary scene as though it were an overlay.",

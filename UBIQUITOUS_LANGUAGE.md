@@ -40,8 +40,8 @@ The "Aliases to Avoid" column is intentionally strict. We use it to prevent mult
 | Room | A discrete authored playable area. | page, screen when it means a world location |
 | Scene | A scoped runtime unit with its own lifecycle, such as gameplay, menu, intro, or pause. | page, route, component |
 | Overlay | A scene layered on top of another scene, such as pause or dialogue. | modal, popover |
-| Tile Layer | A grid-based layer of authored map content. | grid component, layout layer |
-| Object Layer | A map layer of placed gameplay objects, spawn points, triggers, or markers. | metadata layer, annotation layer |
+| Tile Plane | A grid-based authored plane of room content. We avoid the word "layer" here so `Layer` stays reserved for Effect composition. | tile layer, grid component, layout layer |
+| Object Plane | An authored plane of placed gameplay objects, spawn points, triggers, or markers. We avoid the word "layer" here so `Layer` stays reserved for Effect composition. | object layer, metadata layer, annotation layer |
 | Trigger | A non-blocking gameplay region that reacts to overlap or entry. | event handler zone, listener area |
 | Spawn Point | A designated position for creating an actor, pickup, or scene entry. | mount point, insertion point |
 | Transition Zone | A trigger that causes movement into another room or scene. | route boundary, page link |
@@ -83,8 +83,8 @@ The "Aliases to Avoid" column is intentionally strict. We use it to prevent mult
 | AABB | An axis-aligned bounding box used for simple rectangular collision. | box model, layout box |
 | Hitbox | The shape that deals damage or interaction. | attack component, damage zone |
 | Hurtbox | The shape that can receive damage or interaction. | receiver box, target zone |
-| Collision Layer | A named category used to control which things interact. | tag only, CSS layer |
-| Mask | A filter that limits which collision layers a shape responds to. | permission list, allowlist only |
+| Collision Group | A named gameplay collision category used to control which things interact. We avoid the word "layer" here so `Layer` stays reserved for Effect composition. | collision layer, tag only, CSS layer |
+| Mask | A filter that limits which collision groups a shape responds to. | permission list, allowlist only |
 | Physics | Full simulated body behavior such as forces, impulses, and restitution. | collision system |
 
 ## Input And Audio

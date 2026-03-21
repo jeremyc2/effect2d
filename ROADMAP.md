@@ -76,27 +76,27 @@
 
 ## Milestone 7: Maps And World Content
 
-- [ ] Define the internal content model for rooms, tile layers, object layers, triggers, spawn points, and transitions.
-- [ ] Implement TypeScript-first room authoring APIs.
-- [ ] Implement room loading as Effect.
-- [ ] Implement typed metadata support for rooms and room objects.
-- [ ] Implement transition zones between rooms.
-- [ ] Implement object lookup helpers for authored room content.
-- [ ] Implement room validation with typed errors for malformed content.
+- [x] Define the internal content model for rooms, tile planes, object planes, triggers, spawn points, and transitions.
+- [x] Implement TypeScript-first room authoring APIs.
+- [x] Implement room loading as Effect.
+- [x] Implement typed metadata support for rooms and room objects.
+- [x] Implement transition zones between rooms.
+- [x] Implement object lookup helpers for authored room content.
+- [x] Implement room validation with typed errors for malformed content.
 - [ ] Add serialization hooks so future in-game editing can target the same model.
 
 ## Milestone 8: Collision, Triggers, And Spatial Queries
 
-- [ ] Define the collision world model separate from full rigid-body physics.
-- [ ] Implement AABB shapes.
-- [ ] Implement circle shapes.
-- [ ] Implement collision layers and masks.
-- [ ] Implement solid collision checks.
-- [ ] Implement non-blocking trigger regions.
-- [ ] Implement overlap queries.
-- [ ] Implement area queries for collision and trigger lookup.
-- [ ] Implement hitbox and hurtbox helpers.
-- [ ] Implement tile collision helpers for room-based gameplay.
+- [x] Define the collision world model separate from full rigid-body physics.
+- [x] Implement AABB shapes.
+- [x] Implement circle shapes.
+- [x] Implement collision groups and masks.
+- [x] Implement solid collision checks.
+- [x] Implement non-blocking trigger regions.
+- [x] Implement overlap queries.
+- [x] Implement area queries for collision and trigger lookup.
+- [x] Implement hitbox and hurtbox helpers.
+- [x] Implement tile collision helpers for room-based gameplay.
 - [ ] Add deterministic test coverage for collision rules and query semantics.
 
 ## Milestone 9: Animation And Tweening

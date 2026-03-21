@@ -2,7 +2,7 @@ import type { Effect } from "effect";
 
 export type SceneId = string;
 
-export type SceneLayer = "overlay" | "primary";
+export type SceneStackLevel = "overlay" | "primary";
 
 export interface SceneLifecycle {
 	readonly enter: () => Effect.Effect<void>;
@@ -18,14 +18,14 @@ export interface SceneDefinition {
 }
 
 export interface SceneStackEntry {
-	readonly layer: SceneLayer;
+	readonly level: SceneStackLevel;
 	readonly scene: SceneDefinition;
 }
 
 export interface SceneStackSnapshot {
 	readonly activeSceneId: SceneId;
 	readonly entries: ReadonlyArray<{
-		readonly layer: SceneLayer;
+		readonly level: SceneStackLevel;
 		readonly sceneId: SceneId;
 	}>;
 }

@@ -15,7 +15,7 @@ The current subsystem layout is:
 - `audio`: music and sound effect contracts
 - `input`: raw input and action-oriented input contracts
 - `maps`: room content and room loading contracts
-- `collision`: collision, trigger, and spatial query contracts
+- `collision`: collision, trigger, and spatial query contracts with a gameplay-first world model
 - `animation`: sprite animation and tween-adjacent contracts
 - `save`: explicit save coordination and save document shapes
 - `debug`: runtime diagnostics and overlays

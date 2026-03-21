@@ -42,7 +42,7 @@ The first phase of `effect2d` centers on:
 - immediate-mode 2D rendering
 - fixed-timestep simulation
 - code-defined rooms and maps
-- hybrid room content with tile layers plus object and trigger layers
+- hybrid room content with tile planes plus object planes and trigger zones
 - collision, triggers, and spatial queries before full physics
 - simple sprite animation and tween helpers
 - lightweight scenes, overlays, and transitions

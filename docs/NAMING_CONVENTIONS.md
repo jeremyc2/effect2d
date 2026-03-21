@@ -82,8 +82,8 @@ Use:
 - `DrawCommand`
 - `Sprite`
 - `SpriteSheet`
-- `TileLayer`
-- `ObjectLayer`
+- `TilePlane`
+- `ObjectPlane`
 - `SpawnPoint`
 - `TransitionZone`
 - `Camera`
