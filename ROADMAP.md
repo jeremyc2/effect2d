@@ -14,9 +14,9 @@
 - [x] Define the top-level engine launch model using `Effect.runPromise(...)`.
 - [x] Implement the engine composition root as Layer-based runtime assembly.
 - [x] Define the core engine services for runtime boot, shutdown, and capability access.
-- [ ] Add scoped resource ownership patterns for long-lived runtime services.
-- [ ] Add controlled time services for simulation time, frame time, and fixed-step scheduling.
-- [ ] Add a seeded randomness service strategy using Effect primitives.
+- [x] Add scoped resource ownership patterns for long-lived runtime services.
+- [x] Add controlled time services for simulation time, frame time, and fixed-step scheduling.
+- [x] Add a seeded randomness service strategy using Effect primitives.
 - [x] Add typed configuration for engine startup options.
 - [x] Add startup failure handling with typed engine errors.
 
@@ -32,14 +32,14 @@
 
 ## Milestone 3: Scene Model And Runtime Flow
 
-- [ ] Define the scene service model.
+- [x] Define the scene service model.
 - [ ] Implement scoped scene instances created when scenes are entered.
-- [ ] Implement scene lifecycle hooks for enter, exit, update, draw, and input handling.
-- [ ] Implement a scene stack for primary scenes and overlays.
-- [ ] Implement scene transitions and transition errors.
+- [x] Implement scene lifecycle hooks for enter, exit, update, draw, and input handling.
+- [x] Implement a scene stack for primary scenes and overlays.
+- [x] Implement scene transitions and transition errors.
 - [ ] Add scoped cancellation for scene-local scripts, resources, and long-running work.
 - [ ] Add scene-owned camera support hooks.
-- [ ] Add scene inspection hooks for debug tooling.
+- [x] Add scene inspection hooks for debug tooling.
 
 ## Milestone 4: Core Rendering Model
 

@@ -54,7 +54,10 @@ The engine launch model is Layer-based and Effect-native:
 
 - the game launches through `Effect.runPromise(...)`
 - the composition root is a Layer-assembled runtime
-- scenes are services
+- long-lived runtime services are scoped Layers
+- simulation timing is tracked through a dedicated runtime clock service
+- seeded randomness is configured at the runtime boundary
+- scenes are registered runtime definitions coordinated by scene services
 - entered scenes become scoped scene instances
 - resources follow scopes by default
 
