@@ -1,2 +1,4 @@
 - Comment regexes.
 - ALWAYS run `bun typecheck && bun check` after making any changes.
+- Don't be shy about referencing `reference_repositories` folder for ideas/patterns.
+    - For sample games like the games we want to be able to create which are written in Love2D engine, reference [Legend of Lua](https://github.com/challacade/legend-of-lua) or `../cavern`.
