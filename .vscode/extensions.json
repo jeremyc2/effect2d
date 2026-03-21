@@ -1,0 +1,10 @@
+{
+	"recommendations": [
+		"biomejs.biome",
+		"yoavbls.pretty-ts-errors",
+		"bradlc.vscode-tailwindcss",
+		"tldraw-org.tldraw-vscode",
+		"typescriptteam.native-preview",
+		"effectful-tech.effect-vscode"
+	]
+}

@@ -1,0 +1,27 @@
+{
+	"name": "effect2d",
+	"description": "Love2d Vibe-Fork in Effect TypeScript.",
+	"version": "0.0.1",
+	"module": "index.ts",
+	"type": "module",
+	"private": true,
+	"scripts": {
+		"typecheck": "tsgo",
+		"check:staged": "bun --bun biome check --write --staged",
+		"check": "bun --bun biome check --write",
+		"prepare": "effect-tsgo patch"
+	},
+	"dependencies": {
+		"effect": "^4.0.0-beta.36"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^2.4.8",
+		"@effect/language-service": "^0.81.0",
+		"@effect/tsgo": "0.0.16",
+		"@types/bun": "latest",
+		"@typescript/native-preview": "^7.0.0-dev.20260320.1"
+	},
+	"peerDependencies": {
+		"typescript": "^5"
+	}
+}

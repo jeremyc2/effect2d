@@ -1,0 +1,2 @@
+- Comment regexes.
+- ALWAYS run `bun typecheck && bun check` after making any changes.

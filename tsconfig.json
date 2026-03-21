@@ -1,0 +1,78 @@
+{
+	"compilerOptions": {
+		// Environment setup & latest features
+		"lib": ["ESNext"],
+		"target": "ESNext",
+		"module": "Preserve",
+		"moduleDetection": "force",
+		"jsx": "react-jsx",
+		"allowJs": true,
+
+		// Bundler mode
+		"moduleResolution": "bundler",
+		"allowImportingTsExtensions": true,
+		"verbatimModuleSyntax": true,
+		"noEmit": true,
+
+		// Best practices
+		"strict": true,
+		"skipLibCheck": true,
+		"noFallthroughCasesInSwitch": true,
+		"noUncheckedIndexedAccess": true,
+		"noImplicitOverride": true,
+
+		// Some stricter flags (disabled by default)
+		"noUnusedLocals": true,
+		"noUnusedParameters": true,
+		"noPropertyAccessFromIndexSignature": true,
+		"plugins": [
+			{
+				"name": "@effect/language-service",
+				"diagnosticSeverity": {
+					"anyUnknownInErrorContext": "error",
+					"catchAllToMapError": "error",
+					"catchUnfailableEffect": "error",
+					"deterministicKeys": "error",
+					"duplicatePackage": "error",
+					"effectFnIife": "error",
+					"effectFnOpportunity": "error",
+					"effectGenUsesAdapter": "error",
+					"effectInFailure": "error",
+					"effectInVoidSuccess": "error",
+					"effectMapVoid": "error",
+					"effectSucceedWithVoid": "error",
+					"extendsNativeError": "error",
+					"genericEffectServices": "error",
+					"globalErrorInEffectCatch": "error",
+					"globalErrorInEffectFailure": "error",
+					"instanceOfSchema": "error",
+					"layerMergeAllWithDependencies": "error",
+					"leakingRequirements": "error",
+					"missedPipeableOpportunity": "error",
+					"missingEffectServiceDependency": "error",
+					"multipleEffectProvide": "error",
+					"nodeBuiltinImport": "error",
+					"outdatedApi": "error",
+					"preferSchemaOverJson": "error",
+					"redundantSchemaTagIdentifier": "error",
+					"returnEffectInGen": "error",
+					"runEffectInsideEffect": "error",
+					"schemaStructWithTag": "error",
+					"schemaSyncInEffect": "error",
+					"schemaUnionOfLiterals": "error",
+					"scopeInLayerEffect": "error",
+					"serviceNotAsClass": "error",
+					"strictBooleanExpressions": "error",
+					"strictEffectProvide": "error",
+					"tryCatchInEffectGen": "error",
+					"unknownInEffectCatch": "error",
+					"unnecessaryEffectGen": "error",
+					"unnecessaryFailYieldableError": "error",
+					"unnecessaryPipe": "error",
+					"unnecessaryPipeChain": "error"
+				}
+			}
+		]
+	},
+	"$schema": "https://raw.githubusercontent.com/Effect-TS/tsgo/refs/heads/main/schema.json"
+}
