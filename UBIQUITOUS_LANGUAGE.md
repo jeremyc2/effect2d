@@ -115,6 +115,5 @@ The "Aliases to Avoid" column is intentionally strict. We use it to prevent mult
 | Term | Definition | Aliases to Avoid |
 | --- | --- | --- |
 | Typed Error | An expected failure represented explicitly in Effect. | exception, null return |
-| Defect | A bug or broken invariant that should not be modeled as normal control flow. | recoverable error, validation issue |
 | Determinism | The property that the same inputs and seed lead to the same simulation results. | consistency only, stable UI |
 | Replayability | The ability to reproduce a run from controlled inputs, timing, and randomness. | browser recording, session replay |

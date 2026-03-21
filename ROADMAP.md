@@ -2,23 +2,23 @@
 
 ## Milestone 0: Project Foundation
 
-- [ ] Establish the source layout for engine subsystems and native integration boundaries.
-- [ ] Create the initial public export surface for the engine package.
-- [ ] Define the internal module boundaries for runtime, scenes, graphics, audio, input, maps, collision, animation, save, debug, and testing.
-- [ ] Add architecture notes describing the thin native boundary and the small-core rich-userland strategy.
-- [ ] Decide and document the initial error taxonomy for engine typed errors versus defects.
-- [ ] Decide and document the initial directory structure for engine code, sample game code, and demos.
+- [x] Establish the source layout for engine subsystems and native integration boundaries.
+- [x] Create the initial public export surface for the engine package.
+- [x] Define the internal module boundaries for runtime, scenes, graphics, audio, input, maps, collision, animation, save, debug, and testing.
+- [x] Add architecture notes describing the thin native boundary and the small-core rich-userland strategy.
+- [x] Decide and document the initial error taxonomy for engine typed errors.
+- [x] Decide and document the initial directory structure for engine code, sample game code, and demos.
 
 ## Milestone 1: Effect Runtime Composition
 
-- [ ] Define the top-level engine launch model using `Effect.runPromise(...)`.
-- [ ] Implement the engine composition root as Layer-based runtime assembly.
-- [ ] Define the core engine services for runtime boot, shutdown, and capability access.
+- [x] Define the top-level engine launch model using `Effect.runPromise(...)`.
+- [x] Implement the engine composition root as Layer-based runtime assembly.
+- [x] Define the core engine services for runtime boot, shutdown, and capability access.
 - [ ] Add scoped resource ownership patterns for long-lived runtime services.
 - [ ] Add controlled time services for simulation time, frame time, and fixed-step scheduling.
 - [ ] Add a seeded randomness service strategy using Effect primitives.
-- [ ] Add typed configuration for engine startup options.
-- [ ] Add startup failure handling with typed engine errors.
+- [x] Add typed configuration for engine startup options.
+- [x] Add startup failure handling with typed engine errors.
 
 ## Milestone 2: Native Boundary
 
@@ -194,7 +194,7 @@
 
 - [ ] Review the public API for coherence with the documented architecture.
 - [ ] Remove or rename obviously wrong early abstractions.
-- [ ] Tighten error types and defect boundaries.
+- [ ] Tighten error types across engine subsystems.
 - [ ] Tighten scene and resource lifetime semantics.
 - [ ] Reduce duplication discovered during the demo build.
 - [ ] Improve docs where the sample game exposed confusion.

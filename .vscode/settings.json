@@ -9,13 +9,13 @@
 	"json.schemaDownload.enable": true,
 	"css.lint.unknownAtRules": "ignore",
 	"files.readonlyInclude": {
-		"**/routeTree.gen.ts": true
+		"reference_repositories/**": true
 	},
 	"files.watcherExclude": {
-		"**/routeTree.gen.ts": true
+		"reference_repositories/**": true
 	},
 	"search.exclude": {
-		"**/routeTree.gen.ts": true
+		"reference_repositories/**": true
 	},
 	"typescript.enablePromptUseWorkspaceTsdk": true
 }

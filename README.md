@@ -60,7 +60,7 @@ The first phase of `effect2d` centers on:
 - services instead of hidden globals
 - Layers instead of ad hoc wiring
 - typed errors for expected failures
-- defects for bugs and broken invariants
+- known failures modeled through the typed Effect error channel
 - scoped resources and scoped scene instances
 - structured concurrency for scripts and long-running workflows
 
@@ -148,3 +148,9 @@ The goal is not to hide Effect. The goal is to make game development with Effect
 The project glossary lives in [UBIQUITOUS_LANGUAGE.md](/Users/jeremy/Documents/personal/effect2d/UBIQUITOUS_LANGUAGE.md).
 
 Its job is to define the shared game-engine language for the project and to prevent multiple terms from drifting into use for the same concept. We use it to keep docs, code, variable names, and conversations aligned around one vocabulary.
+
+## Roadmap
+
+The milestone checklist lives in [ROADMAP.md](/Users/jeremy/Documents/personal/effect2d/ROADMAP.md).
+
+It is the working plan for the engine. When implementation pressure forces a pivot, the roadmap should be updated along with the architecture docs so the written plan stays honest.
