@@ -146,7 +146,6 @@ export class SceneDirector extends ServiceMap.Service<
 							currentStack,
 							(entry) => entry.scene.lifecycle.draw(),
 							{
-								concurrency: "unbounded",
 								discard: true,
 							},
 						),

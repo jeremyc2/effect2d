@@ -83,7 +83,7 @@
 - [x] Implement transition zones between rooms.
 - [x] Implement object lookup helpers for authored room content.
 - [x] Implement room validation with typed errors for malformed content.
-- [ ] Add serialization hooks so future in-game editing can target the same model.
+- [x] Add serialization hooks so future in-game editing can target the same model.
 
 ## Milestone 8: Collision, Triggers, And Spatial Queries
 
@@ -155,12 +155,12 @@
 
 ## Milestone 14: Testing Infrastructure
 
-- [ ] Establish the test layout for unit and integration coverage.
-- [ ] Add headless test harness support for core engine services.
-- [ ] Add deterministic test helpers for fixed timestep and seeded randomness.
-- [ ] Add scene lifecycle tests.
+- [x] Establish the test layout for unit and integration coverage.
+- [x] Add headless test harness support for core engine services.
+- [x] Add deterministic test helpers for fixed timestep and seeded randomness.
+- [x] Add scene lifecycle tests.
 - [ ] Add persistence tests.
-- [ ] Add collision and map validation tests.
+- [x] Add collision and map validation tests.
 - [ ] Add animation and tween tests.
 - [ ] Add service composition tests for common engine launch paths.
 

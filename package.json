@@ -6,6 +6,7 @@
 	"private": true,
 	"scripts": {
 		"typecheck": "tsgo",
+		"test": "bun test --path-ignore-patterns 'reference_repositories/**'",
 		"check:staged": "bun --bun biome check --write --staged",
 		"check": "bun --bun biome check --write",
 		"prepare": "effect-tsgo patch"
