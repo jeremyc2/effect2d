@@ -10,6 +10,7 @@ import {
 	Input,
 	MapRepository,
 	makeRuntimeLayer,
+	makeSdlCanvasNativeBoundaryLayer,
 	NativeBoundary,
 	ResourceTracker,
 	SceneDirector,
@@ -23,6 +24,7 @@ import { BeaconRunCoordinator } from "./directors/BeaconRunCoordinator.ts";
 import { BeaconRunGameplayDirector } from "./directors/BeaconRunGameplayDirector.ts";
 import { BeaconRunPresentationDirector } from "./directors/BeaconRunPresentationDirector.ts";
 import { beaconRunBindings } from "./input/BeaconRunBindings.ts";
+import { BeaconRunNativeFrameSourceLive } from "./native/BeaconRunNativeFrameSource.ts";
 import { BeaconRunSaveParticipants } from "./save/BeaconRunSaveParticipants.ts";
 import { FieldScene } from "./scenes/FieldScene.ts";
 import { PauseScene } from "./scenes/PauseScene.ts";
@@ -142,6 +144,37 @@ const beaconRunPresentationDirectorLayer =
 		),
 	);
 
+const beaconRunNativeFrameSourceLayer = BeaconRunNativeFrameSourceLive.pipe(
+	Layer.provide(
+		Layer.mergeAll(
+			beaconRunGameplayDirectorLayer,
+			beaconRunPresentationDirectorLayer,
+		),
+	),
+);
+
+export const beaconRunPlayableNativeBoundaryLayer =
+	makeSdlCanvasNativeBoundaryLayer({
+		defaultFontPath: "games/beacon-run/assets/fonts/ui-body.ttf",
+		imageAssetPaths: {
+			"beacon-lit": "games/beacon-run/assets/images/beacon-lit.png",
+			"beacon-unlit": "games/beacon-run/assets/images/beacon-unlit.png",
+			"field-room-background":
+				"games/beacon-run/assets/images/field-room-background.png",
+			"scout-idle": "games/beacon-run/assets/images/scout-idle.png",
+			"shrine-room-background":
+				"games/beacon-run/assets/images/shrine-room-background.png",
+			"title-screen": "games/beacon-run/assets/images/title-screen.png",
+		},
+		title: "effect2d: Beacon Run",
+		windowHeight: 384,
+		windowWidth: 512,
+	}).pipe(
+		Layer.provide(
+			Layer.mergeAll(beaconRunCapabilityLayer, beaconRunNativeFrameSourceLayer),
+		),
+	);
+
 const beaconRunSaveParticipantsLayer = BeaconRunSaveParticipants.layer.pipe(
 	Layer.provide(beaconRunStateLayer),
 );
@@ -160,6 +193,11 @@ export const BeaconRunLive = Layer.mergeAll(
 	beaconRunUiLayer,
 	ScriptEvents.layer,
 	beaconRunSaveParticipantsLayer,
+);
+
+export const BeaconRunPlayableLive = Layer.mergeAll(
+	BeaconRunLive,
+	beaconRunPlayableNativeBoundaryLayer,
 );
 
 export const beaconRunBootstrap = Effect.gen(function* () {
@@ -212,7 +250,7 @@ export const beaconRunBootstrap = Effect.gen(function* () {
 		fontId: "ui-body",
 		glyphWidth: 8,
 		lineHeight: 12,
-		sourcePath: "games/beacon-run/fonts/ui-body.ttf",
+		sourcePath: "games/beacon-run/assets/fonts/ui-body.ttf",
 	});
 	yield* beaconRunCoordinator.recordSceneChange(beaconRunConfig.startScene);
 	yield* beaconRunCoordinator.processEvents;
@@ -228,4 +266,10 @@ export const beaconRunProgram = Effect.gen(function* () {
 	const engine = yield* Engine;
 	yield* beaconRunBootstrap;
 	yield* engine.launch();
+});
+
+export const playableBeaconRunProgram = Effect.gen(function* () {
+	const nativeBoundary = yield* NativeBoundary;
+	yield* beaconRunBootstrap;
+	yield* nativeBoundary.initialize(beaconRunConfig.gameId);
 });

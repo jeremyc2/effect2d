@@ -1,4 +1,14 @@
-import { Effect } from "effect";
-import { BeaconRunLive, beaconRunProgram } from "./game/BeaconRunGame.ts";
+import { Effect, Layer } from "effect";
+import {
+	BeaconRunPlayableLive,
+	playableBeaconRunProgram,
+} from "./game/BeaconRunGame.ts";
 
-await Effect.runPromise(beaconRunProgram.pipe(Effect.provide(BeaconRunLive)));
+await Effect.runPromise(
+	Effect.scoped(
+		Effect.gen(function* () {
+			const services = yield* Layer.build(BeaconRunPlayableLive);
+			return yield* Effect.provideServices(playableBeaconRunProgram, services);
+		}),
+	),
+);

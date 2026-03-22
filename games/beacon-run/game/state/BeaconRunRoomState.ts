@@ -23,7 +23,7 @@ export class BeaconRunRoomState extends ServiceMap.Service<
 		) => Effect.Effect<RoomObject, MapValidationError>;
 		readonly snapshot: Effect.Effect<RoomContent>;
 	}
->()("effect2d/beacon-run/game/state/BeaconRunRoomState") {
+>()("effect2d/games/beacon-run/game/state/BeaconRunRoomState") {
 	static readonly layer = Layer.effect(
 		BeaconRunRoomState,
 		Effect.gen(function* () {

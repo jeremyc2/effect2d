@@ -60,7 +60,7 @@ export class BeaconRunPresentationDirector extends ServiceMap.Service<
 			BeaconRunPresentationDirectorFailure
 		>;
 	}
->()("effect2d/beacon-run/game/directors/BeaconRunPresentationDirector") {
+>()("effect2d/games/beacon-run/game/directors/BeaconRunPresentationDirector") {
 	static readonly layer = Layer.effect(
 		BeaconRunPresentationDirector,
 		Effect.gen(function* () {

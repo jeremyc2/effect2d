@@ -7,22 +7,28 @@
 	"scripts": {
 		"typecheck": "tsgo",
 		"all": "bun typecheck && bun check && bun run test",
+		"beacon-run:native": "bun games/beacon-run/main.ts",
 		"test": "bun test --path-ignore-patterns 'reference_repositories/**'",
 		"check:staged": "bun --bun biome check --write --staged",
 		"check": "bun --bun biome check --write",
 		"prepare": "effect-tsgo patch"
 	},
 	"dependencies": {
+		"@kmamal/sdl": "^0.11.13",
+		"@napi-rs/canvas": "^0.1.97",
 		"effect": "^4.0.0-beta.36"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.4.8",
 		"@effect/language-service": "^0.81.0",
-		"@effect/tsgo": "0.0.16",
+		"@effect/tsgo": "^0.0.17",
 		"@types/bun": "latest",
-		"@typescript/native-preview": "^7.0.0-dev.20260320.1"
+		"@typescript/native-preview": "^7.0.0-dev.20260322.1"
 	},
 	"peerDependencies": {
 		"typescript": "^5"
-	}
+	},
+	"trustedDependencies": [
+		"@kmamal/sdl"
+	]
 }
