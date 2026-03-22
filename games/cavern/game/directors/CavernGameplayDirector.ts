@@ -4,6 +4,8 @@ import {
 	EngineLogger,
 	Input,
 	type InvalidLogMessageError,
+	RuntimeClock,
+	SceneCamera,
 	SceneDirector,
 	type SceneNotFoundError,
 	type SceneStackEmptyError,
@@ -11,9 +13,19 @@ import {
 	type UnknownInputActionError,
 	type WrongAudioCueKindError,
 } from "../../../../src/index.ts";
-import { cavernMenuButtons, cavernWorldBounds } from "../content/CavernMenu.ts";
+import { cavernMenuButtons } from "../content/CavernMenu.ts";
+import {
+	applyTransitionSpawn,
+	cavernCameraZoom,
+	cavernViewport,
+	getCavernRoom,
+	getPlayerVisualCenter,
+	rectangleIntersects,
+	roomToCameraBounds,
+} from "../content/CavernWorld.ts";
 import { CavernMenuState } from "../state/CavernMenuState.ts";
 import { CavernPlayerState } from "../state/CavernPlayerState.ts";
+import { CavernWorldState } from "../state/CavernWorldState.ts";
 
 const movementStep = 10;
 const playerSize = {
@@ -57,8 +69,11 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 			const audio = yield* Audio;
 			const cavernMenuState = yield* CavernMenuState;
 			const cavernPlayerState = yield* CavernPlayerState;
+			const cavernWorldState = yield* CavernWorldState;
 			const engineLogger = yield* EngineLogger;
 			const input = yield* Input;
+			const runtimeClock = yield* RuntimeClock;
+			const sceneCamera = yield* SceneCamera;
 			const sceneDirector = yield* SceneDirector;
 
 			const activateMenuButton = Effect.fn(
@@ -74,6 +89,8 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 				switch (button.id) {
 					case "new-game":
 					case "continue":
+						yield* cavernWorldState.reset;
+						yield* cavernPlayerState.moveTo(getCavernRoom("rm1").playerSpawn);
 						yield* sceneDirector.switchTo("overworld");
 						yield* engineLogger.info("Cavern menu advanced to overworld.", {
 							action: button.id,
@@ -149,6 +166,8 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 					return;
 				}
 
+				const worldSnapshot = yield* cavernWorldState.snapshot;
+				const currentRoom = getCavernRoom(worldSnapshot.currentRoomId);
 				const playerSnapshot = yield* cavernPlayerState.snapshot;
 				let nextX = playerSnapshot.position.x;
 				let nextY = playerSnapshot.position.y;
@@ -166,18 +185,71 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 					nextY += movementStep;
 				}
 
-				yield* cavernPlayerState.moveTo({
-					x: clamp(
-						nextX,
-						cavernWorldBounds.x,
-						cavernWorldBounds.x + cavernWorldBounds.width - playerSize.width,
+				const movementMinX = Math.min(
+					currentRoom.bounds.x,
+					...currentRoom.transitions.map((transition) => transition.x),
+				);
+				const movementMaxX = Math.max(
+					currentRoom.bounds.x + currentRoom.bounds.width - playerSize.width,
+					...currentRoom.transitions.map(
+						(transition) => transition.x + transition.width - playerSize.width,
 					),
-					y: clamp(
-						nextY,
-						cavernWorldBounds.y,
-						cavernWorldBounds.y + cavernWorldBounds.height - playerSize.height,
+				);
+				const movementMinY = Math.min(
+					currentRoom.bounds.y,
+					...currentRoom.transitions.map((transition) => transition.y),
+				);
+				const movementMaxY = Math.max(
+					currentRoom.bounds.y + currentRoom.bounds.height - playerSize.height,
+					...currentRoom.transitions.map(
+						(transition) =>
+							transition.y + transition.height - playerSize.height,
 					),
-				});
+				);
+
+				const candidatePosition = {
+					x: clamp(nextX, movementMinX, movementMaxX),
+					y: clamp(nextY, movementMinY, movementMaxY),
+				};
+				yield* cavernPlayerState.moveTo(candidatePosition);
+
+				const playerRectangle = {
+					height: playerSize.height,
+					width: playerSize.width,
+					x: candidatePosition.x,
+					y: candidatePosition.y,
+				};
+				const activeTransition = currentRoom.transitions.find((transition) =>
+					rectangleIntersects(playerRectangle, transition),
+				);
+
+				if (activeTransition !== undefined) {
+					const targetRoom = getCavernRoom(activeTransition.targetRoomId);
+					yield* cavernWorldState.setCurrentRoom(targetRoom.id);
+					yield* cavernPlayerState.moveTo(
+						applyTransitionSpawn(
+							activeTransition,
+							targetRoom,
+							candidatePosition,
+							playerSize,
+						),
+					);
+				}
+
+				const updatedPlayerSnapshot = yield* cavernPlayerState.snapshot;
+				const updatedWorldSnapshot = yield* cavernWorldState.snapshot;
+				const updatedRoom = getCavernRoom(updatedWorldSnapshot.currentRoomId);
+				yield* sceneCamera.setViewport(cavernViewport);
+				yield* sceneCamera.setZoom(cavernCameraZoom);
+				yield* sceneCamera.setBounds(
+					roomToCameraBounds(updatedRoom, cavernViewport, cavernCameraZoom),
+				);
+				yield* sceneCamera.follow(
+					getPlayerVisualCenter(updatedPlayerSnapshot.position, playerSize),
+				);
+				const deltaSeconds =
+					(yield* runtimeClock.snapshot()).lastFrameDeltaMillis / 1_000;
+				yield* sceneCamera.step(deltaSeconds);
 			});
 
 			const stepFrame = Effect.fn("CavernGameplayDirector.stepFrame")(

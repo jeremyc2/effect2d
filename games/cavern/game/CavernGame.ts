@@ -10,6 +10,7 @@ import {
 	makeSdlCanvasNativeBoundaryLayer,
 	NativeBoundary,
 	ResourceTracker,
+	SceneCamera,
 	SceneDirector,
 	SceneRegistry,
 } from "../../../src/index.ts";
@@ -21,6 +22,7 @@ import { CavernMainMenuScene } from "./scenes/CavernMainMenuScene.ts";
 import { CavernOverworldScene } from "./scenes/CavernOverworldScene.ts";
 import { CavernMenuState } from "./state/CavernMenuState.ts";
 import { CavernPlayerState } from "./state/CavernPlayerState.ts";
+import { CavernWorldState } from "./state/CavernWorldState.ts";
 
 export const cavernConfig = {
 	...defaultEngineConfig,
@@ -72,6 +74,7 @@ const cavernRuntimeLayer = makeRuntimeLayer(cavernConfig, {
 const cavernStateLayer = Layer.mergeAll(
 	CavernMenuState.layer,
 	CavernPlayerState.layer,
+	CavernWorldState.layer,
 );
 
 const cavernCapabilityLayer = Layer.mergeAll(
@@ -80,6 +83,7 @@ const cavernCapabilityLayer = Layer.mergeAll(
 	Graphics.layer,
 	Input.layer,
 	ResourceTracker.layer,
+	SceneCamera.layer(),
 	cavernRuntimeLayer,
 	cavernStateLayer,
 );
@@ -150,10 +154,11 @@ export const cavernPlayableNativeBoundaryLayer =
 		},
 		logicalHeight: 768,
 		logicalWidth: 1152,
-		resizable: false,
+		preferIntegerScaling: false,
+		resizable: true,
 		title: "CAVERN",
-		windowHeight: 768,
-		windowWidth: 1152,
+		windowHeight: 960,
+		windowWidth: 1440,
 	}).pipe(
 		Layer.provide(
 			Layer.mergeAll(cavernCapabilityLayer, cavernNativeFrameSourceLayer),

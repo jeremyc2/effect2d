@@ -44,6 +44,7 @@ export interface SdlCanvasNativeBackendOptions {
 	readonly imageAssetPaths?: Readonly<Record<string, string>>;
 	readonly logicalHeight?: number;
 	readonly logicalWidth?: number;
+	readonly preferIntegerScaling?: boolean;
 	readonly resizable?: boolean;
 	readonly title: string;
 	readonly windowHeight: number;
@@ -377,6 +378,7 @@ const aspectFitRect = (
 	containerHeight: number,
 	contentWidth: number,
 	contentHeight: number,
+	preferIntegerScaling: boolean,
 ) => {
 	const rawScale = Math.min(
 		containerWidth / contentWidth,
@@ -384,7 +386,10 @@ const aspectFitRect = (
 	);
 	// Prefer integer enlargement for pixel art, but still allow fractional
 	// downscaling if the window is made smaller than the authored frame.
-	const scale = rawScale >= 1 ? Math.max(1, Math.floor(rawScale)) : rawScale;
+	const scale =
+		preferIntegerScaling && rawScale >= 1
+			? Math.max(1, Math.floor(rawScale))
+			: rawScale;
 	const width = Math.floor(contentWidth * scale);
 	const height = Math.floor(contentHeight * scale);
 
@@ -408,6 +413,7 @@ export const makeSdlCanvasNativeBackendLayer = ({
 	windowWidth,
 	logicalHeight = windowHeight,
 	logicalWidth = windowWidth,
+	preferIntegerScaling = true,
 	resizable = true,
 }: SdlCanvasNativeBackendOptions): Layer.Layer<
 	NativeBackend,
@@ -726,6 +732,7 @@ export const makeSdlCanvasNativeBackendLayer = ({
 								window.pixelHeight,
 								logicalWidth,
 								logicalHeight,
+								preferIntegerScaling,
 							);
 							window.render(
 								context.canvas.width,
