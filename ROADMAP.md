@@ -38,7 +38,7 @@
 - [x] Implement a scene stack for primary scenes and overlays.
 - [x] Implement scene transitions and transition errors.
 - [x] Add scoped cancellation for scene-local scripts, resources, and long-running work.
-- [ ] Add scene-owned camera support hooks.
+- [x] Add scene-owned camera support hooks.
 - [x] Add scene inspection hooks for debug tooling.
 
 ## Milestone 4: Core Rendering Model
@@ -47,7 +47,7 @@
 - [ ] Implement frame begin, frame end, and clear operations.
 - [ ] Implement draw commands for images, rectangles, circles, lines, and text.
 - [ ] Implement transforms, color tinting, blend controls, and draw order handling.
-- [ ] Implement a camera transform model for world-to-screen rendering.
+- [x] Implement a camera transform model for world-to-screen rendering.
 - [ ] Add render command recording so the user-facing API stays stable while the backend evolves.
 - [ ] Add basic batching strategy for common 2D draw paths.
 - [ ] Add typed rendering errors where operations can fail meaningfully.
