@@ -101,13 +101,13 @@
 
 ## Milestone 9: Animation And Tweening
 
-- [ ] Define the sprite animation model for named animation sequences.
-- [ ] Implement frame-based sprite animation playback.
-- [ ] Implement looping, pausing, speed control, and direction control.
-- [ ] Implement simple animation state helpers without building a giant framework.
-- [ ] Implement tween helpers for scalar and vector values.
-- [ ] Add utility support for fades, flashes, and small value transitions used by scenes and UI.
-- [ ] Add headless tests for animation stepping and tween progression.
+- [x] Define the sprite animation model for named animation sequences.
+- [x] Implement frame-based sprite animation playback.
+- [x] Implement looping, pausing, speed control, and direction control.
+- [x] Implement simple animation state helpers without building a giant framework.
+- [x] Implement tween helpers for scalar and vector values.
+- [x] Add utility support for fades, flashes, and small value transitions used by scenes and UI.
+- [x] Add headless tests for animation stepping and tween progression.
 
 ## Milestone 10: Audio
 
@@ -161,7 +161,7 @@
 - [x] Add scene lifecycle tests.
 - [x] Add persistence tests.
 - [x] Add collision and map validation tests.
-- [ ] Add animation and tween tests.
+- [x] Add animation and tween tests.
 - [ ] Add service composition tests for common engine launch paths.
 
 ## Milestone 15: Starter And Sample Game Structure
