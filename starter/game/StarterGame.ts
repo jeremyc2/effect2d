@@ -16,12 +16,15 @@ import {
 	ScriptEvents,
 	Ui,
 } from "../../src/index.ts";
+import { StarterCoordinator } from "./directors/StarterCoordinator.ts";
+import { StarterGameplayDirector } from "./directors/StarterGameplayDirector.ts";
 import { starterBindings } from "./input/StarterBindings.ts";
 import { StarterSaveParticipants } from "./save/StarterSaveParticipants.ts";
 import { MainMenuScene } from "./scenes/MainMenuScene.ts";
 import { OverworldScene } from "./scenes/OverworldScene.ts";
 import { PauseOverlayScene } from "./scenes/PauseOverlayScene.ts";
 import { DebugSettingsState } from "./state/DebugSettingsState.ts";
+import { GameplayState } from "./state/GameplayState.ts";
 import { PlayerState } from "./state/PlayerState.ts";
 import { WorldState } from "./state/WorldState.ts";
 
@@ -48,6 +51,7 @@ const starterRuntimeLayer = makeRuntimeLayer(starterConfig, {
 
 const starterStateLayer = Layer.mergeAll(
 	DebugSettingsState.layer,
+	GameplayState.layer,
 	PlayerState.layer,
 	WorldState.layer,
 );
@@ -98,9 +102,34 @@ const starterSaveParticipantsLayer = StarterSaveParticipants.layer.pipe(
 	Layer.provide(starterStateLayer),
 );
 
+const starterCoordinatorLayer = StarterCoordinator.layer.pipe(
+	Layer.provide(
+		Layer.mergeAll(
+			starterCapabilityLayer,
+			ScriptEvents.layer,
+			starterStateLayer,
+		),
+	),
+);
+
+const starterGameplayDirectorLayer = StarterGameplayDirector.layer.pipe(
+	Layer.provide(
+		Layer.mergeAll(
+			starterCapabilityLayer,
+			ScriptEvents.layer,
+			starterStateLayer,
+			starterUiLayer,
+			starterDebugOverlayLayer,
+			starterScriptLayer,
+		),
+	),
+);
+
 export const StarterGameLive = Layer.mergeAll(
 	starterCapabilityLayer,
+	starterCoordinatorLayer,
 	starterDebugOverlayLayer,
+	starterGameplayDirectorLayer,
 	starterSceneDirectorLayer,
 	starterSceneRegistryLayer,
 	starterScriptLayer,
@@ -114,9 +143,12 @@ export const starterBootstrap = Effect.gen(function* () {
 	const debugSettingsState = yield* DebugSettingsState;
 	const engineLogger = yield* EngineLogger;
 	const input = yield* Input;
+	const starterCoordinator = yield* StarterCoordinator;
+	const starterGameplayDirector = yield* StarterGameplayDirector;
 	const starterSaveParticipants = yield* StarterSaveParticipants;
 	const ui = yield* Ui;
 
+	yield* starterCoordinator.beginNewGame;
 	yield* input.setBindings(starterBindings);
 	yield* ui.loadFont({
 		fontId: "ui-body",
@@ -129,6 +161,10 @@ export const starterBootstrap = Effect.gen(function* () {
 	if (debugSettings.debugOverlayEnabled) {
 		yield* debugOverlay.enable;
 	}
+
+	yield* starterCoordinator.recordSceneChange(starterConfig.startScene);
+	yield* starterCoordinator.processEvents;
+	yield* starterGameplayDirector.runIntroSequence();
 
 	const saveParticipants = yield* starterSaveParticipants.all;
 	yield* engineLogger.info("Starter game bootstrapped.", {

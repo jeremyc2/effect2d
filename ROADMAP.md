@@ -149,9 +149,9 @@
 - [x] Implement helpers for waiting, timing, and sequencing.
 - [x] Implement helpers for dialogue progression, fades, and audio cues.
 - [x] Implement lifecycle-aware cancellation for long-running scripts.
-- [ ] Implement coordinator service patterns for multi-domain workflows.
+- [x] Implement coordinator service patterns for multi-domain workflows.
 - [x] Implement selective typed domain events for broadcast-worthy situations.
-- [ ] Add examples showing direct service orchestration versus event-based coordination.
+- [x] Add examples showing direct service orchestration versus event-based coordination.
 
 ## Milestone 14: Testing Infrastructure
 
@@ -178,14 +178,14 @@
 ## Milestone 16: Vertical Slice Demo
 
 - [ ] Build a tiny top-down action-adventure demo on the engine.
-- [ ] Implement a title or menu scene.
+- [x] Implement a title or menu scene.
 - [ ] Implement one primary gameplay scene.
-- [ ] Implement at least one overlay scene such as pause or dialogue.
-- [ ] Implement player movement and facing.
-- [ ] Implement one enemy with simple behavior.
-- [ ] Implement one pickup or interactable object.
-- [ ] Implement one room transition.
-- [ ] Implement one short Effect-based scripted sequence.
+- [x] Implement at least one overlay scene such as pause or dialogue.
+- [x] Implement player movement and facing.
+- [x] Implement one enemy with simple behavior.
+- [x] Implement one pickup or interactable object.
+- [x] Implement one room transition.
+- [x] Implement one short Effect-based scripted sequence.
 - [ ] Implement image rendering, text rendering, collision, animation, music, sound effects, and save/load in one cohesive loop.
 - [ ] Implement a debug overlay inside the demo.
 - [ ] Validate that the demo feels like a real game slice instead of a disconnected subsystem showcase.
@@ -219,10 +219,10 @@
 - [ ] A small playable vertical slice exists.
 - [ ] The game launches through `Effect.runPromise(...)`.
 - [x] Scenes are service-defined and scene instances are scoped.
-- [ ] Multiple domain state services exist and persist through save participants.
+- [x] Multiple domain state services exist and persist through save participants.
 - [ ] Input, rendering, audio, maps, animation, collision, transitions, and save/load all work together in one slice.
-- [ ] A debug overlay exists.
-- [ ] At least one scripted sequence is implemented as Effect.
+- [x] A debug overlay exists.
+- [x] At least one scripted sequence is implemented as Effect.
 - [ ] The architecture feels strong enough to build a real game on it.
 
 ### After 0.1

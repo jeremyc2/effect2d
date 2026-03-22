@@ -15,6 +15,7 @@ const initialWorldSnapshot: WorldSnapshot = {
 export class WorldState extends ServiceMap.Service<
 	WorldState,
 	{
+		readonly addItem: (itemId: string) => Effect.Effect<void>;
 		readonly enterRoom: (roomId: string) => Effect.Effect<void>;
 		readonly lightLantern: Effect.Effect<void>;
 		readonly restore: (snapshot: WorldSnapshot) => Effect.Effect<void>;
@@ -25,6 +26,17 @@ export class WorldState extends ServiceMap.Service<
 		WorldState,
 		Effect.gen(function* () {
 			const stateRef = yield* Ref.make(initialWorldSnapshot);
+
+			const addItem = Effect.fn("WorldState.addItem")(function* (
+				itemId: string,
+			) {
+				yield* Ref.update(stateRef, (state) => ({
+					...state,
+					inventory: state.inventory.includes(itemId)
+						? state.inventory
+						: [...state.inventory, itemId],
+				}));
+			});
 
 			const enterRoom = Effect.fn("WorldState.enterRoom")(function* (
 				roomId: string,
@@ -47,6 +59,7 @@ export class WorldState extends ServiceMap.Service<
 			});
 
 			return WorldState.of({
+				addItem,
 				enterRoom,
 				lightLantern,
 				restore,

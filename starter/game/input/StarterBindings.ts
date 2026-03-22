@@ -18,8 +18,24 @@ export const starterBindings = [
 		triggers: [{ key: "Escape", type: "key" }],
 	},
 	{
+		action: "move-left",
+		triggers: [{ key: "ArrowLeft", type: "key" }],
+	},
+	{
 		action: "move-right",
 		triggers: [{ key: "ArrowRight", type: "key" }],
+	},
+	{
+		action: "move-up",
+		triggers: [{ key: "ArrowUp", type: "key" }],
+	},
+	{
+		action: "move-down",
+		triggers: [{ key: "ArrowDown", type: "key" }],
+	},
+	{
+		action: "interact",
+		triggers: [{ key: "Space", type: "key" }],
 	},
 	{
 		action: "debug-toggle",

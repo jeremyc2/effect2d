@@ -1,6 +1,7 @@
 import { Effect, Layer, ServiceMap } from "effect";
 import type { SaveParticipant } from "../../../src/save/SaveDocument.ts";
 import { DebugSettingsState } from "../state/DebugSettingsState.ts";
+import { GameplayState } from "../state/GameplayState.ts";
 import { PlayerState } from "../state/PlayerState.ts";
 import { WorldState } from "../state/WorldState.ts";
 
@@ -14,6 +15,7 @@ export class StarterSaveParticipants extends ServiceMap.Service<
 		StarterSaveParticipants,
 		Effect.gen(function* () {
 			const debugSettingsState = yield* DebugSettingsState;
+			const gameplayState = yield* GameplayState;
 			const playerState = yield* PlayerState;
 			const worldState = yield* WorldState;
 
@@ -78,6 +80,38 @@ export class StarterSaveParticipants extends ServiceMap.Service<
 							lanternLit: state["lanternLit"] === true,
 						});
 					}),
+				},
+				{
+					capture: gameplayState.snapshot.pipe(
+						Effect.map((snapshot) => ({
+							enemyDefeated: snapshot.enemyDefeated,
+							enemyPositionX: snapshot.enemyPosition.x,
+							enemyPositionY: snapshot.enemyPosition.y,
+							introSequencePlayed: snapshot.introSequencePlayed,
+							lanternPickupCollected: snapshot.lanternPickupCollected,
+						})),
+					),
+					key: "gameplay",
+					restore: Effect.fn("StarterSaveParticipants.restoreGameplay")(
+						function* (state: Readonly<Record<string, unknown>>) {
+							yield* gameplayState.restore({
+								enemyDefeated: state["enemyDefeated"] === true,
+								enemyPosition: {
+									x:
+										typeof state["enemyPositionX"] === "number"
+											? state["enemyPositionX"]
+											: 72,
+									y:
+										typeof state["enemyPositionY"] === "number"
+											? state["enemyPositionY"]
+											: 32,
+								},
+								introSequencePlayed: state["introSequencePlayed"] === true,
+								lanternPickupCollected:
+									state["lanternPickupCollected"] === true,
+							});
+						},
+					),
 				},
 				{
 					capture: debugSettingsState.snapshot.pipe(
