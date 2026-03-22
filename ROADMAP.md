@@ -123,14 +123,14 @@
 
 ## Milestone 11: Persistence
 
-- [ ] Define the versioned JSON save document model.
-- [ ] Define the save participant contract for domain state services.
-- [ ] Implement save coordination across multiple participants.
-- [ ] Implement load coordination across multiple participants.
-- [ ] Implement save slot handling.
-- [ ] Implement versioning and migration hooks for save data evolution.
-- [ ] Add typed save and load errors.
-- [ ] Add tests covering round-trip persistence and version migration.
+- [x] Define the versioned JSON save document model.
+- [x] Define the save participant contract for domain state services.
+- [x] Implement save coordination across multiple participants.
+- [x] Implement load coordination across multiple participants.
+- [x] Implement save slot handling.
+- [x] Implement versioning and migration hooks for save data evolution.
+- [x] Add typed save and load errors.
+- [x] Add tests covering round-trip persistence and version migration.
 
 ## Milestone 12: Debugging And Diagnostics
 
@@ -159,7 +159,7 @@
 - [x] Add headless test harness support for core engine services.
 - [x] Add deterministic test helpers for fixed timestep and seeded randomness.
 - [x] Add scene lifecycle tests.
-- [ ] Add persistence tests.
+- [x] Add persistence tests.
 - [x] Add collision and map validation tests.
 - [ ] Add animation and tween tests.
 - [ ] Add service composition tests for common engine launch paths.

@@ -4,9 +4,14 @@ export const runEffectTest = <Success, Failure>(
 	effect: Effect.Effect<Success, Failure>,
 ): Promise<Success> => Effect.runPromise(effect);
 
-export const runLayerEffect = async <Success, Failure, Services>(
-	layer: Layer.Layer<Services, Failure>,
-	effect: Effect.Effect<Success, Failure, Services>,
+export const runLayerEffect = async <
+	Success,
+	EffectFailure,
+	LayerFailure,
+	Services,
+>(
+	layer: Layer.Layer<Services, LayerFailure>,
+	effect: Effect.Effect<Success, EffectFailure, Services>,
 ): Promise<Success> => {
 	return Effect.runPromise(
 		Effect.scoped(

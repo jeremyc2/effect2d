@@ -25,20 +25,19 @@ const topScene = (
 		: Effect.succeed(entry);
 };
 
-const stackSnapshot = (
+const stackSnapshot = Effect.fn("SceneDirector.stackSnapshot")(function* (
 	stack: ReadonlyArray<SceneStackEntry>,
-): Effect.Effect<SceneStackSnapshot, SceneStackEmptyError> =>
-	Effect.gen(function* () {
-		const active = yield* topScene(stack);
+) {
+	const active = yield* topScene(stack);
 
-		return {
-			activeSceneId: active.scene.id,
-			entries: stack.map((entry) => ({
-				level: entry.level,
-				sceneId: entry.scene.id,
-			})),
-		};
-	});
+	return {
+		activeSceneId: active.scene.id,
+		entries: stack.map((entry) => ({
+			level: entry.level,
+			sceneId: entry.scene.id,
+		})),
+	};
+});
 
 export class SceneDirector extends ServiceMap.Service<
 	SceneDirector,

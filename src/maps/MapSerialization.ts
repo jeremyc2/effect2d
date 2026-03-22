@@ -55,17 +55,13 @@ export const serializeRoom = (
 		Effect.mapError((error) => toSerializationError("serialize", error)),
 	);
 
-export const deserializeRoom = (
-	serializedRoom: string,
-): Effect.Effect<
-	RoomContent,
-	MapSerializationError | import("./MapError.ts").MapValidationError
-> =>
-	Effect.gen(function* () {
+export const deserializeRoom = Effect.fn("MapSerialization.deserializeRoom")(
+	function* (serializedRoom: string) {
 		const decodedRoom = yield* Schema.decodeUnknownEffect(
 			RoomContentFromJsonString,
 		)(serializedRoom).pipe(
 			Effect.mapError((error) => toSerializationError("deserialize", error)),
 		);
 		return yield* validateRoom(decodedRoom);
-	});
+	},
+);

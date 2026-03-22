@@ -101,55 +101,54 @@ const validateObjectEntry = (
 	return Effect.void;
 };
 
-export const validateRoom = (
+export const validateRoom = Effect.fn("MapValidation.validateRoom")(function* (
 	room: RoomContent,
-): Effect.Effect<RoomContent, MapValidationError> =>
-	Effect.gen(function* () {
-		if (room.id.length === 0) {
-			return yield* new MapValidationError({
-				reason: "Room ids must be non-empty.",
-				roomId: room.id,
-			});
-		}
+) {
+	if (room.id.length === 0) {
+		return yield* new MapValidationError({
+			reason: "Room ids must be non-empty.",
+			roomId: room.id,
+		});
+	}
 
-		const duplicateTilePlaneIds = duplicateIds(
-			room.tilePlanes.map((plane) => plane.id),
-		);
-		if (duplicateTilePlaneIds.length > 0) {
-			return yield* new MapValidationError({
-				reason: `Duplicate tile plane ids found: ${duplicateTilePlaneIds.join(", ")}.`,
-				roomId: room.id,
-			});
-		}
+	const duplicateTilePlaneIds = duplicateIds(
+		room.tilePlanes.map((plane) => plane.id),
+	);
+	if (duplicateTilePlaneIds.length > 0) {
+		return yield* new MapValidationError({
+			reason: `Duplicate tile plane ids found: ${duplicateTilePlaneIds.join(", ")}.`,
+			roomId: room.id,
+		});
+	}
 
-		const duplicateObjectPlaneIds = duplicateIds(
-			room.objectPlanes.map((plane) => plane.id),
-		);
-		if (duplicateObjectPlaneIds.length > 0) {
-			return yield* new MapValidationError({
-				reason: `Duplicate object plane ids found: ${duplicateObjectPlaneIds.join(", ")}.`,
-				roomId: room.id,
-			});
-		}
+	const duplicateObjectPlaneIds = duplicateIds(
+		room.objectPlanes.map((plane) => plane.id),
+	);
+	if (duplicateObjectPlaneIds.length > 0) {
+		return yield* new MapValidationError({
+			reason: `Duplicate object plane ids found: ${duplicateObjectPlaneIds.join(", ")}.`,
+			roomId: room.id,
+		});
+	}
 
-		for (const tilePlane of room.tilePlanes) {
-			yield* validateTilePlane(room.id, tilePlane);
-		}
+	for (const tilePlane of room.tilePlanes) {
+		yield* validateTilePlane(room.id, tilePlane);
+	}
 
-		const objectEntries = room.objectPlanes.flatMap((plane) => plane.entries);
-		const duplicateObjectIds = duplicateIds(
-			objectEntries.map((entry) => entry.id),
-		);
-		if (duplicateObjectIds.length > 0) {
-			return yield* new MapValidationError({
-				reason: `Duplicate object ids found: ${duplicateObjectIds.join(", ")}.`,
-				roomId: room.id,
-			});
-		}
+	const objectEntries = room.objectPlanes.flatMap((plane) => plane.entries);
+	const duplicateObjectIds = duplicateIds(
+		objectEntries.map((entry) => entry.id),
+	);
+	if (duplicateObjectIds.length > 0) {
+		return yield* new MapValidationError({
+			reason: `Duplicate object ids found: ${duplicateObjectIds.join(", ")}.`,
+			roomId: room.id,
+		});
+	}
 
-		for (const entry of objectEntries) {
-			yield* validateObjectEntry(room.id, entry);
-		}
+	for (const entry of objectEntries) {
+		yield* validateObjectEntry(room.id, entry);
+	}
 
-		return room;
-	});
+	return room;
+});
