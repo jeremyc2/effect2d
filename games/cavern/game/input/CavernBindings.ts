@@ -1,0 +1,44 @@
+import type { ActionBinding } from "../../../../src/input/Input.ts";
+
+export const cavernBindings = [
+	{
+		action: "menu-up",
+		triggers: [{ key: "ArrowUp", type: "key" }],
+	},
+	{
+		action: "menu-down",
+		triggers: [{ key: "ArrowDown", type: "key" }],
+	},
+	{
+		action: "menu-confirm",
+		triggers: [{ key: "Enter", type: "key" }],
+	},
+	{
+		action: "menu-cancel",
+		triggers: [{ key: "Escape", type: "key" }],
+	},
+	{
+		action: "menu-click",
+		triggers: [{ button: 1, type: "mouse-button" }],
+	},
+	{
+		action: "move-left",
+		triggers: [{ key: "ArrowLeft", type: "key" }],
+	},
+	{
+		action: "move-right",
+		triggers: [{ key: "ArrowRight", type: "key" }],
+	},
+	{
+		action: "move-up",
+		triggers: [{ key: "ArrowUp", type: "key" }],
+	},
+	{
+		action: "move-down",
+		triggers: [{ key: "ArrowDown", type: "key" }],
+	},
+	{
+		action: "debug-toggle",
+		triggers: [{ key: "F3", type: "key" }],
+	},
+] satisfies ReadonlyArray<ActionBinding>;

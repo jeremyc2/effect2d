@@ -30,6 +30,16 @@ export interface SdlCanvasNativeBackendOptions {
 	readonly defaultFontFamily?: string;
 	readonly defaultFontPath?: string;
 	readonly defaultFontSizePx?: number;
+	readonly fontAssetDefinitions?: Readonly<
+		Record<
+			string,
+			{
+				readonly family: string;
+				readonly sizePx: number;
+				readonly sourcePath: string;
+			}
+		>
+	>;
 	readonly frameDelayMillis?: number;
 	readonly imageAssetPaths?: Readonly<Record<string, string>>;
 	readonly logicalHeight?: number;
@@ -166,12 +176,24 @@ const drawMissingImage = (
 	context.fillText(imageId.slice(0, 12), x + 2, y + 2, Math.max(0, width - 4));
 };
 
+const fontString = (family: string, sizePx: number): string =>
+	`${sizePx}px "${family}", "Monaco"`;
+
 const renderCommand = (
 	context: SKRSContext2D,
 	command: DrawCommand,
 	images: ReadonlyMap<string, Awaited<ReturnType<typeof loadImage>>>,
 	defaultFontFamily: string,
 	defaultFontSizePx: number,
+	fontAssetDefinitions: Readonly<
+		Record<
+			string,
+			{
+				readonly family: string;
+				readonly sizePx: number;
+			}
+		>
+	>,
 	state: {
 		blendMode: "add" | "alpha" | "multiply";
 		tint: Color;
@@ -283,14 +305,22 @@ const renderCommand = (
 			context.stroke();
 			context.globalAlpha = 1;
 			return;
-		case "draw-text":
+		case "draw-text": {
+			const nativeFont =
+				command.fontId === undefined
+					? undefined
+					: fontAssetDefinitions[command.fontId];
 			context.fillStyle = toRgba(white, state.tint.alpha);
-			context.font = `${defaultFontSizePx}px "${defaultFontFamily}", "Monaco"`;
+			context.font = fontString(
+				nativeFont?.family ?? defaultFontFamily,
+				nativeFont?.sizePx ?? defaultFontSizePx,
+			);
 			context.textBaseline = "top";
 			context.textAlign = command.align;
 			context.fillText(command.text, command.position.x, command.position.y);
 			context.textAlign = "left";
 			return;
+		}
 		case "draw-fade":
 			context.save();
 			context.setTransform(1, 0, 0, 1, 0, 0);
@@ -369,6 +399,7 @@ export const makeSdlCanvasNativeBackendLayer = ({
 	defaultFontFamily = "effect2d-native",
 	defaultFontPath,
 	defaultFontSizePx = 8,
+	fontAssetDefinitions = {},
 	frameDelayMillis = 16,
 	imageAssetPaths = {},
 	title,
@@ -402,6 +433,13 @@ export const makeSdlCanvasNativeBackendLayer = ({
 				string,
 				Awaited<ReturnType<typeof loadImage>>
 			>();
+			const registeredFontDefinitions: Record<
+				string,
+				{
+					readonly family: string;
+					readonly sizePx: number;
+				}
+			> = {};
 
 			const recordError = Effect.fn("NativeBackend.recordError")(function* (
 				reason: string,
@@ -467,6 +505,26 @@ export const makeSdlCanvasNativeBackendLayer = ({
 					yield* Effect.sync(() => {
 						try {
 							GlobalFonts.registerFromPath(defaultFontPath, defaultFontFamily);
+						} catch {
+							return;
+						}
+					});
+				}
+
+				for (const [fontId, definition] of Object.entries(
+					fontAssetDefinitions,
+				)) {
+					registeredFontDefinitions[fontId] = {
+						family: definition.family,
+						sizePx: definition.sizePx,
+					};
+
+					yield* Effect.sync(() => {
+						try {
+							GlobalFonts.registerFromPath(
+								definition.sourcePath,
+								definition.family,
+							);
 						} catch {
 							return;
 						}
@@ -657,6 +715,7 @@ export const makeSdlCanvasNativeBackendLayer = ({
 									loadedImages,
 									defaultFontFamily,
 									defaultFontSizePx,
+									registeredFontDefinitions,
 									renderState,
 								);
 							}
