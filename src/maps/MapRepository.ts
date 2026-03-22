@@ -4,6 +4,11 @@ import { MapValidationError } from "./MapError.ts";
 import { roomObjectById as roomObjectByIdInContent } from "./MapQueries.ts";
 import { validateRoom } from "./MapValidation.ts";
 
+/**
+ * A validated in-memory repository of authored rooms.
+ *
+ * @public
+ */
 export class MapRepository extends ServiceMap.Service<
 	MapRepository,
 	{

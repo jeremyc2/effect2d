@@ -7,6 +7,25 @@ import {
 import { NativeBoundary } from "../native/NativeBoundary.ts";
 import type { EngineConfig } from "./EngineConfig.ts";
 
+/**
+ * The smallest runnable engine surface.
+ *
+ * @public
+ *
+ * `Engine` is the service most applications eventually launch, but it is not
+ * usually the first thing authors wire by hand. In a typical game you compose
+ * a runtime with {@link makeRuntimeLayer}, register your authored services, and
+ * then call `engine.launch()` or use {@link engineProgram}.
+ *
+ * This service intentionally stays narrow:
+ *
+ * - `config` exposes the validated engine configuration
+ * - `launch()` delegates to the active {@link NativeBoundary}
+ *
+ * Everything else that feels "game-like" lives in sibling services such as
+ * {@link Graphics}, {@link Input}, {@link Audio}, {@link SceneDirector}, and
+ * your own game-specific state services.
+ */
 export class Engine extends ServiceMap.Service<
 	Engine,
 	{

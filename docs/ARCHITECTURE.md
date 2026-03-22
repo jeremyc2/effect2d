@@ -12,6 +12,7 @@ The current subsystem layout is:
 - `native`: the thin capability-level bridge to platform APIs
 - `scene`: scene definitions, scene instances, and scene stack orchestration
 - `graphics`: immediate-mode rendering contracts
+  - each frame records a fresh list of draw commands from current game state rather than keeping a retained DOM-like tree
 - `audio`: music and sound effect contracts
 - `input`: raw input and action-oriented input contracts
 - `maps`: room content and room loading contracts
@@ -31,7 +32,7 @@ The native boundary must stay thin.
 
 The current native runtime is split in two layers:
 
-- `NativeBackend`: capability-level access to windowing, frame presentation, raw input draining, audio output syncing, timing waits, and backend diagnostics
+- `NativeBackend`: capability-level access to windowing, frame presentation, native input event collection, audio output syncing, timing waits, and backend diagnostics
 - `NativeBoundary`: the orchestration layer that connects `NativeBackend` to `Input`, `Audio`, and `NativeFrameSource`
 
 The initial practical implementation is:
@@ -70,7 +71,7 @@ If logic starts drifting downward into `native`, that is an architectural bug.
 `NativeBackend` is capability-level on purpose. It owns:
 
 - `open` / `close` for native resource lifetime
-- `drainInputEvents` for raw event collection
+- `drainInputEvents` for native input event collection
 - `presentFrame` for low-level frame presentation
 - `syncAudio` for device-facing playback state updates
 - `waitForNextFrame` for timing hooks

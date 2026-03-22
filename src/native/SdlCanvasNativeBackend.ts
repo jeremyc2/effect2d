@@ -26,6 +26,11 @@ import {
 import { NativeBoundary } from "./NativeBoundary.ts";
 import type { NativeFrameSource } from "./NativeFrameSource.ts";
 
+/**
+ * Configuration for the SDL + Canvas native backend.
+ *
+ * @public
+ */
 export interface SdlCanvasNativeBackendOptions {
 	readonly defaultFontFamily?: string;
 	readonly defaultFontPath?: string;
@@ -401,6 +406,11 @@ const aspectFitRect = (
 	};
 };
 
+/**
+ * Builds the SDL + Canvas implementation of {@link NativeBackend}.
+ *
+ * @public
+ */
 export const makeSdlCanvasNativeBackendLayer = ({
 	defaultFontFamily = "effect2d-native",
 	defaultFontPath,
@@ -903,6 +913,12 @@ export const makeSdlCanvasNativeBackendLayer = ({
 		}),
 	);
 
+/**
+ * Builds a ready-to-use {@link NativeBoundary} backed by SDL windowing and a
+ * Canvas renderer.
+ *
+ * @public
+ */
 export const makeSdlCanvasNativeBoundaryLayer = (
 	options: SdlCanvasNativeBackendOptions,
 ): Layer.Layer<

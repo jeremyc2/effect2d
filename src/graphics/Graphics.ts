@@ -1,6 +1,13 @@
 import { Effect, Layer, Ref, Schema, ServiceMap } from "effect";
 import type { CameraVector } from "./Camera.ts";
 
+/**
+ * A normalized RGBA color used throughout the graphics API.
+ *
+ * @public
+ *
+ * All channels are expected to be in the inclusive range `0..1`.
+ */
 export interface Color {
 	readonly alpha: number;
 	readonly blue: number;
@@ -8,6 +15,11 @@ export interface Color {
 	readonly red: number;
 }
 
+/**
+ * A 2D transform recorded onto the graphics command stream.
+ *
+ * @public
+ */
 export interface Transform2D {
 	readonly rotationRadians: number;
 	readonly scaleX: number;
@@ -15,12 +27,20 @@ export interface Transform2D {
 	readonly translation: CameraVector;
 }
 
+/** Supported compositing modes for subsequent draw commands. @public */
 export type BlendMode = "add" | "alpha" | "multiply";
 
+/** Supported rectangle rendering modes. @public */
 export type RectangleDrawMode = "fill" | "stroke";
 
+/** Supported circle rendering modes. @public */
 export type CircleDrawMode = "fill" | "stroke";
 
+/**
+ * Parameters for a text draw command.
+ *
+ * @public
+ */
 export interface DrawTextOptions {
 	readonly align?: "center" | "left" | "right";
 	readonly fontId?: string;
@@ -28,6 +48,15 @@ export interface DrawTextOptions {
 	readonly text: string;
 }
 
+/**
+ * A serializable render command recorded by {@link Graphics}.
+ *
+ * @public
+ *
+ * The native layer consumes these commands to present an actual frame. Game
+ * code usually records commands through the `Graphics` service rather than
+ * constructing `DrawCommand` objects directly.
+ */
 export type DrawCommand =
 	| {
 			readonly color: Color;
@@ -98,6 +127,11 @@ export type DrawCommand =
 			readonly type: "draw-flash";
 	  };
 
+/**
+ * The graphics frame currently being recorded or most recently completed.
+ *
+ * @public
+ */
 export interface FrameSnapshot {
 	readonly commands: ReadonlyArray<DrawCommand>;
 	readonly isOpen: boolean;
@@ -127,6 +161,12 @@ const initialState: GraphicsState = {
 	lastCompletedFrame: null,
 };
 
+/**
+ * Indicates that game code attempted to record graphics commands without first
+ * opening a frame.
+ *
+ * @public
+ */
 export class GraphicsFrameNotOpenError extends Schema.TaggedErrorClass<GraphicsFrameNotOpenError>()(
 	"GraphicsFrameNotOpenError",
 	{
@@ -134,6 +174,11 @@ export class GraphicsFrameNotOpenError extends Schema.TaggedErrorClass<GraphicsF
 	},
 ) {}
 
+/**
+ * Indicates that more transforms were popped than pushed during a frame.
+ *
+ * @public
+ */
 export class GraphicsTransformStackUnderflowError extends Schema.TaggedErrorClass<GraphicsTransformStackUnderflowError>()(
 	"GraphicsTransformStackUnderflowError",
 	{
@@ -168,6 +213,36 @@ const appendCommand = Effect.fn("Graphics.appendCommand")(function* (
 	});
 });
 
+/**
+ * Records immediate-mode rendering commands for the current frame.
+ *
+ * @public
+ *
+ * For frontend engineers, "immediate-mode" here means:
+ *
+ * - each frame, your game code says what should be drawn right now
+ * - those instructions are recorded as commands such as "draw image", "draw
+ *   text", or "draw rectangle"
+ * - once the frame ends, the native backend presents that recorded command list
+ *
+ * It does **not** mean the engine keeps a long-lived retained UI tree like the
+ * DOM and then diffs it later. Instead, each frame is authored fresh from the
+ * current game state.
+ *
+ * `Graphics` is intentionally command-oriented instead of being a retained
+ * scene graph. Game code opens a frame, records the draw operations it wants to
+ * appear, and then hands the completed {@link FrameSnapshot} to the native
+ * boundary for presentation.
+ *
+ * This service is a good fit for Effect users because it behaves like a typed,
+ * testable log of rendering intent:
+ *
+ * - gameplay and presentation code can be tested headlessly by inspecting the
+ *   resulting command stream
+ * - native backends can focus on playback rather than business logic
+ * - transforms, tints, blend modes, text, fades, and flashes all share the
+ *   same deterministic recording model
+ */
 export class Graphics extends ServiceMap.Service<
 	Graphics,
 	{

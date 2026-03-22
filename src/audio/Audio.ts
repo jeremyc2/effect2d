@@ -1,9 +1,12 @@
 import { Effect, Layer, Ref, Schema, ServiceMap } from "effect";
 
+/** Logical buses supported by the mixer. @public */
 export type AudioBus = "master" | "music" | "sfx";
 
+/** The cue categories understood by the engine. @public */
 export type AudioCueKind = "music" | "sfx";
 
+/** Declares a reusable authored audio cue. @public */
 export interface AudioCueDefinition {
 	readonly cueId: string;
 	readonly defaultLoop: boolean;
@@ -12,16 +15,19 @@ export interface AudioCueDefinition {
 	readonly sourcePath: string;
 }
 
+/** A loaded cue paired with its resolved kind. @public */
 export interface LoadedAudioCue extends AudioCueDefinition {
 	readonly kind: AudioCueKind;
 }
 
+/** Optional playback overrides for an individual cue trigger. @public */
 export interface AudioPlaybackOptions {
 	readonly loop?: boolean;
 	readonly pitch?: number;
 	readonly volume?: number;
 }
 
+/** The current music channel state. @public */
 export interface MusicPlayback {
 	readonly cueId: string;
 	readonly loop: boolean;
@@ -30,10 +36,12 @@ export interface MusicPlayback {
 	readonly volume: number;
 }
 
+/** A single overlapping sound-effect playback instance. @public */
 export interface SoundPlayback extends MusicPlayback {
 	readonly playbackId: string;
 }
 
+/** A complete snapshot of authored mixer state. @public */
 export interface AudioSnapshot {
 	readonly busVolumes: Readonly<Record<AudioBus, number>>;
 	readonly loadedCues: ReadonlyMap<string, LoadedAudioCue>;
@@ -179,6 +187,16 @@ const validateBusVolume = Effect.fn("Audio.validateBusVolume")(function* (
 	}
 });
 
+/**
+ * The engine's cue-driven audio service.
+ *
+ * @public
+ *
+ * Game code usually loads stable cue ids during startup and refers to those ids
+ * during play, instead of scattering file paths throughout gameplay logic. This
+ * keeps audio orchestration testable, deterministic, and portable across native
+ * backends.
+ */
 export class Audio extends ServiceMap.Service<
 	Audio,
 	{

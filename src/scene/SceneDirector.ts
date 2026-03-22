@@ -67,6 +67,27 @@ const stackSnapshot = Effect.fn("SceneDirector.stackSnapshot")(function* (
 	};
 });
 
+/**
+ * Coordinates scene lifecycle, scene transitions, and the overlay stack.
+ *
+ * @public
+ *
+ * This is the main scene-management service game authors use at runtime. It is
+ * responsible for:
+ *
+ * - instantiating the configured start scene
+ * - switching between primary scenes
+ * - pushing and popping overlay scenes
+ * - ensuring scene-local scopes are released when a scene exits
+ * - providing a snapshot suitable for diagnostics and UI
+ *
+ * A common pattern is:
+ *
+ * - register authored scenes with {@link SceneRegistry}
+ * - build `SceneDirector.layer(startSceneId)`
+ * - call `switchTo`, `pushOverlay`, or `popOverlay` from gameplay services
+ * - let a native frame source call the active scene's update and draw work
+ */
 export class SceneDirector extends ServiceMap.Service<
 	SceneDirector,
 	{

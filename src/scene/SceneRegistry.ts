@@ -2,6 +2,15 @@ import { Effect, Layer, ServiceMap } from "effect";
 import type { SceneDefinition, SceneId } from "./Scene.ts";
 import { SceneNotFoundError } from "./SceneError.ts";
 
+/**
+ * A lookup table of authored scene definitions.
+ *
+ * @public
+ *
+ * The registry is intentionally simple: it answers "which scene definition
+ * corresponds to this id?" and exposes the complete authored set for tooling or
+ * diagnostics.
+ */
 export class SceneRegistry extends ServiceMap.Service<
 	SceneRegistry,
 	{

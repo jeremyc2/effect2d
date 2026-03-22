@@ -7,6 +7,7 @@ import {
 } from "../graphics/Graphics.ts";
 import { Input } from "../input/Input.ts";
 
+/** A bitmap or authored font definition known to the UI service. @public */
 export interface FontDefinition {
 	readonly fontId: string;
 	readonly glyphWidth: number;
@@ -16,11 +17,13 @@ export interface FontDefinition {
 	readonly spaceWidth?: number;
 }
 
+/** A single wrapped line of measured text. @public */
 export interface TextLine {
 	readonly text: string;
 	readonly width: number;
 }
 
+/** The measured layout of a text block. @public */
 export interface TextLayout {
 	readonly fontId: string;
 	readonly height: number;
@@ -29,6 +32,7 @@ export interface TextLayout {
 	readonly width: number;
 }
 
+/** Rectangular bounds used by UI drawing helpers. @public */
 export interface UiBounds {
 	readonly position: CameraVector;
 	readonly size: {
@@ -37,6 +41,7 @@ export interface UiBounds {
 	};
 }
 
+/** A single dialogue page produced by pagination. @public */
 export interface DialoguePage {
 	readonly hasNextPage: boolean;
 	readonly layout: TextLayout;
@@ -44,6 +49,7 @@ export interface DialoguePage {
 	readonly pageIndex: number;
 }
 
+/** Options for drawing a dialogue box. @public */
 export interface DrawDialogueBoxOptions {
 	readonly bounds: UiBounds;
 	readonly fontId: string;
@@ -53,6 +59,7 @@ export interface DrawDialogueBoxOptions {
 	readonly textColor?: Color;
 }
 
+/** Options for resolving conventional menu navigation. @public */
 export interface MenuNavigationOptions {
 	readonly cancelAction?: string;
 	readonly confirmAction?: string;
@@ -63,6 +70,7 @@ export interface MenuNavigationOptions {
 	readonly wrap?: boolean;
 }
 
+/** The result of a single menu navigation update. @public */
 export interface MenuNavigationResult {
 	readonly cancelled: boolean;
 	readonly confirmed: boolean;
@@ -260,6 +268,11 @@ const layoutFromLines = (
 	),
 });
 
+/**
+ * High-level text, menu, and dialogue helpers built on top of {@link Graphics}.
+ *
+ * @public
+ */
 export class Ui extends ServiceMap.Service<
 	Ui,
 	{

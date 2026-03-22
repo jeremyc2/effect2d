@@ -27,6 +27,7 @@ import type {
 } from "../scene/SceneError.ts";
 import { type DialoguePage, Ui, type UnknownFontError } from "../ui/Ui.ts";
 
+/** The current state of a prepared dialogue sequence. @public */
 export interface DialogueProgress {
 	readonly hasNextPage: boolean;
 	readonly isComplete: boolean;
@@ -34,6 +35,7 @@ export interface DialogueProgress {
 	readonly pageIndex: number;
 }
 
+/** Options for paginating authored dialogue text. @public */
 export interface DialogueScriptOptions {
 	readonly fontId: string;
 	readonly maxLines: number;
@@ -101,6 +103,7 @@ const initialScriptEventJournalState: ScriptEventJournalState = {
 	events: [],
 };
 
+/** A lightweight published-event journal for scripted sequences. @public */
 export class ScriptEvents extends ServiceMap.Service<
 	ScriptEvents,
 	{
@@ -164,6 +167,11 @@ const nthDialoguePage = Effect.fn("Script.nthDialoguePage")(function* (
 	return page;
 });
 
+/**
+ * A convenience orchestration service for authored sequences.
+ *
+ * @public
+ */
 export class Script extends ServiceMap.Service<
 	Script,
 	{

@@ -1,5 +1,10 @@
 import { Effect, Layer, Random, ServiceMap } from "effect";
 
+/**
+ * A thin deterministic randomness service for authored gameplay logic.
+ *
+ * @public
+ */
 export class RandomSource extends ServiceMap.Service<
 	RandomSource,
 	{
@@ -34,6 +39,11 @@ export class RandomSource extends ServiceMap.Service<
 		);
 }
 
+/**
+ * Runs an effect with a temporary deterministic random seed.
+ *
+ * @public
+ */
 export const withRandomSeed = <Success, Failure, Requirements>(
 	effect: Effect.Effect<Success, Failure, Requirements>,
 	seed?: number | string,

@@ -60,6 +60,11 @@ const applyMigrations = Effect.fn("SaveCoordinator.applyMigrations")(function* (
 	return currentDocument;
 });
 
+/**
+ * Configuration for building a {@link SaveCoordinator}.
+ *
+ * @public
+ */
 export interface SaveCoordinatorOptions {
 	readonly initialDocument?: SaveDocument;
 	readonly migrations?: ReadonlyArray<SaveMigration>;
@@ -68,6 +73,20 @@ export interface SaveCoordinatorOptions {
 	readonly version: number;
 }
 
+/**
+ * Coordinates save snapshots, restores, imports, and migrations.
+ *
+ * @public
+ *
+ * Game authors typically provide a list of {@link SaveParticipant} values, one
+ * per domain state area they want to persist. The coordinator handles the
+ * boring parts:
+ *
+ * - composing those participant captures into a single document
+ * - restoring participant state from a slot
+ * - importing old documents through migrations
+ * - exposing typed failures when documents are missing or incompatible
+ */
 export class SaveCoordinator extends ServiceMap.Service<
 	SaveCoordinator,
 	{

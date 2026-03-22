@@ -1,5 +1,6 @@
 import { Clock, Duration, Effect, Layer, Ref, ServiceMap } from "effect";
 
+/** Snapshot data exposed by the runtime clock. @public */
 export interface RuntimeTimingSnapshot {
 	readonly fixedTickMillis: number;
 	readonly frameCount: number;
@@ -22,6 +23,11 @@ const initialRuntimeClockState: RuntimeClockState = {
 	tickCount: 0,
 };
 
+/**
+ * Tracks frame timing and fixed-step sleep for a running game.
+ *
+ * @public
+ */
 export class RuntimeClock extends ServiceMap.Service<
 	RuntimeClock,
 	{

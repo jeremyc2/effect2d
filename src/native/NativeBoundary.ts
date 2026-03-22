@@ -9,6 +9,24 @@ import {
 } from "./NativeBackend.ts";
 import { NativeFrameSource } from "./NativeFrameSource.ts";
 
+/**
+ * The playable bridge between authored game services and a concrete native
+ * runtime.
+ *
+ * @public
+ *
+ * `NativeBoundary` owns the real-time launch loop for a native build. It is
+ * responsible for:
+ *
+ * - opening the native backend
+ * - collecting native input events and applying them to {@link Input}
+ * - asking the active {@link NativeFrameSource} for the next frame
+ * - synchronizing authored audio state with the backend
+ * - presenting frames and waiting for the next step
+ *
+ * Most application code does not implement this service directly. Instead it
+ * uses helpers such as {@link makeSdlCanvasNativeBoundaryLayer}.
+ */
 export class NativeBoundary extends ServiceMap.Service<
 	NativeBoundary,
 	{

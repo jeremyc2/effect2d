@@ -1,14 +1,22 @@
 import { Effect, Layer, Ref, Schema, ServiceMap } from "effect";
 
+/** Keyboard key identifiers as reported by the native backend. @public */
 export type KeyCode = string;
 
+/** Mouse button identifiers as reported by the native backend. @public */
 export type MouseButton = number;
 
+/** The latest known mouse or pointer position. @public */
 export interface PointerPosition {
 	readonly x: number;
 	readonly y: number;
 }
 
+/**
+ * A raw native input event captured during the current frame.
+ *
+ * @public
+ */
 export type InputEvent =
 	| {
 			readonly key: KeyCode;
@@ -32,6 +40,11 @@ export type InputEvent =
 			readonly type: "text-input";
 	  };
 
+/**
+ * A declarative trigger that can activate a named gameplay action.
+ *
+ * @public
+ */
 export type InputTrigger =
 	| {
 			readonly key: KeyCode;
@@ -42,11 +55,21 @@ export type InputTrigger =
 			readonly type: "mouse-button";
 	  };
 
+/**
+ * Maps a named gameplay action to one or more low-level triggers.
+ *
+ * @public
+ */
 export interface ActionBinding {
 	readonly action: string;
 	readonly triggers: ReadonlyArray<InputTrigger>;
 }
 
+/**
+ * The derived state of a named gameplay action for the current frame.
+ *
+ * @public
+ */
 export interface ActionState {
 	readonly action: string;
 	readonly consumed: boolean;
@@ -55,6 +78,11 @@ export interface ActionState {
 	readonly justReleased: boolean;
 }
 
+/**
+ * A frame-local snapshot of raw input state.
+ *
+ * @public
+ */
 export interface InputSnapshot {
 	readonly events: ReadonlyArray<InputEvent>;
 	readonly mouseButtons: ReadonlySet<MouseButton>;
@@ -258,6 +286,23 @@ const validateBinding = Effect.fn("Input.validateBinding")(function* (
 	return binding;
 });
 
+/**
+ * The engine's action-oriented input service.
+ *
+ * @public
+ *
+ * `Input` bridges the gap between native events and gameplay-friendly action
+ * queries. Game authors usually:
+ *
+ * - declare a set of {@link ActionBinding} values
+ * - call `setBindings(...)` during bootstrap
+ * - read `actionState(...)` or `isActionPressed(...)` in gameplay systems
+ * - inspect raw `events` or `pointerPosition` only when they need lower-level
+ *   control
+ *
+ * The service keeps frame transitions explicit through `beginFrame`, which lets
+ * tests and native boundaries drive input deterministically.
+ */
 export class Input extends ServiceMap.Service<
 	Input,
 	{

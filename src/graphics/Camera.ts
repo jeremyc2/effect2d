@@ -1,10 +1,16 @@
 import { Effect, Layer, Ref, ServiceMap } from "effect";
 
+/** A 2D point or vector used by the camera API. @public */
 export interface CameraVector {
 	readonly x: number;
 	readonly y: number;
 }
 
+/**
+ * Bounds that clamp the camera's focal position.
+ *
+ * @public
+ */
 export interface CameraBounds {
 	readonly maxX: number;
 	readonly maxY: number;
@@ -12,17 +18,24 @@ export interface CameraBounds {
 	readonly minY: number;
 }
 
+/** The authored viewport the camera projects into. @public */
 export interface CameraViewport {
 	readonly height: number;
 	readonly width: number;
 }
 
+/** Transient screen-shake metadata. @public */
 export interface CameraShakeState {
 	readonly durationSeconds: number;
 	readonly elapsedSeconds: number;
 	readonly intensity: number;
 }
 
+/**
+ * A complete snapshot of camera state.
+ *
+ * @public
+ */
 export interface CameraState {
 	readonly bounds: CameraBounds | null;
 	readonly followTarget: CameraVector | null;
@@ -49,6 +62,11 @@ const clampPosition = (
 	};
 };
 
+/**
+ * Creates an initial camera state value.
+ *
+ * @public
+ */
 export const makeCameraState = (options?: {
 	readonly bounds?: CameraBounds | null;
 	readonly position?: CameraVector;
@@ -205,6 +223,22 @@ export const screenToWorld = (
 	};
 };
 
+/**
+ * A scene-local camera service for authored gameplay and presentation logic.
+ *
+ * @public
+ *
+ * `SceneCamera` is the runtime-friendly companion to the pure camera helper
+ * functions in this module. Game code typically uses it to:
+ *
+ * - define the viewport and zoom used by a scene
+ * - clamp the camera to room bounds
+ * - follow a player or focal target
+ * - translate between world and screen coordinates
+ * - apply temporary shake effects
+ *
+ * If your scene needs a camera at all, this is usually the service you inject.
+ */
 export class SceneCamera extends ServiceMap.Service<
 	SceneCamera,
 	{
