@@ -10,5 +10,6 @@ export * from "./native/index.ts";
 export * from "./runtime/index.ts";
 export * from "./save/index.ts";
 export * from "./scene/index.ts";
+export * from "./script/index.ts";
 export * from "./testing/index.ts";
 export * from "./ui/index.ts";

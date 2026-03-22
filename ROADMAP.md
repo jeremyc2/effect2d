@@ -145,12 +145,12 @@
 
 ## Milestone 13: Scripting And Orchestration
 
-- [ ] Define the script helper layer built on Effect.
-- [ ] Implement helpers for waiting, timing, and sequencing.
-- [ ] Implement helpers for dialogue progression, fades, and audio cues.
-- [ ] Implement lifecycle-aware cancellation for long-running scripts.
+- [x] Define the script helper layer built on Effect.
+- [x] Implement helpers for waiting, timing, and sequencing.
+- [x] Implement helpers for dialogue progression, fades, and audio cues.
+- [x] Implement lifecycle-aware cancellation for long-running scripts.
 - [ ] Implement coordinator service patterns for multi-domain workflows.
-- [ ] Implement selective typed domain events for broadcast-worthy situations.
+- [x] Implement selective typed domain events for broadcast-worthy situations.
 - [ ] Add examples showing direct service orchestration versus event-based coordination.
 
 ## Milestone 14: Testing Infrastructure
