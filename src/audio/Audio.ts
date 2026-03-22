@@ -182,6 +182,7 @@ const validateBusVolume = Effect.fn("Audio.validateBusVolume")(function* (
 export class Audio extends ServiceMap.Service<
 	Audio,
 	{
+		readonly completeSound: (playbackId: string) => Effect.Effect<void>;
 		readonly loadMusic: (
 			definition: AudioCueDefinition,
 		) => Effect.Effect<void, DuplicateAudioCueError | InvalidAudioCueError>;
@@ -372,6 +373,17 @@ export class Audio extends ServiceMap.Service<
 				}));
 			});
 
+			const completeSound = Effect.fn("Audio.completeSound")(function* (
+				playbackId: string,
+			) {
+				yield* Ref.update(stateRef, (current) => ({
+					...current,
+					sounds: current.sounds.filter(
+						(playback) => playback.playbackId !== playbackId,
+					),
+				}));
+			});
+
 			const setBusVolume = Effect.fn("Audio.setBusVolume")(function* (
 				bus: AudioBus,
 				volume: number,
@@ -405,6 +417,7 @@ export class Audio extends ServiceMap.Service<
 			);
 
 			return Audio.of({
+				completeSound,
 				loadMusic,
 				loadSound,
 				loadedCues: Ref.get(stateRef).pipe(

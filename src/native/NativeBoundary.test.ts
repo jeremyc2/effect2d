@@ -79,7 +79,8 @@ describe("NativeBoundary", () => {
 						open: () => Ref.set(openRef, true),
 						presentFrame: () =>
 							Ref.update(presentedFrames, (count) => count + 1),
-						syncAudio: () => Ref.update(syncedAudio, (count) => count + 1),
+						syncAudio: () =>
+							Ref.update(syncedAudio, (count) => count + 1).pipe(Effect.as([])),
 						waitForNextFrame: Ref.set(openRef, false),
 					});
 				}),

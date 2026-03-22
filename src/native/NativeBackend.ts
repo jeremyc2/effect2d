@@ -63,7 +63,7 @@ export class NativeBackend extends ServiceMap.Service<
 		) => Effect.Effect<void, EngineLaunchError>;
 		readonly syncAudio: (
 			snapshot: AudioSnapshot,
-		) => Effect.Effect<void, EngineLaunchError>;
+		) => Effect.Effect<ReadonlyArray<string>, EngineLaunchError>;
 		readonly waitForNextFrame: Effect.Effect<void, EngineLaunchError>;
 	}
 >()("effect2d/native/NativeBackend") {}

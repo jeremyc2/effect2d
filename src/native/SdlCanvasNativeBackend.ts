@@ -52,6 +52,7 @@ export interface SdlCanvasNativeBackendOptions {
 
 interface SpawnedAudioProcess {
 	readonly cueId: string;
+	readonly loop: boolean;
 	readonly process: Bun.Subprocess;
 	readonly sourcePath: string;
 	readonly volume: number;
@@ -765,11 +766,16 @@ export const makeSdlCanvasNativeBackendLayer = ({
 			) {
 				const currentMusic = yield* Ref.get(musicProcessRef);
 				const currentSounds = new Map(yield* Ref.get(soundProcessesRef));
+				const completedPlaybackIds: Array<string> = [];
 				const desiredSoundIds = new Set(
 					snapshot.sounds.map((sound) => sound.playbackId),
 				);
 
 				for (const [playbackId, process] of currentSounds) {
+					if (process.process.exitCode !== null && !process.loop) {
+						completedPlaybackIds.push(playbackId);
+					}
+
 					if (
 						!desiredSoundIds.has(playbackId) ||
 						process.process.exitCode !== null
@@ -780,7 +786,10 @@ export const makeSdlCanvasNativeBackendLayer = ({
 				}
 
 				for (const sound of snapshot.sounds) {
-					if (currentSounds.has(sound.playbackId)) {
+					if (
+						currentSounds.has(sound.playbackId) ||
+						completedPlaybackIds.includes(sound.playbackId)
+					) {
 						continue;
 					}
 
@@ -806,6 +815,7 @@ export const makeSdlCanvasNativeBackendLayer = ({
 					if (process._tag === "Some") {
 						currentSounds.set(sound.playbackId, {
 							cueId: sound.cueId,
+							loop: sound.loop,
 							process: process.value,
 							sourcePath: cue.sourcePath,
 							volume,
@@ -849,6 +859,7 @@ export const makeSdlCanvasNativeBackendLayer = ({
 						if (process._tag === "Some") {
 							yield* Ref.set(musicProcessRef, {
 								cueId: snapshot.music.cueId,
+								loop: snapshot.music.loop,
 								process: process.value,
 								sourcePath: cue.sourcePath,
 								volume,
@@ -869,6 +880,8 @@ export const makeSdlCanvasNativeBackendLayer = ({
 								: snapshot.music.cueId,
 					},
 				}));
+
+				return completedPlaybackIds;
 			});
 
 			const waitForNextFrame = Effect.sleep(`${frameDelayMillis} millis`);

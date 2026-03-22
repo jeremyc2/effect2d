@@ -41,7 +41,11 @@ export class NativeBoundary extends ServiceMap.Service<
 						}
 
 						const frame = yield* frameSource.nextFrame;
-						yield* nativeBackend.syncAudio(yield* audio.snapshot);
+						for (const playbackId of yield* nativeBackend.syncAudio(
+							yield* audio.snapshot,
+						)) {
+							yield* audio.completeSound(playbackId);
+						}
 						yield* nativeBackend.presentFrame(frame);
 						yield* nativeBackend.waitForNextFrame;
 					}
