@@ -7,6 +7,8 @@ import type {
 } from "../graphics/Camera.ts";
 import { RuntimeClock } from "../runtime/RuntimeClock.ts";
 import { SceneDirector } from "../scene/SceneDirector.ts";
+import { EngineLogger, type LogEntry } from "./EngineLogger.ts";
+import { ResourceTracker } from "./ResourceTracker.ts";
 
 export interface DebugRoomMarker {
 	readonly id: string;
@@ -37,6 +39,7 @@ export interface DebugOverlaySnapshot {
 	};
 	readonly collisionBodies: ReadonlyArray<CollisionBody>;
 	readonly enabled: boolean;
+	readonly logs: ReadonlyArray<LogEntry>;
 	readonly roomMarkers: ReadonlyArray<DebugRoomMarker>;
 	readonly sceneStack: {
 		readonly activeSceneId: string | null;
@@ -58,7 +61,7 @@ interface DebugOverlayState {
 	readonly cameraState: CameraState | null;
 	readonly collisionBodies: ReadonlyArray<CollisionBody>;
 	readonly enabled: boolean;
-	readonly resources: ReadonlyArray<ResourceDiagnostic>;
+	readonly authoredResources: ReadonlyArray<ResourceDiagnostic>;
 	readonly roomMarkers: ReadonlyArray<DebugRoomMarker>;
 }
 
@@ -66,7 +69,7 @@ const initialState: DebugOverlayState = {
 	cameraState: null,
 	collisionBodies: [],
 	enabled: false,
-	resources: [],
+	authoredResources: [],
 	roomMarkers: [],
 };
 
@@ -85,6 +88,7 @@ const formatDrawModel = (
 		`collision-bodies: ${snapshot.collisionBodies.length}`,
 		`room-markers: ${snapshot.roomMarkers.length}`,
 		`resources: ${snapshot.resources.length}`,
+		`logs: ${snapshot.logs.length}`,
 	],
 	snapshot,
 });
@@ -115,6 +119,8 @@ export class DebugOverlay extends ServiceMap.Service<
 		DebugOverlay,
 		Effect.gen(function* () {
 			const stateRef = yield* Ref.make(initialState);
+			const engineLogger = yield* EngineLogger;
+			const resourceTracker = yield* ResourceTracker;
 			const runtimeClock = yield* RuntimeClock;
 			const sceneDirector = yield* SceneDirector;
 
@@ -156,7 +162,7 @@ export class DebugOverlay extends ServiceMap.Service<
 			)(function* (resources: ReadonlyArray<ResourceDiagnostic>) {
 				yield* Ref.update(stateRef, (state) => ({
 					...state,
-					resources,
+					authoredResources: resources,
 				}));
 			});
 
@@ -171,6 +177,8 @@ export class DebugOverlay extends ServiceMap.Service<
 
 			const captureSnapshot = Effect.gen(function* () {
 				const state = yield* Ref.get(stateRef);
+				const liveLogs = yield* engineLogger.entries;
+				const trackedResources = yield* resourceTracker.records;
 				const timingSnapshot = yield* runtimeClock.snapshot();
 				const sceneSnapshot = yield* Effect.match(sceneDirector.snapshot, {
 					onFailure: () => ({
@@ -189,9 +197,17 @@ export class DebugOverlay extends ServiceMap.Service<
 					},
 					collisionBodies: state.collisionBodies,
 					enabled: state.enabled,
+					logs: liveLogs,
 					roomMarkers: state.roomMarkers,
 					sceneStack: sceneSnapshot,
-					resources: state.resources,
+					resources: [
+						...trackedResources.map((resource) => ({
+							id: resource.id,
+							kind: resource.kind,
+							state: resource.state,
+						})),
+						...state.authoredResources,
+					],
 					timing: {
 						fixedTickMillis: timingSnapshot.fixedTickMillis,
 						fps: formatFps(timingSnapshot.lastFrameDeltaMillis),

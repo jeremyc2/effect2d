@@ -8,6 +8,8 @@ import { SceneDirector } from "../scene/SceneDirector.ts";
 import { SceneRegistry } from "../scene/SceneRegistry.ts";
 import { runLayerEffect } from "../testing/runEffectTest.ts";
 import { DebugOverlay } from "./DebugOverlay.ts";
+import { EngineLogger } from "./EngineLogger.ts";
+import { ResourceTracker } from "./ResourceTracker.ts";
 
 const makeScene = (id: SceneId): SceneDefinition => ({
 	id,
@@ -38,6 +40,8 @@ const body: CollisionBody = {
 describe("DebugOverlay", () => {
 	test("captures frame timing, scene stack, and authored debug diagnostics", async () => {
 		const dependencies = Layer.mergeAll(
+			EngineLogger.layer,
+			ResourceTracker.layer,
 			RuntimeClock.layer(60),
 			SceneDirector.layer("overworld").pipe(
 				Layer.provide(SceneRegistry.layer([makeScene("overworld")])),
@@ -53,10 +57,20 @@ describe("DebugOverlay", () => {
 			Effect.gen(function* () {
 				const runtimeClock = yield* RuntimeClock;
 				const debugOverlay = yield* DebugOverlay;
+				const engineLogger = yield* EngineLogger;
+				const resourceTracker = yield* ResourceTracker;
 
 				yield* runtimeClock.beginFrame();
 				yield* runtimeClock.advanceTick();
 				yield* debugOverlay.enable;
+				yield* engineLogger.info("Loaded starting room.", {
+					sceneId: "overworld",
+				});
+				yield* resourceTracker.register("player-sheet", "image");
+				yield* resourceTracker.setLoaded(
+					"player-sheet",
+					"Main player sprite atlas is ready.",
+				);
 				yield* debugOverlay.setCollisionBodies([body]);
 				yield* debugOverlay.setRoomMarkers([
 					{
@@ -86,6 +100,16 @@ describe("DebugOverlay", () => {
 				const drawModel = yield* debugOverlay.drawModel;
 
 				expect(snapshot.enabled).toBe(true);
+				expect(snapshot.logs).toEqual([
+					{
+						context: {
+							sceneId: "overworld",
+						},
+						level: "info",
+						message: "Loaded starting room.",
+						sequence: 0,
+					},
+				]);
 				expect(snapshot.sceneStack.activeSceneId).toBe("overworld");
 				expect(snapshot.collisionBodies).toEqual([body]);
 				expect(snapshot.roomMarkers).toEqual([
@@ -101,6 +125,11 @@ describe("DebugOverlay", () => {
 						kind: "image",
 						state: "loaded",
 					},
+					{
+						id: "player-sheet",
+						kind: "image",
+						state: "loaded",
+					},
 				]);
 				expect(snapshot.camera.position).toEqual({ x: 64, y: 32 });
 				expect(snapshot.camera.shakeActive).toBe(true);
@@ -108,12 +137,15 @@ describe("DebugOverlay", () => {
 				expect(snapshot.timing.tickCount).toBe(1);
 				expect(drawModel.lines).toContain("active-scene: overworld");
 				expect(drawModel.lines).toContain("collision-bodies: 1");
+				expect(drawModel.lines).toContain("logs: 1");
 			}),
 		);
 	});
 
 	test("toggles visibility without losing collected diagnostics", async () => {
 		const dependencies = Layer.mergeAll(
+			EngineLogger.layer,
+			ResourceTracker.layer,
 			RuntimeClock.layer(60),
 			SceneDirector.layer("overworld").pipe(
 				Layer.provide(SceneRegistry.layer([makeScene("overworld")])),
@@ -128,14 +160,17 @@ describe("DebugOverlay", () => {
 			layer,
 			Effect.gen(function* () {
 				const debugOverlay = yield* DebugOverlay;
+				const engineLogger = yield* EngineLogger;
 
 				yield* debugOverlay.setCollisionBodies([body]);
+				yield* engineLogger.warn("Overlay toggled for diagnostics.");
 				yield* debugOverlay.toggle;
 				yield* debugOverlay.toggle;
 
 				const snapshot = yield* debugOverlay.captureSnapshot;
 				expect(snapshot.enabled).toBe(false);
 				expect(snapshot.collisionBodies).toEqual([body]);
+				expect(snapshot.logs).toHaveLength(1);
 			}),
 		);
 	});

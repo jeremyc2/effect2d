@@ -139,8 +139,8 @@
 - [x] Implement collision and trigger visualization.
 - [x] Implement camera bounds and room marker visualization.
 - [x] Implement scene stack inspection.
-- [ ] Implement resource and asset diagnostics where practical.
-- [ ] Implement structured logging patterns through Effect.
+- [x] Implement resource and asset diagnostics where practical.
+- [x] Implement structured logging patterns through Effect.
 - [x] Add debug toggles that can be disabled cleanly in normal play.
 
 ## Milestone 13: Scripting And Orchestration
