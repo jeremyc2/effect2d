@@ -9,6 +9,7 @@ import {
 	type InvalidLogMessageError,
 	type InvalidScriptWaitError,
 	type OverlayStackUnderflowError,
+	roomObjectById,
 	SceneDirector,
 	type SceneNotFoundError,
 	type SceneStackEmptyError,
@@ -101,15 +102,9 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 				const gameplaySnapshot = yield* gameplayState.snapshot;
 				const playerSnapshot = yield* playerState.snapshot;
 				const currentRoom = yield* roomState.snapshot;
-				const exitZone = currentRoom.objectPlanes
-					.flatMap((plane) => plane.entries)
-					.find((entry) => entry.id === "to-lantern-room");
-				const lanternPickup = currentRoom.objectPlanes
-					.flatMap((plane) => plane.entries)
-					.find((entry) => entry.id === "lantern-pickup");
-				const slimeEnemy = currentRoom.objectPlanes
-					.flatMap((plane) => plane.entries)
-					.find((entry) => entry.id === "slime-enemy");
+				const exitZone = roomObjectById(currentRoom, "to-lantern-room");
+				const lanternPickup = roomObjectById(currentRoom, "lantern-pickup");
+				const slimeEnemy = roomObjectById(currentRoom, "slime-enemy");
 
 				const bodies: Array<CollisionBody> = [
 					aabbBody(

@@ -1,6 +1,7 @@
 import { Effect, Layer, ServiceMap } from "effect";
 import type { RoomContent } from "./MapContent.ts";
 import { MapValidationError } from "./MapError.ts";
+import { roomObjectById as roomObjectByIdInContent } from "./MapQueries.ts";
 import { validateRoom } from "./MapValidation.ts";
 
 export class MapRepository extends ServiceMap.Service<
@@ -46,9 +47,7 @@ export class MapRepository extends ServiceMap.Service<
 				const roomObjectById = Effect.fn("MapRepository.roomObjectById")(
 					function* (roomId: string, objectId: string) {
 						const room = yield* loadRoom(roomId);
-						const objectEntry = room.objectPlanes
-							.flatMap((plane) => plane.entries)
-							.find((entry) => entry.id === objectId);
+						const objectEntry = roomObjectByIdInContent(room, objectId);
 
 						if (objectEntry === undefined) {
 							return yield* new MapValidationError({

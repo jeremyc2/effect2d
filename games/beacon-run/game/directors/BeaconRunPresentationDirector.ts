@@ -5,6 +5,7 @@ import {
 	type GraphicsFrameNotOpenError,
 	type GraphicsTransformStackUnderflowError,
 	RuntimeClock,
+	roomObjectById,
 	SceneDirector,
 	type SceneStackEmptyError,
 	Ui,
@@ -130,9 +131,7 @@ export class BeaconRunPresentationDirector extends ServiceMap.Service<
 					}
 				}
 
-				const beacon = room.objectPlanes
-					.flatMap((plane) => plane.entries)
-					.find((entry) => entry.id === "north-beacon");
+				const beacon = roomObjectById(room, "north-beacon");
 				if (beacon !== undefined) {
 					yield* graphics.drawImage(
 						expeditionSnapshot.litBeaconIds.includes("north-beacon")

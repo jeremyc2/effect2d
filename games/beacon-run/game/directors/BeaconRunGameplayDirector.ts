@@ -8,6 +8,7 @@ import {
 	Input,
 	type InvalidLogMessageError,
 	type OverlayStackUnderflowError,
+	roomObjectById,
 	SceneDirector,
 	type SceneNotFoundError,
 	type SceneStackEmptyError,
@@ -101,12 +102,8 @@ export class BeaconRunGameplayDirector extends ServiceMap.Service<
 				const currentRoom = yield* beaconRunRoomState.snapshot;
 				const expeditionSnapshot = yield* expeditionState.snapshot;
 				const scoutSnapshot = yield* scoutState.snapshot;
-				const exitZone = currentRoom.objectPlanes
-					.flatMap((plane) => plane.entries)
-					.find((entry) => entry.id === "to-shrine-room");
-				const beacon = currentRoom.objectPlanes
-					.flatMap((plane) => plane.entries)
-					.find((entry) => entry.id === "north-beacon");
+				const exitZone = roomObjectById(currentRoom, "to-shrine-room");
+				const beacon = roomObjectById(currentRoom, "north-beacon");
 
 				const bodies: Array<CollisionBody> = [
 					aabbBody(

@@ -4,6 +4,7 @@ import {
 	type MapValidationError,
 	type RoomContent,
 	type RoomObject,
+	roomObjectById as roomObjectByIdInContent,
 } from "../../../../src/index.ts";
 import { ExpeditionState } from "./ExpeditionState.ts";
 
@@ -56,9 +57,7 @@ export class BeaconRunRoomState extends ServiceMap.Service<
 				"BeaconRunRoomState.currentObjectById",
 			)(function* (objectId: string) {
 				const room = yield* Ref.get(roomRef);
-				const objectEntry = room.objectPlanes
-					.flatMap((plane) => plane.entries)
-					.find((entry) => entry.id === objectId);
+				const objectEntry = roomObjectByIdInContent(room, objectId);
 
 				if (objectEntry === undefined) {
 					return yield* mapRepository.roomObjectById(room.id, objectId);

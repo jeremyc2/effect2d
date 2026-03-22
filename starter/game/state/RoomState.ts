@@ -4,6 +4,7 @@ import {
 	type MapValidationError,
 	type RoomContent,
 	type RoomObject,
+	roomObjectById as roomObjectByIdInContent,
 } from "../../../src/index.ts";
 import { WorldState } from "./WorldState.ts";
 
@@ -58,9 +59,7 @@ export class RoomState extends ServiceMap.Service<
 			const currentObjectById = Effect.fn("RoomState.currentObjectById")(
 				function* (objectId: string) {
 					const room = yield* Ref.get(roomRef);
-					const objectEntry = room.objectPlanes
-						.flatMap((plane) => plane.entries)
-						.find((entry) => entry.id === objectId);
+					const objectEntry = roomObjectByIdInContent(room, objectId);
 
 					if (objectEntry === undefined) {
 						return yield* mapRepository.roomObjectById(room.id, objectId);

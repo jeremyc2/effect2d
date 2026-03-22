@@ -205,8 +205,8 @@
 
 - [x] Start a small real game on top of `effect2d`.
 - [x] Reuse the canonical engine architecture instead of inventing a separate one.
-- [ ] Let real game needs reveal the next engine gaps.
-- [ ] Refine maps and room content APIs under real usage.
+- [x] Let real game needs reveal the next engine gaps.
+- [x] Refine maps and room content APIs under real usage.
 - [ ] Refine save participants under real usage.
 - [ ] Refine scene and script ergonomics under real usage.
 - [ ] Refine debug tooling under real usage.

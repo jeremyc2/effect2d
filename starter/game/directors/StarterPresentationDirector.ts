@@ -10,6 +10,7 @@ import {
 	type GraphicsTransformStackUnderflowError,
 	type InvalidLogMessageError,
 	RuntimeClock,
+	roomObjectById,
 	SceneDirector,
 	type SceneStackEmptyError,
 	startAnimation,
@@ -196,9 +197,7 @@ export class StarterPresentationDirector extends ServiceMap.Service<
 					const worldSnapshot = yield* worldState.snapshot;
 					const room = yield* roomState.snapshot;
 					const terrainPlane = room.tilePlanes[0];
-					const lanternPickup = room.objectPlanes
-						.flatMap((plane) => plane.entries)
-						.find((entry) => entry.id === "lantern-pickup");
+					const lanternPickup = roomObjectById(room, "lantern-pickup");
 					const backgroundImageId =
 						typeof room.metadata["backgroundImageId"] === "string"
 							? room.metadata["backgroundImageId"]
