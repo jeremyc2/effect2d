@@ -1,6 +1,7 @@
 import { Effect, Layer } from "effect";
 import {
 	Audio,
+	CollisionWorld,
 	DebugOverlay,
 	defaultEngineConfig,
 	Engine,
@@ -18,6 +19,7 @@ import {
 } from "../../src/index.ts";
 import { StarterCoordinator } from "./directors/StarterCoordinator.ts";
 import { StarterGameplayDirector } from "./directors/StarterGameplayDirector.ts";
+import { StarterPresentationDirector } from "./directors/StarterPresentationDirector.ts";
 import { starterBindings } from "./input/StarterBindings.ts";
 import { StarterSaveParticipants } from "./save/StarterSaveParticipants.ts";
 import { MainMenuScene } from "./scenes/MainMenuScene.ts";
@@ -58,6 +60,7 @@ const starterStateLayer = Layer.mergeAll(
 
 const starterEngineCapabilityLayer = Layer.mergeAll(
 	Audio.layer,
+	CollisionWorld.layer,
 	EngineLogger.layer,
 	Graphics.layer,
 	Input.layer,
@@ -117,10 +120,23 @@ const starterGameplayDirectorLayer = StarterGameplayDirector.layer.pipe(
 		Layer.mergeAll(
 			starterCapabilityLayer,
 			ScriptEvents.layer,
+			starterSceneDirectorLayer,
 			starterStateLayer,
 			starterUiLayer,
 			starterDebugOverlayLayer,
 			starterScriptLayer,
+		),
+	),
+);
+
+const starterPresentationDirectorLayer = StarterPresentationDirector.layer.pipe(
+	Layer.provide(
+		Layer.mergeAll(
+			starterCapabilityLayer,
+			starterDebugOverlayLayer,
+			starterSceneDirectorLayer,
+			starterStateLayer,
+			starterUiLayer,
 		),
 	),
 );
@@ -130,6 +146,7 @@ export const StarterGameLive = Layer.mergeAll(
 	starterCoordinatorLayer,
 	starterDebugOverlayLayer,
 	starterGameplayDirectorLayer,
+	starterPresentationDirectorLayer,
 	starterSceneDirectorLayer,
 	starterSceneRegistryLayer,
 	starterScriptLayer,
@@ -139,17 +156,60 @@ export const StarterGameLive = Layer.mergeAll(
 );
 
 export const starterBootstrap = Effect.gen(function* () {
+	const audio = yield* Audio;
 	const debugOverlay = yield* DebugOverlay;
 	const debugSettingsState = yield* DebugSettingsState;
 	const engineLogger = yield* EngineLogger;
 	const input = yield* Input;
 	const starterCoordinator = yield* StarterCoordinator;
-	const starterGameplayDirector = yield* StarterGameplayDirector;
 	const starterSaveParticipants = yield* StarterSaveParticipants;
 	const ui = yield* Ui;
 
 	yield* starterCoordinator.beginNewGame;
 	yield* input.setBindings(starterBindings);
+	yield* audio.loadMusic({
+		cueId: "starter-theme",
+		defaultLoop: true,
+		defaultPitch: 1,
+		defaultVolume: 0.7,
+		sourcePath: "starter/audio/music/starter-theme.ogg",
+	});
+	yield* audio.loadSound({
+		cueId: "menu-confirm",
+		defaultLoop: false,
+		defaultPitch: 1,
+		defaultVolume: 0.7,
+		sourcePath: "starter/audio/sfx/menu-confirm.wav",
+	});
+	yield* audio.loadSound({
+		cueId: "pause-toggle",
+		defaultLoop: false,
+		defaultPitch: 1,
+		defaultVolume: 0.6,
+		sourcePath: "starter/audio/sfx/pause-toggle.wav",
+	});
+	yield* audio.loadSound({
+		cueId: "pickup-lantern",
+		defaultLoop: false,
+		defaultPitch: 1,
+		defaultVolume: 0.8,
+		sourcePath: "starter/audio/sfx/pickup-lantern.wav",
+	});
+	yield* audio.loadSound({
+		cueId: "room-transition",
+		defaultLoop: false,
+		defaultPitch: 1,
+		defaultVolume: 0.75,
+		sourcePath: "starter/audio/sfx/room-transition.wav",
+	});
+	yield* audio.loadSound({
+		cueId: "slime-hit",
+		defaultLoop: false,
+		defaultPitch: 1,
+		defaultVolume: 0.8,
+		sourcePath: "starter/audio/sfx/slime-hit.wav",
+	});
+	yield* audio.playLoopingMusic("starter-theme");
 	yield* ui.loadFont({
 		fontId: "ui-body",
 		glyphWidth: 8,
@@ -164,7 +224,6 @@ export const starterBootstrap = Effect.gen(function* () {
 
 	yield* starterCoordinator.recordSceneChange(starterConfig.startScene);
 	yield* starterCoordinator.processEvents;
-	yield* starterGameplayDirector.runIntroSequence();
 
 	const saveParticipants = yield* starterSaveParticipants.all;
 	yield* engineLogger.info("Starter game bootstrapped.", {

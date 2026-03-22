@@ -9,6 +9,9 @@ It demonstrates:
 - scene registration and scoped scene instances
 - coordinator-driven multi-domain orchestration
 - a gameplay director for movement, transitions, pickups, and a simple encounter
+- a presentation director for menu/gameplay/pause rendering
+- starter music and sound-effect cues
+- collision-driven interactions and debug overlay rendering
 - selective event-driven follow-up through `ScriptEvents`
 - input bindings
 - save participants
@@ -20,3 +23,4 @@ The current entry point is [main.ts](./main.ts).
 The important composition root is [StarterGame.ts](./game/StarterGame.ts).
 The main coordination example is [StarterCoordinator.ts](./game/directors/StarterCoordinator.ts).
 The gameplay slice example is [StarterGameplayDirector.ts](./game/directors/StarterGameplayDirector.ts).
+The rendering and audio example is [StarterPresentationDirector.ts](./game/directors/StarterPresentationDirector.ts).

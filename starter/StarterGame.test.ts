@@ -1,15 +1,18 @@
 import { describe, expect, test } from "bun:test";
 import { Effect, Layer } from "effect";
 import {
+	Audio,
 	DebugOverlay,
 	EngineLogger,
 	Input,
 	ResourceTracker,
 	SaveCoordinator,
+	SceneDirector,
 } from "../src/index.ts";
 import { runLayerEffect } from "../src/testing/runEffectTest.ts";
 import { StarterCoordinator } from "./game/directors/StarterCoordinator.ts";
 import { StarterGameplayDirector } from "./game/directors/StarterGameplayDirector.ts";
+import { StarterPresentationDirector } from "./game/directors/StarterPresentationDirector.ts";
 import { starterBindings } from "./game/input/StarterBindings.ts";
 import {
 	StarterGameLive,
@@ -26,6 +29,7 @@ describe("starter", () => {
 		await runLayerEffect(
 			StarterGameLive,
 			Effect.gen(function* () {
+				const audio = yield* Audio;
 				const debugOverlay = yield* DebugOverlay;
 				const engineLogger = yield* EngineLogger;
 				const input = yield* Input;
@@ -42,7 +46,16 @@ describe("starter", () => {
 						(participant) => participant.key,
 					),
 				).toEqual(["player", "world", "gameplay", "debug-settings"]);
-				expect(yield* engineLogger.entries).toHaveLength(4);
+				expect(yield* engineLogger.entries).toHaveLength(3);
+				expect((yield* audio.loadedCues).map((cue) => cue.cueId)).toEqual([
+					"starter-theme",
+					"menu-confirm",
+					"pause-toggle",
+					"pickup-lantern",
+					"room-transition",
+					"slime-hit",
+				]);
+				expect((yield* audio.music)?.cueId).toBe("starter-theme");
 				expect(yield* resourceTracker.records).toEqual([
 					{
 						details: "Starter opening room is active.",
@@ -60,7 +73,7 @@ describe("starter", () => {
 				);
 				const overlaySnapshot = yield* debugOverlay.captureSnapshot;
 				expect(overlaySnapshot.enabled).toBe(false);
-				expect(overlaySnapshot.logs).toHaveLength(4);
+				expect(overlaySnapshot.logs).toHaveLength(3);
 			}),
 		);
 	});
@@ -115,14 +128,77 @@ describe("starter", () => {
 		await runLayerEffect(
 			StarterGameLive,
 			Effect.gen(function* () {
+				const audio = yield* Audio;
 				const gameplayState = yield* GameplayState;
 				const input = yield* Input;
 				const playerState = yield* PlayerState;
+				const sceneDirector = yield* SceneDirector;
 				const starterGameplayDirector = yield* StarterGameplayDirector;
+				const starterPresentationDirector = yield* StarterPresentationDirector;
 				const starterSaveParticipants = yield* StarterSaveParticipants;
 				const worldState = yield* WorldState;
 
 				yield* starterBootstrap;
+
+				const menuFrame = yield* starterPresentationDirector.renderFrame();
+				expect(
+					menuFrame.commands.some((command) => command.type === "draw-image"),
+				).toBe(true);
+				expect(
+					menuFrame.commands.some(
+						(command) =>
+							command.type === "draw-text" && command.text.includes("effect2d"),
+					),
+				).toBe(true);
+
+				yield* input.beginFrame;
+				yield* input.applyEvent({
+					key: "Enter",
+					type: "key-down",
+				});
+				yield* starterGameplayDirector.stepFrame();
+				expect((yield* sceneDirector.snapshot).activeSceneId).toBe("overworld");
+
+				const gameplayFrame = yield* starterPresentationDirector.renderFrame();
+				expect(
+					gameplayFrame.commands.some(
+						(command) =>
+							command.type === "draw-image" &&
+							command.imageId === "room-overworld",
+					),
+				).toBe(true);
+
+				yield* input.beginFrame;
+				yield* input.applyEvent({
+					key: "Escape",
+					type: "key-down",
+				});
+				yield* starterGameplayDirector.stepFrame();
+				expect((yield* sceneDirector.snapshot).activeSceneId).toBe(
+					"pause-overlay",
+				);
+
+				const pauseFrame = yield* starterPresentationDirector.renderFrame();
+				expect(
+					pauseFrame.commands.some(
+						(command) =>
+							command.type === "draw-text" && command.text.includes("Paused"),
+					),
+				).toBe(true);
+
+				yield* input.beginFrame;
+				yield* input.applyEvent({
+					key: "Escape",
+					type: "key-up",
+				});
+
+				yield* input.beginFrame;
+				yield* input.applyEvent({
+					key: "Escape",
+					type: "key-down",
+				});
+				yield* starterGameplayDirector.stepFrame();
+				expect((yield* sceneDirector.snapshot).activeSceneId).toBe("overworld");
 
 				for (let index = 0; index < 8; index += 1) {
 					yield* input.beginFrame;
@@ -135,6 +211,26 @@ describe("starter", () => {
 
 				expect((yield* worldState.snapshot).currentRoomId).toBe("lantern-room");
 				expect((yield* gameplayState.snapshot).introSequencePlayed).toBe(true);
+
+				yield* input.beginFrame;
+				yield* input.applyEvent({
+					key: "ArrowRight",
+					type: "key-down",
+				});
+				yield* starterGameplayDirector.stepFrame();
+
+				yield* input.beginFrame;
+				yield* input.applyEvent({
+					key: "ArrowRight",
+					type: "key-down",
+				});
+				yield* starterGameplayDirector.stepFrame();
+
+				yield* input.beginFrame;
+				yield* input.applyEvent({
+					key: "ArrowRight",
+					type: "key-up",
+				});
 
 				yield* input.beginFrame;
 				yield* input.applyEvent({
@@ -152,6 +248,16 @@ describe("starter", () => {
 				yield* playerState.restore({
 					...(yield* playerState.snapshot),
 					position: (yield* gameplayState.snapshot).enemyPosition,
+				});
+
+				yield* input.beginFrame;
+				yield* input.applyEvent({
+					key: "ArrowRight",
+					type: "key-up",
+				});
+				yield* input.applyEvent({
+					key: "Space",
+					type: "key-up",
 				});
 
 				yield* input.beginFrame;
@@ -207,6 +313,8 @@ describe("starter", () => {
 				expect((yield* gameplayState.snapshot).lanternPickupCollected).toBe(
 					true,
 				);
+				expect((yield* audio.music)?.cueId).toBe("starter-theme");
+				expect((yield* audio.sounds).length).toBeGreaterThanOrEqual(4);
 			}),
 		);
 	});

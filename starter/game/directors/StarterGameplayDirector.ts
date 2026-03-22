@@ -1,15 +1,23 @@
 import { Effect, Layer, ServiceMap } from "effect";
+import type { CollisionBody } from "../../../src/collision/CollisionWorld.ts";
 import type { CameraVector } from "../../../src/graphics/Camera.ts";
 import {
+	CollisionWorld,
 	DebugOverlay,
 	EngineLogger,
 	Input,
 	type InvalidLogMessageError,
 	type InvalidScriptWaitError,
+	type OverlayStackUnderflowError,
+	SceneDirector,
+	type SceneNotFoundError,
+	type SceneStackEmptyError,
 	Script,
 	ScriptEvents,
+	type UnknownAudioCueError,
 	type UnknownFontError,
 	type UnknownInputActionError,
+	type WrongAudioCueKindError,
 } from "../../../src/index.ts";
 import { GameplayState } from "../state/GameplayState.ts";
 import { PlayerState } from "../state/PlayerState.ts";
@@ -18,20 +26,43 @@ import { WorldState } from "../state/WorldState.ts";
 const movementStep = 8;
 const overworldExitThreshold = 96;
 const lanternPickupPosition: CameraVector = { x: 24, y: 32 };
+const playerBodyId = "starter-player";
+const exitBodyId = "starter-room-exit";
+const lanternBodyId = "starter-lantern";
+const enemyBodyId = "starter-slime";
 
-const isNear = (
-	left: CameraVector,
-	right: CameraVector,
-	threshold: number,
-): boolean =>
-	Math.abs(left.x - right.x) <= threshold &&
-	Math.abs(left.y - right.y) <= threshold;
+const aabbBody = (
+	id: string,
+	group: string,
+	position: CameraVector,
+	size: { readonly height: number; readonly width: number },
+	isTrigger = true,
+): CollisionBody => ({
+	group,
+	id,
+	isTrigger,
+	mask: ["player"],
+	shape: {
+		kind: "aabb",
+		shape: {
+			height: size.height,
+			width: size.width,
+			x: position.x,
+			y: position.y,
+		},
+	},
+});
 
 type StarterGameplayDirectorFailure =
 	| InvalidLogMessageError
 	| InvalidScriptWaitError
+	| OverlayStackUnderflowError
+	| SceneNotFoundError
+	| SceneStackEmptyError
+	| UnknownAudioCueError
 	| UnknownFontError
-	| UnknownInputActionError;
+	| UnknownInputActionError
+	| WrongAudioCueKindError;
 
 export class StarterGameplayDirector extends ServiceMap.Service<
 	StarterGameplayDirector,
@@ -49,14 +80,96 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 	static readonly layer = Layer.effect(
 		StarterGameplayDirector,
 		Effect.gen(function* () {
+			const collisionWorld = yield* CollisionWorld;
 			const debugOverlay = yield* DebugOverlay;
 			const engineLogger = yield* EngineLogger;
 			const gameplayState = yield* GameplayState;
 			const input = yield* Input;
 			const playerState = yield* PlayerState;
+			const sceneDirector = yield* SceneDirector;
 			const script = yield* Script;
 			const scriptEvents = yield* ScriptEvents;
 			const worldState = yield* WorldState;
+
+			const syncCollisionBodies = Effect.fn(
+				"StarterGameplayDirector.syncCollisionBodies",
+			)(function* () {
+				const gameplaySnapshot = yield* gameplayState.snapshot;
+				const playerSnapshot = yield* playerState.snapshot;
+				const worldSnapshot = yield* worldState.snapshot;
+
+				const bodies: Array<CollisionBody> = [
+					aabbBody(
+						playerBodyId,
+						"player",
+						playerSnapshot.position,
+						{ height: 16, width: 16 },
+						false,
+					),
+				];
+
+				if (worldSnapshot.currentRoomId === "overworld-room") {
+					bodies.push(
+						aabbBody(
+							exitBodyId,
+							"room-exit",
+							{ x: overworldExitThreshold, y: 24 },
+							{ height: 32, width: 16 },
+						),
+					);
+				}
+
+				if (
+					worldSnapshot.currentRoomId === "lantern-room" &&
+					!gameplaySnapshot.lanternPickupCollected
+				) {
+					bodies.push(
+						aabbBody(lanternBodyId, "pickup", lanternPickupPosition, {
+							height: 12,
+							width: 12,
+						}),
+					);
+				}
+
+				if (
+					worldSnapshot.currentRoomId === "lantern-room" &&
+					!gameplaySnapshot.enemyDefeated
+				) {
+					bodies.push(
+						aabbBody(enemyBodyId, "enemy", gameplaySnapshot.enemyPosition, {
+							height: 14,
+							width: 14,
+						}),
+					);
+				}
+
+				for (const bodyId of [
+					playerBodyId,
+					exitBodyId,
+					lanternBodyId,
+					enemyBodyId,
+				]) {
+					yield* collisionWorld.removeBody(bodyId);
+				}
+
+				for (const body of bodies) {
+					yield* collisionWorld.registerBody(body);
+				}
+
+				yield* debugOverlay.setCollisionBodies(bodies);
+				yield* debugOverlay.setRoomMarkers([
+					{
+						id: "starter-exit",
+						kind: "transition-zone",
+						position: { x: overworldExitThreshold, y: 24 },
+					},
+					{
+						id: "starter-lantern",
+						kind: "pickup",
+						position: lanternPickupPosition,
+					},
+				]);
+			});
 
 			const applyMovement = Effect.fn("StarterGameplayDirector.applyMovement")(
 				function* () {
@@ -95,6 +208,21 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 				},
 			);
 
+			const playerBodyShape = Effect.fn(
+				"StarterGameplayDirector.playerBodyShape",
+			)(function* () {
+				const playerSnapshot = yield* playerState.snapshot;
+				return {
+					kind: "aabb" as const,
+					shape: {
+						height: 16,
+						width: 16,
+						x: playerSnapshot.position.x,
+						y: playerSnapshot.position.y,
+					},
+				};
+			});
+
 			const runIntroSequence = Effect.fn(
 				"StarterGameplayDirector.runIntroSequence",
 			)(function* () {
@@ -124,18 +252,20 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 					return;
 				}
 
-				const gameplaySnapshot = yield* gameplayState.snapshot;
-				const playerSnapshot = yield* playerState.snapshot;
+				const overlappingBodies = yield* collisionWorld.queryTriggers(
+					yield* playerBodyShape(),
+					["enemy", "pickup"],
+				);
 				const worldSnapshot = yield* worldState.snapshot;
 
 				if (
 					worldSnapshot.currentRoomId === "lantern-room" &&
-					!gameplaySnapshot.lanternPickupCollected &&
-					isNear(playerSnapshot.position, lanternPickupPosition, 12)
+					overlappingBodies.some((body) => body.id === lanternBodyId)
 				) {
 					yield* gameplayState.collectLantern;
 					yield* worldState.lightLantern;
 					yield* worldState.addItem("lantern");
+					yield* script.playSoundCue("pickup-lantern");
 					yield* scriptEvents.publish({
 						pickupId: "lantern",
 						type: "pickup-collected",
@@ -144,15 +274,16 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 						roomId: worldSnapshot.currentRoomId,
 					});
 					yield* input.consumeAction("interact");
+					yield* syncCollisionBodies();
 					return;
 				}
 
 				if (
 					worldSnapshot.lanternLit &&
-					!gameplaySnapshot.enemyDefeated &&
-					isNear(playerSnapshot.position, gameplaySnapshot.enemyPosition, 16)
+					overlappingBodies.some((body) => body.id === enemyBodyId)
 				) {
 					yield* gameplayState.defeatEnemy;
+					yield* script.playSoundCue("slime-hit");
 					yield* scriptEvents.publish({
 						enemyId: "slime",
 						type: "enemy-defeated",
@@ -161,26 +292,53 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 						enemyId: "slime",
 					});
 					yield* input.consumeAction("interact");
+					yield* syncCollisionBodies();
 				}
 			});
 
 			const stepFrame = Effect.fn("StarterGameplayDirector.stepFrame")(
 				function* () {
+					const activeSceneId = (yield* sceneDirector.snapshot).activeSceneId;
+					const cancelAction = yield* input.actionState("menu-cancel");
+					const confirmAction = yield* input.actionState("menu-confirm");
 					const debugToggle = yield* input.actionState("debug-toggle");
+
+					if (activeSceneId === "main-menu") {
+						if (confirmAction.justPressed) {
+							yield* script.playSoundCue("menu-confirm");
+							yield* script.switchScene("overworld");
+						}
+						return;
+					}
+
+					if (activeSceneId === "pause-overlay") {
+						if (cancelAction.justPressed || confirmAction.justPressed) {
+							yield* script.playSoundCue("pause-toggle");
+							yield* script.popOverlayScene();
+						}
+						return;
+					}
+
+					if (cancelAction.justPressed) {
+						yield* script.playSoundCue("pause-toggle");
+						yield* script.pushOverlayScene("pause-overlay");
+						return;
+					}
+
 					if (debugToggle.justPressed) {
 						yield* debugOverlay.toggle;
 						yield* input.consumeAction("debug-toggle");
 					}
 
 					yield* applyMovement();
+					yield* syncCollisionBodies();
 
-					const playerSnapshot = yield* playerState.snapshot;
-					const worldSnapshot = yield* worldState.snapshot;
-
-					if (
-						worldSnapshot.currentRoomId === "overworld-room" &&
-						playerSnapshot.position.x >= overworldExitThreshold
-					) {
+					const exitTriggers = yield* collisionWorld.queryTriggers(
+						yield* playerBodyShape(),
+						["room-exit"],
+					);
+					if (exitTriggers.some((body) => body.id === exitBodyId)) {
+						const playerSnapshot = yield* playerState.snapshot;
 						yield* worldState.enterRoom("lantern-room");
 						yield* playerState.restore({
 							...playerSnapshot,
@@ -189,18 +347,20 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 								y: 32,
 							},
 						});
+						yield* script.playSoundCue("room-transition");
 						yield* engineLogger.info("Starter room transition completed.", {
 							roomId: "lantern-room",
 						});
+						yield* syncCollisionBodies();
 					}
 
-					const nextWorldSnapshot = yield* worldState.snapshot;
-					if (nextWorldSnapshot.currentRoomId === "lantern-room") {
+					if ((yield* worldState.snapshot).currentRoomId === "lantern-room") {
 						yield* runIntroSequence();
 						yield* gameplayState.moveEnemyToward(
 							(yield* playerState.snapshot).position,
 							4,
 						);
+						yield* syncCollisionBodies();
 					}
 
 					yield* handleInteraction();

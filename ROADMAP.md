@@ -179,15 +179,15 @@
 
 - [ ] Build a tiny top-down action-adventure demo on the engine.
 - [x] Implement a title or menu scene.
-- [ ] Implement one primary gameplay scene.
+- [x] Implement one primary gameplay scene.
 - [x] Implement at least one overlay scene such as pause or dialogue.
 - [x] Implement player movement and facing.
 - [x] Implement one enemy with simple behavior.
 - [x] Implement one pickup or interactable object.
 - [x] Implement one room transition.
 - [x] Implement one short Effect-based scripted sequence.
-- [ ] Implement image rendering, text rendering, collision, animation, music, sound effects, and save/load in one cohesive loop.
-- [ ] Implement a debug overlay inside the demo.
+- [x] Implement image rendering, text rendering, collision, animation, music, sound effects, and save/load in one cohesive loop.
+- [x] Implement a debug overlay inside the demo.
 - [ ] Validate that the demo feels like a real game slice instead of a disconnected subsystem showcase.
 
 ## Milestone 17: Hardening For 0.1
