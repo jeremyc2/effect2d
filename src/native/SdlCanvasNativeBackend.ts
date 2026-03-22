@@ -29,6 +29,7 @@ import type { NativeFrameSource } from "./NativeFrameSource.ts";
 export interface SdlCanvasNativeBackendOptions {
 	readonly defaultFontFamily?: string;
 	readonly defaultFontPath?: string;
+	readonly defaultFontSizePx?: number;
 	readonly frameDelayMillis?: number;
 	readonly imageAssetPaths?: Readonly<Record<string, string>>;
 	readonly logicalHeight?: number;
@@ -170,6 +171,7 @@ const renderCommand = (
 	command: DrawCommand,
 	images: ReadonlyMap<string, Awaited<ReturnType<typeof loadImage>>>,
 	defaultFontFamily: string,
+	defaultFontSizePx: number,
 	state: {
 		blendMode: "add" | "alpha" | "multiply";
 		tint: Color;
@@ -283,7 +285,7 @@ const renderCommand = (
 			return;
 		case "draw-text":
 			context.fillStyle = toRgba(white, state.tint.alpha);
-			context.font = `12px "${defaultFontFamily}", "Monaco"`;
+			context.font = `${defaultFontSizePx}px "${defaultFontFamily}", "Monaco"`;
 			context.textBaseline = "top";
 			context.textAlign = command.align;
 			context.fillText(command.text, command.position.x, command.position.y);
@@ -345,10 +347,13 @@ const aspectFitRect = (
 	contentWidth: number,
 	contentHeight: number,
 ) => {
-	const scale = Math.min(
+	const rawScale = Math.min(
 		containerWidth / contentWidth,
 		containerHeight / contentHeight,
 	);
+	// Prefer integer enlargement for pixel art, but still allow fractional
+	// downscaling if the window is made smaller than the authored frame.
+	const scale = rawScale >= 1 ? Math.max(1, Math.floor(rawScale)) : rawScale;
 	const width = Math.floor(contentWidth * scale);
 	const height = Math.floor(contentHeight * scale);
 
@@ -363,6 +368,7 @@ const aspectFitRect = (
 export const makeSdlCanvasNativeBackendLayer = ({
 	defaultFontFamily = "effect2d-native",
 	defaultFontPath,
+	defaultFontSizePx = 8,
 	frameDelayMillis = 16,
 	imageAssetPaths = {},
 	title,
@@ -650,21 +656,12 @@ export const makeSdlCanvasNativeBackendLayer = ({
 									command,
 									loadedImages,
 									defaultFontFamily,
+									defaultFontSizePx,
 									renderState,
 								);
 							}
 
-							const imageData = context.getImageData(
-								0,
-								0,
-								context.canvas.width,
-								context.canvas.height,
-							);
-							const buffer = Buffer.from(
-								imageData.data.buffer,
-								imageData.data.byteOffset,
-								imageData.data.byteLength,
-							);
+							const buffer = context.canvas.data();
 							// SDL's dstRect is expressed in render pixels, not window points.
 							// On Retina displays, using width/height here draws into a quarter
 							// of the client area and makes the frame look clipped or offset.

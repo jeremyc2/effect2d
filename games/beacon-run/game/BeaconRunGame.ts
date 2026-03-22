@@ -182,6 +182,7 @@ const beaconRunNativeFrameSourceLayer = BeaconRunNativeFrameSourceLive.pipe(
 export const beaconRunPlayableNativeBoundaryLayer =
 	makeSdlCanvasNativeBoundaryLayer({
 		defaultFontPath: "games/beacon-run/assets/fonts/ui-body.ttf",
+		defaultFontSizePx: 16,
 		imageAssetPaths: {
 			"beacon-lit": "games/beacon-run/assets/images/beacon-lit.png",
 			"beacon-unlit": "games/beacon-run/assets/images/beacon-unlit.png",
@@ -192,12 +193,12 @@ export const beaconRunPlayableNativeBoundaryLayer =
 				"games/beacon-run/assets/images/shrine-room-background.png",
 			"title-screen": "games/beacon-run/assets/images/title-screen.png",
 		},
-		logicalHeight: 96,
-		logicalWidth: 128,
+		logicalHeight: 192,
+		logicalWidth: 256,
 		resizable: true,
 		title: "effect2d: Beacon Run",
-		windowHeight: 384,
-		windowWidth: 512,
+		windowHeight: 768,
+		windowWidth: 1024,
 	}).pipe(
 		Layer.provide(
 			Layer.mergeAll(beaconRunCapabilityLayer, beaconRunNativeFrameSourceLayer),
@@ -277,8 +278,8 @@ export const beaconRunBootstrap = Effect.gen(function* () {
 	yield* audio.playMusic("beacon-run-theme", { loop: true });
 	yield* ui.loadFont({
 		fontId: "ui-body",
-		glyphWidth: 8,
-		lineHeight: 12,
+		glyphWidth: 12,
+		lineHeight: 18,
 		sourcePath: "games/beacon-run/assets/fonts/ui-body.ttf",
 	});
 	yield* beaconRunCoordinator.recordSceneChange(beaconRunConfig.startScene);

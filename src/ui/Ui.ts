@@ -326,6 +326,7 @@ export class Ui extends ServiceMap.Service<
 				position: CameraVector,
 				lineHeight: number,
 				align: "center" | "left" | "right",
+				blockWidth: number,
 			) {
 				for (let index = 0; index < lines.length; index += 1) {
 					const line = lines[index];
@@ -335,9 +336,9 @@ export class Ui extends ServiceMap.Service<
 
 					const x =
 						align === "center"
-							? position.x + Math.floor(line.width / 2)
+							? position.x + Math.floor(blockWidth / 2)
 							: align === "right"
-								? position.x + line.width
+								? position.x + blockWidth
 								: position.x;
 
 					yield* graphics.drawText({
@@ -520,6 +521,7 @@ export class Ui extends ServiceMap.Service<
 					options.position,
 					layout.lineHeight,
 					options.align ?? "left",
+					options.maxWidth ?? layout.width,
 				);
 			});
 
@@ -590,6 +592,7 @@ export class Ui extends ServiceMap.Service<
 					},
 					options.page.layout.lineHeight,
 					"left",
+					options.bounds.size.width - padding * 2,
 				);
 
 				if (options.page.hasNextPage) {

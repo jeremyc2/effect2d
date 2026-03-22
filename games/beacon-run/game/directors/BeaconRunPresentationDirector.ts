@@ -16,6 +16,18 @@ import { BeaconRunRoomState } from "../state/BeaconRunRoomState.ts";
 import { ExpeditionState } from "../state/ExpeditionState.ts";
 import { ScoutState } from "../state/ScoutState.ts";
 
+const viewport = {
+	height: 192,
+	width: 256,
+};
+
+const playfield = {
+	height: 96,
+	width: 128,
+	x: 64,
+	y: 48,
+};
+
 const titleBackground = {
 	alpha: 1,
 	blue: 0.14,
@@ -45,6 +57,14 @@ const tileColor = (tileId: number) => {
 	}
 };
 
+const worldToViewport = (position: {
+	readonly x: number;
+	readonly y: number;
+}) => ({
+	x: playfield.x + position.x,
+	y: playfield.y + position.y,
+});
+
 type BeaconRunPresentationDirectorFailure =
 	| GraphicsFrameNotOpenError
 	| GraphicsTransformStackUnderflowError
@@ -72,26 +92,47 @@ export class BeaconRunPresentationDirector extends ServiceMap.Service<
 			const scoutState = yield* ScoutState;
 			const ui = yield* Ui;
 
+			const tileBackground = Effect.fn(
+				"BeaconRunPresentationDirector.tileBackground",
+			)(function* (imageId: string, tileWidth: number, tileHeight: number) {
+				for (let y = 0; y < viewport.height; y += tileHeight) {
+					for (let x = 0; x < viewport.width; x += tileWidth) {
+						yield* graphics.drawImage(
+							imageId,
+							{ x, y },
+							{
+								height: tileHeight,
+								width: tileWidth,
+							},
+						);
+					}
+				}
+			});
+
 			const renderTitle = Effect.fn(
 				"BeaconRunPresentationDirector.renderTitle",
 			)(function* () {
-				yield* graphics.drawImage(
-					"title-screen",
-					{ x: 0, y: 0 },
-					{ height: 96, width: 128 },
+				yield* tileBackground("title-screen", 128, 96);
+				yield* ui.drawPanel(
+					{
+						position: { x: 48, y: 40 },
+						size: { height: 112, width: 160 },
+					},
+					{ alpha: 0.3, blue: 0.03, green: 0.03, red: 0.03 },
+					{ alpha: 0.8, blue: 0.85, green: 0.85, red: 0.85 },
 				);
 				yield* ui.drawTextBlock({
 					align: "center",
 					fontId: "ui-body",
-					maxWidth: 96,
-					position: { x: 16, y: 28 },
+					maxWidth: 144,
+					position: { x: 56, y: 58 },
 					text: "Beacon Run",
 				});
 				yield* ui.drawTextBlock({
 					align: "center",
 					fontId: "ui-body",
-					maxWidth: 96,
-					position: { x: 16, y: 46 },
+					maxWidth: 128,
+					position: { x: 64, y: 94 },
 					text: "Press Enter to scout the ridge",
 				});
 			});
@@ -105,12 +146,20 @@ export class BeaconRunPresentationDirector extends ServiceMap.Service<
 				yield* runtimeClock.snapshot();
 				const terrainPlane = room.tilePlanes[0];
 
-				yield* graphics.drawImage(
+				yield* tileBackground(
 					typeof room.metadata["backgroundImageId"] === "string"
 						? room.metadata["backgroundImageId"]
 						: room.id,
-					{ x: 0, y: 0 },
-					{ height: 96, width: 128 },
+					128,
+					96,
+				);
+				yield* ui.drawPanel(
+					{
+						position: { x: playfield.x - 4, y: playfield.y - 4 },
+						size: { height: playfield.height + 8, width: playfield.width + 8 },
+					},
+					{ alpha: 0.12, blue: 0.02, green: 0.02, red: 0.02 },
+					{ alpha: 0.65, blue: 0.9, green: 0.9, red: 0.9 },
 				);
 
 				if (terrainPlane !== undefined) {
@@ -122,7 +171,7 @@ export class BeaconRunPresentationDirector extends ServiceMap.Service<
 							}
 
 							yield* graphics.drawRectangle(
-								{ x: x * 16, y: y * 16 },
+								worldToViewport({ x: x * 16, y: y * 16 }),
 								{ height: 16, width: 16 },
 								"fill",
 								tileColor(tile),
@@ -137,19 +186,41 @@ export class BeaconRunPresentationDirector extends ServiceMap.Service<
 						expeditionSnapshot.litBeaconIds.includes("north-beacon")
 							? "beacon-lit"
 							: "beacon-unlit",
-						{ x: beacon.x, y: beacon.y },
+						worldToViewport({ x: beacon.x, y: beacon.y }),
 						{ height: beacon.height, width: beacon.width },
 					);
 				}
 
-				yield* graphics.drawImage("scout-idle", scoutSnapshot.position, {
-					height: 16,
-					width: 16,
-				});
+				yield* graphics.drawImage(
+					"scout-idle",
+					worldToViewport(scoutSnapshot.position),
+					{
+						height: 16,
+						width: 16,
+					},
+				);
+
+				const exitZone = roomObjectById(room, "to-shrine-room");
+				if (exitZone !== undefined) {
+					yield* graphics.drawRectangle(
+						worldToViewport({ x: exitZone.x, y: exitZone.y }),
+						{ height: exitZone.height, width: exitZone.width },
+						"stroke",
+						{ alpha: 0.95, blue: 0.92, green: 0.92, red: 0.92 },
+					);
+					yield* ui.drawTextBlock({
+						fontId: "ui-body",
+						position: worldToViewport({
+							x: Math.max(0, exitZone.x - 10),
+							y: Math.max(0, exitZone.y - 14),
+						}),
+						text: "EXIT",
+					});
+				}
 
 				yield* ui.drawTextBlock({
 					fontId: "ui-body",
-					position: { x: 4, y: 4 },
+					position: { x: 12, y: 12 },
 					text: `Room: ${
 						typeof room.metadata["displayName"] === "string"
 							? room.metadata["displayName"]
@@ -158,7 +229,7 @@ export class BeaconRunPresentationDirector extends ServiceMap.Service<
 				});
 				yield* ui.drawTextBlock({
 					fontId: "ui-body",
-					position: { x: 4, y: 16 },
+					position: { x: 12, y: 26 },
 					text: expeditionSnapshot.missionComplete
 						? "Beacon lit"
 						: "Beacon unlit",
@@ -169,8 +240,8 @@ export class BeaconRunPresentationDirector extends ServiceMap.Service<
 				) {
 					yield* ui.drawDialogueBox({
 						bounds: {
-							position: { x: 8, y: 68 },
-							size: { height: 20, width: 112 },
+							position: { x: 64, y: 156 },
+							size: { height: 24, width: 128 },
 						},
 						fontId: "ui-body",
 						page: {
@@ -178,7 +249,7 @@ export class BeaconRunPresentationDirector extends ServiceMap.Service<
 							layout: yield* ui.wrapText(
 								"ui-body",
 								room.metadata["hintText"],
-								100,
+								112,
 							),
 							pageCount: 1,
 							pageIndex: 0,
@@ -192,8 +263,8 @@ export class BeaconRunPresentationDirector extends ServiceMap.Service<
 			)(function* () {
 				yield* ui.drawPanel(
 					{
-						position: { x: 20, y: 24 },
-						size: { height: 40, width: 88 },
+						position: { x: 84, y: 68 },
+						size: { height: 56, width: 88 },
 					},
 					{ alpha: 0.92, blue: 0.06, green: 0.06, red: 0.06 },
 				);
@@ -201,7 +272,7 @@ export class BeaconRunPresentationDirector extends ServiceMap.Service<
 					align: "center",
 					fontId: "ui-body",
 					maxWidth: 72,
-					position: { x: 28, y: 34 },
+					position: { x: 92, y: 84 },
 					text: "Paused\nEnter or Esc",
 				});
 			});

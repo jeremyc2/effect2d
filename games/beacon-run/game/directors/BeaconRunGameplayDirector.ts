@@ -23,6 +23,8 @@ import { ExpeditionState } from "../state/ExpeditionState.ts";
 import { ScoutState } from "../state/ScoutState.ts";
 
 const movementStep = 8;
+const tileSize = 16;
+const scoutSize = 16;
 const scoutBodyId = "beacon-run-scout";
 const exitBodyId = "beacon-run-exit";
 const beaconBodyId = "beacon-run-beacon";
@@ -58,6 +60,38 @@ type BeaconRunGameplayDirectorFailure =
 	| UnknownAudioCueError
 	| UnknownInputActionError
 	| WrongAudioCueKindError;
+
+const clamp = (value: number, minimum: number, maximum: number): number =>
+	Math.max(minimum, Math.min(maximum, value));
+
+const roomPixelSize = (room: {
+	readonly tilePlanes: ReadonlyArray<{
+		readonly width: number;
+		readonly height: number;
+	}>;
+}) => {
+	const terrainPlane = room.tilePlanes[0];
+	return {
+		height: (terrainPlane?.height ?? 6) * tileSize,
+		width: (terrainPlane?.width ?? 8) * tileSize,
+	};
+};
+
+const clampScoutPosition = (
+	room: {
+		readonly tilePlanes: ReadonlyArray<{
+			readonly width: number;
+			readonly height: number;
+		}>;
+	},
+	position: CameraVector,
+): CameraVector => {
+	const roomSize = roomPixelSize(room);
+	return {
+		x: clamp(position.x, 0, Math.max(0, roomSize.width - scoutSize)),
+		y: clamp(position.y, 0, Math.max(0, roomSize.height - scoutSize)),
+	};
+};
 
 export class BeaconRunGameplayDirector extends ServiceMap.Service<
 	BeaconRunGameplayDirector,
@@ -154,6 +188,7 @@ export class BeaconRunGameplayDirector extends ServiceMap.Service<
 			const applyMovement = Effect.fn(
 				"BeaconRunGameplayDirector.applyMovement",
 			)(function* () {
+				const currentRoom = yield* beaconRunRoomState.snapshot;
 				const directions = [
 					{
 						action: "move-left",
@@ -183,8 +218,14 @@ export class BeaconRunGameplayDirector extends ServiceMap.Service<
 						continue;
 					}
 
+					const scoutSnapshot = yield* scoutState.snapshot;
 					yield* scoutState.setFacing(direction.facing);
-					yield* scoutState.moveBy(direction.delta);
+					yield* scoutState.moveTo(
+						clampScoutPosition(currentRoom, {
+							x: scoutSnapshot.position.x + direction.delta.x,
+							y: scoutSnapshot.position.y + direction.delta.y,
+						}),
+					);
 				}
 			});
 
@@ -260,10 +301,13 @@ export class BeaconRunGameplayDirector extends ServiceMap.Service<
 						yield* beaconRunRoomState.enterRoom("shrine-room");
 						const shrineEntry =
 							yield* beaconRunRoomState.currentObjectById("shrine-entry");
-						yield* scoutState.moveTo({
-							x: shrineEntry.x,
-							y: shrineEntry.y,
-						});
+						const shrineRoom = yield* beaconRunRoomState.snapshot;
+						yield* scoutState.moveTo(
+							clampScoutPosition(shrineRoom, {
+								x: shrineEntry.x,
+								y: shrineEntry.y,
+							}),
+						);
 						yield* script.playSoundCue("room-transition");
 						yield* engineLogger.info("Beacon Run room transition completed.", {
 							roomId: "shrine-room",
