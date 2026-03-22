@@ -9,6 +9,7 @@ import {
 	type GraphicsFrameNotOpenError,
 	type GraphicsTransformStackUnderflowError,
 	type InvalidLogMessageError,
+	MapRepository,
 	RuntimeClock,
 	SceneDirector,
 	type SceneStackEmptyError,
@@ -16,6 +17,7 @@ import {
 	Ui,
 	type UnknownFontError,
 } from "../../../src/index.ts";
+import type { MapValidationError } from "../../../src/maps/MapError.ts";
 import { GameplayState } from "../state/GameplayState.ts";
 import { PlayerState } from "../state/PlayerState.ts";
 import { WorldState } from "../state/WorldState.ts";
@@ -78,8 +80,49 @@ type StarterPresentationDirectorFailure =
 	| GraphicsFrameNotOpenError
 	| GraphicsTransformStackUnderflowError
 	| InvalidLogMessageError
+	| MapValidationError
 	| SceneStackEmptyError
 	| UnknownFontError;
+
+const tileColor = (tileId: number) => {
+	switch (tileId) {
+		case 0:
+			return {
+				alpha: 1,
+				blue: 0.18,
+				green: 0.16,
+				red: 0.14,
+			};
+		case 1:
+			return {
+				alpha: 1,
+				blue: 0.24,
+				green: 0.22,
+				red: 0.18,
+			};
+		case 2:
+			return {
+				alpha: 1,
+				blue: 0.12,
+				green: 0.26,
+				red: 0.38,
+			};
+		case 3:
+			return {
+				alpha: 1,
+				blue: 0.08,
+				green: 0.12,
+				red: 0.1,
+			};
+		default:
+			return {
+				alpha: 1,
+				blue: 0.28,
+				green: 0.1,
+				red: 0.32,
+			};
+	}
+};
 
 export class StarterPresentationDirector extends ServiceMap.Service<
 	StarterPresentationDirector,
@@ -96,6 +139,7 @@ export class StarterPresentationDirector extends ServiceMap.Service<
 			const debugOverlay = yield* DebugOverlay;
 			const graphics = yield* Graphics;
 			const gameplayState = yield* GameplayState;
+			const mapRepository = yield* MapRepository;
 			const playerState = yield* PlayerState;
 			const runtimeClock = yield* RuntimeClock;
 			const sceneDirector = yield* SceneDirector;
@@ -147,14 +191,49 @@ export class StarterPresentationDirector extends ServiceMap.Service<
 					const playerSnapshot = yield* playerState.snapshot;
 					const timing = yield* runtimeClock.snapshot();
 					const worldSnapshot = yield* worldState.snapshot;
+					const room = yield* mapRepository.loadRoom(
+						worldSnapshot.currentRoomId,
+					);
+					const terrainPlane = room.tilePlanes[0];
+					const lanternPickup = room.objectPlanes
+						.flatMap((plane) => plane.entries)
+						.find((entry) => entry.id === "lantern-pickup");
+					const backgroundImageId =
+						typeof room.metadata["backgroundImageId"] === "string"
+							? room.metadata["backgroundImageId"]
+							: worldSnapshot.currentRoomId;
+					const displayName =
+						typeof room.metadata["displayName"] === "string"
+							? room.metadata["displayName"]
+							: worldSnapshot.currentRoomId;
+					const hintText =
+						typeof room.metadata["hintText"] === "string"
+							? room.metadata["hintText"]
+							: null;
 
 					yield* graphics.drawImage(
-						worldSnapshot.currentRoomId === "lantern-room"
-							? "room-lantern"
-							: "room-overworld",
+						backgroundImageId,
 						{ x: 0, y: 0 },
 						{ height: 96, width: 128 },
 					);
+
+					if (terrainPlane !== undefined) {
+						for (let y = 0; y < terrainPlane.height; y += 1) {
+							for (let x = 0; x < terrainPlane.width; x += 1) {
+								const tile = terrainPlane.tiles[y * terrainPlane.width + x];
+								if (tile === undefined) {
+									continue;
+								}
+
+								yield* graphics.drawRectangle(
+									{ x: x * 16, y: y * 16 },
+									{ height: 16, width: 16 },
+									"fill",
+									tileColor(tile),
+								);
+							}
+						}
+					}
 
 					const playerImageId = currentAnimationFrame(
 						advanceAnimation(
@@ -172,12 +251,13 @@ export class StarterPresentationDirector extends ServiceMap.Service<
 
 					if (
 						worldSnapshot.currentRoomId === "lantern-room" &&
-						!gameplaySnapshot.lanternPickupCollected
+						!gameplaySnapshot.lanternPickupCollected &&
+						lanternPickup !== undefined
 					) {
 						yield* graphics.drawImage(
 							animatedFrame(4, timing.tickCount, lanternClip),
-							{ x: 24, y: 32 },
-							{ height: 12, width: 12 },
+							{ x: lanternPickup.x, y: lanternPickup.y },
+							{ height: lanternPickup.height, width: lanternPickup.width },
 						);
 					}
 
@@ -195,7 +275,7 @@ export class StarterPresentationDirector extends ServiceMap.Service<
 					yield* ui.drawTextBlock({
 						fontId: "ui-body",
 						position: { x: 4, y: 4 },
-						text: `Room: ${worldSnapshot.currentRoomId}`,
+						text: `Room: ${displayName}`,
 					});
 					yield* ui.drawTextBlock({
 						fontId: "ui-body",
@@ -203,10 +283,7 @@ export class StarterPresentationDirector extends ServiceMap.Service<
 						text: `Inventory: ${worldSnapshot.inventory.join(", ") || "empty"}`,
 					});
 
-					if (
-						worldSnapshot.currentRoomId === "lantern-room" &&
-						!worldSnapshot.lanternLit
-					) {
+					if (hintText !== null && !worldSnapshot.lanternLit) {
 						yield* ui.drawDialogueBox({
 							bounds: {
 								position: { x: 8, y: 68 },
@@ -215,11 +292,7 @@ export class StarterPresentationDirector extends ServiceMap.Service<
 							fontId: "ui-body",
 							page: {
 								hasNextPage: false,
-								layout: yield* ui.wrapText(
-									"ui-body",
-									"Press Space near the lantern.",
-									100,
-								),
+								layout: yield* ui.wrapText("ui-body", hintText, 100),
 								pageCount: 1,
 								pageIndex: 0,
 							},

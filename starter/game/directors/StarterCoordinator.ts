@@ -8,6 +8,8 @@ import {
 	ResourceTracker,
 	type UnknownTrackedResourceError,
 } from "../../../src/debug/ResourceTracker.ts";
+import type { MapValidationError } from "../../../src/maps/MapError.ts";
+import { MapRepository } from "../../../src/maps/MapRepository.ts";
 import { ScriptEvents } from "../../../src/script/Script.ts";
 import { DebugSettingsState } from "../state/DebugSettingsState.ts";
 import { GameplayState } from "../state/GameplayState.ts";
@@ -17,6 +19,7 @@ import { WorldState } from "../state/WorldState.ts";
 type StarterCoordinatorFailure =
 	| InvalidLogMessageError
 	| InvalidResourceRecordError
+	| MapValidationError
 	| UnknownTrackedResourceError;
 
 export class StarterCoordinator extends ServiceMap.Service<
@@ -34,18 +37,27 @@ export class StarterCoordinator extends ServiceMap.Service<
 			const debugSettingsState = yield* DebugSettingsState;
 			const engineLogger = yield* EngineLogger;
 			const gameplayState = yield* GameplayState;
+			const mapRepository = yield* MapRepository;
 			const playerState = yield* PlayerState;
 			const resourceTracker = yield* ResourceTracker;
 			const scriptEvents = yield* ScriptEvents;
 			const worldState = yield* WorldState;
 
 			const beginNewGame = Effect.gen(function* () {
+				const overworldSpawn = yield* mapRepository.roomObjectById(
+					"overworld-room",
+					"spawn-player",
+				);
+				const slimeEnemy = yield* mapRepository.roomObjectById(
+					"lantern-room",
+					"slime-enemy",
+				);
 				yield* playerState.restore({
 					facing: "down",
 					health: 3,
 					position: {
-						x: 32,
-						y: 32,
+						x: overworldSpawn.x,
+						y: overworldSpawn.y,
 					},
 				});
 				yield* worldState.restore({
@@ -59,8 +71,8 @@ export class StarterCoordinator extends ServiceMap.Service<
 				yield* gameplayState.restore({
 					enemyDefeated: false,
 					enemyPosition: {
-						x: 72,
-						y: 32,
+						x: slimeEnemy.x,
+						y: slimeEnemy.y,
 					},
 					introSequencePlayed: false,
 					lanternPickupCollected: false,

@@ -8,6 +8,7 @@ import {
 	EngineLogger,
 	Graphics,
 	Input,
+	MapRepository,
 	makeRuntimeLayer,
 	NativeBoundary,
 	ResourceTracker,
@@ -17,6 +18,7 @@ import {
 	ScriptEvents,
 	Ui,
 } from "../../src/index.ts";
+import { starterRooms } from "./content/StarterRooms.ts";
 import { StarterCoordinator } from "./directors/StarterCoordinator.ts";
 import { StarterGameplayDirector } from "./directors/StarterGameplayDirector.ts";
 import { StarterPresentationDirector } from "./directors/StarterPresentationDirector.ts";
@@ -75,6 +77,8 @@ const starterCapabilityLayer = Layer.mergeAll(
 
 const starterUiLayer = Ui.layer.pipe(Layer.provide(starterCapabilityLayer));
 
+const starterMapRepositoryLayer = MapRepository.layer(starterRooms);
+
 const starterSceneRegistryLayer = SceneRegistry.layer([
 	MainMenuScene,
 	OverworldScene,
@@ -109,6 +113,7 @@ const starterCoordinatorLayer = StarterCoordinator.layer.pipe(
 	Layer.provide(
 		Layer.mergeAll(
 			starterCapabilityLayer,
+			starterMapRepositoryLayer,
 			ScriptEvents.layer,
 			starterStateLayer,
 		),
@@ -119,6 +124,7 @@ const starterGameplayDirectorLayer = StarterGameplayDirector.layer.pipe(
 	Layer.provide(
 		Layer.mergeAll(
 			starterCapabilityLayer,
+			starterMapRepositoryLayer,
 			ScriptEvents.layer,
 			starterSceneDirectorLayer,
 			starterStateLayer,
@@ -134,6 +140,7 @@ const starterPresentationDirectorLayer = StarterPresentationDirector.layer.pipe(
 		Layer.mergeAll(
 			starterCapabilityLayer,
 			starterDebugOverlayLayer,
+			starterMapRepositoryLayer,
 			starterSceneDirectorLayer,
 			starterStateLayer,
 			starterUiLayer,
@@ -146,6 +153,7 @@ export const StarterGameLive = Layer.mergeAll(
 	starterCoordinatorLayer,
 	starterDebugOverlayLayer,
 	starterGameplayDirectorLayer,
+	starterMapRepositoryLayer,
 	starterPresentationDirectorLayer,
 	starterSceneDirectorLayer,
 	starterSceneRegistryLayer,

@@ -8,6 +8,7 @@ import {
 	Input,
 	type InvalidLogMessageError,
 	type InvalidScriptWaitError,
+	MapRepository,
 	type OverlayStackUnderflowError,
 	SceneDirector,
 	type SceneNotFoundError,
@@ -19,13 +20,12 @@ import {
 	type UnknownInputActionError,
 	type WrongAudioCueKindError,
 } from "../../../src/index.ts";
+import type { MapValidationError } from "../../../src/maps/MapError.ts";
 import { GameplayState } from "../state/GameplayState.ts";
 import { PlayerState } from "../state/PlayerState.ts";
 import { WorldState } from "../state/WorldState.ts";
 
 const movementStep = 8;
-const overworldExitThreshold = 96;
-const lanternPickupPosition: CameraVector = { x: 24, y: 32 };
 const playerBodyId = "starter-player";
 const exitBodyId = "starter-room-exit";
 const lanternBodyId = "starter-lantern";
@@ -57,6 +57,7 @@ type StarterGameplayDirectorFailure =
 	| InvalidLogMessageError
 	| InvalidScriptWaitError
 	| OverlayStackUnderflowError
+	| MapValidationError
 	| SceneNotFoundError
 	| SceneStackEmptyError
 	| UnknownAudioCueError
@@ -85,6 +86,7 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 			const engineLogger = yield* EngineLogger;
 			const gameplayState = yield* GameplayState;
 			const input = yield* Input;
+			const mapRepository = yield* MapRepository;
 			const playerState = yield* PlayerState;
 			const sceneDirector = yield* SceneDirector;
 			const script = yield* Script;
@@ -97,6 +99,18 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 				const gameplaySnapshot = yield* gameplayState.snapshot;
 				const playerSnapshot = yield* playerState.snapshot;
 				const worldSnapshot = yield* worldState.snapshot;
+				const currentRoom = yield* mapRepository.loadRoom(
+					worldSnapshot.currentRoomId,
+				);
+				const exitZone = currentRoom.objectPlanes
+					.flatMap((plane) => plane.entries)
+					.find((entry) => entry.id === "to-lantern-room");
+				const lanternPickup = currentRoom.objectPlanes
+					.flatMap((plane) => plane.entries)
+					.find((entry) => entry.id === "lantern-pickup");
+				const slimeEnemy = currentRoom.objectPlanes
+					.flatMap((plane) => plane.entries)
+					.find((entry) => entry.id === "slime-enemy");
 
 				const bodies: Array<CollisionBody> = [
 					aabbBody(
@@ -108,37 +122,36 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 					),
 				];
 
-				if (worldSnapshot.currentRoomId === "overworld-room") {
+				if (exitZone !== undefined) {
 					bodies.push(
 						aabbBody(
 							exitBodyId,
 							"room-exit",
-							{ x: overworldExitThreshold, y: 24 },
-							{ height: 32, width: 16 },
+							{ x: exitZone.x, y: exitZone.y },
+							{ height: exitZone.height, width: exitZone.width },
 						),
 					);
 				}
 
 				if (
-					worldSnapshot.currentRoomId === "lantern-room" &&
+					lanternPickup !== undefined &&
 					!gameplaySnapshot.lanternPickupCollected
 				) {
 					bodies.push(
-						aabbBody(lanternBodyId, "pickup", lanternPickupPosition, {
-							height: 12,
-							width: 12,
-						}),
+						aabbBody(
+							lanternBodyId,
+							"pickup",
+							{ x: lanternPickup.x, y: lanternPickup.y },
+							{ height: lanternPickup.height, width: lanternPickup.width },
+						),
 					);
 				}
 
-				if (
-					worldSnapshot.currentRoomId === "lantern-room" &&
-					!gameplaySnapshot.enemyDefeated
-				) {
+				if (slimeEnemy !== undefined && !gameplaySnapshot.enemyDefeated) {
 					bodies.push(
 						aabbBody(enemyBodyId, "enemy", gameplaySnapshot.enemyPosition, {
-							height: 14,
-							width: 14,
+							height: slimeEnemy.height,
+							width: slimeEnemy.width,
 						}),
 					);
 				}
@@ -158,16 +171,13 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 
 				yield* debugOverlay.setCollisionBodies(bodies);
 				yield* debugOverlay.setRoomMarkers([
-					{
-						id: "starter-exit",
-						kind: "transition-zone",
-						position: { x: overworldExitThreshold, y: 24 },
-					},
-					{
-						id: "starter-lantern",
-						kind: "pickup",
-						position: lanternPickupPosition,
-					},
+					...currentRoom.objectPlanes.flatMap((plane) =>
+						plane.entries.map((entry) => ({
+							id: entry.id,
+							kind: entry.kind,
+							position: { x: entry.x, y: entry.y },
+						})),
+					),
 				]);
 			});
 
@@ -338,13 +348,17 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 						["room-exit"],
 					);
 					if (exitTriggers.some((body) => body.id === exitBodyId)) {
+						const lanternEntry = yield* mapRepository.roomObjectById(
+							"lantern-room",
+							"lantern-entry",
+						);
 						const playerSnapshot = yield* playerState.snapshot;
 						yield* worldState.enterRoom("lantern-room");
 						yield* playerState.restore({
 							...playerSnapshot,
 							position: {
-								x: 8,
-								y: 32,
+								x: lanternEntry.x,
+								y: lanternEntry.y,
 							},
 						});
 						yield* script.playSoundCue("room-transition");
