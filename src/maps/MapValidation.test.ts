@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { Effect } from "effect";
+import { Cause, Effect, Exit, Result, Schema } from "effect";
 
+import { MapValidationError } from "./MapError.ts";
 import { validateRoom } from "./MapValidation.ts";
 import {
 	defineObjectPlane,
@@ -11,6 +12,8 @@ import {
 	spawnPoint,
 	transitionZone,
 } from "./RoomBuilder.ts";
+
+const isMapValidationError = Schema.is(MapValidationError);
 
 describe("validateRoom", () => {
 	test("accepts valid code-defined room content", async () => {
@@ -84,10 +87,25 @@ describe("validateRoom", () => {
 			tilePlanes: [],
 		});
 
-		await expect(Effect.runPromise(validateRoom(room))).rejects.toMatchObject({
-			_tag: "MapValidationError",
-			reason: expect.stringContaining("metadata.targetRoomId"),
-			roomId: "broken-room",
-		});
+		const exit = await Effect.runPromiseExit(validateRoom(room));
+		expect(Exit.isFailure(exit)).toBe(true);
+		if (!Exit.isFailure(exit)) {
+			return;
+		}
+
+		const failure = Cause.findError(exit.cause);
+		expect(Result.isSuccess(failure)).toBe(true);
+		if (!Result.isSuccess(failure)) {
+			return;
+		}
+
+		const isKnownFailure = isMapValidationError(failure.success);
+		expect(isKnownFailure).toBe(true);
+		if (!isKnownFailure) {
+			return;
+		}
+
+		expect(failure.success.roomId).toBe("broken-room");
+		expect(failure.success.reason).toContain("metadata.targetRoomId");
 	});
 });

@@ -6,7 +6,7 @@ import {
 	loadImage,
 	type SKRSContext2D,
 } from "@napi-rs/canvas";
-import { Effect, Layer, Ref } from "effect";
+import { Effect, Layer, Option, Ref } from "effect";
 import type { Audio, AudioSnapshot } from "../audio/Audio.ts";
 import { EngineLaunchError } from "../errors/EngineError.ts";
 import type {
@@ -503,13 +503,11 @@ export const makeSdlCanvasNativeBackendLayer = ({
 				context.imageSmoothingEnabled = false;
 
 				if (defaultFontPath !== undefined) {
-					yield* Effect.sync(() => {
-						try {
-							GlobalFonts.registerFromPath(defaultFontPath, defaultFontFamily);
-						} catch {
-							return;
-						}
-					});
+					yield* Effect.try({
+						try: () =>
+							GlobalFonts.registerFromPath(defaultFontPath, defaultFontFamily),
+						catch: () => null,
+					}).pipe(Effect.ignore);
 				}
 
 				for (const [fontId, definition] of Object.entries(
@@ -520,16 +518,14 @@ export const makeSdlCanvasNativeBackendLayer = ({
 						sizePx: definition.sizePx,
 					};
 
-					yield* Effect.sync(() => {
-						try {
+					yield* Effect.try({
+						try: () =>
 							GlobalFonts.registerFromPath(
 								definition.sourcePath,
 								definition.family,
-							);
-						} catch {
-							return;
-						}
-					});
+							),
+						catch: () => null,
+					}).pipe(Effect.ignore);
 				}
 
 				for (const [imageId, sourcePath] of Object.entries(imageAssetPaths)) {
@@ -546,7 +542,7 @@ export const makeSdlCanvasNativeBackendLayer = ({
 							}),
 					}).pipe(Effect.option);
 
-					if (image._tag === "Some") {
+					if (Option.isSome(image)) {
 						loadedImages.set(imageId, image.value);
 					}
 				}
@@ -812,7 +808,7 @@ export const makeSdlCanvasNativeBackendLayer = ({
 							}),
 					}).pipe(Effect.option);
 
-					if (process._tag === "Some") {
+					if (Option.isSome(process)) {
 						currentSounds.set(sound.playbackId, {
 							cueId: sound.cueId,
 							loop: sound.loop,
@@ -856,7 +852,7 @@ export const makeSdlCanvasNativeBackendLayer = ({
 								}),
 						}).pipe(Effect.option);
 
-						if (process._tag === "Some") {
+						if (Option.isSome(process)) {
 							yield* Ref.set(musicProcessRef, {
 								cueId: snapshot.music.cueId,
 								loop: snapshot.music.loop,

@@ -32,7 +32,7 @@ export class NativeBoundary extends ServiceMap.Service<
 			) {
 				yield* nativeBackend.open(gameId);
 
-				try {
+				yield* Effect.gen(function* () {
 					while ((yield* nativeBackend.diagnostics).initialized) {
 						yield* input.beginFrame;
 
@@ -49,9 +49,7 @@ export class NativeBoundary extends ServiceMap.Service<
 						yield* nativeBackend.presentFrame(frame);
 						yield* nativeBackend.waitForNextFrame;
 					}
-				} finally {
-					yield* nativeBackend.close;
-				}
+				}).pipe(Effect.ensuring(nativeBackend.close));
 			});
 
 			return NativeBoundary.of({

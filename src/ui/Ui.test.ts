@@ -1,9 +1,16 @@
 import { describe, expect, test } from "bun:test";
-import { Effect, Layer } from "effect";
+import { Effect, Layer, Schema } from "effect";
 import { Graphics } from "../graphics/Graphics.ts";
 import { Input } from "../input/Input.ts";
 import { runLayerEffect } from "../testing/runEffectTest.ts";
 import { Ui } from "./Ui.ts";
+
+class UiTestAssertionError extends Schema.TaggedErrorClass<UiTestAssertionError>()(
+	"UiTestAssertionError",
+	{
+		reason: Schema.String,
+	},
+) {}
 
 const makeUiLayer = () => {
 	const dependencies = Layer.mergeAll(Graphics.layer, Input.layer);
@@ -66,9 +73,10 @@ describe("Ui", () => {
 				});
 				const firstPage = pages[0];
 				if (firstPage === undefined) {
-					throw new Error(
-						"Expected dialogue pagination to produce at least one page.",
-					);
+					return yield* new UiTestAssertionError({
+						reason:
+							"Expected dialogue pagination to produce at least one page.",
+					});
 				}
 
 				yield* graphics.beginFrame;

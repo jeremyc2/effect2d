@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { Effect } from "effect";
+import { Effect, Exit } from "effect";
 import { runEffectTest } from "../testing/runEffectTest.ts";
 import { deserializeRoom, serializeRoom } from "./MapSerialization.ts";
 import {
@@ -61,6 +61,6 @@ describe("MapSerialization", () => {
 			),
 		);
 
-		expect(result._tag).toBe("Failure");
+		expect(Exit.isFailure(result)).toBe(true);
 	});
 });
