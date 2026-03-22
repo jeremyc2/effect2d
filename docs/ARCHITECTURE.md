@@ -59,6 +59,8 @@ The engine launch model is Layer-based and Effect-native:
 - seeded randomness is configured at the runtime boundary
 - scenes are registered runtime definitions coordinated by scene services
 - entered scenes become scoped scene instances
+- scene lifecycle effects run inside scene-owned scopes
+- leaving a scene closes its scope and cancels scene-local background work
 - resources follow scopes by default
 
 ## Error Taxonomy

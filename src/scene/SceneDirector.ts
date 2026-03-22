@@ -1,7 +1,8 @@
-import { Effect, Layer, Ref, ServiceMap } from "effect";
+import { Effect, Exit, Layer, Ref, Scope, ServiceMap } from "effect";
 import type {
 	SceneDefinition,
 	SceneId,
+	SceneInstance,
 	SceneStackEntry,
 	SceneStackSnapshot,
 } from "./Scene.ts";
@@ -25,16 +26,43 @@ const topScene = (
 		: Effect.succeed(entry);
 };
 
+const instantiateScene = Effect.fn("SceneDirector.instantiateScene")(function* (
+	sceneDefinition: SceneDefinition,
+) {
+	const scope = yield* Scope.make();
+	const lifecycle = yield* Scope.provide(scope)(sceneDefinition.instantiate);
+
+	return {
+		definition: sceneDefinition,
+		lifecycle,
+		scope,
+	} satisfies SceneInstance;
+});
+
+const runInSceneScope = Effect.fn("SceneDirector.runInSceneScope")(function* (
+	sceneInstance: SceneInstance,
+	effect: Effect.Effect<void, never, Scope.Scope>,
+) {
+	yield* Scope.provide(sceneInstance.scope)(effect);
+});
+
+const releaseSceneInstance = Effect.fn("SceneDirector.releaseSceneInstance")(
+	function* (sceneInstance: SceneInstance) {
+		yield* runInSceneScope(sceneInstance, sceneInstance.lifecycle.exit());
+		yield* Scope.close(sceneInstance.scope, Exit.void);
+	},
+);
+
 const stackSnapshot = Effect.fn("SceneDirector.stackSnapshot")(function* (
 	stack: ReadonlyArray<SceneStackEntry>,
 ) {
 	const active = yield* topScene(stack);
 
 	return {
-		activeSceneId: active.scene.id,
+		activeSceneId: active.instance.definition.id,
 		entries: stack.map((entry) => ({
 			level: entry.level,
-			sceneId: entry.scene.id,
+			sceneId: entry.instance.definition.id,
 		})),
 	};
 });
@@ -65,18 +93,24 @@ export class SceneDirector extends ServiceMap.Service<
 			Effect.gen(function* () {
 				const sceneRegistry = yield* SceneRegistry;
 				const startScene = yield* sceneRegistry.get(startSceneId);
+				const startSceneInstance = yield* instantiateScene(startScene);
 				const stack = yield* Ref.make<ReadonlyArray<SceneStackEntry>>([
 					{
+						instance: startSceneInstance,
 						level: "primary",
-						scene: startScene,
 					},
 				]);
 
-				yield* startScene.lifecycle.enter();
+				yield* runInSceneScope(
+					startSceneInstance,
+					startSceneInstance.lifecycle.enter(),
+				);
 
 				const currentScene = Ref.get(stack).pipe(
 					Effect.flatMap((currentStack) =>
-						topScene(currentStack).pipe(Effect.map((entry) => entry.scene)),
+						topScene(currentStack).pipe(
+							Effect.map((entry) => entry.instance.definition),
+						),
 					),
 				);
 
@@ -89,18 +123,22 @@ export class SceneDirector extends ServiceMap.Service<
 				) {
 					const nextScene = yield* sceneRegistry.get(sceneId);
 					const currentStack = yield* Ref.get(stack);
+					const nextSceneInstance = yield* instantiateScene(nextScene);
 
 					for (const entry of currentStack.toReversed()) {
-						yield* entry.scene.lifecycle.exit();
+						yield* releaseSceneInstance(entry.instance);
 					}
 
 					yield* Ref.set(stack, [
 						{
+							instance: nextSceneInstance,
 							level: "primary",
-							scene: nextScene,
 						},
 					]);
-					yield* nextScene.lifecycle.enter();
+					yield* runInSceneScope(
+						nextSceneInstance,
+						nextSceneInstance.lifecycle.enter(),
+					);
 				});
 
 				const pushOverlay = Effect.fn("SceneDirector.pushOverlay")(function* (
@@ -108,15 +146,19 @@ export class SceneDirector extends ServiceMap.Service<
 				) {
 					const overlayScene = yield* sceneRegistry.get(sceneId);
 					const currentStack = yield* Ref.get(stack);
+					const overlaySceneInstance = yield* instantiateScene(overlayScene);
 
 					yield* Ref.set(stack, [
 						...currentStack,
 						{
+							instance: overlaySceneInstance,
 							level: "overlay",
-							scene: overlayScene,
 						},
 					]);
-					yield* overlayScene.lifecycle.enter();
+					yield* runInSceneScope(
+						overlaySceneInstance,
+						overlaySceneInstance.lifecycle.enter(),
+					);
 				});
 
 				const popOverlay = Effect.fn("SceneDirector.popOverlay")(function* () {
@@ -130,20 +172,26 @@ export class SceneDirector extends ServiceMap.Service<
 						});
 					}
 
-					yield* currentEntry.scene.lifecycle.exit();
+					yield* releaseSceneInstance(currentEntry.instance);
 					yield* Ref.set(stack, currentStack.slice(0, -1));
 				});
 
 				const updateCurrent = Ref.get(stack).pipe(
 					Effect.flatMap((currentStack) => topScene(currentStack)),
-					Effect.flatMap((entry) => entry.scene.lifecycle.update()),
+					Effect.flatMap((entry) =>
+						runInSceneScope(entry.instance, entry.instance.lifecycle.update()),
+					),
 				);
 
 				const drawStack = Ref.get(stack).pipe(
 					Effect.flatMap((currentStack) =>
 						Effect.forEach(
 							currentStack,
-							(entry) => entry.scene.lifecycle.draw(),
+							(entry) =>
+								runInSceneScope(
+									entry.instance,
+									entry.instance.lifecycle.draw(),
+								),
 							{
 								discard: true,
 							},
@@ -154,9 +202,12 @@ export class SceneDirector extends ServiceMap.Service<
 				const handleInput = Ref.get(stack).pipe(
 					Effect.flatMap((currentStack) => topScene(currentStack)),
 					Effect.flatMap((entry) =>
-						entry.scene.lifecycle.handleInput === undefined
+						entry.instance.lifecycle.handleInput === undefined
 							? Effect.void
-							: entry.scene.lifecycle.handleInput(),
+							: runInSceneScope(
+									entry.instance,
+									entry.instance.lifecycle.handleInput(),
+								),
 					),
 				);
 

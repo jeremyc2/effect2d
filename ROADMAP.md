@@ -33,11 +33,11 @@
 ## Milestone 3: Scene Model And Runtime Flow
 
 - [x] Define the scene service model.
-- [ ] Implement scoped scene instances created when scenes are entered.
+- [x] Implement scoped scene instances created when scenes are entered.
 - [x] Implement scene lifecycle hooks for enter, exit, update, draw, and input handling.
 - [x] Implement a scene stack for primary scenes and overlays.
 - [x] Implement scene transitions and transition errors.
-- [ ] Add scoped cancellation for scene-local scripts, resources, and long-running work.
+- [x] Add scoped cancellation for scene-local scripts, resources, and long-running work.
 - [ ] Add scene-owned camera support hooks.
 - [x] Add scene inspection hooks for debug tooling.
 
@@ -218,7 +218,7 @@
 
 - [ ] A small playable vertical slice exists.
 - [ ] The game launches through `Effect.runPromise(...)`.
-- [ ] Scenes are service-defined and scene instances are scoped.
+- [x] Scenes are service-defined and scene instances are scoped.
 - [ ] Multiple domain state services exist and persist through save participants.
 - [ ] Input, rendering, audio, maps, animation, collision, transitions, and save/load all work together in one slice.
 - [ ] A debug overlay exists.

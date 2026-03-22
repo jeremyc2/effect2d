@@ -7,13 +7,13 @@ import { SceneRegistry } from "./SceneRegistry.ts";
 
 const makeScene = (id: SceneId, trace: Array<string>): SceneDefinition => ({
 	id,
-	lifecycle: {
+	instantiate: Effect.succeed({
 		enter: () => Effect.sync(() => trace.push(`${id}:enter`)),
 		update: () => Effect.sync(() => trace.push(`${id}:update`)),
 		draw: () => Effect.sync(() => trace.push(`${id}:draw`)),
 		exit: () => Effect.sync(() => trace.push(`${id}:exit`)),
 		handleInput: () => Effect.sync(() => trace.push(`${id}:input`)),
-	},
+	}),
 });
 
 describe("SceneDirector", () => {
@@ -65,6 +65,45 @@ describe("SceneDirector", () => {
 			"overworld:exit",
 			"pause:enter",
 			"pause:draw",
+		]);
+	});
+
+	test("closes scene scopes so scene-local background work is canceled on transition", async () => {
+		const trace: Array<string> = [];
+		const overworld: SceneDefinition = {
+			id: "overworld",
+			instantiate: Effect.succeed({
+				enter: () =>
+					Effect.addFinalizer(() =>
+						Effect.sync(() => {
+							trace.push("overworld:background-stopped");
+						}),
+					),
+				update: () => Effect.void,
+				draw: () => Effect.void,
+				exit: () =>
+					Effect.sync(() => {
+						trace.push("overworld:exit");
+					}),
+			}),
+		};
+		const pause = makeScene("pause", trace);
+		const layer = SceneDirector.layer("overworld").pipe(
+			Layer.provide(SceneRegistry.layer([overworld, pause])),
+		);
+
+		await runLayerEffect(
+			layer,
+			Effect.gen(function* () {
+				const sceneDirector = yield* SceneDirector;
+				yield* sceneDirector.switchTo("pause");
+			}),
+		);
+
+		expect(trace).toEqual([
+			"overworld:exit",
+			"overworld:background-stopped",
+			"pause:enter",
 		]);
 	});
 });
