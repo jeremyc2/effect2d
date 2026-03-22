@@ -9,7 +9,6 @@ import {
 	type GraphicsFrameNotOpenError,
 	type GraphicsTransformStackUnderflowError,
 	type InvalidLogMessageError,
-	MapRepository,
 	RuntimeClock,
 	SceneDirector,
 	type SceneStackEmptyError,
@@ -20,6 +19,7 @@ import {
 import type { MapValidationError } from "../../../src/maps/MapError.ts";
 import { GameplayState } from "../state/GameplayState.ts";
 import { PlayerState } from "../state/PlayerState.ts";
+import { RoomState } from "../state/RoomState.ts";
 import { WorldState } from "../state/WorldState.ts";
 
 const menuBackground = {
@@ -139,8 +139,8 @@ export class StarterPresentationDirector extends ServiceMap.Service<
 			const debugOverlay = yield* DebugOverlay;
 			const graphics = yield* Graphics;
 			const gameplayState = yield* GameplayState;
-			const mapRepository = yield* MapRepository;
 			const playerState = yield* PlayerState;
+			const roomState = yield* RoomState;
 			const runtimeClock = yield* RuntimeClock;
 			const sceneDirector = yield* SceneDirector;
 			const ui = yield* Ui;
@@ -191,9 +191,7 @@ export class StarterPresentationDirector extends ServiceMap.Service<
 					const playerSnapshot = yield* playerState.snapshot;
 					const timing = yield* runtimeClock.snapshot();
 					const worldSnapshot = yield* worldState.snapshot;
-					const room = yield* mapRepository.loadRoom(
-						worldSnapshot.currentRoomId,
-					);
+					const room = yield* roomState.snapshot;
 					const terrainPlane = room.tilePlanes[0];
 					const lanternPickup = room.objectPlanes
 						.flatMap((plane) => plane.entries)

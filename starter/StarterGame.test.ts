@@ -22,6 +22,7 @@ import {
 import { StarterSaveParticipants } from "./game/save/StarterSaveParticipants.ts";
 import { GameplayState } from "./game/state/GameplayState.ts";
 import { PlayerState } from "./game/state/PlayerState.ts";
+import { RoomState } from "./game/state/RoomState.ts";
 import { WorldState } from "./game/state/WorldState.ts";
 
 describe("starter", () => {
@@ -35,6 +36,7 @@ describe("starter", () => {
 				const input = yield* Input;
 				const playerState = yield* PlayerState;
 				const resourceTracker = yield* ResourceTracker;
+				const roomState = yield* RoomState;
 				const starterSaveParticipants = yield* StarterSaveParticipants;
 				const worldState = yield* WorldState;
 
@@ -71,6 +73,7 @@ describe("starter", () => {
 				expect((yield* worldState.snapshot).currentRoomId).toBe(
 					"overworld-room",
 				);
+				expect((yield* roomState.snapshot).id).toBe("overworld-room");
 				const overlaySnapshot = yield* debugOverlay.captureSnapshot;
 				expect(overlaySnapshot.enabled).toBe(false);
 				expect(overlaySnapshot.logs).toHaveLength(3);
@@ -132,6 +135,7 @@ describe("starter", () => {
 				const gameplayState = yield* GameplayState;
 				const input = yield* Input;
 				const playerState = yield* PlayerState;
+				const roomState = yield* RoomState;
 				const sceneDirector = yield* SceneDirector;
 				const starterGameplayDirector = yield* StarterGameplayDirector;
 				const starterPresentationDirector = yield* StarterPresentationDirector;
@@ -210,6 +214,7 @@ describe("starter", () => {
 				}
 
 				expect((yield* worldState.snapshot).currentRoomId).toBe("lantern-room");
+				expect((yield* roomState.snapshot).id).toBe("lantern-room");
 				expect((yield* gameplayState.snapshot).introSequencePlayed).toBe(true);
 
 				yield* input.beginFrame;

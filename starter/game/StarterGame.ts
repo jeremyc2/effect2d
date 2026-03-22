@@ -30,6 +30,7 @@ import { PauseOverlayScene } from "./scenes/PauseOverlayScene.ts";
 import { DebugSettingsState } from "./state/DebugSettingsState.ts";
 import { GameplayState } from "./state/GameplayState.ts";
 import { PlayerState } from "./state/PlayerState.ts";
+import { RoomState } from "./state/RoomState.ts";
 import { WorldState } from "./state/WorldState.ts";
 
 export const starterConfig = {
@@ -79,6 +80,10 @@ const starterUiLayer = Ui.layer.pipe(Layer.provide(starterCapabilityLayer));
 
 const starterMapRepositoryLayer = MapRepository.layer(starterRooms);
 
+const starterRoomStateLayer = RoomState.layer.pipe(
+	Layer.provide(Layer.mergeAll(starterMapRepositoryLayer, starterStateLayer)),
+);
+
 const starterSceneRegistryLayer = SceneRegistry.layer([
 	MainMenuScene,
 	OverworldScene,
@@ -114,6 +119,7 @@ const starterCoordinatorLayer = StarterCoordinator.layer.pipe(
 		Layer.mergeAll(
 			starterCapabilityLayer,
 			starterMapRepositoryLayer,
+			starterRoomStateLayer,
 			ScriptEvents.layer,
 			starterStateLayer,
 		),
@@ -124,10 +130,9 @@ const starterGameplayDirectorLayer = StarterGameplayDirector.layer.pipe(
 	Layer.provide(
 		Layer.mergeAll(
 			starterCapabilityLayer,
-			starterMapRepositoryLayer,
 			ScriptEvents.layer,
 			starterSceneDirectorLayer,
-			starterStateLayer,
+			starterRoomStateLayer,
 			starterUiLayer,
 			starterDebugOverlayLayer,
 			starterScriptLayer,
@@ -140,9 +145,8 @@ const starterPresentationDirectorLayer = StarterPresentationDirector.layer.pipe(
 		Layer.mergeAll(
 			starterCapabilityLayer,
 			starterDebugOverlayLayer,
-			starterMapRepositoryLayer,
 			starterSceneDirectorLayer,
-			starterStateLayer,
+			starterRoomStateLayer,
 			starterUiLayer,
 		),
 	),
@@ -155,6 +159,7 @@ export const StarterGameLive = Layer.mergeAll(
 	starterGameplayDirectorLayer,
 	starterMapRepositoryLayer,
 	starterPresentationDirectorLayer,
+	starterRoomStateLayer,
 	starterSceneDirectorLayer,
 	starterSceneRegistryLayer,
 	starterScriptLayer,

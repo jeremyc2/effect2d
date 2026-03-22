@@ -8,7 +8,6 @@ import {
 	Input,
 	type InvalidLogMessageError,
 	type InvalidScriptWaitError,
-	MapRepository,
 	type OverlayStackUnderflowError,
 	SceneDirector,
 	type SceneNotFoundError,
@@ -23,6 +22,7 @@ import {
 import type { MapValidationError } from "../../../src/maps/MapError.ts";
 import { GameplayState } from "../state/GameplayState.ts";
 import { PlayerState } from "../state/PlayerState.ts";
+import { RoomState } from "../state/RoomState.ts";
 import { WorldState } from "../state/WorldState.ts";
 
 const movementStep = 8;
@@ -86,8 +86,8 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 			const engineLogger = yield* EngineLogger;
 			const gameplayState = yield* GameplayState;
 			const input = yield* Input;
-			const mapRepository = yield* MapRepository;
 			const playerState = yield* PlayerState;
+			const roomState = yield* RoomState;
 			const sceneDirector = yield* SceneDirector;
 			const script = yield* Script;
 			const scriptEvents = yield* ScriptEvents;
@@ -98,10 +98,7 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 			)(function* () {
 				const gameplaySnapshot = yield* gameplayState.snapshot;
 				const playerSnapshot = yield* playerState.snapshot;
-				const worldSnapshot = yield* worldState.snapshot;
-				const currentRoom = yield* mapRepository.loadRoom(
-					worldSnapshot.currentRoomId,
-				);
+				const currentRoom = yield* roomState.snapshot;
 				const exitZone = currentRoom.objectPlanes
 					.flatMap((plane) => plane.entries)
 					.find((entry) => entry.id === "to-lantern-room");
@@ -348,12 +345,11 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 						["room-exit"],
 					);
 					if (exitTriggers.some((body) => body.id === exitBodyId)) {
-						const lanternEntry = yield* mapRepository.roomObjectById(
-							"lantern-room",
-							"lantern-entry",
-						);
-						const playerSnapshot = yield* playerState.snapshot;
 						yield* worldState.enterRoom("lantern-room");
+						yield* roomState.loadCurrentRoom;
+						const lanternEntry =
+							yield* roomState.currentObjectById("lantern-entry");
+						const playerSnapshot = yield* playerState.snapshot;
 						yield* playerState.restore({
 							...playerSnapshot,
 							position: {
