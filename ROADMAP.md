@@ -55,13 +55,13 @@
 
 ## Milestone 5: Text, Fonts, And Lightweight UI
 
-- [ ] Implement font loading through Effect.
-- [ ] Implement text measurement and wrapped text layout helpers.
-- [ ] Implement text drawing with alignment options.
-- [ ] Implement lightweight immediate-mode UI primitives for panels, highlights, cursors, and framed boxes.
-- [ ] Implement simple dialogue box helpers.
-- [ ] Implement simple menu input helpers for selection and confirm/cancel flows.
-- [ ] Add text and dialogue test coverage where headless verification is practical.
+- [x] Implement font loading through Effect.
+- [x] Implement text measurement and wrapped text layout helpers.
+- [x] Implement text drawing with alignment options.
+- [x] Implement lightweight immediate-mode UI primitives for panels, highlights, cursors, and framed boxes.
+- [x] Implement simple dialogue box helpers.
+- [x] Implement simple menu input helpers for selection and confirm/cancel flows.
+- [x] Add text and dialogue test coverage where headless verification is practical.
 
 ## Milestone 6: Input
 

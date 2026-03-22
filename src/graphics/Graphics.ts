@@ -23,6 +23,7 @@ export type CircleDrawMode = "fill" | "stroke";
 
 export interface DrawTextOptions {
 	readonly align?: "center" | "left" | "right";
+	readonly fontId?: string;
 	readonly position: CameraVector;
 	readonly text: string;
 }
@@ -81,6 +82,7 @@ export type DrawCommand =
 	  }
 	| {
 			readonly align: "center" | "left" | "right";
+			readonly fontId?: string;
 			readonly position: CameraVector;
 			readonly text: string;
 			readonly type: "draw-text";
@@ -386,6 +388,7 @@ export class Graphics extends ServiceMap.Service<
 				yield* ensureFrameOpen();
 				yield* appendCommand(stateRef, {
 					align: options.align ?? "left",
+					fontId: options.fontId,
 					position: options.position,
 					text: options.text,
 					type: "draw-text",
