@@ -37,10 +37,10 @@ Controls:
 
 ## Current Native Scope
 
-The first native pass is focused on a real playable window:
+The current native pass is focused on a real playable window with live device hooks:
 
 - SDL owns the macOS window and raw input events
 - Canvas2D draws the recorded `Graphics` frame to the SDL window
+- macOS `afplay` is the initial native audio output path
 - borrowed local assets under `games/beacon-run/assets` provide the initial images and font
-
-Audio cues are still handled by the headless `Audio` service state for now, so the native playable build is currently visual/input-first while we finish the live audio output path.
+- the first music/sfx files are local placeholder assets so the native path stays fully repo-local

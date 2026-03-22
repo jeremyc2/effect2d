@@ -29,6 +29,19 @@ Supporting repo-local utilities such as test helpers may exist under their own i
 
 The native boundary must stay thin.
 
+The current native runtime is split in two layers:
+
+- `NativeBackend`: capability-level access to windowing, frame presentation, raw input draining, audio output syncing, timing waits, and backend diagnostics
+- `NativeBoundary`: the orchestration layer that connects `NativeBackend` to `Input`, `Audio`, and `NativeFrameSource`
+
+The initial practical implementation is:
+
+- SDL for macOS windowing and raw input
+- Canvas2D via `@napi-rs/canvas` for frame presentation
+- `afplay` as the first macOS audio output path
+
+This is intentionally a thin backend contract rather than a second engine hidden under `native`.
+
 It is allowed to own:
 
 - window creation
@@ -51,6 +64,19 @@ It is not allowed to own:
 - high-level engine orchestration
 
 If logic starts drifting downward into `native`, that is an architectural bug.
+
+### Backend Contract
+
+`NativeBackend` is capability-level on purpose. It owns:
+
+- `open` / `close` for native resource lifetime
+- `drainInputEvents` for raw event collection
+- `presentFrame` for low-level frame presentation
+- `syncAudio` for device-facing playback state updates
+- `waitForNextFrame` for timing hooks
+- `diagnostics` for backend status and initialization failure visibility
+
+It does not own scene stepping, gameplay rules, save logic, dialogue flow, or game-specific orchestration.
 
 ## Runtime Model
 

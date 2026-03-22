@@ -22,13 +22,13 @@
 
 ## Milestone 2: Native Boundary
 
-- [ ] Define the native boundary contract for windowing, rendering device access, raw input, audio device output, and timing hooks.
-- [ ] Choose and wire up the initial macOS windowing path.
-- [ ] Choose and wire up the initial practical rendering backend.
-- [ ] Choose and wire up the initial audio output path.
-- [ ] Define a backend-facing service API that stays capability-level and does not absorb engine semantics.
-- [ ] Add clean shutdown and resource teardown for all native services.
-- [ ] Add diagnostics for backend initialization failures.
+- [x] Define the native boundary contract for windowing, rendering device access, raw input, audio device output, and timing hooks.
+- [x] Choose and wire up the initial macOS windowing path.
+- [x] Choose and wire up the initial practical rendering backend.
+- [x] Choose and wire up the initial audio output path.
+- [x] Define a backend-facing service API that stays capability-level and does not absorb engine semantics.
+- [x] Add clean shutdown and resource teardown for all native services.
+- [x] Add diagnostics for backend initialization failures.
 
 ## Milestone 3: Scene Model And Runtime Flow
 

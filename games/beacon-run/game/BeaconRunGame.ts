@@ -44,6 +44,32 @@ export const beaconRunConfig = {
 export const beaconRunNativeBoundaryLayer = Layer.effect(NativeBoundary)(
 	Effect.succeed(
 		NativeBoundary.of({
+			diagnostics: Effect.succeed({
+				audio: {
+					activeSoundCount: 0,
+					backend: "headless",
+					currentMusicCueId: null,
+					supportsLoopingMusic: false,
+					supportsPauseResume: false,
+					supportsPitch: false,
+					supportsVolume: false,
+				},
+				initialized: false,
+				inputEventCount: 0,
+				lastError: null,
+				renderer: {
+					backend: "headless",
+					frameCount: 0,
+					supportsBlendModes: ["alpha"],
+					supportsImages: false,
+					supportsText: false,
+				},
+				timing: {
+					backend: "headless",
+					frameDelayMillis: 0,
+				},
+				window: null,
+			}),
 			initialize: () => Effect.void,
 			shutdown: Effect.void,
 		}),
@@ -215,35 +241,35 @@ export const beaconRunBootstrap = Effect.gen(function* () {
 		defaultLoop: true,
 		defaultPitch: 1,
 		defaultVolume: 0.7,
-		sourcePath: "games/beacon-run/audio/music/beacon-run-theme.ogg",
+		sourcePath: "games/beacon-run/assets/audio/music/beacon-run-theme.wav",
 	});
 	yield* audio.loadSound({
 		cueId: "menu-confirm",
 		defaultLoop: false,
 		defaultPitch: 1,
 		defaultVolume: 0.7,
-		sourcePath: "games/beacon-run/audio/sfx/menu-confirm.wav",
+		sourcePath: "games/beacon-run/assets/audio/sfx/menu-confirm.wav",
 	});
 	yield* audio.loadSound({
 		cueId: "pause-toggle",
 		defaultLoop: false,
 		defaultPitch: 1,
 		defaultVolume: 0.6,
-		sourcePath: "games/beacon-run/audio/sfx/pause-toggle.wav",
+		sourcePath: "games/beacon-run/assets/audio/sfx/pause-toggle.wav",
 	});
 	yield* audio.loadSound({
 		cueId: "room-transition",
 		defaultLoop: false,
 		defaultPitch: 1,
 		defaultVolume: 0.75,
-		sourcePath: "games/beacon-run/audio/sfx/room-transition.wav",
+		sourcePath: "games/beacon-run/assets/audio/sfx/room-transition.wav",
 	});
 	yield* audio.loadSound({
 		cueId: "beacon-ignite",
 		defaultLoop: false,
 		defaultPitch: 1,
 		defaultVolume: 0.8,
-		sourcePath: "games/beacon-run/audio/sfx/beacon-ignite.wav",
+		sourcePath: "games/beacon-run/assets/audio/sfx/beacon-ignite.wav",
 	});
 	yield* audio.playMusic("beacon-run-theme", { loop: true });
 	yield* ui.loadFont({
