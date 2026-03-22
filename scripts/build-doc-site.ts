@@ -341,10 +341,9 @@ const renderModules = (
 								<article
 									class="doc-entry"
 									id="${entry.slug}"
-									data-search="${escapeHtml(`${entry.name} ${entry.kind} ${moduleGroup.label} ${fileGroup.fileLabel}`.toLowerCase())}"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">${entry.kind}</span>
+										<span class="doc-kind doc-kind-${entry.kind}">${entry.kind}</span>
 										<a class="doc-source" href="#${entry.slug}">${escapeHtml(
 											`${entry.filePath}:${entry.line}`,
 										)}</a>
@@ -402,9 +401,9 @@ const renderSidebar = (modules: ReadonlyArray<ModuleDocGroup>): string =>
 								const entriesMarkup = fileGroup.entries
 									.map(
 										(entry) => `
-											<a class="nav-entry" href="#${entry.slug}" data-search="${escapeHtml(`${entry.name} ${entry.kind} ${moduleGroup.label} ${fileGroup.fileLabel}`.toLowerCase())}">
+											<a class="nav-entry" href="#${entry.slug}">
 												<span>${escapeHtml(entry.name)}</span>
-												<small>${escapeHtml(entry.kind)}</small>
+												<small class="nav-kind nav-kind-${entry.kind}">${escapeHtml(entry.kind)}</small>
 											</a>
 										`,
 									)
@@ -487,8 +486,8 @@ const renderHtmlDocument = ({
 				box-sizing: border-box;
 			}
 
-			html {
-				scroll-behavior: smooth;
+			.main [id] {
+				scroll-margin-top: calc(var(--header-height) + 16px);
 			}
 
 			body {
@@ -667,6 +666,26 @@ const renderHtmlDocument = ({
 				padding-top: 0.08rem;
 				color: var(--muted);
 				font-size: 0.72rem;
+			}
+
+			.nav-entry .nav-kind-class {
+				color: #ffd08f;
+			}
+
+			.nav-entry .nav-kind-const {
+				color: #9fd8ff;
+			}
+
+			.nav-entry .nav-kind-function {
+				color: #ffb3d6;
+			}
+
+			.nav-entry .nav-kind-interface {
+				color: #c7ff9e;
+			}
+
+			.nav-entry .nav-kind-type {
+				color: #d7c2ff;
 			}
 
 			.nav-entry span,
@@ -850,10 +869,40 @@ const renderHtmlDocument = ({
 			.doc-kind {
 				display: inline-flex;
 				padding: 0.28rem 0.46rem;
+				font-size: 0.68rem;
 				border: 1px solid rgba(154, 230, 180, 0.24);
 				background: rgba(154, 230, 180, 0.07);
 				color: var(--accent-strong);
-				font-size: 0.68rem;
+			}
+
+			.doc-kind-class {
+				border-color: rgba(248, 191, 114, 0.32);
+				background: rgba(248, 191, 114, 0.08);
+				color: #ffd08f;
+			}
+
+			.doc-kind-const {
+				border-color: rgba(120, 197, 255, 0.3);
+				background: rgba(120, 197, 255, 0.08);
+				color: #9fd8ff;
+			}
+
+			.doc-kind-function {
+				border-color: rgba(255, 154, 201, 0.3);
+				background: rgba(255, 154, 201, 0.08);
+				color: #ffb3d6;
+			}
+
+			.doc-kind-interface {
+				border-color: rgba(154, 230, 180, 0.28);
+				background: rgba(154, 230, 180, 0.07);
+				color: #c7ff9e;
+			}
+
+			.doc-kind-type {
+				border-color: rgba(196, 167, 255, 0.3);
+				background: rgba(196, 167, 255, 0.08);
+				color: #d7c2ff;
 			}
 
 			.doc-source {
@@ -962,10 +1011,6 @@ const renderHtmlDocument = ({
 				transform: translateX(2px);
 			}
 
-			.hidden-by-search {
-				display: none;
-			}
-
 			@keyframes hero-enter {
 				from {
 					opacity: 0;
@@ -1072,16 +1117,38 @@ const renderHtmlDocument = ({
 			</div>
 		</div>
 		<script>
-			const observer = new IntersectionObserver((entries) => {
-				for (const entry of entries) {
-					if (entry.isIntersecting) {
-						entry.target.classList.add("in-view");
-					}
-				}
-			}, { threshold: 0.12 });
-			for (const card of document.querySelectorAll(".doc-entry")) {
-				observer.observe(card);
+			if ("scrollRestoration" in history && location.hash.length === 0) {
+				history.scrollRestoration = "manual";
 			}
+
+			const resetScrollToTop = () => {
+				if (location.hash.length === 0) {
+					window.scrollTo(0, 0);
+				}
+			};
+
+			const scrollToHashTarget = () => {
+				if (location.hash.length === 0) {
+					return;
+				}
+
+				const target = document.getElementById(location.hash.slice(1));
+				if (!(target instanceof HTMLElement)) {
+					return;
+				}
+
+				target.scrollIntoView({
+					block: "start",
+				});
+			};
+
+			window.addEventListener("pageshow", resetScrollToTop);
+			window.addEventListener("load", () => {
+				requestAnimationFrame(() => {
+					resetScrollToTop();
+					scrollToHashTarget();
+				});
+			});
 		</script>
 	</body>
 </html>

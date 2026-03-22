@@ -33,8 +33,8 @@
 				box-sizing: border-box;
 			}
 
-			html {
-				scroll-behavior: smooth;
+			.main [id] {
+				scroll-margin-top: calc(var(--header-height) + 16px);
 			}
 
 			body {
@@ -213,6 +213,26 @@
 				padding-top: 0.08rem;
 				color: var(--muted);
 				font-size: 0.72rem;
+			}
+
+			.nav-entry .nav-kind-class {
+				color: #ffd08f;
+			}
+
+			.nav-entry .nav-kind-const {
+				color: #9fd8ff;
+			}
+
+			.nav-entry .nav-kind-function {
+				color: #ffb3d6;
+			}
+
+			.nav-entry .nav-kind-interface {
+				color: #c7ff9e;
+			}
+
+			.nav-entry .nav-kind-type {
+				color: #d7c2ff;
 			}
 
 			.nav-entry span,
@@ -396,10 +416,40 @@
 			.doc-kind {
 				display: inline-flex;
 				padding: 0.28rem 0.46rem;
+				font-size: 0.68rem;
 				border: 1px solid rgba(154, 230, 180, 0.24);
 				background: rgba(154, 230, 180, 0.07);
 				color: var(--accent-strong);
-				font-size: 0.68rem;
+			}
+
+			.doc-kind-class {
+				border-color: rgba(248, 191, 114, 0.32);
+				background: rgba(248, 191, 114, 0.08);
+				color: #ffd08f;
+			}
+
+			.doc-kind-const {
+				border-color: rgba(120, 197, 255, 0.3);
+				background: rgba(120, 197, 255, 0.08);
+				color: #9fd8ff;
+			}
+
+			.doc-kind-function {
+				border-color: rgba(255, 154, 201, 0.3);
+				background: rgba(255, 154, 201, 0.08);
+				color: #ffb3d6;
+			}
+
+			.doc-kind-interface {
+				border-color: rgba(154, 230, 180, 0.28);
+				background: rgba(154, 230, 180, 0.07);
+				color: #c7ff9e;
+			}
+
+			.doc-kind-type {
+				border-color: rgba(196, 167, 255, 0.3);
+				background: rgba(196, 167, 255, 0.08);
+				color: #d7c2ff;
 			}
 
 			.doc-source {
@@ -508,10 +558,6 @@
 				transform: translateX(2px);
 			}
 
-			.hidden-by-search {
-				display: none;
-			}
-
 			@keyframes hero-enter {
 				from {
 					opacity: 0;
@@ -600,49 +646,49 @@
 						
 										<div class="nav-file nav-file-flat">
 											
-											<a class="nav-entry" href="#audio-audiobus" data-search="audiobus type audio audio">
+											<a class="nav-entry" href="#audio-audiobus">
 												<span>AudioBus</span>
-												<small>type</small>
+												<small class="nav-kind nav-kind-type">type</small>
 											</a>
 										
-											<a class="nav-entry" href="#audio-audiocuekind" data-search="audiocuekind type audio audio">
+											<a class="nav-entry" href="#audio-audiocuekind">
 												<span>AudioCueKind</span>
-												<small>type</small>
+												<small class="nav-kind nav-kind-type">type</small>
 											</a>
 										
-											<a class="nav-entry" href="#audio-audiocuedefinition" data-search="audiocuedefinition interface audio audio">
+											<a class="nav-entry" href="#audio-audiocuedefinition">
 												<span>AudioCueDefinition</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#audio-loadedaudiocue" data-search="loadedaudiocue interface audio audio">
+											<a class="nav-entry" href="#audio-loadedaudiocue">
 												<span>LoadedAudioCue</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#audio-audioplaybackoptions" data-search="audioplaybackoptions interface audio audio">
+											<a class="nav-entry" href="#audio-audioplaybackoptions">
 												<span>AudioPlaybackOptions</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#audio-musicplayback" data-search="musicplayback interface audio audio">
+											<a class="nav-entry" href="#audio-musicplayback">
 												<span>MusicPlayback</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#audio-soundplayback" data-search="soundplayback interface audio audio">
+											<a class="nav-entry" href="#audio-soundplayback">
 												<span>SoundPlayback</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#audio-audiosnapshot" data-search="audiosnapshot interface audio audio">
+											<a class="nav-entry" href="#audio-audiosnapshot">
 												<span>AudioSnapshot</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#audio-audio" data-search="audio class audio audio">
+											<a class="nav-entry" href="#audio-audio">
 												<span>Audio</span>
-												<small>class</small>
+												<small class="nav-kind nav-kind-class">class</small>
 											</a>
 										
 										</div>
@@ -655,39 +701,39 @@
 										<div class="nav-file">
 											<a class="nav-file-title" href="#graphics-camera-ts">Camera</a>
 											
-											<a class="nav-entry" href="#graphics-cameravector" data-search="cameravector interface graphics camera">
+											<a class="nav-entry" href="#graphics-cameravector">
 												<span>CameraVector</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#graphics-camerabounds" data-search="camerabounds interface graphics camera">
+											<a class="nav-entry" href="#graphics-camerabounds">
 												<span>CameraBounds</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#graphics-cameraviewport" data-search="cameraviewport interface graphics camera">
+											<a class="nav-entry" href="#graphics-cameraviewport">
 												<span>CameraViewport</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#graphics-camerashakestate" data-search="camerashakestate interface graphics camera">
+											<a class="nav-entry" href="#graphics-camerashakestate">
 												<span>CameraShakeState</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#graphics-camerastate" data-search="camerastate interface graphics camera">
+											<a class="nav-entry" href="#graphics-camerastate">
 												<span>CameraState</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#graphics-makecamerastate" data-search="makecamerastate const graphics camera">
+											<a class="nav-entry" href="#graphics-makecamerastate">
 												<span>makeCameraState</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
-											<a class="nav-entry" href="#graphics-scenecamera" data-search="scenecamera class graphics camera">
+											<a class="nav-entry" href="#graphics-scenecamera">
 												<span>SceneCamera</span>
-												<small>class</small>
+												<small class="nav-kind nav-kind-class">class</small>
 											</a>
 										
 										</div>
@@ -695,59 +741,59 @@
 										<div class="nav-file">
 											<a class="nav-file-title" href="#graphics-graphics-ts">Graphics</a>
 											
-											<a class="nav-entry" href="#graphics-color" data-search="color interface graphics graphics">
+											<a class="nav-entry" href="#graphics-color">
 												<span>Color</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#graphics-transform2d" data-search="transform2d interface graphics graphics">
+											<a class="nav-entry" href="#graphics-transform2d">
 												<span>Transform2D</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#graphics-blendmode" data-search="blendmode type graphics graphics">
+											<a class="nav-entry" href="#graphics-blendmode">
 												<span>BlendMode</span>
-												<small>type</small>
+												<small class="nav-kind nav-kind-type">type</small>
 											</a>
 										
-											<a class="nav-entry" href="#graphics-rectangledrawmode" data-search="rectangledrawmode type graphics graphics">
+											<a class="nav-entry" href="#graphics-rectangledrawmode">
 												<span>RectangleDrawMode</span>
-												<small>type</small>
+												<small class="nav-kind nav-kind-type">type</small>
 											</a>
 										
-											<a class="nav-entry" href="#graphics-circledrawmode" data-search="circledrawmode type graphics graphics">
+											<a class="nav-entry" href="#graphics-circledrawmode">
 												<span>CircleDrawMode</span>
-												<small>type</small>
+												<small class="nav-kind nav-kind-type">type</small>
 											</a>
 										
-											<a class="nav-entry" href="#graphics-drawtextoptions" data-search="drawtextoptions interface graphics graphics">
+											<a class="nav-entry" href="#graphics-drawtextoptions">
 												<span>DrawTextOptions</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#graphics-drawcommand" data-search="drawcommand type graphics graphics">
+											<a class="nav-entry" href="#graphics-drawcommand">
 												<span>DrawCommand</span>
-												<small>type</small>
+												<small class="nav-kind nav-kind-type">type</small>
 											</a>
 										
-											<a class="nav-entry" href="#graphics-framesnapshot" data-search="framesnapshot interface graphics graphics">
+											<a class="nav-entry" href="#graphics-framesnapshot">
 												<span>FrameSnapshot</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#graphics-graphicsframenotopenerror" data-search="graphicsframenotopenerror class graphics graphics">
+											<a class="nav-entry" href="#graphics-graphicsframenotopenerror">
 												<span>GraphicsFrameNotOpenError</span>
-												<small>class</small>
+												<small class="nav-kind nav-kind-class">class</small>
 											</a>
 										
-											<a class="nav-entry" href="#graphics-graphicstransformstackunderflowerror" data-search="graphicstransformstackunderflowerror class graphics graphics">
+											<a class="nav-entry" href="#graphics-graphicstransformstackunderflowerror">
 												<span>GraphicsTransformStackUnderflowError</span>
-												<small>class</small>
+												<small class="nav-kind nav-kind-class">class</small>
 											</a>
 										
-											<a class="nav-entry" href="#graphics-graphics" data-search="graphics class graphics graphics">
+											<a class="nav-entry" href="#graphics-graphics">
 												<span>Graphics</span>
-												<small>class</small>
+												<small class="nav-kind nav-kind-class">class</small>
 											</a>
 										
 										</div>
@@ -759,49 +805,49 @@
 						
 										<div class="nav-file nav-file-flat">
 											
-											<a class="nav-entry" href="#input-keycode" data-search="keycode type input input">
+											<a class="nav-entry" href="#input-keycode">
 												<span>KeyCode</span>
-												<small>type</small>
+												<small class="nav-kind nav-kind-type">type</small>
 											</a>
 										
-											<a class="nav-entry" href="#input-mousebutton" data-search="mousebutton type input input">
+											<a class="nav-entry" href="#input-mousebutton">
 												<span>MouseButton</span>
-												<small>type</small>
+												<small class="nav-kind nav-kind-type">type</small>
 											</a>
 										
-											<a class="nav-entry" href="#input-pointerposition" data-search="pointerposition interface input input">
+											<a class="nav-entry" href="#input-pointerposition">
 												<span>PointerPosition</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#input-inputevent" data-search="inputevent type input input">
+											<a class="nav-entry" href="#input-inputevent">
 												<span>InputEvent</span>
-												<small>type</small>
+												<small class="nav-kind nav-kind-type">type</small>
 											</a>
 										
-											<a class="nav-entry" href="#input-inputtrigger" data-search="inputtrigger type input input">
+											<a class="nav-entry" href="#input-inputtrigger">
 												<span>InputTrigger</span>
-												<small>type</small>
+												<small class="nav-kind nav-kind-type">type</small>
 											</a>
 										
-											<a class="nav-entry" href="#input-actionbinding" data-search="actionbinding interface input input">
+											<a class="nav-entry" href="#input-actionbinding">
 												<span>ActionBinding</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#input-actionstate" data-search="actionstate interface input input">
+											<a class="nav-entry" href="#input-actionstate">
 												<span>ActionState</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#input-inputsnapshot" data-search="inputsnapshot interface input input">
+											<a class="nav-entry" href="#input-inputsnapshot">
 												<span>InputSnapshot</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#input-input" data-search="input class input input">
+											<a class="nav-entry" href="#input-input">
 												<span>Input</span>
-												<small>class</small>
+												<small class="nav-kind nav-kind-class">class</small>
 											</a>
 										
 										</div>
@@ -814,44 +860,44 @@
 										<div class="nav-file">
 											<a class="nav-file-title" href="#maps-mapcontent-ts">MapContent</a>
 											
-											<a class="nav-entry" href="#maps-roommetadata" data-search="roommetadata type maps mapcontent">
+											<a class="nav-entry" href="#maps-roommetadata">
 												<span>RoomMetadata</span>
-												<small>type</small>
+												<small class="nav-kind nav-kind-type">type</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-tileplane" data-search="tileplane interface maps mapcontent">
+											<a class="nav-entry" href="#maps-tileplane">
 												<span>TilePlane</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-roomobject" data-search="roomobject interface maps mapcontent">
+											<a class="nav-entry" href="#maps-roomobject">
 												<span>RoomObject</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-objectplane" data-search="objectplane interface maps mapcontent">
+											<a class="nav-entry" href="#maps-objectplane">
 												<span>ObjectPlane</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-roomcontent" data-search="roomcontent interface maps mapcontent">
+											<a class="nav-entry" href="#maps-roomcontent">
 												<span>RoomContent</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-spawnpoint" data-search="spawnpoint interface maps mapcontent">
+											<a class="nav-entry" href="#maps-spawnpoint">
 												<span>SpawnPoint</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-transitionzone" data-search="transitionzone interface maps mapcontent">
+											<a class="nav-entry" href="#maps-transitionzone">
 												<span>TransitionZone</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-triggerzone" data-search="triggerzone interface maps mapcontent">
+											<a class="nav-entry" href="#maps-triggerzone">
 												<span>TriggerZone</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
 										</div>
@@ -859,29 +905,29 @@
 										<div class="nav-file">
 											<a class="nav-file-title" href="#maps-mapqueries-ts">MapQueries</a>
 											
-											<a class="nav-entry" href="#maps-roomobjects" data-search="roomobjects const maps mapqueries">
+											<a class="nav-entry" href="#maps-roomobjects">
 												<span>roomObjects</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-roomobjectbyid" data-search="roomobjectbyid const maps mapqueries">
+											<a class="nav-entry" href="#maps-roomobjectbyid">
 												<span>roomObjectById</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-roomobjectsbykind" data-search="roomobjectsbykind const maps mapqueries">
+											<a class="nav-entry" href="#maps-roomobjectsbykind">
 												<span>roomObjectsByKind</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-roomspawnpoints" data-search="roomspawnpoints const maps mapqueries">
+											<a class="nav-entry" href="#maps-roomspawnpoints">
 												<span>roomSpawnPoints</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-roomtransitionzones" data-search="roomtransitionzones const maps mapqueries">
+											<a class="nav-entry" href="#maps-roomtransitionzones">
 												<span>roomTransitionZones</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
 										</div>
@@ -889,9 +935,9 @@
 										<div class="nav-file">
 											<a class="nav-file-title" href="#maps-maprepository-ts">MapRepository</a>
 											
-											<a class="nav-entry" href="#maps-maprepository" data-search="maprepository class maps maprepository">
+											<a class="nav-entry" href="#maps-maprepository">
 												<span>MapRepository</span>
-												<small>class</small>
+												<small class="nav-kind nav-kind-class">class</small>
 											</a>
 										
 										</div>
@@ -899,44 +945,44 @@
 										<div class="nav-file">
 											<a class="nav-file-title" href="#maps-roombuilder-ts">RoomBuilder</a>
 											
-											<a class="nav-entry" href="#maps-definetileplane" data-search="definetileplane const maps roombuilder">
+											<a class="nav-entry" href="#maps-definetileplane">
 												<span>defineTilePlane</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-defineobjectplane" data-search="defineobjectplane const maps roombuilder">
+											<a class="nav-entry" href="#maps-defineobjectplane">
 												<span>defineObjectPlane</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-defineroom" data-search="defineroom const maps roombuilder">
+											<a class="nav-entry" href="#maps-defineroom">
 												<span>defineRoom</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-roomobject" data-search="roomobject const maps roombuilder">
+											<a class="nav-entry" href="#maps-roomobject">
 												<span>roomObject</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-spawnpoint" data-search="spawnpoint const maps roombuilder">
+											<a class="nav-entry" href="#maps-spawnpoint">
 												<span>spawnPoint</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-transitionzone" data-search="transitionzone const maps roombuilder">
+											<a class="nav-entry" href="#maps-transitionzone">
 												<span>transitionZone</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-triggerzone" data-search="triggerzone const maps roombuilder">
+											<a class="nav-entry" href="#maps-triggerzone">
 												<span>triggerZone</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-roommetadata" data-search="roommetadata const maps roombuilder">
+											<a class="nav-entry" href="#maps-roommetadata">
 												<span>roomMetadata</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
 										</div>
@@ -949,9 +995,9 @@
 										<div class="nav-file">
 											<a class="nav-file-title" href="#native-nativeboundary-ts">NativeBoundary</a>
 											
-											<a class="nav-entry" href="#native-nativeboundary" data-search="nativeboundary class native nativeboundary">
+											<a class="nav-entry" href="#native-nativeboundary">
 												<span>NativeBoundary</span>
-												<small>class</small>
+												<small class="nav-kind nav-kind-class">class</small>
 											</a>
 										
 										</div>
@@ -959,9 +1005,9 @@
 										<div class="nav-file">
 											<a class="nav-file-title" href="#native-nativeframesource-ts">NativeFrameSource</a>
 											
-											<a class="nav-entry" href="#native-nativeframesource" data-search="nativeframesource class native nativeframesource">
+											<a class="nav-entry" href="#native-nativeframesource">
 												<span>NativeFrameSource</span>
-												<small>class</small>
+												<small class="nav-kind nav-kind-class">class</small>
 											</a>
 										
 										</div>
@@ -969,19 +1015,19 @@
 										<div class="nav-file">
 											<a class="nav-file-title" href="#native-sdlcanvasnativebackend-ts">SdlCanvasNativeBackend</a>
 											
-											<a class="nav-entry" href="#native-sdlcanvasnativebackendoptions" data-search="sdlcanvasnativebackendoptions interface native sdlcanvasnativebackend">
+											<a class="nav-entry" href="#native-sdlcanvasnativebackendoptions">
 												<span>SdlCanvasNativeBackendOptions</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#native-makesdlcanvasnativebackendlayer" data-search="makesdlcanvasnativebackendlayer const native sdlcanvasnativebackend">
+											<a class="nav-entry" href="#native-makesdlcanvasnativebackendlayer">
 												<span>makeSdlCanvasNativeBackendLayer</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
-											<a class="nav-entry" href="#native-makesdlcanvasnativeboundarylayer" data-search="makesdlcanvasnativeboundarylayer const native sdlcanvasnativebackend">
+											<a class="nav-entry" href="#native-makesdlcanvasnativeboundarylayer">
 												<span>makeSdlCanvasNativeBoundaryLayer</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
 										</div>
@@ -994,9 +1040,9 @@
 										<div class="nav-file">
 											<a class="nav-file-title" href="#runtime-engine-ts">Engine</a>
 											
-											<a class="nav-entry" href="#runtime-engine" data-search="engine class runtime engine">
+											<a class="nav-entry" href="#runtime-engine">
 												<span>Engine</span>
-												<small>class</small>
+												<small class="nav-kind nav-kind-class">class</small>
 											</a>
 										
 										</div>
@@ -1004,14 +1050,14 @@
 										<div class="nav-file">
 											<a class="nav-file-title" href="#runtime-engineconfig-ts">EngineConfig</a>
 											
-											<a class="nav-entry" href="#runtime-engineconfig" data-search="engineconfig interface runtime engineconfig">
+											<a class="nav-entry" href="#runtime-engineconfig">
 												<span>EngineConfig</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#runtime-defaultengineconfig" data-search="defaultengineconfig const runtime engineconfig">
+											<a class="nav-entry" href="#runtime-defaultengineconfig">
 												<span>defaultEngineConfig</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
 										</div>
@@ -1019,24 +1065,24 @@
 										<div class="nav-file">
 											<a class="nav-file-title" href="#runtime-launch-ts">Launch</a>
 											
-											<a class="nav-entry" href="#runtime-makeenginelayer" data-search="makeenginelayer const runtime launch">
+											<a class="nav-entry" href="#runtime-makeenginelayer">
 												<span>makeEngineLayer</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
-											<a class="nav-entry" href="#runtime-makeruntimelayer" data-search="makeruntimelayer const runtime launch">
+											<a class="nav-entry" href="#runtime-makeruntimelayer">
 												<span>makeRuntimeLayer</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
-											<a class="nav-entry" href="#runtime-engineprogram" data-search="engineprogram const runtime launch">
+											<a class="nav-entry" href="#runtime-engineprogram">
 												<span>engineProgram</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
-											<a class="nav-entry" href="#runtime-seededengineprogram" data-search="seededengineprogram const runtime launch">
+											<a class="nav-entry" href="#runtime-seededengineprogram">
 												<span>seededEngineProgram</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
 										</div>
@@ -1044,14 +1090,14 @@
 										<div class="nav-file">
 											<a class="nav-file-title" href="#runtime-randomsource-ts">RandomSource</a>
 											
-											<a class="nav-entry" href="#runtime-randomsource" data-search="randomsource class runtime randomsource">
+											<a class="nav-entry" href="#runtime-randomsource">
 												<span>RandomSource</span>
-												<small>class</small>
+												<small class="nav-kind nav-kind-class">class</small>
 											</a>
 										
-											<a class="nav-entry" href="#runtime-withrandomseed" data-search="withrandomseed const runtime randomsource">
+											<a class="nav-entry" href="#runtime-withrandomseed">
 												<span>withRandomSeed</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
 										</div>
@@ -1059,14 +1105,14 @@
 										<div class="nav-file">
 											<a class="nav-file-title" href="#runtime-runtimeclock-ts">RuntimeClock</a>
 											
-											<a class="nav-entry" href="#runtime-runtimetimingsnapshot" data-search="runtimetimingsnapshot interface runtime runtimeclock">
+											<a class="nav-entry" href="#runtime-runtimetimingsnapshot">
 												<span>RuntimeTimingSnapshot</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#runtime-runtimeclock" data-search="runtimeclock class runtime runtimeclock">
+											<a class="nav-entry" href="#runtime-runtimeclock">
 												<span>RuntimeClock</span>
-												<small>class</small>
+												<small class="nav-kind nav-kind-class">class</small>
 											</a>
 										
 										</div>
@@ -1079,14 +1125,14 @@
 										<div class="nav-file">
 											<a class="nav-file-title" href="#save-savecoordinator-ts">SaveCoordinator</a>
 											
-											<a class="nav-entry" href="#save-savecoordinatoroptions" data-search="savecoordinatoroptions interface save savecoordinator">
+											<a class="nav-entry" href="#save-savecoordinatoroptions">
 												<span>SaveCoordinatorOptions</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#save-savecoordinator" data-search="savecoordinator class save savecoordinator">
+											<a class="nav-entry" href="#save-savecoordinator">
 												<span>SaveCoordinator</span>
-												<small>class</small>
+												<small class="nav-kind nav-kind-class">class</small>
 											</a>
 										
 										</div>
@@ -1094,39 +1140,39 @@
 										<div class="nav-file">
 											<a class="nav-file-title" href="#save-savedocument-ts">SaveDocument</a>
 											
-											<a class="nav-entry" href="#save-saveslotid" data-search="saveslotid type save savedocument">
+											<a class="nav-entry" href="#save-saveslotid">
 												<span>SaveSlotId</span>
-												<small>type</small>
+												<small class="nav-kind nav-kind-type">type</small>
 											</a>
 										
-											<a class="nav-entry" href="#save-saveslotdocument" data-search="saveslotdocument interface save savedocument">
+											<a class="nav-entry" href="#save-saveslotdocument">
 												<span>SaveSlotDocument</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#save-savedocument" data-search="savedocument interface save savedocument">
+											<a class="nav-entry" href="#save-savedocument">
 												<span>SaveDocument</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#save-saveparticipant" data-search="saveparticipant interface save savedocument">
+											<a class="nav-entry" href="#save-saveparticipant">
 												<span>SaveParticipant</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#save-savemigration" data-search="savemigration interface save savedocument">
+											<a class="nav-entry" href="#save-savemigration">
 												<span>SaveMigration</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#save-saveslotdocumentschema" data-search="saveslotdocumentschema const save savedocument">
+											<a class="nav-entry" href="#save-saveslotdocumentschema">
 												<span>SaveSlotDocumentSchema</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
-											<a class="nav-entry" href="#save-savedocumentschema" data-search="savedocumentschema const save savedocument">
+											<a class="nav-entry" href="#save-savedocumentschema">
 												<span>SaveDocumentSchema</span>
-												<small>const</small>
+												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
 										</div>
@@ -1139,39 +1185,39 @@
 										<div class="nav-file">
 											<a class="nav-file-title" href="#scene-scene-ts">Scene</a>
 											
-											<a class="nav-entry" href="#scene-sceneid" data-search="sceneid type scene scene">
+											<a class="nav-entry" href="#scene-sceneid">
 												<span>SceneId</span>
-												<small>type</small>
+												<small class="nav-kind nav-kind-type">type</small>
 											</a>
 										
-											<a class="nav-entry" href="#scene-scenestacklevel" data-search="scenestacklevel type scene scene">
+											<a class="nav-entry" href="#scene-scenestacklevel">
 												<span>SceneStackLevel</span>
-												<small>type</small>
+												<small class="nav-kind nav-kind-type">type</small>
 											</a>
 										
-											<a class="nav-entry" href="#scene-scenelifecycle" data-search="scenelifecycle interface scene scene">
+											<a class="nav-entry" href="#scene-scenelifecycle">
 												<span>SceneLifecycle</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#scene-scenedefinition" data-search="scenedefinition interface scene scene">
+											<a class="nav-entry" href="#scene-scenedefinition">
 												<span>SceneDefinition</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#scene-sceneinstance" data-search="sceneinstance interface scene scene">
+											<a class="nav-entry" href="#scene-sceneinstance">
 												<span>SceneInstance</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#scene-scenestackentry" data-search="scenestackentry interface scene scene">
+											<a class="nav-entry" href="#scene-scenestackentry">
 												<span>SceneStackEntry</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#scene-scenestacksnapshot" data-search="scenestacksnapshot interface scene scene">
+											<a class="nav-entry" href="#scene-scenestacksnapshot">
 												<span>SceneStackSnapshot</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
 										</div>
@@ -1179,9 +1225,9 @@
 										<div class="nav-file">
 											<a class="nav-file-title" href="#scene-scenedirector-ts">SceneDirector</a>
 											
-											<a class="nav-entry" href="#scene-scenedirector" data-search="scenedirector class scene scenedirector">
+											<a class="nav-entry" href="#scene-scenedirector">
 												<span>SceneDirector</span>
-												<small>class</small>
+												<small class="nav-kind nav-kind-class">class</small>
 											</a>
 										
 										</div>
@@ -1189,9 +1235,9 @@
 										<div class="nav-file">
 											<a class="nav-file-title" href="#scene-sceneregistry-ts">SceneRegistry</a>
 											
-											<a class="nav-entry" href="#scene-sceneregistry" data-search="sceneregistry class scene sceneregistry">
+											<a class="nav-entry" href="#scene-sceneregistry">
 												<span>SceneRegistry</span>
-												<small>class</small>
+												<small class="nav-kind nav-kind-class">class</small>
 											</a>
 										
 										</div>
@@ -1203,24 +1249,24 @@
 						
 										<div class="nav-file nav-file-flat">
 											
-											<a class="nav-entry" href="#script-dialogueprogress" data-search="dialogueprogress interface script script">
+											<a class="nav-entry" href="#script-dialogueprogress">
 												<span>DialogueProgress</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#script-dialoguescriptoptions" data-search="dialoguescriptoptions interface script script">
+											<a class="nav-entry" href="#script-dialoguescriptoptions">
 												<span>DialogueScriptOptions</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#script-scriptevents" data-search="scriptevents class script script">
+											<a class="nav-entry" href="#script-scriptevents">
 												<span>ScriptEvents</span>
-												<small>class</small>
+												<small class="nav-kind nav-kind-class">class</small>
 											</a>
 										
-											<a class="nav-entry" href="#script-script" data-search="script class script script">
+											<a class="nav-entry" href="#script-script">
 												<span>Script</span>
-												<small>class</small>
+												<small class="nav-kind nav-kind-class">class</small>
 											</a>
 										
 										</div>
@@ -1232,49 +1278,49 @@
 						
 										<div class="nav-file nav-file-flat">
 											
-											<a class="nav-entry" href="#ui-fontdefinition" data-search="fontdefinition interface ui ui">
+											<a class="nav-entry" href="#ui-fontdefinition">
 												<span>FontDefinition</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#ui-textline" data-search="textline interface ui ui">
+											<a class="nav-entry" href="#ui-textline">
 												<span>TextLine</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#ui-textlayout" data-search="textlayout interface ui ui">
+											<a class="nav-entry" href="#ui-textlayout">
 												<span>TextLayout</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#ui-uibounds" data-search="uibounds interface ui ui">
+											<a class="nav-entry" href="#ui-uibounds">
 												<span>UiBounds</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#ui-dialoguepage" data-search="dialoguepage interface ui ui">
+											<a class="nav-entry" href="#ui-dialoguepage">
 												<span>DialoguePage</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#ui-drawdialogueboxoptions" data-search="drawdialogueboxoptions interface ui ui">
+											<a class="nav-entry" href="#ui-drawdialogueboxoptions">
 												<span>DrawDialogueBoxOptions</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#ui-menunavigationoptions" data-search="menunavigationoptions interface ui ui">
+											<a class="nav-entry" href="#ui-menunavigationoptions">
 												<span>MenuNavigationOptions</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#ui-menunavigationresult" data-search="menunavigationresult interface ui ui">
+											<a class="nav-entry" href="#ui-menunavigationresult">
 												<span>MenuNavigationResult</span>
-												<small>interface</small>
+												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#ui-ui" data-search="ui class ui ui">
+											<a class="nav-entry" href="#ui-ui">
 												<span>Ui</span>
-												<small>class</small>
+												<small class="nav-kind nav-kind-class">class</small>
 											</a>
 										
 										</div>
@@ -1486,10 +1532,9 @@ better place to work because they show tighter implementation boundaries.</p>
 								<article
 									class="doc-entry"
 									id="audio-audiobus"
-									data-search="audiobus type audio audio"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">type</span>
+										<span class="doc-kind doc-kind-type">type</span>
 										<a class="doc-source" href="#audio-audiobus">src/audio/Audio.ts:3</a>
 									</div>
 									<h4>AudioBus</h4>
@@ -1500,10 +1545,9 @@ better place to work because they show tighter implementation boundaries.</p>
 								<article
 									class="doc-entry"
 									id="audio-audiocuekind"
-									data-search="audiocuekind type audio audio"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">type</span>
+										<span class="doc-kind doc-kind-type">type</span>
 										<a class="doc-source" href="#audio-audiocuekind">src/audio/Audio.ts:6</a>
 									</div>
 									<h4>AudioCueKind</h4>
@@ -1514,10 +1558,9 @@ better place to work because they show tighter implementation boundaries.</p>
 								<article
 									class="doc-entry"
 									id="audio-audiocuedefinition"
-									data-search="audiocuedefinition interface audio audio"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#audio-audiocuedefinition">src/audio/Audio.ts:9</a>
 									</div>
 									<h4>AudioCueDefinition</h4>
@@ -1528,10 +1571,9 @@ better place to work because they show tighter implementation boundaries.</p>
 								<article
 									class="doc-entry"
 									id="audio-loadedaudiocue"
-									data-search="loadedaudiocue interface audio audio"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#audio-loadedaudiocue">src/audio/Audio.ts:18</a>
 									</div>
 									<h4>LoadedAudioCue</h4>
@@ -1542,10 +1584,9 @@ better place to work because they show tighter implementation boundaries.</p>
 								<article
 									class="doc-entry"
 									id="audio-audioplaybackoptions"
-									data-search="audioplaybackoptions interface audio audio"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#audio-audioplaybackoptions">src/audio/Audio.ts:23</a>
 									</div>
 									<h4>AudioPlaybackOptions</h4>
@@ -1556,10 +1597,9 @@ better place to work because they show tighter implementation boundaries.</p>
 								<article
 									class="doc-entry"
 									id="audio-musicplayback"
-									data-search="musicplayback interface audio audio"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#audio-musicplayback">src/audio/Audio.ts:30</a>
 									</div>
 									<h4>MusicPlayback</h4>
@@ -1570,10 +1610,9 @@ better place to work because they show tighter implementation boundaries.</p>
 								<article
 									class="doc-entry"
 									id="audio-soundplayback"
-									data-search="soundplayback interface audio audio"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#audio-soundplayback">src/audio/Audio.ts:39</a>
 									</div>
 									<h4>SoundPlayback</h4>
@@ -1584,10 +1623,9 @@ better place to work because they show tighter implementation boundaries.</p>
 								<article
 									class="doc-entry"
 									id="audio-audiosnapshot"
-									data-search="audiosnapshot interface audio audio"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#audio-audiosnapshot">src/audio/Audio.ts:44</a>
 									</div>
 									<h4>AudioSnapshot</h4>
@@ -1598,10 +1636,9 @@ better place to work because they show tighter implementation boundaries.</p>
 								<article
 									class="doc-entry"
 									id="audio-audio"
-									data-search="audio class audio audio"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">class</span>
+										<span class="doc-kind doc-kind-class">class</span>
 										<a class="doc-source" href="#audio-audio">src/audio/Audio.ts:190</a>
 									</div>
 									<h4>Audio</h4>
@@ -1631,10 +1668,9 @@ backends.</p>
 								<article
 									class="doc-entry"
 									id="graphics-cameravector"
-									data-search="cameravector interface graphics camera"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#graphics-cameravector">src/graphics/Camera.ts:3</a>
 									</div>
 									<h4>CameraVector</h4>
@@ -1645,10 +1681,9 @@ backends.</p>
 								<article
 									class="doc-entry"
 									id="graphics-camerabounds"
-									data-search="camerabounds interface graphics camera"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#graphics-camerabounds">src/graphics/Camera.ts:9</a>
 									</div>
 									<h4>CameraBounds</h4>
@@ -1659,10 +1694,9 @@ backends.</p>
 								<article
 									class="doc-entry"
 									id="graphics-cameraviewport"
-									data-search="cameraviewport interface graphics camera"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#graphics-cameraviewport">src/graphics/Camera.ts:21</a>
 									</div>
 									<h4>CameraViewport</h4>
@@ -1673,10 +1707,9 @@ backends.</p>
 								<article
 									class="doc-entry"
 									id="graphics-camerashakestate"
-									data-search="camerashakestate interface graphics camera"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#graphics-camerashakestate">src/graphics/Camera.ts:27</a>
 									</div>
 									<h4>CameraShakeState</h4>
@@ -1687,10 +1720,9 @@ backends.</p>
 								<article
 									class="doc-entry"
 									id="graphics-camerastate"
-									data-search="camerastate interface graphics camera"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#graphics-camerastate">src/graphics/Camera.ts:34</a>
 									</div>
 									<h4>CameraState</h4>
@@ -1701,10 +1733,9 @@ backends.</p>
 								<article
 									class="doc-entry"
 									id="graphics-makecamerastate"
-									data-search="makecamerastate const graphics camera"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#graphics-makecamerastate">src/graphics/Camera.ts:65</a>
 									</div>
 									<h4>makeCameraState</h4>
@@ -1715,10 +1746,9 @@ backends.</p>
 								<article
 									class="doc-entry"
 									id="graphics-scenecamera"
-									data-search="scenecamera class graphics camera"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">class</span>
+										<span class="doc-kind doc-kind-class">class</span>
 										<a class="doc-source" href="#graphics-scenecamera">src/graphics/Camera.ts:226</a>
 									</div>
 									<h4>SceneCamera</h4>
@@ -1749,10 +1779,9 @@ functions in this module. Game code typically uses it to:</p>
 								<article
 									class="doc-entry"
 									id="graphics-color"
-									data-search="color interface graphics graphics"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#graphics-color">src/graphics/Graphics.ts:4</a>
 									</div>
 									<h4>Color</h4>
@@ -1764,10 +1793,9 @@ functions in this module. Game code typically uses it to:</p>
 								<article
 									class="doc-entry"
 									id="graphics-transform2d"
-									data-search="transform2d interface graphics graphics"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#graphics-transform2d">src/graphics/Graphics.ts:18</a>
 									</div>
 									<h4>Transform2D</h4>
@@ -1778,10 +1806,9 @@ functions in this module. Game code typically uses it to:</p>
 								<article
 									class="doc-entry"
 									id="graphics-blendmode"
-									data-search="blendmode type graphics graphics"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">type</span>
+										<span class="doc-kind doc-kind-type">type</span>
 										<a class="doc-source" href="#graphics-blendmode">src/graphics/Graphics.ts:30</a>
 									</div>
 									<h4>BlendMode</h4>
@@ -1792,10 +1819,9 @@ functions in this module. Game code typically uses it to:</p>
 								<article
 									class="doc-entry"
 									id="graphics-rectangledrawmode"
-									data-search="rectangledrawmode type graphics graphics"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">type</span>
+										<span class="doc-kind doc-kind-type">type</span>
 										<a class="doc-source" href="#graphics-rectangledrawmode">src/graphics/Graphics.ts:33</a>
 									</div>
 									<h4>RectangleDrawMode</h4>
@@ -1806,10 +1832,9 @@ functions in this module. Game code typically uses it to:</p>
 								<article
 									class="doc-entry"
 									id="graphics-circledrawmode"
-									data-search="circledrawmode type graphics graphics"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">type</span>
+										<span class="doc-kind doc-kind-type">type</span>
 										<a class="doc-source" href="#graphics-circledrawmode">src/graphics/Graphics.ts:36</a>
 									</div>
 									<h4>CircleDrawMode</h4>
@@ -1820,10 +1845,9 @@ functions in this module. Game code typically uses it to:</p>
 								<article
 									class="doc-entry"
 									id="graphics-drawtextoptions"
-									data-search="drawtextoptions interface graphics graphics"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#graphics-drawtextoptions">src/graphics/Graphics.ts:39</a>
 									</div>
 									<h4>DrawTextOptions</h4>
@@ -1834,10 +1858,9 @@ functions in this module. Game code typically uses it to:</p>
 								<article
 									class="doc-entry"
 									id="graphics-drawcommand"
-									data-search="drawcommand type graphics graphics"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">type</span>
+										<span class="doc-kind doc-kind-type">type</span>
 										<a class="doc-source" href="#graphics-drawcommand">src/graphics/Graphics.ts:51</a>
 									</div>
 									<h4>DrawCommand</h4>
@@ -1851,10 +1874,9 @@ constructing <code>DrawCommand</code> objects directly.</p>
 								<article
 									class="doc-entry"
 									id="graphics-framesnapshot"
-									data-search="framesnapshot interface graphics graphics"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#graphics-framesnapshot">src/graphics/Graphics.ts:130</a>
 									</div>
 									<h4>FrameSnapshot</h4>
@@ -1865,10 +1887,9 @@ constructing <code>DrawCommand</code> objects directly.</p>
 								<article
 									class="doc-entry"
 									id="graphics-graphicsframenotopenerror"
-									data-search="graphicsframenotopenerror class graphics graphics"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">class</span>
+										<span class="doc-kind doc-kind-class">class</span>
 										<a class="doc-source" href="#graphics-graphicsframenotopenerror">src/graphics/Graphics.ts:164</a>
 									</div>
 									<h4>GraphicsFrameNotOpenError</h4>
@@ -1880,10 +1901,9 @@ opening a frame.</p>
 								<article
 									class="doc-entry"
 									id="graphics-graphicstransformstackunderflowerror"
-									data-search="graphicstransformstackunderflowerror class graphics graphics"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">class</span>
+										<span class="doc-kind doc-kind-class">class</span>
 										<a class="doc-source" href="#graphics-graphicstransformstackunderflowerror">src/graphics/Graphics.ts:177</a>
 									</div>
 									<h4>GraphicsTransformStackUnderflowError</h4>
@@ -1894,10 +1914,9 @@ opening a frame.</p>
 								<article
 									class="doc-entry"
 									id="graphics-graphics"
-									data-search="graphics class graphics graphics"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">class</span>
+										<span class="doc-kind doc-kind-class">class</span>
 										<a class="doc-source" href="#graphics-graphics">src/graphics/Graphics.ts:216</a>
 									</div>
 									<h4>Graphics</h4>
@@ -1942,10 +1961,9 @@ same deterministic recording model</li>
 								<article
 									class="doc-entry"
 									id="input-keycode"
-									data-search="keycode type input input"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">type</span>
+										<span class="doc-kind doc-kind-type">type</span>
 										<a class="doc-source" href="#input-keycode">src/input/Input.ts:3</a>
 									</div>
 									<h4>KeyCode</h4>
@@ -1956,10 +1974,9 @@ same deterministic recording model</li>
 								<article
 									class="doc-entry"
 									id="input-mousebutton"
-									data-search="mousebutton type input input"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">type</span>
+										<span class="doc-kind doc-kind-type">type</span>
 										<a class="doc-source" href="#input-mousebutton">src/input/Input.ts:6</a>
 									</div>
 									<h4>MouseButton</h4>
@@ -1970,10 +1987,9 @@ same deterministic recording model</li>
 								<article
 									class="doc-entry"
 									id="input-pointerposition"
-									data-search="pointerposition interface input input"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#input-pointerposition">src/input/Input.ts:9</a>
 									</div>
 									<h4>PointerPosition</h4>
@@ -1984,10 +2000,9 @@ same deterministic recording model</li>
 								<article
 									class="doc-entry"
 									id="input-inputevent"
-									data-search="inputevent type input input"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">type</span>
+										<span class="doc-kind doc-kind-type">type</span>
 										<a class="doc-source" href="#input-inputevent">src/input/Input.ts:15</a>
 									</div>
 									<h4>InputEvent</h4>
@@ -1998,10 +2013,9 @@ same deterministic recording model</li>
 								<article
 									class="doc-entry"
 									id="input-inputtrigger"
-									data-search="inputtrigger type input input"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">type</span>
+										<span class="doc-kind doc-kind-type">type</span>
 										<a class="doc-source" href="#input-inputtrigger">src/input/Input.ts:43</a>
 									</div>
 									<h4>InputTrigger</h4>
@@ -2012,10 +2026,9 @@ same deterministic recording model</li>
 								<article
 									class="doc-entry"
 									id="input-actionbinding"
-									data-search="actionbinding interface input input"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#input-actionbinding">src/input/Input.ts:58</a>
 									</div>
 									<h4>ActionBinding</h4>
@@ -2026,10 +2039,9 @@ same deterministic recording model</li>
 								<article
 									class="doc-entry"
 									id="input-actionstate"
-									data-search="actionstate interface input input"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#input-actionstate">src/input/Input.ts:68</a>
 									</div>
 									<h4>ActionState</h4>
@@ -2040,10 +2052,9 @@ same deterministic recording model</li>
 								<article
 									class="doc-entry"
 									id="input-inputsnapshot"
-									data-search="inputsnapshot interface input input"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#input-inputsnapshot">src/input/Input.ts:81</a>
 									</div>
 									<h4>InputSnapshot</h4>
@@ -2054,10 +2065,9 @@ same deterministic recording model</li>
 								<article
 									class="doc-entry"
 									id="input-input"
-									data-search="input class input input"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">class</span>
+										<span class="doc-kind doc-kind-class">class</span>
 										<a class="doc-source" href="#input-input">src/input/Input.ts:289</a>
 									</div>
 									<h4>Input</h4>
@@ -2094,10 +2104,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-roommetadata"
-									data-search="roommetadata type maps mapcontent"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">type</span>
+										<span class="doc-kind doc-kind-type">type</span>
 										<a class="doc-source" href="#maps-roommetadata">src/maps/MapContent.ts:1</a>
 									</div>
 									<h4>RoomMetadata</h4>
@@ -2108,10 +2117,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-tileplane"
-									data-search="tileplane interface maps mapcontent"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#maps-tileplane">src/maps/MapContent.ts:4</a>
 									</div>
 									<h4>TilePlane</h4>
@@ -2122,10 +2130,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-roomobject"
-									data-search="roomobject interface maps mapcontent"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#maps-roomobject">src/maps/MapContent.ts:12</a>
 									</div>
 									<h4>RoomObject</h4>
@@ -2136,10 +2143,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-objectplane"
-									data-search="objectplane interface maps mapcontent"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#maps-objectplane">src/maps/MapContent.ts:23</a>
 									</div>
 									<h4>ObjectPlane</h4>
@@ -2150,10 +2156,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-roomcontent"
-									data-search="roomcontent interface maps mapcontent"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#maps-roomcontent">src/maps/MapContent.ts:29</a>
 									</div>
 									<h4>RoomContent</h4>
@@ -2164,10 +2169,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-spawnpoint"
-									data-search="spawnpoint interface maps mapcontent"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#maps-spawnpoint">src/maps/MapContent.ts:37</a>
 									</div>
 									<h4>SpawnPoint</h4>
@@ -2178,10 +2182,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-transitionzone"
-									data-search="transitionzone interface maps mapcontent"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#maps-transitionzone">src/maps/MapContent.ts:46</a>
 									</div>
 									<h4>TransitionZone</h4>
@@ -2192,10 +2195,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-triggerzone"
-									data-search="triggerzone interface maps mapcontent"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#maps-triggerzone">src/maps/MapContent.ts:56</a>
 									</div>
 									<h4>TriggerZone</h4>
@@ -2216,10 +2218,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-roomobjects"
-									data-search="roomobjects const maps mapqueries"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#maps-roomobjects">src/maps/MapQueries.ts:8</a>
 									</div>
 									<h4>roomObjects</h4>
@@ -2230,10 +2231,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-roomobjectbyid"
-									data-search="roomobjectbyid const maps mapqueries"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#maps-roomobjectbyid">src/maps/MapQueries.ts:12</a>
 									</div>
 									<h4>roomObjectById</h4>
@@ -2244,10 +2244,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-roomobjectsbykind"
-									data-search="roomobjectsbykind const maps mapqueries"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#maps-roomobjectsbykind">src/maps/MapQueries.ts:19</a>
 									</div>
 									<h4>roomObjectsByKind</h4>
@@ -2258,10 +2257,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-roomspawnpoints"
-									data-search="roomspawnpoints const maps mapqueries"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#maps-roomspawnpoints">src/maps/MapQueries.ts:26</a>
 									</div>
 									<h4>roomSpawnPoints</h4>
@@ -2272,10 +2270,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-roomtransitionzones"
-									data-search="roomtransitionzones const maps mapqueries"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#maps-roomtransitionzones">src/maps/MapQueries.ts:30</a>
 									</div>
 									<h4>roomTransitionZones</h4>
@@ -2296,10 +2293,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-maprepository"
-									data-search="maprepository class maps maprepository"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">class</span>
+										<span class="doc-kind doc-kind-class">class</span>
 										<a class="doc-source" href="#maps-maprepository">src/maps/MapRepository.ts:7</a>
 									</div>
 									<h4>MapRepository</h4>
@@ -2320,10 +2316,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-definetileplane"
-									data-search="definetileplane const maps roombuilder"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#maps-definetileplane">src/maps/RoomBuilder.ts:12</a>
 									</div>
 									<h4>defineTilePlane</h4>
@@ -2334,10 +2329,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-defineobjectplane"
-									data-search="defineobjectplane const maps roombuilder"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#maps-defineobjectplane">src/maps/RoomBuilder.ts:15</a>
 									</div>
 									<h4>defineObjectPlane</h4>
@@ -2348,10 +2342,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-defineroom"
-									data-search="defineroom const maps roombuilder"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#maps-defineroom">src/maps/RoomBuilder.ts:18</a>
 									</div>
 									<h4>defineRoom</h4>
@@ -2362,10 +2355,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-roomobject"
-									data-search="roomobject const maps roombuilder"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#maps-roomobject">src/maps/RoomBuilder.ts:21</a>
 									</div>
 									<h4>roomObject</h4>
@@ -2376,10 +2368,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-spawnpoint"
-									data-search="spawnpoint const maps roombuilder"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#maps-spawnpoint">src/maps/RoomBuilder.ts:24</a>
 									</div>
 									<h4>spawnPoint</h4>
@@ -2390,10 +2381,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-transitionzone"
-									data-search="transitionzone const maps roombuilder"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#maps-transitionzone">src/maps/RoomBuilder.ts:30</a>
 									</div>
 									<h4>transitionZone</h4>
@@ -2404,10 +2394,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-triggerzone"
-									data-search="triggerzone const maps roombuilder"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#maps-triggerzone">src/maps/RoomBuilder.ts:38</a>
 									</div>
 									<h4>triggerZone</h4>
@@ -2418,10 +2407,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="maps-roommetadata"
-									data-search="roommetadata const maps roombuilder"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#maps-roommetadata">src/maps/RoomBuilder.ts:46</a>
 									</div>
 									<h4>roomMetadata</h4>
@@ -2448,10 +2436,9 @@ tests and native boundaries drive input deterministically.</p>
 								<article
 									class="doc-entry"
 									id="native-nativeboundary"
-									data-search="nativeboundary class native nativeboundary"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">class</span>
+										<span class="doc-kind doc-kind-class">class</span>
 										<a class="doc-source" href="#native-nativeboundary">src/native/NativeBoundary.ts:12</a>
 									</div>
 									<h4>NativeBoundary</h4>
@@ -2484,10 +2471,9 @@ uses helpers such as <a href="#native-makesdlcanvasnativeboundarylayer">makeSdlC
 								<article
 									class="doc-entry"
 									id="native-nativeframesource"
-									data-search="nativeframesource class native nativeframesource"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">class</span>
+										<span class="doc-kind doc-kind-class">class</span>
 										<a class="doc-source" href="#native-nativeframesource">src/native/NativeFrameSource.ts:6</a>
 									</div>
 									<h4>NativeFrameSource</h4>
@@ -2510,10 +2496,9 @@ directors into one step that returns a <a href="#graphics-framesnapshot">FrameSn
 								<article
 									class="doc-entry"
 									id="native-sdlcanvasnativebackendoptions"
-									data-search="sdlcanvasnativebackendoptions interface native sdlcanvasnativebackend"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#native-sdlcanvasnativebackendoptions">src/native/SdlCanvasNativeBackend.ts:29</a>
 									</div>
 									<h4>SdlCanvasNativeBackendOptions</h4>
@@ -2524,10 +2509,9 @@ directors into one step that returns a <a href="#graphics-framesnapshot">FrameSn
 								<article
 									class="doc-entry"
 									id="native-makesdlcanvasnativebackendlayer"
-									data-search="makesdlcanvasnativebackendlayer const native sdlcanvasnativebackend"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#native-makesdlcanvasnativebackendlayer">src/native/SdlCanvasNativeBackend.ts:409</a>
 									</div>
 									<h4>makeSdlCanvasNativeBackendLayer</h4>
@@ -2538,10 +2522,9 @@ directors into one step that returns a <a href="#graphics-framesnapshot">FrameSn
 								<article
 									class="doc-entry"
 									id="native-makesdlcanvasnativeboundarylayer"
-									data-search="makesdlcanvasnativeboundarylayer const native sdlcanvasnativebackend"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#native-makesdlcanvasnativeboundarylayer">src/native/SdlCanvasNativeBackend.ts:916</a>
 									</div>
 									<h4>makeSdlCanvasNativeBoundaryLayer</h4>
@@ -2569,10 +2552,9 @@ Canvas renderer.</p>
 								<article
 									class="doc-entry"
 									id="runtime-engine"
-									data-search="engine class runtime engine"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">class</span>
+										<span class="doc-kind doc-kind-class">class</span>
 										<a class="doc-source" href="#runtime-engine">src/runtime/Engine.ts:10</a>
 									</div>
 									<h4>Engine</h4>
@@ -2605,10 +2587,9 @@ your own game-specific state services.</p>
 								<article
 									class="doc-entry"
 									id="runtime-engineconfig"
-									data-search="engineconfig interface runtime engineconfig"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#runtime-engineconfig">src/runtime/EngineConfig.ts:1</a>
 									</div>
 									<h4>EngineConfig</h4>
@@ -2621,10 +2602,9 @@ the fields that are specific to your game.</p>
 								<article
 									class="doc-entry"
 									id="runtime-defaultengineconfig"
-									data-search="defaultengineconfig const runtime engineconfig"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#runtime-defaultengineconfig">src/runtime/EngineConfig.ts:20</a>
 									</div>
 									<h4>defaultEngineConfig</h4>
@@ -2648,10 +2628,9 @@ preset.</p>
 								<article
 									class="doc-entry"
 									id="runtime-makeenginelayer"
-									data-search="makeenginelayer const runtime launch"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#runtime-makeenginelayer">src/runtime/Launch.ts:13</a>
 									</div>
 									<h4>makeEngineLayer</h4>
@@ -2665,10 +2644,9 @@ yourself and only need the validated <a href="#runtime-engine">Engine</a> servic
 								<article
 									class="doc-entry"
 									id="runtime-makeruntimelayer"
-									data-search="makeruntimelayer const runtime launch"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#runtime-makeruntimelayer">src/runtime/Launch.ts:35</a>
 									</div>
 									<h4>makeRuntimeLayer</h4>
@@ -2683,10 +2661,9 @@ state, scene, input, audio, graphics, and native frame services.</p>
 								<article
 									class="doc-entry"
 									id="runtime-engineprogram"
-									data-search="engineprogram const runtime launch"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#runtime-engineprogram">src/runtime/Launch.ts:66</a>
 									</div>
 									<h4>engineProgram</h4>
@@ -2699,10 +2676,9 @@ and provided an <code>Engine</code> service.</p>
 								<article
 									class="doc-entry"
 									id="runtime-seededengineprogram"
-									data-search="seededengineprogram const runtime launch"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#runtime-seededengineprogram">src/runtime/Launch.ts:80</a>
 									</div>
 									<h4>seededEngineProgram</h4>
@@ -2726,10 +2702,9 @@ deterministic debugging sessions.</p>
 								<article
 									class="doc-entry"
 									id="runtime-randomsource"
-									data-search="randomsource class runtime randomsource"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">class</span>
+										<span class="doc-kind doc-kind-class">class</span>
 										<a class="doc-source" href="#runtime-randomsource">src/runtime/RandomSource.ts:3</a>
 									</div>
 									<h4>RandomSource</h4>
@@ -2740,10 +2715,9 @@ deterministic debugging sessions.</p>
 								<article
 									class="doc-entry"
 									id="runtime-withrandomseed"
-									data-search="withrandomseed const runtime randomsource"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#runtime-withrandomseed">src/runtime/RandomSource.ts:42</a>
 									</div>
 									<h4>withRandomSeed</h4>
@@ -2764,10 +2738,9 @@ deterministic debugging sessions.</p>
 								<article
 									class="doc-entry"
 									id="runtime-runtimetimingsnapshot"
-									data-search="runtimetimingsnapshot interface runtime runtimeclock"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#runtime-runtimetimingsnapshot">src/runtime/RuntimeClock.ts:3</a>
 									</div>
 									<h4>RuntimeTimingSnapshot</h4>
@@ -2778,10 +2751,9 @@ deterministic debugging sessions.</p>
 								<article
 									class="doc-entry"
 									id="runtime-runtimeclock"
-									data-search="runtimeclock class runtime runtimeclock"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">class</span>
+										<span class="doc-kind doc-kind-class">class</span>
 										<a class="doc-source" href="#runtime-runtimeclock">src/runtime/RuntimeClock.ts:26</a>
 									</div>
 									<h4>RuntimeClock</h4>
@@ -2808,10 +2780,9 @@ deterministic debugging sessions.</p>
 								<article
 									class="doc-entry"
 									id="save-savecoordinatoroptions"
-									data-search="savecoordinatoroptions interface save savecoordinator"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#save-savecoordinatoroptions">src/save/SaveCoordinator.ts:63</a>
 									</div>
 									<h4>SaveCoordinatorOptions</h4>
@@ -2822,10 +2793,9 @@ deterministic debugging sessions.</p>
 								<article
 									class="doc-entry"
 									id="save-savecoordinator"
-									data-search="savecoordinator class save savecoordinator"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">class</span>
+										<span class="doc-kind doc-kind-class">class</span>
 										<a class="doc-source" href="#save-savecoordinator">src/save/SaveCoordinator.ts:76</a>
 									</div>
 									<h4>SaveCoordinator</h4>
@@ -2855,10 +2825,9 @@ boring parts:</p>
 								<article
 									class="doc-entry"
 									id="save-saveslotid"
-									data-search="saveslotid type save savedocument"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">type</span>
+										<span class="doc-kind doc-kind-type">type</span>
 										<a class="doc-source" href="#save-saveslotid">src/save/SaveDocument.ts:4</a>
 									</div>
 									<h4>SaveSlotId</h4>
@@ -2869,10 +2838,9 @@ boring parts:</p>
 								<article
 									class="doc-entry"
 									id="save-saveslotdocument"
-									data-search="saveslotdocument interface save savedocument"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#save-saveslotdocument">src/save/SaveDocument.ts:7</a>
 									</div>
 									<h4>SaveSlotDocument</h4>
@@ -2883,10 +2851,9 @@ boring parts:</p>
 								<article
 									class="doc-entry"
 									id="save-savedocument"
-									data-search="savedocument interface save savedocument"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#save-savedocument">src/save/SaveDocument.ts:16</a>
 									</div>
 									<h4>SaveDocument</h4>
@@ -2897,10 +2864,9 @@ boring parts:</p>
 								<article
 									class="doc-entry"
 									id="save-saveparticipant"
-									data-search="saveparticipant interface save savedocument"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#save-saveparticipant">src/save/SaveDocument.ts:22</a>
 									</div>
 									<h4>SaveParticipant</h4>
@@ -2913,10 +2879,9 @@ boring parts:</p>
 								<article
 									class="doc-entry"
 									id="save-savemigration"
-									data-search="savemigration interface save savedocument"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#save-savemigration">src/save/SaveDocument.ts:38</a>
 									</div>
 									<h4>SaveMigration</h4>
@@ -2927,10 +2892,9 @@ boring parts:</p>
 								<article
 									class="doc-entry"
 									id="save-saveslotdocumentschema"
-									data-search="saveslotdocumentschema const save savedocument"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#save-saveslotdocumentschema">src/save/SaveDocument.ts:49</a>
 									</div>
 									<h4>SaveSlotDocumentSchema</h4>
@@ -2941,10 +2905,9 @@ boring parts:</p>
 								<article
 									class="doc-entry"
 									id="save-savedocumentschema"
-									data-search="savedocumentschema const save savedocument"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">const</span>
+										<span class="doc-kind doc-kind-const">const</span>
 										<a class="doc-source" href="#save-savedocumentschema">src/save/SaveDocument.ts:56</a>
 									</div>
 									<h4>SaveDocumentSchema</h4>
@@ -2971,10 +2934,9 @@ boring parts:</p>
 								<article
 									class="doc-entry"
 									id="scene-sceneid"
-									data-search="sceneid type scene scene"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">type</span>
+										<span class="doc-kind doc-kind-type">type</span>
 										<a class="doc-source" href="#scene-sceneid">src/scene/Scene.ts:3</a>
 									</div>
 									<h4>SceneId</h4>
@@ -2985,10 +2947,9 @@ boring parts:</p>
 								<article
 									class="doc-entry"
 									id="scene-scenestacklevel"
-									data-search="scenestacklevel type scene scene"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">type</span>
+										<span class="doc-kind doc-kind-type">type</span>
 										<a class="doc-source" href="#scene-scenestacklevel">src/scene/Scene.ts:10</a>
 									</div>
 									<h4>SceneStackLevel</h4>
@@ -3000,10 +2961,9 @@ as pause menus, inventory sheets, or modal dialogue stacks.</p>
 								<article
 									class="doc-entry"
 									id="scene-scenelifecycle"
-									data-search="scenelifecycle interface scene scene"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#scene-scenelifecycle">src/scene/Scene.ts:18</a>
 									</div>
 									<h4>SceneLifecycle</h4>
@@ -3018,10 +2978,9 @@ scene exits.</p>
 								<article
 									class="doc-entry"
 									id="scene-scenedefinition"
-									data-search="scenedefinition interface scene scene"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#scene-scenedefinition">src/scene/Scene.ts:36</a>
 									</div>
 									<h4>SceneDefinition</h4>
@@ -3034,10 +2993,9 @@ register it with <code>SceneRegistry.layer</code>.</p>
 								<article
 									class="doc-entry"
 									id="scene-sceneinstance"
-									data-search="sceneinstance interface scene scene"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#scene-sceneinstance">src/scene/Scene.ts:49</a>
 									</div>
 									<h4>SceneInstance</h4>
@@ -3048,10 +3006,9 @@ register it with <code>SceneRegistry.layer</code>.</p>
 								<article
 									class="doc-entry"
 									id="scene-scenestackentry"
-									data-search="scenestackentry interface scene scene"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#scene-scenestackentry">src/scene/Scene.ts:60</a>
 									</div>
 									<h4>SceneStackEntry</h4>
@@ -3062,10 +3019,9 @@ register it with <code>SceneRegistry.layer</code>.</p>
 								<article
 									class="doc-entry"
 									id="scene-scenestacksnapshot"
-									data-search="scenestacksnapshot interface scene scene"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#scene-scenestacksnapshot">src/scene/Scene.ts:70</a>
 									</div>
 									<h4>SceneStackSnapshot</h4>
@@ -3086,10 +3042,9 @@ register it with <code>SceneRegistry.layer</code>.</p>
 								<article
 									class="doc-entry"
 									id="scene-scenedirector"
-									data-search="scenedirector class scene scenedirector"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">class</span>
+										<span class="doc-kind doc-kind-class">class</span>
 										<a class="doc-source" href="#scene-scenedirector">src/scene/SceneDirector.ts:70</a>
 									</div>
 									<h4>SceneDirector</h4>
@@ -3126,10 +3081,9 @@ responsible for:</p>
 								<article
 									class="doc-entry"
 									id="scene-sceneregistry"
-									data-search="sceneregistry class scene sceneregistry"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">class</span>
+										<span class="doc-kind doc-kind-class">class</span>
 										<a class="doc-source" href="#scene-sceneregistry">src/scene/SceneRegistry.ts:5</a>
 									</div>
 									<h4>SceneRegistry</h4>
@@ -3154,10 +3108,9 @@ diagnostics.</p>
 								<article
 									class="doc-entry"
 									id="script-dialogueprogress"
-									data-search="dialogueprogress interface script script"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#script-dialogueprogress">src/script/Script.ts:30</a>
 									</div>
 									<h4>DialogueProgress</h4>
@@ -3168,10 +3121,9 @@ diagnostics.</p>
 								<article
 									class="doc-entry"
 									id="script-dialoguescriptoptions"
-									data-search="dialoguescriptoptions interface script script"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#script-dialoguescriptoptions">src/script/Script.ts:38</a>
 									</div>
 									<h4>DialogueScriptOptions</h4>
@@ -3182,10 +3134,9 @@ diagnostics.</p>
 								<article
 									class="doc-entry"
 									id="script-scriptevents"
-									data-search="scriptevents class script script"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">class</span>
+										<span class="doc-kind doc-kind-class">class</span>
 										<a class="doc-source" href="#script-scriptevents">src/script/Script.ts:106</a>
 									</div>
 									<h4>ScriptEvents</h4>
@@ -3196,10 +3147,9 @@ diagnostics.</p>
 								<article
 									class="doc-entry"
 									id="script-script"
-									data-search="script class script script"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">class</span>
+										<span class="doc-kind doc-kind-class">class</span>
 										<a class="doc-source" href="#script-script">src/script/Script.ts:170</a>
 									</div>
 									<h4>Script</h4>
@@ -3220,10 +3170,9 @@ diagnostics.</p>
 								<article
 									class="doc-entry"
 									id="ui-fontdefinition"
-									data-search="fontdefinition interface ui ui"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#ui-fontdefinition">src/ui/Ui.ts:10</a>
 									</div>
 									<h4>FontDefinition</h4>
@@ -3234,10 +3183,9 @@ diagnostics.</p>
 								<article
 									class="doc-entry"
 									id="ui-textline"
-									data-search="textline interface ui ui"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#ui-textline">src/ui/Ui.ts:20</a>
 									</div>
 									<h4>TextLine</h4>
@@ -3248,10 +3196,9 @@ diagnostics.</p>
 								<article
 									class="doc-entry"
 									id="ui-textlayout"
-									data-search="textlayout interface ui ui"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#ui-textlayout">src/ui/Ui.ts:26</a>
 									</div>
 									<h4>TextLayout</h4>
@@ -3262,10 +3209,9 @@ diagnostics.</p>
 								<article
 									class="doc-entry"
 									id="ui-uibounds"
-									data-search="uibounds interface ui ui"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#ui-uibounds">src/ui/Ui.ts:35</a>
 									</div>
 									<h4>UiBounds</h4>
@@ -3276,10 +3222,9 @@ diagnostics.</p>
 								<article
 									class="doc-entry"
 									id="ui-dialoguepage"
-									data-search="dialoguepage interface ui ui"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#ui-dialoguepage">src/ui/Ui.ts:44</a>
 									</div>
 									<h4>DialoguePage</h4>
@@ -3290,10 +3235,9 @@ diagnostics.</p>
 								<article
 									class="doc-entry"
 									id="ui-drawdialogueboxoptions"
-									data-search="drawdialogueboxoptions interface ui ui"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#ui-drawdialogueboxoptions">src/ui/Ui.ts:52</a>
 									</div>
 									<h4>DrawDialogueBoxOptions</h4>
@@ -3304,10 +3248,9 @@ diagnostics.</p>
 								<article
 									class="doc-entry"
 									id="ui-menunavigationoptions"
-									data-search="menunavigationoptions interface ui ui"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#ui-menunavigationoptions">src/ui/Ui.ts:62</a>
 									</div>
 									<h4>MenuNavigationOptions</h4>
@@ -3318,10 +3261,9 @@ diagnostics.</p>
 								<article
 									class="doc-entry"
 									id="ui-menunavigationresult"
-									data-search="menunavigationresult interface ui ui"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">interface</span>
+										<span class="doc-kind doc-kind-interface">interface</span>
 										<a class="doc-source" href="#ui-menunavigationresult">src/ui/Ui.ts:73</a>
 									</div>
 									<h4>MenuNavigationResult</h4>
@@ -3332,10 +3274,9 @@ diagnostics.</p>
 								<article
 									class="doc-entry"
 									id="ui-ui"
-									data-search="ui class ui ui"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind">class</span>
+										<span class="doc-kind doc-kind-class">class</span>
 										<a class="doc-source" href="#ui-ui">src/ui/Ui.ts:271</a>
 									</div>
 									<h4>Ui</h4>
@@ -3386,16 +3327,38 @@ diagnostics.</p>
 			</div>
 		</div>
 		<script>
-			const observer = new IntersectionObserver((entries) => {
-				for (const entry of entries) {
-					if (entry.isIntersecting) {
-						entry.target.classList.add("in-view");
-					}
-				}
-			}, { threshold: 0.12 });
-			for (const card of document.querySelectorAll(".doc-entry")) {
-				observer.observe(card);
+			if ("scrollRestoration" in history && location.hash.length === 0) {
+				history.scrollRestoration = "manual";
 			}
+
+			const resetScrollToTop = () => {
+				if (location.hash.length === 0) {
+					window.scrollTo(0, 0);
+				}
+			};
+
+			const scrollToHashTarget = () => {
+				if (location.hash.length === 0) {
+					return;
+				}
+
+				const target = document.getElementById(location.hash.slice(1));
+				if (!(target instanceof HTMLElement)) {
+					return;
+				}
+
+				target.scrollIntoView({
+					block: "start",
+				});
+			};
+
+			window.addEventListener("pageshow", resetScrollToTop);
+			window.addEventListener("load", () => {
+				requestAnimationFrame(() => {
+					resetScrollToTop();
+					scrollToHashTarget();
+				});
+			});
 		</script>
 	</body>
 </html>
