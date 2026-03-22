@@ -31,6 +31,9 @@ export interface SdlCanvasNativeBackendOptions {
 	readonly defaultFontPath?: string;
 	readonly frameDelayMillis?: number;
 	readonly imageAssetPaths?: Readonly<Record<string, string>>;
+	readonly logicalHeight?: number;
+	readonly logicalWidth?: number;
+	readonly resizable?: boolean;
 	readonly title: string;
 	readonly windowHeight: number;
 	readonly windowWidth: number;
@@ -336,6 +339,27 @@ const stopProcess = (process: Bun.Subprocess | null | undefined) => {
 	process.kill();
 };
 
+const aspectFitRect = (
+	containerWidth: number,
+	containerHeight: number,
+	contentWidth: number,
+	contentHeight: number,
+) => {
+	const scale = Math.min(
+		containerWidth / contentWidth,
+		containerHeight / contentHeight,
+	);
+	const width = Math.floor(contentWidth * scale);
+	const height = Math.floor(contentHeight * scale);
+
+	return {
+		height,
+		width,
+		x: Math.floor((containerWidth - width) / 2),
+		y: Math.floor((containerHeight - height) / 2),
+	};
+};
+
 export const makeSdlCanvasNativeBackendLayer = ({
 	defaultFontFamily = "effect2d-native",
 	defaultFontPath,
@@ -344,6 +368,9 @@ export const makeSdlCanvasNativeBackendLayer = ({
 	title,
 	windowHeight,
 	windowWidth,
+	logicalHeight = windowHeight,
+	logicalWidth = windowWidth,
+	resizable = true,
 }: SdlCanvasNativeBackendOptions): Layer.Layer<
 	NativeBackend,
 	EngineLaunchError
@@ -412,6 +439,7 @@ export const makeSdlCanvasNativeBackendLayer = ({
 					try: () =>
 						sdl.video.createWindow({
 							height: windowHeight,
+							resizable,
 							title,
 							width: windowWidth,
 						}),
@@ -590,10 +618,10 @@ export const makeSdlCanvasNativeBackendLayer = ({
 
 				if (
 					canvas === null ||
-					canvas.width !== window.pixelWidth ||
-					canvas.height !== window.pixelHeight
+					canvas.width !== logicalWidth ||
+					canvas.height !== logicalHeight
 				) {
-					canvas = createCanvas(window.pixelWidth, window.pixelHeight);
+					canvas = createCanvas(logicalWidth, logicalHeight);
 					context = canvas.getContext("2d");
 					context.imageSmoothingEnabled = false;
 				}
@@ -637,12 +665,25 @@ export const makeSdlCanvasNativeBackendLayer = ({
 								imageData.data.byteOffset,
 								imageData.data.byteLength,
 							);
+							// SDL's dstRect is expressed in render pixels, not window points.
+							// On Retina displays, using width/height here draws into a quarter
+							// of the client area and makes the frame look clipped or offset.
+							const destinationRect = aspectFitRect(
+								window.pixelWidth,
+								window.pixelHeight,
+								logicalWidth,
+								logicalHeight,
+							);
 							window.render(
 								context.canvas.width,
 								context.canvas.height,
 								context.canvas.width * 4,
 								"rgba32",
 								buffer,
+								{
+									dstRect: destinationRect,
+									scaling: "nearest",
+								},
 							);
 						}
 					},

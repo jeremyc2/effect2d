@@ -44,3 +44,5 @@ The current native pass is focused on a real playable window with live device ho
 - macOS `afplay` is the initial native audio output path
 - borrowed local assets under `games/beacon-run/assets` provide the initial images and font
 - the first music/sfx files are local placeholder assets so the native path stays fully repo-local
+
+Asset provenance is tracked in [assets/SOURCES.md](./assets/SOURCES.md), including the current mix of neighboring `cavern` assets and Freesound-sourced music.

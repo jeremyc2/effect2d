@@ -192,6 +192,9 @@ export const beaconRunPlayableNativeBoundaryLayer =
 				"games/beacon-run/assets/images/shrine-room-background.png",
 			"title-screen": "games/beacon-run/assets/images/title-screen.png",
 		},
+		logicalHeight: 96,
+		logicalWidth: 128,
+		resizable: true,
 		title: "effect2d: Beacon Run",
 		windowHeight: 384,
 		windowWidth: 512,
@@ -241,7 +244,7 @@ export const beaconRunBootstrap = Effect.gen(function* () {
 		defaultLoop: true,
 		defaultPitch: 1,
 		defaultVolume: 0.7,
-		sourcePath: "games/beacon-run/assets/audio/music/beacon-run-theme.wav",
+		sourcePath: "games/beacon-run/assets/audio/music/beacon-run-theme.mp3",
 	});
 	yield* audio.loadSound({
 		cueId: "menu-confirm",

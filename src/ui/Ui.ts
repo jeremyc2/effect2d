@@ -333,11 +333,18 @@ export class Ui extends ServiceMap.Service<
 						continue;
 					}
 
+					const x =
+						align === "center"
+							? position.x + Math.floor(line.width / 2)
+							: align === "right"
+								? position.x + line.width
+								: position.x;
+
 					yield* graphics.drawText({
 						align,
 						fontId,
 						position: {
-							x: position.x,
+							x,
 							y: position.y + index * lineHeight,
 						},
 						text: line.text,

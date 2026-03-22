@@ -13,6 +13,8 @@ The "Aliases to Avoid" column is intentionally strict. We use it to prevent mult
 | Runtime | The live executing game process, including the engine and userland services. | process manager, host app |
 | Native Boundary | The thin layer that talks to platform capabilities like windowing, rendering, audio devices, and raw input. | backend app, core engine, platform layer |
 | Backend | A low-level implementation behind an engine capability such as rendering or audio output. | provider, adapter layer |
+| Native Backend | The capability-level implementation that owns real device interaction such as opening a window, draining input, presenting frames, syncing audio output, and reporting diagnostics. | mini-engine, platform app |
+| Frame Source | The service that supplies the next fully prepared frame for native presentation. | render loop, scene renderer |
 | Launch | Starting the runtime through Effect. | boot app, mount |
 | Capability | A low-level engine power exposed through services, such as graphics, audio, input, or filesystem. | utility, helper |
 | Service | An Effect service that provides engine or game behavior. | singleton, context object, manager unless it is specifically a director-style service |
@@ -27,6 +29,7 @@ The "Aliases to Avoid" column is intentionally strict. We use it to prevent mult
 | Fixed Timestep | A simulation model where update steps advance in stable increments. | frame-tied update, variable tick |
 | Frame | One render pass of the game. | render cycle, repaint |
 | Tick | A single simulation step. | frame, render |
+| Timing Hook | A native wait or scheduling point that helps pace frame presentation. | sleep hack, event loop trick |
 | Update | The simulation phase where game state advances. | reducer pass, render prep |
 | Draw | The rendering phase where the frame's visuals are submitted. | render component, paint UI |
 | Script | An Effect program that sequences gameplay events over time. | workflow, saga, async flow |
@@ -70,8 +73,10 @@ The "Aliases to Avoid" column is intentionally strict. We use it to prevent mult
 | Animation | A time-based sequence of visual states such as sprite frames. | transition only, motion preset |
 | Tween | A value interpolation over time. | animation state machine, CSS transition |
 | Camera | The viewport transform that determines how world coordinates map to the screen. | scroll container, viewport component |
+| Canvas2D | The immediate drawing surface used by the current native renderer backend. | browser canvas, DOM canvas |
 | Parallax | Layered movement at different rates to imply depth. | background scroll effect |
 | Render Target | An off-screen destination for drawing. | canvas component, buffer view |
+| Window | The native desktop surface that receives presented frames and raw player input. | browser tab, page |
 
 ## Collision And Motion
 
@@ -94,8 +99,11 @@ The "Aliases to Avoid" column is intentionally strict. We use it to prevent mult
 | Raw Input | Direct device-level keyboard or mouse state and events. | DOM event, browser event |
 | Action Mapping | A layer that maps raw inputs to gameplay actions like move, attack, or pause. | shortcut system, key handler map |
 | Binding | A mapping from one or more inputs to a named action. | hotkey only |
+| SDL | The current native windowing and raw input path used by the playable desktop build. | browser shell, game engine |
 | Sound Effect | A short gameplay audio event. | clip only, media asset |
 | Music | A longer-running background audio track. | soundtrack only, media stream |
+| Audio Output Path | The concrete native route that turns engine audio state into audible sound on the machine. | media player integration, soundtrack system |
+| `afplay` | The current macOS command-line playback path used for the first native audio output implementation. | final audio architecture, mixer engine |
 | Mixer Bus | A controllable audio channel group such as master, music, or sfx. | audio context, playlist |
 
 ## Persistence And Testing
@@ -109,6 +117,7 @@ The "Aliases to Avoid" column is intentionally strict. We use it to prevent mult
 | Headless Core | Engine subsystems that can run and be tested without a real window or GPU. | mock app, fake browser mode |
 | Demo Slice | A small playable scenario used to validate engine behavior manually. | end-to-end test app, sandbox page |
 | Debug Overlay | Runtime visualization or diagnostics drawn over the game. | devtools panel, inspector UI |
+| Diagnostics | Structured runtime status information about native services, frame presentation, audio output, or other engine state. | console spam, ad hoc logs |
 
 ## Error And Reliability
 
