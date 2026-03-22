@@ -29,6 +29,9 @@ type PackageDocumentation = {
 	readonly summary: string;
 };
 
+const effectDocsUrl = "https://effect.website/docs/introduction";
+const loveWebsiteUrl = "https://love2d.org/";
+
 class DocSiteReadError extends Schema.TaggedErrorClass<DocSiteReadError>()(
 	"DocSiteReadError",
 	{
@@ -159,12 +162,19 @@ const cleanJsDocMarkdown = (rawBlock: string): string => {
 		.replace(/\*\/$/, "")
 		.split("\n")
 		.map((line) => line.replace(/^\s*\*\s?/, ""))
-		.filter((line) => line.trim() !== "@public")
-		.filter((line) => line.trim() !== "@packageDocumentation")
+		.map((line) =>
+			line
+				.replace(/\s*@public\b/g, "")
+				.replace(/\s*@packageDocumentation\b/g, ""),
+		)
 		.join("\n")
 		.trim();
 
-	return body;
+	return body
+		.replace(/\b[Pp]ublic\b/g, "")
+		.replace(/ {2,}/g, " ")
+		.replace(/\s+([,.:;!?])/g, "$1")
+		.trim();
 };
 
 const extractSummary = (markdown: string): string => {
@@ -208,13 +218,17 @@ const makeInlineLinks = (
 	markdown: string,
 	slugBySymbol: ReadonlyMap<string, string>,
 ): string =>
-	markdown.replace(tsDocLinkRegex, (_match, target: string, label?: string) => {
-		const resolvedLabel = (label ?? target).trim();
-		const slug = slugBySymbol.get(target);
-		return slug === undefined
-			? `\`${resolvedLabel}\``
-			: `[${resolvedLabel}](#${slug})`;
-	});
+	markdown
+		.replace(/`(LÖVE(?: 2D)?)`/g, (_match, label: string) => {
+			return `[${label}](${loveWebsiteUrl})`;
+		})
+		.replace(tsDocLinkRegex, (_match, target: string, label?: string) => {
+			const resolvedLabel = (label ?? target).trim();
+			const slug = slugBySymbol.get(target);
+			return slug === undefined
+				? `\`${resolvedLabel}\``
+				: `[${resolvedLabel}](#${slug})`;
+		});
 
 const extractPublicEntries = (
 	filePath: string,
@@ -264,7 +278,7 @@ const renderMarkdown = (markdown: string): string =>
 		},
 	});
 
-const renderHero = (packageDocs: PackageDocumentation): string => `
+const renderHero = (): string => `
 	<section class="hero" id="top">
 		<div class="hero-brand">
 			<div class="hero-mark" aria-hidden="true">
@@ -273,11 +287,16 @@ const renderHero = (packageDocs: PackageDocumentation): string => `
 				<span></span>
 			</div>
 			<div>
-				<p class="eyebrow">Public API</p>
 				<h1>effect2d</h1>
 			</div>
 		</div>
-		<p class="hero-copy">${escapeHtml(packageDocs.summary)}</p>
+		<p class="hero-copy">
+			Inspired by
+			<a href="${loveWebsiteUrl}" target="_blank" rel="noopener noreferrer">LÖVE 2D</a>
+			for
+			<a href="${effectDocsUrl}" target="_blank" rel="noopener noreferrer">Effect TS</a>
+			developers.
+		</p>
 		<div class="hero-actions">
 			<a href="#introduction">Read introduction</a>
 			<a href="#modules">Browse modules</a>
@@ -518,9 +537,7 @@ const renderHtmlDocument = ({
 				position: sticky;
 				top: 0;
 				z-index: 40;
-				display: grid;
-				grid-template-columns: minmax(0, 1fr) minmax(260px, 420px) auto;
-				gap: 1rem;
+				display: flex;
 				align-items: center;
 				padding: 1rem 1.5rem;
 				border-bottom: 1px solid var(--border);
@@ -553,48 +570,6 @@ const renderHtmlDocument = ({
 				background: linear-gradient(135deg, var(--accent-strong), var(--accent));
 				clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
 				filter: drop-shadow(0 0 10px rgba(154, 230, 180, 0.24));
-			}
-
-			.topbar-search {
-				position: relative;
-			}
-
-			.topbar-search input {
-				width: 100%;
-				padding: 0.95rem 3.5rem 0.95rem 1rem;
-				border: 1px solid var(--border);
-				border-radius: 14px;
-				background: rgba(255, 255, 255, 0.03);
-				color: var(--text);
-				font-size: 0.98rem;
-				outline: none;
-				transition:
-					border-color 180ms ease,
-					transform 180ms ease,
-					background 180ms ease;
-			}
-
-			.topbar-search input:focus {
-				border-color: rgba(154, 230, 180, 0.42);
-				background: rgba(255, 255, 255, 0.05);
-				transform: translateY(-1px);
-			}
-
-			.search-shortcut {
-				position: absolute;
-				top: 50%;
-				right: 0.8rem;
-				transform: translateY(-50%);
-				padding: 0.18rem 0.42rem;
-				border: 1px solid var(--border);
-				border-radius: 8px;
-				font-size: 0.78rem;
-				color: var(--muted);
-			}
-
-			.topbar-meta {
-				color: var(--muted);
-				font-size: 0.9rem;
 			}
 
 			.layout {
@@ -664,8 +639,9 @@ const renderHtmlDocument = ({
 			}
 
 			.nav-entry {
-				display: flex;
-				align-items: baseline;
+				display: grid;
+				grid-template-columns: minmax(0, 1fr) auto;
+				align-items: start;
 				justify-content: space-between;
 				gap: 0.75rem;
 				padding: 0.38rem 0.5rem;
@@ -685,8 +661,18 @@ const renderHtmlDocument = ({
 			}
 
 			.nav-entry small {
+				align-self: start;
+				padding-top: 0.08rem;
 				color: var(--muted);
 				font-size: 0.72rem;
+			}
+
+			.nav-entry span,
+			.nav-file-title,
+			.nav-group-title {
+				min-width: 0;
+				overflow-wrap: anywhere;
+				word-break: break-word;
 			}
 
 			.main {
@@ -748,6 +734,26 @@ const renderHtmlDocument = ({
 				color: rgba(243, 239, 228, 0.88);
 				font-size: 1.14rem;
 				line-height: 1.7;
+			}
+
+			.hero-copy a,
+			.prose a,
+			.doc-source {
+				color: var(--accent);
+				text-decoration: underline;
+				text-decoration-color: rgba(154, 230, 180, 0.55);
+				text-decoration-thickness: 0.09em;
+				text-underline-offset: 0.16em;
+			}
+
+			.hero-copy a:hover,
+			.hero-copy a:focus-visible,
+			.prose a:hover,
+			.prose a:focus-visible,
+			.doc-source:hover,
+			.doc-source:focus-visible {
+				color: var(--accent-strong);
+				text-decoration-color: rgba(212, 255, 114, 0.55);
 			}
 
 			.hero-actions {
@@ -849,7 +855,6 @@ const renderHtmlDocument = ({
 			}
 
 			.doc-source {
-				color: var(--muted);
 				font-size: 0.84rem;
 			}
 
@@ -937,13 +942,6 @@ const renderHtmlDocument = ({
 				text-align: left;
 			}
 
-			.prose a {
-				color: var(--accent-strong);
-				text-decoration: underline;
-				text-decoration-color: rgba(212, 255, 114, 0.36);
-				text-underline-offset: 0.15em;
-			}
-
 			.toc {
 				display: grid;
 				gap: 0.55rem;
@@ -995,10 +993,6 @@ const renderHtmlDocument = ({
 			}
 
 			@media (max-width: 920px) {
-				.topbar {
-					grid-template-columns: 1fr;
-				}
-
 				.layout {
 					grid-template-columns: 1fr;
 				}
@@ -1044,10 +1038,6 @@ const renderHtmlDocument = ({
 					</div>
 					<span>effect2d Docs</span>
 				</a>
-				<label class="topbar-search" aria-label="Search docs">
-					<input id="doc-search" type="search" placeholder="Search public API..." />
-					<span class="search-shortcut">/</span>
-				</label>
 			</header>
 			<div class="layout">
 				<aside class="sidebar">
@@ -1059,11 +1049,11 @@ const renderHtmlDocument = ({
 					</nav>
 				</aside>
 				<main class="main">
-					${renderHero(packageDocs)}
+					${renderHero()}
 					${renderPackageDocumentation(packageDocs, slugBySymbol)}
 					<section class="content-section" id="modules">
 						<div class="section-kicker">Reference</div>
-						<h2 style="margin: 0; font-size: clamp(2.1rem, 4.4vw, 3.1rem); letter-spacing: -0.03em;">Public modules</h2>
+						<h2 style="margin: 0; font-size: clamp(2.1rem, 4.4vw, 3.1rem); letter-spacing: -0.03em;">Modules</h2>
 						<div style="margin-top: 1.25rem;">
 							${renderModules(modules, slugBySymbol)}
 						</div>
@@ -1076,24 +1066,6 @@ const renderHtmlDocument = ({
 			</div>
 		</div>
 		<script>
-			const searchInput = document.getElementById("doc-search");
-			const searchableEntries = Array.from(document.querySelectorAll("[data-search]"));
-			const focusSearch = (event) => {
-				if (!(event instanceof KeyboardEvent)) return;
-				if (event.key === "/" && document.activeElement !== searchInput) {
-					event.preventDefault();
-					searchInput?.focus();
-				}
-			};
-			const applySearch = () => {
-				const query = searchInput?.value.trim().toLowerCase() ?? "";
-				for (const element of searchableEntries) {
-					const haystack = element.getAttribute("data-search") ?? "";
-					element.classList.toggle("hidden-by-search", query.length > 0 && !haystack.includes(query));
-				}
-			};
-			searchInput?.addEventListener("input", applySearch);
-			window.addEventListener("keydown", focusSearch);
 			const observer = new IntersectionObserver((entries) => {
 				for (const entry of entries) {
 					if (entry.isIntersecting) {

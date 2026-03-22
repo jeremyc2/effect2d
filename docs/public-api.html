@@ -4,7 +4,7 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<title>effect2d Public API</title>
-		<meta name="description" content="The public entrypoint for the `effect2d` game engine." />
+		<meta name="description" content="The entrypoint for the `effect2d` game engine." />
 		<style>
 			:root {
 				--bg: #0a0b10;
@@ -83,9 +83,7 @@
 				position: sticky;
 				top: 0;
 				z-index: 40;
-				display: grid;
-				grid-template-columns: minmax(0, 1fr) minmax(260px, 420px) auto;
-				gap: 1rem;
+				display: flex;
 				align-items: center;
 				padding: 1rem 1.5rem;
 				border-bottom: 1px solid var(--border);
@@ -118,48 +116,6 @@
 				background: linear-gradient(135deg, var(--accent-strong), var(--accent));
 				clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
 				filter: drop-shadow(0 0 10px rgba(154, 230, 180, 0.24));
-			}
-
-			.topbar-search {
-				position: relative;
-			}
-
-			.topbar-search input {
-				width: 100%;
-				padding: 0.95rem 3.5rem 0.95rem 1rem;
-				border: 1px solid var(--border);
-				border-radius: 14px;
-				background: rgba(255, 255, 255, 0.03);
-				color: var(--text);
-				font-size: 0.98rem;
-				outline: none;
-				transition:
-					border-color 180ms ease,
-					transform 180ms ease,
-					background 180ms ease;
-			}
-
-			.topbar-search input:focus {
-				border-color: rgba(154, 230, 180, 0.42);
-				background: rgba(255, 255, 255, 0.05);
-				transform: translateY(-1px);
-			}
-
-			.search-shortcut {
-				position: absolute;
-				top: 50%;
-				right: 0.8rem;
-				transform: translateY(-50%);
-				padding: 0.18rem 0.42rem;
-				border: 1px solid var(--border);
-				border-radius: 8px;
-				font-size: 0.78rem;
-				color: var(--muted);
-			}
-
-			.topbar-meta {
-				color: var(--muted);
-				font-size: 0.9rem;
 			}
 
 			.layout {
@@ -229,8 +185,9 @@
 			}
 
 			.nav-entry {
-				display: flex;
-				align-items: baseline;
+				display: grid;
+				grid-template-columns: minmax(0, 1fr) auto;
+				align-items: start;
 				justify-content: space-between;
 				gap: 0.75rem;
 				padding: 0.38rem 0.5rem;
@@ -250,8 +207,18 @@
 			}
 
 			.nav-entry small {
+				align-self: start;
+				padding-top: 0.08rem;
 				color: var(--muted);
 				font-size: 0.72rem;
+			}
+
+			.nav-entry span,
+			.nav-file-title,
+			.nav-group-title {
+				min-width: 0;
+				overflow-wrap: anywhere;
+				word-break: break-word;
 			}
 
 			.main {
@@ -313,6 +280,26 @@
 				color: rgba(243, 239, 228, 0.88);
 				font-size: 1.14rem;
 				line-height: 1.7;
+			}
+
+			.hero-copy a,
+			.prose a,
+			.doc-source {
+				color: var(--accent);
+				text-decoration: underline;
+				text-decoration-color: rgba(154, 230, 180, 0.55);
+				text-decoration-thickness: 0.09em;
+				text-underline-offset: 0.16em;
+			}
+
+			.hero-copy a:hover,
+			.hero-copy a:focus-visible,
+			.prose a:hover,
+			.prose a:focus-visible,
+			.doc-source:hover,
+			.doc-source:focus-visible {
+				color: var(--accent-strong);
+				text-decoration-color: rgba(212, 255, 114, 0.55);
 			}
 
 			.hero-actions {
@@ -414,7 +401,6 @@
 			}
 
 			.doc-source {
-				color: var(--muted);
 				font-size: 0.84rem;
 			}
 
@@ -502,13 +488,6 @@
 				text-align: left;
 			}
 
-			.prose a {
-				color: var(--accent-strong);
-				text-decoration: underline;
-				text-decoration-color: rgba(212, 255, 114, 0.36);
-				text-underline-offset: 0.15em;
-			}
-
 			.toc {
 				display: grid;
 				gap: 0.55rem;
@@ -560,10 +539,6 @@
 			}
 
 			@media (max-width: 920px) {
-				.topbar {
-					grid-template-columns: 1fr;
-				}
-
 				.layout {
 					grid-template-columns: 1fr;
 				}
@@ -609,10 +584,6 @@
 					</div>
 					<span>effect2d Docs</span>
 				</a>
-				<label class="topbar-search" aria-label="Search docs">
-					<input id="doc-search" type="search" placeholder="Search public API..." />
-					<span class="search-shortcut">/</span>
-				</label>
 			</header>
 			<div class="layout">
 				<aside class="sidebar">
@@ -1319,11 +1290,16 @@
 				<span></span>
 			</div>
 			<div>
-				<p class="eyebrow">Public API</p>
 				<h1>effect2d</h1>
 			</div>
 		</div>
-		<p class="hero-copy">The public entrypoint for the `effect2d` game engine.</p>
+		<p class="hero-copy">
+			Inspired by
+			<a href="https://love2d.org/" target="_blank" rel="noopener noreferrer">LÖVE 2D</a>
+			for
+			<a href="https://effect.website/docs/introduction" target="_blank" rel="noopener noreferrer">Effect TS</a>
+			developers.
+		</p>
 		<div class="hero-actions">
 			<a href="#introduction">Read introduction</a>
 			<a href="#modules">Browse modules</a>
@@ -1333,13 +1309,13 @@
 					
 			<section class="content-section intro-section" id="introduction">
 				<div class="section-kicker">Overview</div>
-				<div class="prose"><p>The public entrypoint for the <code>effect2d</code> game engine.</p>
+				<div class="prose"><p>The entrypoint for the <code>effect2d</code> game engine.</p>
 <p>This module is the &quot;big bucket of Lego bricks&quot; entrypoint for building games
 with the engine. Most applications can import everything they need from here
 and only drop down into submodules when they want a more curated import
 boundary.</p>
 <h2 id="what-this-surface-area-includes">What this surface area includes</h2>
-<p>The root entrypoint re-exports the engine's public authoring APIs:</p>
+<p>The root entrypoint re-exports the engine's authoring APIs:</p>
 <ul>
 <li>Runtime bootstrapping and launch helpers such as
 <a href="#runtime-engine">Engine</a>, <a href="#runtime-engineconfig">EngineConfig</a>, <a href="#runtime-defaultengineconfig">defaultEngineConfig</a>,
@@ -1440,20 +1416,20 @@ rules. You still own:</p>
 <h2 id="typical-folder-structure">Typical folder structure</h2>
 <p>A practical game layout usually looks something like this:</p>
 <pre><code class="language-text">games/my-game/
-  assets/
-    audio/
-    fonts/
-    images/
-  game/
-    content/
-    directors/
-    input/
-    native/
-    scenes/
-    state/
-    MyGame.ts
-  main.ts
-  README.md
+ assets/
+ audio/
+ fonts/
+ images/
+ game/
+ content/
+ directors/
+ input/
+ native/
+ scenes/
+ state/
+ MyGame.ts
+ main.ts
+ README.md
 </code></pre>
 <p>Common responsibilities:</p>
 <ul>
@@ -1485,7 +1461,7 @@ native desktop window.</li>
 <ul>
 <li>you are writing a game against the engine</li>
 <li>you are reading the engine as an application developer</li>
-<li>you want the documentation site to present the &quot;official&quot; public surface</li>
+<li>you want the documentation site to present the &quot;official&quot; surface</li>
 </ul>
 <p>If you are contributing to the engine itself, the submodules are often a
 better place to work because they show tighter implementation boundaries.</p>
@@ -1494,7 +1470,7 @@ better place to work because they show tighter implementation boundaries.</p>
 		
 					<section class="content-section" id="modules">
 						<div class="section-kicker">Reference</div>
-						<h2 style="margin: 0; font-size: clamp(2.1rem, 4.4vw, 3.1rem); letter-spacing: -0.03em;">Public modules</h2>
+						<h2 style="margin: 0; font-size: clamp(2.1rem, 4.4vw, 3.1rem); letter-spacing: -0.03em;">Modules</h2>
 						<div style="margin-top: 1.25rem;">
 							
 				<section class="content-section module-section" id="audio">
@@ -1513,7 +1489,7 @@ better place to work because they show tighter implementation boundaries.</p>
 										<a class="doc-source" href="#audio-audiobus">src/audio/Audio.ts:3</a>
 									</div>
 									<h4>AudioBus</h4>
-									<div class="prose"><p>Logical buses supported by the mixer. @public</p>
+									<div class="prose"><p>Logical buses supported by the mixer.</p>
 </div>
 								</article>
 							
@@ -1527,7 +1503,7 @@ better place to work because they show tighter implementation boundaries.</p>
 										<a class="doc-source" href="#audio-audiocuekind">src/audio/Audio.ts:6</a>
 									</div>
 									<h4>AudioCueKind</h4>
-									<div class="prose"><p>The cue categories understood by the engine. @public</p>
+									<div class="prose"><p>The cue categories understood by the engine.</p>
 </div>
 								</article>
 							
@@ -1541,7 +1517,7 @@ better place to work because they show tighter implementation boundaries.</p>
 										<a class="doc-source" href="#audio-audiocuedefinition">src/audio/Audio.ts:9</a>
 									</div>
 									<h4>AudioCueDefinition</h4>
-									<div class="prose"><p>Declares a reusable authored audio cue. @public</p>
+									<div class="prose"><p>Declares a reusable authored audio cue.</p>
 </div>
 								</article>
 							
@@ -1555,7 +1531,7 @@ better place to work because they show tighter implementation boundaries.</p>
 										<a class="doc-source" href="#audio-loadedaudiocue">src/audio/Audio.ts:18</a>
 									</div>
 									<h4>LoadedAudioCue</h4>
-									<div class="prose"><p>A loaded cue paired with its resolved kind. @public</p>
+									<div class="prose"><p>A loaded cue paired with its resolved kind.</p>
 </div>
 								</article>
 							
@@ -1569,7 +1545,7 @@ better place to work because they show tighter implementation boundaries.</p>
 										<a class="doc-source" href="#audio-audioplaybackoptions">src/audio/Audio.ts:23</a>
 									</div>
 									<h4>AudioPlaybackOptions</h4>
-									<div class="prose"><p>Optional playback overrides for an individual cue trigger. @public</p>
+									<div class="prose"><p>Optional playback overrides for an individual cue trigger.</p>
 </div>
 								</article>
 							
@@ -1583,7 +1559,7 @@ better place to work because they show tighter implementation boundaries.</p>
 										<a class="doc-source" href="#audio-musicplayback">src/audio/Audio.ts:30</a>
 									</div>
 									<h4>MusicPlayback</h4>
-									<div class="prose"><p>The current music channel state. @public</p>
+									<div class="prose"><p>The current music channel state.</p>
 </div>
 								</article>
 							
@@ -1597,7 +1573,7 @@ better place to work because they show tighter implementation boundaries.</p>
 										<a class="doc-source" href="#audio-soundplayback">src/audio/Audio.ts:39</a>
 									</div>
 									<h4>SoundPlayback</h4>
-									<div class="prose"><p>A single overlapping sound-effect playback instance. @public</p>
+									<div class="prose"><p>A single overlapping sound-effect playback instance.</p>
 </div>
 								</article>
 							
@@ -1611,7 +1587,7 @@ better place to work because they show tighter implementation boundaries.</p>
 										<a class="doc-source" href="#audio-audiosnapshot">src/audio/Audio.ts:44</a>
 									</div>
 									<h4>AudioSnapshot</h4>
-									<div class="prose"><p>A complete snapshot of authored mixer state. @public</p>
+									<div class="prose"><p>A complete snapshot of authored mixer state.</p>
 </div>
 								</article>
 							
@@ -1658,7 +1634,7 @@ backends.</p>
 										<a class="doc-source" href="#graphics-cameravector">src/graphics/Camera.ts:3</a>
 									</div>
 									<h4>CameraVector</h4>
-									<div class="prose"><p>A 2D point or vector used by the camera API. @public</p>
+									<div class="prose"><p>A 2D point or vector used by the camera API.</p>
 </div>
 								</article>
 							
@@ -1686,7 +1662,7 @@ backends.</p>
 										<a class="doc-source" href="#graphics-cameraviewport">src/graphics/Camera.ts:21</a>
 									</div>
 									<h4>CameraViewport</h4>
-									<div class="prose"><p>The authored viewport the camera projects into. @public</p>
+									<div class="prose"><p>The authored viewport the camera projects into.</p>
 </div>
 								</article>
 							
@@ -1700,7 +1676,7 @@ backends.</p>
 										<a class="doc-source" href="#graphics-camerashakestate">src/graphics/Camera.ts:27</a>
 									</div>
 									<h4>CameraShakeState</h4>
-									<div class="prose"><p>Transient screen-shake metadata. @public</p>
+									<div class="prose"><p>Transient screen-shake metadata.</p>
 </div>
 								</article>
 							
@@ -1805,7 +1781,7 @@ functions in this module. Game code typically uses it to:</p>
 										<a class="doc-source" href="#graphics-blendmode">src/graphics/Graphics.ts:30</a>
 									</div>
 									<h4>BlendMode</h4>
-									<div class="prose"><p>Supported compositing modes for subsequent draw commands. @public</p>
+									<div class="prose"><p>Supported compositing modes for subsequent draw commands.</p>
 </div>
 								</article>
 							
@@ -1819,7 +1795,7 @@ functions in this module. Game code typically uses it to:</p>
 										<a class="doc-source" href="#graphics-rectangledrawmode">src/graphics/Graphics.ts:33</a>
 									</div>
 									<h4>RectangleDrawMode</h4>
-									<div class="prose"><p>Supported rectangle rendering modes. @public</p>
+									<div class="prose"><p>Supported rectangle rendering modes.</p>
 </div>
 								</article>
 							
@@ -1833,7 +1809,7 @@ functions in this module. Game code typically uses it to:</p>
 										<a class="doc-source" href="#graphics-circledrawmode">src/graphics/Graphics.ts:36</a>
 									</div>
 									<h4>CircleDrawMode</h4>
-									<div class="prose"><p>Supported circle rendering modes. @public</p>
+									<div class="prose"><p>Supported circle rendering modes.</p>
 </div>
 								</article>
 							
@@ -1969,7 +1945,7 @@ same deterministic recording model</li>
 										<a class="doc-source" href="#input-keycode">src/input/Input.ts:3</a>
 									</div>
 									<h4>KeyCode</h4>
-									<div class="prose"><p>Keyboard key identifiers as reported by the native backend. @public</p>
+									<div class="prose"><p>Keyboard key identifiers as reported by the native backend.</p>
 </div>
 								</article>
 							
@@ -1983,7 +1959,7 @@ same deterministic recording model</li>
 										<a class="doc-source" href="#input-mousebutton">src/input/Input.ts:6</a>
 									</div>
 									<h4>MouseButton</h4>
-									<div class="prose"><p>Mouse button identifiers as reported by the native backend. @public</p>
+									<div class="prose"><p>Mouse button identifiers as reported by the native backend.</p>
 </div>
 								</article>
 							
@@ -1997,7 +1973,7 @@ same deterministic recording model</li>
 										<a class="doc-source" href="#input-pointerposition">src/input/Input.ts:9</a>
 									</div>
 									<h4>PointerPosition</h4>
-									<div class="prose"><p>The latest known mouse or pointer position. @public</p>
+									<div class="prose"><p>The latest known mouse or pointer position.</p>
 </div>
 								</article>
 							
@@ -2121,7 +2097,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-roommetadata">src/maps/MapContent.ts:1</a>
 									</div>
 									<h4>RoomMetadata</h4>
-									<div class="prose"><p>Free-form metadata attached to a room or room object. @public</p>
+									<div class="prose"><p>Free-form metadata attached to a room or room object.</p>
 </div>
 								</article>
 							
@@ -2135,7 +2111,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-tileplane">src/maps/MapContent.ts:4</a>
 									</div>
 									<h4>TilePlane</h4>
-									<div class="prose"><p>A dense tile plane authored for a room. @public</p>
+									<div class="prose"><p>A dense tile plane authored for a room.</p>
 </div>
 								</article>
 							
@@ -2149,7 +2125,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-roomobject">src/maps/MapContent.ts:12</a>
 									</div>
 									<h4>RoomObject</h4>
-									<div class="prose"><p>A positioned authored room object. @public</p>
+									<div class="prose"><p>A positioned authored room object.</p>
 </div>
 								</article>
 							
@@ -2163,7 +2139,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-objectplane">src/maps/MapContent.ts:23</a>
 									</div>
 									<h4>ObjectPlane</h4>
-									<div class="prose"><p>A named collection of room objects. @public</p>
+									<div class="prose"><p>A named collection of room objects.</p>
 </div>
 								</article>
 							
@@ -2177,7 +2153,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-roomcontent">src/maps/MapContent.ts:29</a>
 									</div>
 									<h4>RoomContent</h4>
-									<div class="prose"><p>The canonical authored representation of a room. @public</p>
+									<div class="prose"><p>The canonical authored representation of a room.</p>
 </div>
 								</article>
 							
@@ -2191,7 +2167,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-spawnpoint">src/maps/MapContent.ts:37</a>
 									</div>
 									<h4>SpawnPoint</h4>
-									<div class="prose"><p>A room object that identifies a spawn location. @public</p>
+									<div class="prose"><p>A room object that identifies a spawn location.</p>
 </div>
 								</article>
 							
@@ -2205,7 +2181,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-transitionzone">src/maps/MapContent.ts:46</a>
 									</div>
 									<h4>TransitionZone</h4>
-									<div class="prose"><p>A room object that moves the player to another room. @public</p>
+									<div class="prose"><p>A room object that moves the player to another room.</p>
 </div>
 								</article>
 							
@@ -2219,7 +2195,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-triggerzone">src/maps/MapContent.ts:56</a>
 									</div>
 									<h4>TriggerZone</h4>
-									<div class="prose"><p>A generic authored trigger zone. @public</p>
+									<div class="prose"><p>A generic authored trigger zone.</p>
 </div>
 								</article>
 							
@@ -2243,7 +2219,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-roomobjects">src/maps/MapQueries.ts:8</a>
 									</div>
 									<h4>roomObjects</h4>
-									<div class="prose"><p>Returns every authored object across all object planes in a room. @public</p>
+									<div class="prose"><p>Returns every authored object across all object planes in a room.</p>
 </div>
 								</article>
 							
@@ -2257,7 +2233,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-roomobjectbyid">src/maps/MapQueries.ts:12</a>
 									</div>
 									<h4>roomObjectById</h4>
-									<div class="prose"><p>Finds one authored room object by id. @public</p>
+									<div class="prose"><p>Finds one authored room object by id.</p>
 </div>
 								</article>
 							
@@ -2271,7 +2247,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-roomobjectsbykind">src/maps/MapQueries.ts:19</a>
 									</div>
 									<h4>roomObjectsByKind</h4>
-									<div class="prose"><p>Filters room objects by authored kind. @public</p>
+									<div class="prose"><p>Filters room objects by authored kind.</p>
 </div>
 								</article>
 							
@@ -2285,7 +2261,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-roomspawnpoints">src/maps/MapQueries.ts:26</a>
 									</div>
 									<h4>roomSpawnPoints</h4>
-									<div class="prose"><p>Returns all authored spawn points in a room. @public</p>
+									<div class="prose"><p>Returns all authored spawn points in a room.</p>
 </div>
 								</article>
 							
@@ -2299,7 +2275,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-roomtransitionzones">src/maps/MapQueries.ts:30</a>
 									</div>
 									<h4>roomTransitionZones</h4>
-									<div class="prose"><p>Returns all authored transition zones in a room. @public</p>
+									<div class="prose"><p>Returns all authored transition zones in a room.</p>
 </div>
 								</article>
 							
@@ -2347,7 +2323,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-definetileplane">src/maps/RoomBuilder.ts:12</a>
 									</div>
 									<h4>defineTilePlane</h4>
-									<div class="prose"><p>Identity helper for authored tile planes. @public</p>
+									<div class="prose"><p>Identity helper for authored tile planes.</p>
 </div>
 								</article>
 							
@@ -2361,7 +2337,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-defineobjectplane">src/maps/RoomBuilder.ts:15</a>
 									</div>
 									<h4>defineObjectPlane</h4>
-									<div class="prose"><p>Identity helper for authored object planes. @public</p>
+									<div class="prose"><p>Identity helper for authored object planes.</p>
 </div>
 								</article>
 							
@@ -2375,7 +2351,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-defineroom">src/maps/RoomBuilder.ts:18</a>
 									</div>
 									<h4>defineRoom</h4>
-									<div class="prose"><p>Identity helper for authored rooms. @public</p>
+									<div class="prose"><p>Identity helper for authored rooms.</p>
 </div>
 								</article>
 							
@@ -2389,7 +2365,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-roomobject">src/maps/RoomBuilder.ts:21</a>
 									</div>
 									<h4>roomObject</h4>
-									<div class="prose"><p>Identity helper for generic room objects. @public</p>
+									<div class="prose"><p>Identity helper for generic room objects.</p>
 </div>
 								</article>
 							
@@ -2403,7 +2379,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-spawnpoint">src/maps/RoomBuilder.ts:24</a>
 									</div>
 									<h4>spawnPoint</h4>
-									<div class="prose"><p>Builds a typed spawn-point object. @public</p>
+									<div class="prose"><p>Builds a typed spawn-point object.</p>
 </div>
 								</article>
 							
@@ -2417,7 +2393,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-transitionzone">src/maps/RoomBuilder.ts:30</a>
 									</div>
 									<h4>transitionZone</h4>
-									<div class="prose"><p>Builds a typed transition-zone object. @public</p>
+									<div class="prose"><p>Builds a typed transition-zone object.</p>
 </div>
 								</article>
 							
@@ -2431,7 +2407,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-triggerzone">src/maps/RoomBuilder.ts:38</a>
 									</div>
 									<h4>triggerZone</h4>
-									<div class="prose"><p>Builds a typed trigger-zone object. @public</p>
+									<div class="prose"><p>Builds a typed trigger-zone object.</p>
 </div>
 								</article>
 							
@@ -2445,7 +2421,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-roommetadata">src/maps/RoomBuilder.ts:46</a>
 									</div>
 									<h4>roomMetadata</h4>
-									<div class="prose"><p>Identity helper for room metadata. @public</p>
+									<div class="prose"><p>Identity helper for room metadata.</p>
 </div>
 								</article>
 							
@@ -2791,7 +2767,7 @@ deterministic debugging sessions.</p>
 										<a class="doc-source" href="#runtime-runtimetimingsnapshot">src/runtime/RuntimeClock.ts:3</a>
 									</div>
 									<h4>RuntimeTimingSnapshot</h4>
-									<div class="prose"><p>Snapshot data exposed by the runtime clock. @public</p>
+									<div class="prose"><p>Snapshot data exposed by the runtime clock.</p>
 </div>
 								</article>
 							
@@ -2882,7 +2858,7 @@ boring parts:</p>
 										<a class="doc-source" href="#save-saveslotid">src/save/SaveDocument.ts:4</a>
 									</div>
 									<h4>SaveSlotId</h4>
-									<div class="prose"><p>A stable identifier for a saved slot. @public</p>
+									<div class="prose"><p>A stable identifier for a saved slot.</p>
 </div>
 								</article>
 							
@@ -2896,7 +2872,7 @@ boring parts:</p>
 										<a class="doc-source" href="#save-saveslotdocument">src/save/SaveDocument.ts:7</a>
 									</div>
 									<h4>SaveSlotDocument</h4>
-									<div class="prose"><p>The persisted contents of a single save slot. @public</p>
+									<div class="prose"><p>The persisted contents of a single save slot.</p>
 </div>
 								</article>
 							
@@ -2910,7 +2886,7 @@ boring parts:</p>
 										<a class="doc-source" href="#save-savedocument">src/save/SaveDocument.ts:16</a>
 									</div>
 									<h4>SaveDocument</h4>
-									<div class="prose"><p>The full persisted save document for a game. @public</p>
+									<div class="prose"><p>The full persisted save document for a game.</p>
 </div>
 								</article>
 							
@@ -2940,7 +2916,7 @@ boring parts:</p>
 										<a class="doc-source" href="#save-savemigration">src/save/SaveDocument.ts:38</a>
 									</div>
 									<h4>SaveMigration</h4>
-									<div class="prose"><p>A typed migration between persisted save versions. @public</p>
+									<div class="prose"><p>A typed migration between persisted save versions.</p>
 </div>
 								</article>
 							
@@ -2954,7 +2930,7 @@ boring parts:</p>
 										<a class="doc-source" href="#save-saveslotdocumentschema">src/save/SaveDocument.ts:49</a>
 									</div>
 									<h4>SaveSlotDocumentSchema</h4>
-									<div class="prose"><p>Runtime schema for a single save slot document. @public</p>
+									<div class="prose"><p>Runtime schema for a single save slot document.</p>
 </div>
 								</article>
 							
@@ -2968,7 +2944,7 @@ boring parts:</p>
 										<a class="doc-source" href="#save-savedocumentschema">src/save/SaveDocument.ts:56</a>
 									</div>
 									<h4>SaveDocumentSchema</h4>
-									<div class="prose"><p>Runtime schema for the top-level save document. @public</p>
+									<div class="prose"><p>Runtime schema for the top-level save document.</p>
 </div>
 								</article>
 							
@@ -3181,7 +3157,7 @@ diagnostics.</p>
 										<a class="doc-source" href="#script-dialogueprogress">src/script/Script.ts:30</a>
 									</div>
 									<h4>DialogueProgress</h4>
-									<div class="prose"><p>The current state of a prepared dialogue sequence. @public</p>
+									<div class="prose"><p>The current state of a prepared dialogue sequence.</p>
 </div>
 								</article>
 							
@@ -3195,7 +3171,7 @@ diagnostics.</p>
 										<a class="doc-source" href="#script-dialoguescriptoptions">src/script/Script.ts:38</a>
 									</div>
 									<h4>DialogueScriptOptions</h4>
-									<div class="prose"><p>Options for paginating authored dialogue text. @public</p>
+									<div class="prose"><p>Options for paginating authored dialogue text.</p>
 </div>
 								</article>
 							
@@ -3209,7 +3185,7 @@ diagnostics.</p>
 										<a class="doc-source" href="#script-scriptevents">src/script/Script.ts:106</a>
 									</div>
 									<h4>ScriptEvents</h4>
-									<div class="prose"><p>A lightweight published-event journal for scripted sequences. @public</p>
+									<div class="prose"><p>A lightweight published-event journal for scripted sequences.</p>
 </div>
 								</article>
 							
@@ -3247,7 +3223,7 @@ diagnostics.</p>
 										<a class="doc-source" href="#ui-fontdefinition">src/ui/Ui.ts:10</a>
 									</div>
 									<h4>FontDefinition</h4>
-									<div class="prose"><p>A bitmap or authored font definition known to the UI service. @public</p>
+									<div class="prose"><p>A bitmap or authored font definition known to the UI service.</p>
 </div>
 								</article>
 							
@@ -3261,7 +3237,7 @@ diagnostics.</p>
 										<a class="doc-source" href="#ui-textline">src/ui/Ui.ts:20</a>
 									</div>
 									<h4>TextLine</h4>
-									<div class="prose"><p>A single wrapped line of measured text. @public</p>
+									<div class="prose"><p>A single wrapped line of measured text.</p>
 </div>
 								</article>
 							
@@ -3275,7 +3251,7 @@ diagnostics.</p>
 										<a class="doc-source" href="#ui-textlayout">src/ui/Ui.ts:26</a>
 									</div>
 									<h4>TextLayout</h4>
-									<div class="prose"><p>The measured layout of a text block. @public</p>
+									<div class="prose"><p>The measured layout of a text block.</p>
 </div>
 								</article>
 							
@@ -3289,7 +3265,7 @@ diagnostics.</p>
 										<a class="doc-source" href="#ui-uibounds">src/ui/Ui.ts:35</a>
 									</div>
 									<h4>UiBounds</h4>
-									<div class="prose"><p>Rectangular bounds used by UI drawing helpers. @public</p>
+									<div class="prose"><p>Rectangular bounds used by UI drawing helpers.</p>
 </div>
 								</article>
 							
@@ -3303,7 +3279,7 @@ diagnostics.</p>
 										<a class="doc-source" href="#ui-dialoguepage">src/ui/Ui.ts:44</a>
 									</div>
 									<h4>DialoguePage</h4>
-									<div class="prose"><p>A single dialogue page produced by pagination. @public</p>
+									<div class="prose"><p>A single dialogue page produced by pagination.</p>
 </div>
 								</article>
 							
@@ -3317,7 +3293,7 @@ diagnostics.</p>
 										<a class="doc-source" href="#ui-drawdialogueboxoptions">src/ui/Ui.ts:52</a>
 									</div>
 									<h4>DrawDialogueBoxOptions</h4>
-									<div class="prose"><p>Options for drawing a dialogue box. @public</p>
+									<div class="prose"><p>Options for drawing a dialogue box.</p>
 </div>
 								</article>
 							
@@ -3331,7 +3307,7 @@ diagnostics.</p>
 										<a class="doc-source" href="#ui-menunavigationoptions">src/ui/Ui.ts:62</a>
 									</div>
 									<h4>MenuNavigationOptions</h4>
-									<div class="prose"><p>Options for resolving conventional menu navigation. @public</p>
+									<div class="prose"><p>Options for resolving conventional menu navigation.</p>
 </div>
 								</article>
 							
@@ -3345,7 +3321,7 @@ diagnostics.</p>
 										<a class="doc-source" href="#ui-menunavigationresult">src/ui/Ui.ts:73</a>
 									</div>
 									<h4>MenuNavigationResult</h4>
-									<div class="prose"><p>The result of a single menu navigation update. @public</p>
+									<div class="prose"><p>The result of a single menu navigation update.</p>
 </div>
 								</article>
 							
@@ -3404,24 +3380,6 @@ diagnostics.</p>
 			</div>
 		</div>
 		<script>
-			const searchInput = document.getElementById("doc-search");
-			const searchableEntries = Array.from(document.querySelectorAll("[data-search]"));
-			const focusSearch = (event) => {
-				if (!(event instanceof KeyboardEvent)) return;
-				if (event.key === "/" && document.activeElement !== searchInput) {
-					event.preventDefault();
-					searchInput?.focus();
-				}
-			};
-			const applySearch = () => {
-				const query = searchInput?.value.trim().toLowerCase() ?? "";
-				for (const element of searchableEntries) {
-					const haystack = element.getAttribute("data-search") ?? "";
-					element.classList.toggle("hidden-by-search", query.length > 0 && !haystack.includes(query));
-				}
-			};
-			searchInput?.addEventListener("input", applySearch);
-			window.addEventListener("keydown", focusSearch);
 			const observer = new IntersectionObserver((entries) => {
 				for (const entry of entries) {
 					if (entry.isIntersecting) {
