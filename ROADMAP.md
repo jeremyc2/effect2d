@@ -166,14 +166,14 @@
 
 ## Milestone 15: Starter And Sample Game Structure
 
-- [ ] Create one canonical small starter for new games.
-- [ ] Show a Layer-composed game runtime in the starter.
-- [ ] Show scene services and scoped scene instances in the starter.
-- [ ] Show multiple domain state services in the starter.
-- [ ] Show save participants in the starter.
-- [ ] Show action mapping in the starter.
-- [ ] Show debug toggles in the starter.
-- [ ] Keep the starter intentionally small and opinionated.
+- [x] Create one canonical small starter for new games.
+- [x] Show a Layer-composed game runtime in the starter.
+- [x] Show scene services and scoped scene instances in the starter.
+- [x] Show multiple domain state services in the starter.
+- [x] Show save participants in the starter.
+- [x] Show action mapping in the starter.
+- [x] Show debug toggles in the starter.
+- [x] Keep the starter intentionally small and opinionated.
 
 ## Milestone 16: Vertical Slice Demo
 

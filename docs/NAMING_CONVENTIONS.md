@@ -2,7 +2,7 @@
 
 This document turns the project glossary into practical naming guidance for code.
 
-The goal is to keep names aligned with [UBIQUITOUS_LANGUAGE.md](/Users/jeremy/Documents/personal/effect2d/UBIQUITOUS_LANGUAGE.md) so we do not accidentally import web-app language into the engine.
+The goal is to keep names aligned with [UBIQUITOUS_LANGUAGE.md](../UBIQUITOUS_LANGUAGE.md) so we do not accidentally import web-app language into the engine.
 
 ## Prefer Game-Engine Terms
 
@@ -101,6 +101,6 @@ When a new concept appears, first check whether the glossary already has a term 
 
 If not:
 
-- add the term to [UBIQUITOUS_LANGUAGE.md](/Users/jeremy/Documents/personal/effect2d/UBIQUITOUS_LANGUAGE.md)
+- add the term to [UBIQUITOUS_LANGUAGE.md](../UBIQUITOUS_LANGUAGE.md)
 - use the same term in docs and code
 - update this file if the naming choice affects general conventions

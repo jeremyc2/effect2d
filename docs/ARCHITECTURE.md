@@ -85,4 +85,4 @@ The current engine guidance is intentionally simple:
 
 This structure is intentionally front-loaded before real rendering or windowing work so the next milestones have stable boundaries.
 
-If implementation pressure exposes better boundaries, update this document and [ROADMAP.md](/Users/jeremy/Documents/personal/effect2d/ROADMAP.md) together.
+If implementation pressure exposes better boundaries, update this document and [ROADMAP.md](../ROADMAP.md) together.

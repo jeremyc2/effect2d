@@ -145,12 +145,25 @@ The goal is not to hide Effect. The goal is to make game development with Effect
 
 ## Shared Language
 
-The project glossary lives in [UBIQUITOUS_LANGUAGE.md](/Users/jeremy/Documents/personal/effect2d/UBIQUITOUS_LANGUAGE.md).
+The project glossary lives in [UBIQUITOUS_LANGUAGE.md](./UBIQUITOUS_LANGUAGE.md).
 
 Its job is to define the shared game-engine language for the project and to prevent multiple terms from drifting into use for the same concept. We use it to keep docs, code, variable names, and conversations aligned around one vocabulary.
 
 ## Roadmap
 
-The milestone checklist lives in [ROADMAP.md](/Users/jeremy/Documents/personal/effect2d/ROADMAP.md).
+The milestone checklist lives in [ROADMAP.md](./ROADMAP.md).
 
 It is the working plan for the engine. When implementation pressure forces a pivot, the roadmap should be updated along with the architecture docs so the written plan stays honest.
+
+## Starter
+
+The canonical starter lives in [starter/README.md](./starter/README.md).
+
+It shows the intended small-game architecture in code:
+
+- Layer-composed runtime assembly
+- domain state services
+- registered scenes
+- save participants
+- input bindings
+- debug toggles
