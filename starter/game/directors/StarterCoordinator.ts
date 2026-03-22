@@ -11,6 +11,7 @@ import {
 import type { MapValidationError } from "../../../src/maps/MapError.ts";
 import { ScriptEvents } from "../../../src/script/Script.ts";
 import { DebugSettingsState } from "../state/DebugSettingsState.ts";
+import { DialogueState } from "../state/DialogueState.ts";
 import { GameplayState } from "../state/GameplayState.ts";
 import { PlayerState } from "../state/PlayerState.ts";
 import { RoomState } from "../state/RoomState.ts";
@@ -35,6 +36,7 @@ export class StarterCoordinator extends ServiceMap.Service<
 		StarterCoordinator,
 		Effect.gen(function* () {
 			const debugSettingsState = yield* DebugSettingsState;
+			const dialogueState = yield* DialogueState;
 			const engineLogger = yield* EngineLogger;
 			const gameplayState = yield* GameplayState;
 			const playerState = yield* PlayerState;
@@ -44,11 +46,14 @@ export class StarterCoordinator extends ServiceMap.Service<
 			const worldState = yield* WorldState;
 
 			const beginNewGame = Effect.gen(function* () {
-				yield* roomState.loadRoom("overworld-room");
-				const overworldSpawn =
-					yield* roomState.currentObjectById("spawn-player");
-				yield* roomState.loadRoom("lantern-room");
-				const slimeEnemy = yield* roomState.currentObjectById("slime-enemy");
+				const overworldSpawn = yield* roomState.roomObjectById(
+					"overworld-room",
+					"spawn-player",
+				);
+				const slimeEnemy = yield* roomState.roomObjectById(
+					"lantern-room",
+					"slime-enemy",
+				);
 				yield* playerState.restore({
 					facing: "down",
 					health: 3,
@@ -74,6 +79,7 @@ export class StarterCoordinator extends ServiceMap.Service<
 					introSequencePlayed: false,
 					lanternPickupCollected: false,
 				});
+				yield* dialogueState.clear;
 				yield* resourceTracker.register(
 					"starter-overworld-room",
 					"map",
@@ -86,8 +92,8 @@ export class StarterCoordinator extends ServiceMap.Service<
 				yield* engineLogger.info("Starter coordinator began a new game.", {
 					roomId: "overworld-room",
 				});
-				yield* roomState.loadRoom("overworld-room");
-			});
+				yield* roomState.enterRoom("overworld-room");
+			}).pipe(Effect.withSpan("StarterCoordinator.beginNewGame"));
 
 			const recordSceneChange = Effect.fn(
 				"StarterCoordinator.recordSceneChange",
@@ -128,7 +134,7 @@ export class StarterCoordinator extends ServiceMap.Service<
 							break;
 					}
 				}
-			});
+			}).pipe(Effect.withSpan("StarterCoordinator.processEvents"));
 
 			return StarterCoordinator.of({
 				beginNewGame,

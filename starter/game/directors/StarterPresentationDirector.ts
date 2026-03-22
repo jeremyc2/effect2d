@@ -17,6 +17,7 @@ import {
 	type UnknownFontError,
 } from "../../../src/index.ts";
 import type { MapValidationError } from "../../../src/maps/MapError.ts";
+import { DialogueState } from "../state/DialogueState.ts";
 import { GameplayState } from "../state/GameplayState.ts";
 import { PlayerState } from "../state/PlayerState.ts";
 import { RoomState } from "../state/RoomState.ts";
@@ -137,6 +138,7 @@ export class StarterPresentationDirector extends ServiceMap.Service<
 		StarterPresentationDirector,
 		Effect.gen(function* () {
 			const debugOverlay = yield* DebugOverlay;
+			const dialogueState = yield* DialogueState;
 			const graphics = yield* Graphics;
 			const gameplayState = yield* GameplayState;
 			const playerState = yield* PlayerState;
@@ -189,6 +191,7 @@ export class StarterPresentationDirector extends ServiceMap.Service<
 				function* () {
 					const gameplaySnapshot = yield* gameplayState.snapshot;
 					const playerSnapshot = yield* playerState.snapshot;
+					const dialogueSnapshot = yield* dialogueState.snapshot;
 					const timing = yield* runtimeClock.snapshot();
 					const worldSnapshot = yield* worldState.snapshot;
 					const room = yield* roomState.snapshot;
@@ -281,7 +284,16 @@ export class StarterPresentationDirector extends ServiceMap.Service<
 						text: `Inventory: ${worldSnapshot.inventory.join(", ") || "empty"}`,
 					});
 
-					if (hintText !== null && !worldSnapshot.lanternLit) {
+					if (dialogueSnapshot.activeDialogue !== null) {
+						yield* ui.drawDialogueBox({
+							bounds: {
+								position: { x: 8, y: 68 },
+								size: { height: 20, width: 112 },
+							},
+							fontId: "ui-body",
+							page: dialogueSnapshot.activeDialogue.page,
+						});
+					} else if (hintText !== null && !worldSnapshot.lanternLit) {
 						yield* ui.drawDialogueBox({
 							bounds: {
 								position: { x: 8, y: 68 },

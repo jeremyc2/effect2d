@@ -20,6 +20,7 @@ import {
 	type WrongAudioCueKindError,
 } from "../../../src/index.ts";
 import type { MapValidationError } from "../../../src/maps/MapError.ts";
+import { DialogueState } from "../state/DialogueState.ts";
 import { GameplayState } from "../state/GameplayState.ts";
 import { PlayerState } from "../state/PlayerState.ts";
 import { RoomState } from "../state/RoomState.ts";
@@ -83,6 +84,7 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 		Effect.gen(function* () {
 			const collisionWorld = yield* CollisionWorld;
 			const debugOverlay = yield* DebugOverlay;
+			const dialogueState = yield* DialogueState;
 			const engineLogger = yield* EngineLogger;
 			const gameplayState = yield* GameplayState;
 			const input = yield* Input;
@@ -244,11 +246,32 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 					maxWidth: 160,
 					text: "A lantern flickers in the dark. Press Space to take it.",
 				});
+				yield* dialogueState.open("lantern-intro", pages);
 				yield* script.waitSteps(1);
 				yield* gameplayState.markIntroSequencePlayed;
 				yield* engineLogger.info("Starter intro sequence played.", {
 					dialoguePageCount: pages.length,
 				});
+			});
+
+			const handleDialogueAdvance = Effect.fn(
+				"StarterGameplayDirector.handleDialogueAdvance",
+			)(function* () {
+				const dialogueSnapshot = yield* dialogueState.snapshot;
+				if (dialogueSnapshot.activeDialogue === null) {
+					return false;
+				}
+
+				const confirmAction = yield* input.actionState("menu-confirm");
+				const interactAction = yield* input.actionState("interact");
+				if (!confirmAction.justPressed && !interactAction.justPressed) {
+					return true;
+				}
+
+				yield* dialogueState.advance;
+				yield* input.consumeAction("interact");
+				yield* input.consumeAction("menu-confirm");
+				return true;
 			});
 
 			const handleInteraction = Effect.fn(
@@ -273,6 +296,15 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 					yield* worldState.lightLantern;
 					yield* worldState.addItem("lantern");
 					yield* script.playSoundCue("pickup-lantern");
+					yield* dialogueState.open(
+						"lantern-picked-up",
+						yield* script.prepareDialogue({
+							fontId: "ui-body",
+							maxLines: 2,
+							maxWidth: 160,
+							text: "The lantern steadies your path.",
+						}),
+					);
 					yield* scriptEvents.publish({
 						pickupId: "lantern",
 						type: "pickup-collected",
@@ -291,6 +323,15 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 				) {
 					yield* gameplayState.defeatEnemy;
 					yield* script.playSoundCue("slime-hit");
+					yield* dialogueState.open(
+						"slime-defeated",
+						yield* script.prepareDialogue({
+							fontId: "ui-body",
+							maxLines: 2,
+							maxWidth: 160,
+							text: "The slime recoils from the light and fades away.",
+						}),
+					);
 					yield* scriptEvents.publish({
 						enemyId: "slime",
 						type: "enemy-defeated",
@@ -337,6 +378,10 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 						yield* input.consumeAction("debug-toggle");
 					}
 
+					if (yield* handleDialogueAdvance()) {
+						return;
+					}
+
 					yield* applyMovement();
 					yield* syncCollisionBodies();
 
@@ -345,17 +390,13 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 						["room-exit"],
 					);
 					if (exitTriggers.some((body) => body.id === exitBodyId)) {
-						yield* worldState.enterRoom("lantern-room");
-						yield* roomState.loadCurrentRoom;
+						yield* roomState.enterRoom("lantern-room");
+						yield* dialogueState.clear;
 						const lanternEntry =
 							yield* roomState.currentObjectById("lantern-entry");
-						const playerSnapshot = yield* playerState.snapshot;
-						yield* playerState.restore({
-							...playerSnapshot,
-							position: {
-								x: lanternEntry.x,
-								y: lanternEntry.y,
-							},
+						yield* playerState.moveTo({
+							x: lanternEntry.x,
+							y: lanternEntry.y,
 						});
 						yield* script.playSoundCue("room-transition");
 						yield* engineLogger.info("Starter room transition completed.", {

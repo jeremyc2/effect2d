@@ -3,6 +3,11 @@ import { Effect, Exit, Ref } from "effect";
 import { runLayerEffect } from "../testing/runEffectTest.ts";
 import { SaveCoordinator } from "./SaveCoordinator.ts";
 import type { SaveDocument } from "./SaveDocument.ts";
+import {
+	SaveMigrationExecutionError,
+	SaveMigrationFailedError,
+	SaveMigrationMissingError,
+} from "./SaveError.ts";
 
 const makeParticipant = Effect.fn("SaveCoordinator.makeParticipant")(function* (
 	key: string,
@@ -161,5 +166,85 @@ describe("SaveCoordinator", () => {
 		);
 
 		expect(Exit.isFailure(exit)).toBe(true);
+	});
+
+	test("fails with a typed error when a required migration is missing", async () => {
+		const player = await Effect.runPromise(
+			makeParticipant("player", { health: 0, roomId: "void" }),
+		);
+		const oldDocument: SaveDocument = {
+			slots: {
+				"slot-a": {
+					participantStates: {
+						player: {
+							health: 2,
+						},
+					},
+					savedAtMillis: 50,
+					slotId: "slot-a",
+				},
+			},
+			version: 1,
+		};
+		const layer = SaveCoordinator.layer({
+			participants: [player.participant],
+			version: 2,
+		});
+
+		const exit = await runLayerEffect(
+			layer,
+			Effect.gen(function* () {
+				const saveCoordinator = yield* SaveCoordinator;
+				return yield* Effect.flip(saveCoordinator.importDocument(oldDocument));
+			}),
+		);
+
+		expect(exit).toBeInstanceOf(SaveMigrationMissingError);
+	});
+
+	test("fails with a typed error when a migration implementation fails", async () => {
+		const player = await Effect.runPromise(
+			makeParticipant("player", { health: 0, roomId: "void" }),
+		);
+		const oldDocument: SaveDocument = {
+			slots: {
+				"slot-a": {
+					participantStates: {
+						player: {
+							health: 2,
+						},
+					},
+					savedAtMillis: 50,
+					slotId: "slot-a",
+				},
+			},
+			version: 1,
+		};
+		const layer = SaveCoordinator.layer({
+			migrations: [
+				{
+					fromVersion: 1,
+					migrate: () =>
+						Effect.fail(
+							new SaveMigrationExecutionError({
+								details: "boom",
+							}),
+						),
+					toVersion: 2,
+				},
+			],
+			participants: [player.participant],
+			version: 2,
+		});
+
+		const exit = await runLayerEffect(
+			layer,
+			Effect.gen(function* () {
+				const saveCoordinator = yield* SaveCoordinator;
+				return yield* Effect.flip(saveCoordinator.importDocument(oldDocument));
+			}),
+		);
+
+		expect(exit).toBeInstanceOf(SaveMigrationFailedError);
 	});
 });

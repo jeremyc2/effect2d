@@ -9,7 +9,9 @@ import type {
 import { SaveDocumentSchema } from "./SaveDocument.ts";
 import {
 	SaveDocumentDecodeError,
-	SaveMigrationPathError,
+	SaveMigrationFailedError,
+	SaveMigrationMissingError,
+	SaveMigrationVersionMismatchError,
 	SaveParticipantKeyConflictError,
 	SaveSlotNotFoundError,
 } from "./SaveError.ts";
@@ -31,24 +33,27 @@ const applyMigrations = Effect.fn("SaveCoordinator.applyMigrations")(function* (
 			(candidate) => candidate.fromVersion === currentDocument.version,
 		);
 		if (migration === undefined) {
-			return yield* new SaveMigrationPathError({
-				details: `No save migration exists from version ${currentDocument.version} to ${targetVersion}.`,
+			return yield* new SaveMigrationMissingError({
+				fromVersion: currentDocument.version,
+				targetVersion,
 			});
 		}
 
 		currentDocument = yield* migration.migrate(currentDocument).pipe(
 			Effect.mapError(
 				() =>
-					new SaveMigrationPathError({
-						details: `Save migration from version ${migration.fromVersion} to ${migration.toVersion} failed.`,
+					new SaveMigrationFailedError({
+						fromVersion: migration.fromVersion,
+						toVersion: migration.toVersion,
 					}),
 			),
 		);
 	}
 
 	if (currentDocument.version !== targetVersion) {
-		return yield* new SaveMigrationPathError({
-			details: `Migrated save document stopped at version ${currentDocument.version}, expected ${targetVersion}.`,
+		return yield* new SaveMigrationVersionMismatchError({
+			actualVersion: currentDocument.version,
+			expectedVersion: targetVersion,
 		});
 	}
 
@@ -72,7 +77,13 @@ export class SaveCoordinator extends ServiceMap.Service<
 		readonly exportDocument: Effect.Effect<SaveDocument>;
 		readonly importDocument: (
 			document: unknown,
-		) => Effect.Effect<void, SaveDocumentDecodeError | SaveMigrationPathError>;
+		) => Effect.Effect<
+			void,
+			| SaveDocumentDecodeError
+			| SaveMigrationFailedError
+			| SaveMigrationMissingError
+			| SaveMigrationVersionMismatchError
+		>;
 		readonly snapshotSlot: (
 			slotId: SaveSlotId,
 		) => Effect.Effect<SaveSlotDocument>;

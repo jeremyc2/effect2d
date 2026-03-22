@@ -21,6 +21,7 @@ const initialPlayerSnapshot: PlayerSnapshot = {
 export class PlayerState extends ServiceMap.Service<
 	PlayerState,
 	{
+		readonly moveTo: (position: CameraVector) => Effect.Effect<void>;
 		readonly moveBy: (delta: CameraVector) => Effect.Effect<void>;
 		readonly restore: (snapshot: PlayerSnapshot) => Effect.Effect<void>;
 		readonly setFacing: (facing: FacingDirection) => Effect.Effect<void>;
@@ -44,6 +45,15 @@ export class PlayerState extends ServiceMap.Service<
 				}));
 			});
 
+			const moveTo = Effect.fn("PlayerState.moveTo")(function* (
+				position: CameraVector,
+			) {
+				yield* Ref.update(stateRef, (state) => ({
+					...state,
+					position,
+				}));
+			});
+
 			const setFacing = Effect.fn("PlayerState.setFacing")(function* (
 				facing: FacingDirection,
 			) {
@@ -60,6 +70,7 @@ export class PlayerState extends ServiceMap.Service<
 			});
 
 			return PlayerState.of({
+				moveTo,
 				moveBy,
 				restore,
 				setFacing,

@@ -9,13 +9,16 @@ It demonstrates:
 - scene registration and scoped scene instances
 - coordinator-driven multi-domain orchestration
 - a gameplay director for movement, transitions, pickups, and a simple encounter
+- a dedicated dialogue state service that owns active conversation pages
 - a presentation director for menu/gameplay/pause rendering
+- room/session helpers so transitions and room loading stay game-shaped
 - starter music and sound-effect cues
 - collision-driven interactions and debug overlay rendering
 - authored code-defined rooms loaded through `MapRepository`
 - selective event-driven follow-up through `ScriptEvents`
 - input bindings
 - save participants
+- dialogue progress carried by save participants
 - debug overlay toggles
 - bootstrapping through `Effect.runPromise(...)`
 

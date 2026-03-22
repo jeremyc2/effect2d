@@ -177,7 +177,7 @@
 
 ## Milestone 16: Vertical Slice Demo
 
-- [ ] Build a tiny top-down action-adventure demo on the engine.
+- [x] Build a tiny top-down action-adventure demo on the engine.
 - [x] Implement a title or menu scene.
 - [x] Implement one primary gameplay scene.
 - [x] Implement at least one overlay scene such as pause or dialogue.
@@ -188,23 +188,23 @@
 - [x] Implement one short Effect-based scripted sequence.
 - [x] Implement image rendering, text rendering, collision, animation, music, sound effects, and save/load in one cohesive loop.
 - [x] Implement a debug overlay inside the demo.
-- [ ] Validate that the demo feels like a real game slice instead of a disconnected subsystem showcase.
+- [x] Validate that the demo feels like a real game slice instead of a disconnected subsystem showcase.
 
 ## Milestone 17: Hardening For 0.1
 
-- [ ] Review the public API for coherence with the documented architecture.
-- [ ] Remove or rename obviously wrong early abstractions.
-- [ ] Tighten error types across engine subsystems.
-- [ ] Tighten scene and resource lifetime semantics.
-- [ ] Reduce duplication discovered during the demo build.
-- [ ] Improve docs where the sample game exposed confusion.
-- [ ] Add missing integration tests for the validated engine paths.
-- [ ] Confirm that the engine is good enough to begin a real small game.
+- [x] Review the public API for coherence with the documented architecture.
+- [x] Remove or rename obviously wrong early abstractions.
+- [x] Tighten error types across engine subsystems.
+- [x] Tighten scene and resource lifetime semantics.
+- [x] Reduce duplication discovered during the demo build.
+- [x] Improve docs where the sample game exposed confusion.
+- [x] Add missing integration tests for the validated engine paths.
+- [x] Confirm that the engine is good enough to begin a real small game.
 
 ## Milestone 18: First Real Game Pressure Test
 
-- [ ] Start a small real game on top of `effect2d`.
-- [ ] Reuse the canonical engine architecture instead of inventing a separate one.
+- [x] Start a small real game on top of `effect2d`.
+- [x] Reuse the canonical engine architecture instead of inventing a separate one.
 - [ ] Let real game needs reveal the next engine gaps.
 - [ ] Refine maps and room content APIs under real usage.
 - [ ] Refine save participants under real usage.
@@ -216,18 +216,18 @@
 
 ### 0.1
 
-- [ ] A small playable vertical slice exists.
-- [ ] The game launches through `Effect.runPromise(...)`.
+- [x] A small playable vertical slice exists.
+- [x] The game launches through `Effect.runPromise(...)`.
 - [x] Scenes are service-defined and scene instances are scoped.
 - [x] Multiple domain state services exist and persist through save participants.
-- [ ] Input, rendering, audio, maps, animation, collision, transitions, and save/load all work together in one slice.
+- [x] Input, rendering, audio, maps, animation, collision, transitions, and save/load all work together in one slice.
 - [x] A debug overlay exists.
 - [x] At least one scripted sequence is implemented as Effect.
-- [ ] The architecture feels strong enough to build a real game on it.
+- [x] The architecture feels strong enough to build a real game on it.
 
 ### After 0.1
 
-- [ ] Begin a real small game immediately.
+- [x] Begin a real small game immediately.
 - [ ] Evolve the engine under pressure from that game instead of polishing in abstraction.
 - [ ] Keep the core small and capability-focused.
 - [ ] Continue rejecting non-goals that would distort the architecture.

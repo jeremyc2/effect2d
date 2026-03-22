@@ -1,6 +1,7 @@
 import { Effect, Layer, ServiceMap } from "effect";
 import type { SaveParticipant } from "../../../src/save/SaveDocument.ts";
 import { DebugSettingsState } from "../state/DebugSettingsState.ts";
+import { DialogueState } from "../state/DialogueState.ts";
 import { GameplayState } from "../state/GameplayState.ts";
 import { PlayerState } from "../state/PlayerState.ts";
 import { WorldState } from "../state/WorldState.ts";
@@ -15,6 +16,7 @@ export class StarterSaveParticipants extends ServiceMap.Service<
 		StarterSaveParticipants,
 		Effect.gen(function* () {
 			const debugSettingsState = yield* DebugSettingsState;
+			const dialogueState = yield* DialogueState;
 			const gameplayState = yield* GameplayState;
 			const playerState = yield* PlayerState;
 			const worldState = yield* WorldState;
@@ -109,6 +111,118 @@ export class StarterSaveParticipants extends ServiceMap.Service<
 								introSequencePlayed: state["introSequencePlayed"] === true,
 								lanternPickupCollected:
 									state["lanternPickupCollected"] === true,
+							});
+						},
+					),
+				},
+				{
+					capture: dialogueState.snapshot.pipe(
+						Effect.map((snapshot) => ({
+							currentPageIndex: snapshot.currentPageIndex,
+							dialogueId: snapshot.dialogueId,
+							pages: snapshot.pages.map((page) => ({
+								hasNextPage: page.hasNextPage,
+								layout: {
+									fontId: page.layout.fontId,
+									height: page.layout.height,
+									lineHeight: page.layout.lineHeight,
+									lines: page.layout.lines.map((line) => ({
+										text: line.text,
+										width: line.width,
+									})),
+									width: page.layout.width,
+								},
+								pageCount: page.pageCount,
+								pageIndex: page.pageIndex,
+							})),
+						})),
+					),
+					key: "dialogue",
+					restore: Effect.fn("StarterSaveParticipants.restoreDialogue")(
+						function* (state: Readonly<Record<string, unknown>>) {
+							const rawPages = state["pages"];
+							const pages = Array.isArray(rawPages)
+								? rawPages.flatMap((page) => {
+										if (
+											typeof page !== "object" ||
+											page === null ||
+											typeof page["hasNextPage"] !== "boolean" ||
+											typeof page["pageCount"] !== "number" ||
+											typeof page["pageIndex"] !== "number"
+										) {
+											return [];
+										}
+
+										const rawLayout = page["layout"];
+										if (
+											typeof rawLayout !== "object" ||
+											rawLayout === null ||
+											typeof rawLayout["fontId"] !== "string" ||
+											typeof rawLayout["height"] !== "number" ||
+											typeof rawLayout["lineHeight"] !== "number" ||
+											typeof rawLayout["width"] !== "number" ||
+											!Array.isArray(rawLayout["lines"])
+										) {
+											return [];
+										}
+
+										const lines = rawLayout["lines"].flatMap((line) => {
+											if (
+												typeof line !== "object" ||
+												line === null ||
+												typeof line["text"] !== "string" ||
+												typeof line["width"] !== "number"
+											) {
+												return [];
+											}
+
+											return [
+												{
+													text: line["text"],
+													width: line["width"],
+												},
+											];
+										});
+
+										return [
+											{
+												hasNextPage: page["hasNextPage"],
+												layout: {
+													fontId: rawLayout["fontId"],
+													height: rawLayout["height"],
+													lineHeight: rawLayout["lineHeight"],
+													lines,
+													width: rawLayout["width"],
+												},
+												pageCount: page["pageCount"],
+												pageIndex: page["pageIndex"],
+											},
+										];
+									})
+								: [];
+							const dialogueId =
+								typeof state["dialogueId"] === "string"
+									? state["dialogueId"]
+									: null;
+							const currentPageIndex =
+								typeof state["currentPageIndex"] === "number"
+									? state["currentPageIndex"]
+									: 0;
+							const restoredPage = pages[currentPageIndex] ?? pages[0];
+							const activeDialogue =
+								dialogueId === null || restoredPage === undefined
+									? null
+									: {
+											dialogueId,
+											page: restoredPage,
+											pageCount: pages.length,
+										};
+
+							yield* dialogueState.restore({
+								activeDialogue,
+								currentPageIndex,
+								dialogueId,
+								pages,
 							});
 						},
 					),

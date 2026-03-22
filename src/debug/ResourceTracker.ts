@@ -1,4 +1,4 @@
-import { Effect, Layer, Ref, Schema, ServiceMap } from "effect";
+import { Effect, Layer, Ref, Schema, type Scope, ServiceMap } from "effect";
 import type { ResourceDiagnostic } from "./DebugOverlay.ts";
 
 export type ResourceKind =
@@ -53,6 +53,11 @@ export class ResourceTracker extends ServiceMap.Service<
 			kind: ResourceKind,
 			details?: string,
 		) => Effect.Effect<void, InvalidResourceRecordError>;
+		readonly registerScoped: (
+			id: string,
+			kind: ResourceKind,
+			details?: string,
+		) => Effect.Effect<void, InvalidResourceRecordError, Scope.Scope>;
 		readonly release: (
 			id: string,
 		) => Effect.Effect<void, UnknownTrackedResourceError>;
@@ -109,12 +114,24 @@ export class ResourceTracker extends ServiceMap.Service<
 				}));
 			});
 
+			const registerScoped = Effect.fn("ResourceTracker.registerScoped")(
+				function* (id: string, kind: ResourceKind, details?: string) {
+					yield* register(id, kind, details);
+					yield* Effect.addFinalizer(() =>
+						updateRecord(id, "released").pipe(
+							Effect.catchTag("UnknownTrackedResourceError", () => Effect.void),
+						),
+					);
+				},
+			);
+
 			return ResourceTracker.of({
 				fault: (id, details) => updateRecord(id, "faulted", details),
 				records: Ref.get(stateRef).pipe(
 					Effect.map((state) => Array.from(state.records.values())),
 				),
 				register,
+				registerScoped,
 				release: (id) => updateRecord(id, "released"),
 				setLoaded: (id, details) => updateRecord(id, "loaded", details),
 			});

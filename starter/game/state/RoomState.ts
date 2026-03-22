@@ -13,10 +13,17 @@ export class RoomState extends ServiceMap.Service<
 		readonly currentObjectById: (
 			objectId: string,
 		) => Effect.Effect<RoomObject, MapValidationError>;
+		readonly enterRoom: (
+			roomId: string,
+		) => Effect.Effect<void, MapValidationError>;
 		readonly loadCurrentRoom: Effect.Effect<void, MapValidationError>;
 		readonly loadRoom: (
 			roomId: string,
 		) => Effect.Effect<void, MapValidationError>;
+		readonly roomObjectById: (
+			roomId: string,
+			objectId: string,
+		) => Effect.Effect<RoomObject, MapValidationError>;
 		readonly snapshot: Effect.Effect<RoomContent>;
 	}
 >()("effect2d/starter/game/state/RoomState") {
@@ -41,6 +48,13 @@ export class RoomState extends ServiceMap.Service<
 				Effect.flatMap(loadRoom),
 			);
 
+			const roomObjectById = Effect.fn("RoomState.roomObjectById")(function* (
+				roomId: string,
+				objectId: string,
+			) {
+				return yield* mapRepository.roomObjectById(roomId, objectId);
+			});
+
 			const currentObjectById = Effect.fn("RoomState.currentObjectById")(
 				function* (objectId: string) {
 					const room = yield* Ref.get(roomRef);
@@ -56,10 +70,19 @@ export class RoomState extends ServiceMap.Service<
 				},
 			);
 
+			const enterRoom = Effect.fn("RoomState.enterRoom")(function* (
+				roomId: string,
+			) {
+				yield* worldState.enterRoom(roomId);
+				yield* loadRoom(roomId);
+			});
+
 			return RoomState.of({
 				currentObjectById,
+				enterRoom,
 				loadCurrentRoom,
 				loadRoom,
+				roomObjectById,
 				snapshot: Ref.get(roomRef),
 			});
 		}),

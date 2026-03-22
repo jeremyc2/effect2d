@@ -1,4 +1,5 @@
 import { type Effect, Schema } from "effect";
+import type { SaveMigrationExecutionError } from "./SaveError.ts";
 
 export type SaveSlotId = string;
 
@@ -25,7 +26,9 @@ export interface SaveParticipant {
 
 export interface SaveMigration {
 	readonly fromVersion: number;
-	readonly migrate: (document: SaveDocument) => Effect.Effect<SaveDocument>;
+	readonly migrate: (
+		document: SaveDocument,
+	) => Effect.Effect<SaveDocument, SaveMigrationExecutionError>;
 	readonly toVersion: number;
 }
 

@@ -21,6 +21,10 @@ The current subsystem layout is:
 - `debug`: runtime diagnostics and overlays
 - `errors`: typed engine errors
 
+The package root export should stay focused on engine/runtime APIs.
+
+Supporting repo-local utilities such as test helpers may exist under their own internal paths, but they should not automatically become part of the root package surface.
+
 ## Native Boundary
 
 The native boundary must stay thin.
@@ -62,6 +66,7 @@ The engine launch model is Layer-based and Effect-native:
 - scene lifecycle effects run inside scene-owned scopes
 - leaving a scene closes its scope and cancels scene-local background work
 - resources follow scopes by default
+- resource diagnostics should be able to mirror scoped lifetimes instead of relying only on manual release calls
 
 ## Error Taxonomy
 
@@ -74,12 +79,14 @@ Examples:
 - malformed room content
 - unsupported audio asset
 - invalid save document
+- missing or failed save migrations
 
 The current engine guidance is intentionally simple:
 
 - if we know a failure mode can happen, model it through the typed Effect error channel
 - keep error data Schema-backed so it stays serializable and loggable
 - do not design around defects yet
+- prefer specific migration/decode/load failure types over catch-all path errors when the subsystem can distinguish them
 
 ## Current Intent
 

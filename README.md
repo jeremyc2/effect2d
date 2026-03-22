@@ -167,3 +167,11 @@ It shows the intended small-game architecture in code:
 - save participants
 - input bindings
 - debug toggles
+
+The package root export is intended for engine/runtime APIs. Repo-local testing helpers stay under `src/testing` and are not part of the package root surface.
+
+## Pressure Test
+
+The first real small game pressure-test lives in [games/beacon-run/README.md](./games/beacon-run/README.md).
+
+It exists to prove that `effect2d` can support a separate game-specific domain and composition root without sliding back into starter-specific assumptions.

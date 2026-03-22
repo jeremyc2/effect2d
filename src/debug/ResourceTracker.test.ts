@@ -42,4 +42,36 @@ describe("ResourceTracker", () => {
 			}),
 		);
 	});
+
+	test("releases scoped resources automatically when their scope closes", async () => {
+		await runLayerEffect(
+			ResourceTracker.layer,
+			Effect.gen(function* () {
+				const resourceTracker = yield* ResourceTracker;
+
+				yield* Effect.scoped(
+					Effect.gen(function* () {
+						yield* resourceTracker.registerScoped(
+							"overworld-scene",
+							"scene",
+							"Scene instance is live.",
+						);
+						yield* resourceTracker.setLoaded(
+							"overworld-scene",
+							"Scene instance finished loading.",
+						);
+					}),
+				);
+
+				expect(yield* resourceTracker.records).toEqual([
+					{
+						details: "Scene instance finished loading.",
+						id: "overworld-scene",
+						kind: "scene",
+						state: "released",
+					},
+				]);
+			}),
+		);
+	});
 });

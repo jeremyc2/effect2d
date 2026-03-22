@@ -28,6 +28,7 @@ import { MainMenuScene } from "./scenes/MainMenuScene.ts";
 import { OverworldScene } from "./scenes/OverworldScene.ts";
 import { PauseOverlayScene } from "./scenes/PauseOverlayScene.ts";
 import { DebugSettingsState } from "./state/DebugSettingsState.ts";
+import { DialogueState } from "./state/DialogueState.ts";
 import { GameplayState } from "./state/GameplayState.ts";
 import { PlayerState } from "./state/PlayerState.ts";
 import { RoomState } from "./state/RoomState.ts";
@@ -56,6 +57,7 @@ const starterRuntimeLayer = makeRuntimeLayer(starterConfig, {
 
 const starterStateLayer = Layer.mergeAll(
 	DebugSettingsState.layer,
+	DialogueState.layer,
 	GameplayState.layer,
 	PlayerState.layer,
 	WorldState.layer,
@@ -222,7 +224,7 @@ export const starterBootstrap = Effect.gen(function* () {
 		defaultVolume: 0.8,
 		sourcePath: "starter/audio/sfx/slime-hit.wav",
 	});
-	yield* audio.playLoopingMusic("starter-theme");
+	yield* audio.playMusic("starter-theme", { loop: true });
 	yield* ui.loadFont({
 		fontId: "ui-body",
 		glyphWidth: 8,

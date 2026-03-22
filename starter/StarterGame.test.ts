@@ -20,6 +20,7 @@ import {
 	starterProgram,
 } from "./game/StarterGame.ts";
 import { StarterSaveParticipants } from "./game/save/StarterSaveParticipants.ts";
+import { DialogueState } from "./game/state/DialogueState.ts";
 import { GameplayState } from "./game/state/GameplayState.ts";
 import { PlayerState } from "./game/state/PlayerState.ts";
 import { RoomState } from "./game/state/RoomState.ts";
@@ -47,7 +48,13 @@ describe("starter", () => {
 					(yield* starterSaveParticipants.all).map(
 						(participant) => participant.key,
 					),
-				).toEqual(["player", "world", "gameplay", "debug-settings"]);
+				).toEqual([
+					"player",
+					"world",
+					"gameplay",
+					"dialogue",
+					"debug-settings",
+				]);
 				expect(yield* engineLogger.entries).toHaveLength(3);
 				expect((yield* audio.loadedCues).map((cue) => cue.cueId)).toEqual([
 					"starter-theme",
@@ -134,6 +141,7 @@ describe("starter", () => {
 				const audio = yield* Audio;
 				const gameplayState = yield* GameplayState;
 				const input = yield* Input;
+				const dialogueState = yield* DialogueState;
 				const playerState = yield* PlayerState;
 				const roomState = yield* RoomState;
 				const sceneDirector = yield* SceneDirector;
@@ -216,6 +224,58 @@ describe("starter", () => {
 				expect((yield* worldState.snapshot).currentRoomId).toBe("lantern-room");
 				expect((yield* roomState.snapshot).id).toBe("lantern-room");
 				expect((yield* gameplayState.snapshot).introSequencePlayed).toBe(true);
+				expect((yield* dialogueState.snapshot).activeDialogue?.dialogueId).toBe(
+					"lantern-intro",
+				);
+
+				const introFrame = yield* starterPresentationDirector.renderFrame();
+				expect(
+					introFrame.commands.some(
+						(command) =>
+							command.type === "draw-text" &&
+							command.text.includes("A lantern flickers"),
+					),
+				).toBe(true);
+
+				yield* input.beginFrame;
+				yield* input.applyEvent({
+					key: "Space",
+					type: "key-down",
+				});
+				yield* starterGameplayDirector.stepFrame();
+				expect(
+					(yield* dialogueState.snapshot).activeDialogue?.page.pageIndex,
+				).toBe(1);
+
+				const introSecondPageFrame =
+					yield* starterPresentationDirector.renderFrame();
+				expect(
+					introSecondPageFrame.commands.some(
+						(command) =>
+							command.type === "draw-text" &&
+							command.text.includes("Space to take it"),
+					),
+				).toBe(true);
+
+				yield* input.beginFrame;
+				yield* input.applyEvent({
+					key: "Space",
+					type: "key-up",
+				});
+
+				yield* input.beginFrame;
+				yield* input.applyEvent({
+					key: "Space",
+					type: "key-down",
+				});
+				yield* starterGameplayDirector.stepFrame();
+				expect((yield* dialogueState.snapshot).activeDialogue).toBeNull();
+
+				yield* input.beginFrame;
+				yield* input.applyEvent({
+					key: "Space",
+					type: "key-up",
+				});
 
 				yield* input.beginFrame;
 				yield* input.applyEvent({
@@ -249,6 +309,18 @@ describe("starter", () => {
 					true,
 				);
 				expect((yield* worldState.snapshot).inventory).toContain("lantern");
+				expect((yield* dialogueState.snapshot).activeDialogue?.dialogueId).toBe(
+					"lantern-picked-up",
+				);
+
+				const pickupFrame = yield* starterPresentationDirector.renderFrame();
+				expect(
+					pickupFrame.commands.some(
+						(command) =>
+							command.type === "draw-text" &&
+							command.text.includes("The lantern"),
+					),
+				).toBe(true);
 
 				yield* playerState.restore({
 					...(yield* playerState.snapshot),
@@ -277,8 +349,34 @@ describe("starter", () => {
 					type: "key-down",
 				});
 				yield* starterGameplayDirector.stepFrame();
+				expect((yield* dialogueState.snapshot).activeDialogue).toBeNull();
+
+				yield* input.beginFrame;
+				yield* input.applyEvent({
+					key: "Space",
+					type: "key-up",
+				});
+
+				yield* input.beginFrame;
+				yield* input.applyEvent({
+					key: "Space",
+					type: "key-down",
+				});
+				yield* starterGameplayDirector.stepFrame();
 
 				expect((yield* gameplayState.snapshot).enemyDefeated).toBe(true);
+				expect((yield* dialogueState.snapshot).activeDialogue?.dialogueId).toBe(
+					"slime-defeated",
+				);
+
+				const enemyFrame = yield* starterPresentationDirector.renderFrame();
+				expect(
+					enemyFrame.commands.some(
+						(command) =>
+							command.type === "draw-text" &&
+							command.text.includes("The slime"),
+					),
+				).toBe(true);
 
 				const participants = yield* starterSaveParticipants.all;
 				const saveProgram = Effect.gen(function* () {
@@ -296,6 +394,7 @@ describe("starter", () => {
 						introSequencePlayed: false,
 						lanternPickupCollected: false,
 					});
+					yield* dialogueState.clear;
 
 					yield* saveCoordinator.restoreSlot("slot-a");
 				});
@@ -317,6 +416,9 @@ describe("starter", () => {
 				expect((yield* gameplayState.snapshot).enemyDefeated).toBe(true);
 				expect((yield* gameplayState.snapshot).lanternPickupCollected).toBe(
 					true,
+				);
+				expect((yield* dialogueState.snapshot).activeDialogue?.dialogueId).toBe(
+					"slime-defeated",
 				);
 				expect((yield* audio.music)?.cueId).toBe("starter-theme");
 				expect((yield* audio.sounds).length).toBeGreaterThanOrEqual(4);

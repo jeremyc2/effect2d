@@ -25,7 +25,7 @@ describe("Audio", () => {
 					sourcePath: "audio/sfx/sword-hit.wav",
 				});
 
-				yield* audio.playLoopingMusic("overworld-theme");
+				yield* audio.playMusic("overworld-theme", { loop: true });
 				const firstHit = yield* audio.playSfx("sword-hit");
 				const secondHit = yield* audio.playSfx("sword-hit", {
 					pitch: 1.2,

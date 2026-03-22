@@ -247,7 +247,7 @@ export class Script extends ServiceMap.Service<
 			const playMusicCue = Effect.fn("Script.playMusicCue")(function* (
 				cueId: string,
 			) {
-				yield* audio.playLoopingMusic(cueId);
+				yield* audio.playMusic(cueId, { loop: true });
 			});
 
 			const playSoundCue = Effect.fn("Script.playSoundCue")(function* (

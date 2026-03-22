@@ -191,9 +191,6 @@ export class Audio extends ServiceMap.Service<
 		readonly loadedCues: Effect.Effect<ReadonlyArray<LoadedAudioCue>>;
 		readonly music: Effect.Effect<MusicPlayback | null>;
 		readonly pauseMusic: Effect.Effect<void>;
-		readonly playLoopingMusic: (
-			cueId: string,
-		) => Effect.Effect<void, UnknownAudioCueError | WrongAudioCueKindError>;
 		readonly playMusic: (
 			cueId: string,
 			options?: AudioPlaybackOptions,
@@ -298,12 +295,6 @@ export class Audio extends ServiceMap.Service<
 						volume: resolveVolume(options, cue),
 					},
 				}));
-			});
-
-			const playLoopingMusic = Effect.fn("Audio.playLoopingMusic")(function* (
-				cueId: string,
-			) {
-				yield* playMusic(cueId, { loop: true });
 			});
 
 			const pauseMusic = Ref.update(stateRef, (state) => ({
@@ -421,7 +412,6 @@ export class Audio extends ServiceMap.Service<
 				),
 				music: snapshot.pipe(Effect.map((current) => current.music)),
 				pauseMusic,
-				playLoopingMusic,
 				playMusic,
 				playSfx,
 				resumeMusic,
