@@ -134,14 +134,14 @@
 
 ## Milestone 12: Debugging And Diagnostics
 
-- [ ] Implement a debug overlay service.
-- [ ] Implement frame timing and FPS diagnostics.
-- [ ] Implement collision and trigger visualization.
-- [ ] Implement camera bounds and room marker visualization.
-- [ ] Implement scene stack inspection.
+- [x] Implement a debug overlay service.
+- [x] Implement frame timing and FPS diagnostics.
+- [x] Implement collision and trigger visualization.
+- [x] Implement camera bounds and room marker visualization.
+- [x] Implement scene stack inspection.
 - [ ] Implement resource and asset diagnostics where practical.
 - [ ] Implement structured logging patterns through Effect.
-- [ ] Add debug toggles that can be disabled cleanly in normal play.
+- [x] Add debug toggles that can be disabled cleanly in normal play.
 
 ## Milestone 13: Scripting And Orchestration
 
