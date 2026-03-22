@@ -279,7 +279,7 @@ const renderMarkdown = (markdown: string): string =>
 	});
 
 const renderHero = (): string => `
-	<section class="hero" id="top">
+	<section class="hero">
 		<div class="hero-brand">
 			<div class="hero-mark" aria-hidden="true">
 				<span></span>
@@ -471,6 +471,7 @@ const renderHtmlDocument = ({
 				--accent: #9ae6b4;
 				--accent-strong: #d4ff72;
 				--accent-warm: #f8bf72;
+				--header-height: 64px;
 				--shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
 				--hero-glow:
 					radial-gradient(circle at 20% 20%, rgba(154, 230, 180, 0.14), transparent 34%),
@@ -488,10 +489,6 @@ const renderHtmlDocument = ({
 
 			html {
 				scroll-behavior: smooth;
-			}
-
-			[id] {
-				scroll-margin-top: 108px;
 			}
 
 			body {
@@ -581,8 +578,8 @@ const renderHtmlDocument = ({
 			.sidebar,
 			.aside {
 				position: sticky;
-				top: 84px;
-				height: calc(100vh - 84px);
+				top: var(--header-height);
+				max-height: calc(100vh - var(--header-height));
 				overflow: auto;
 				padding: 1.5rem 1.1rem 2rem;
 				border-right: 1px solid var(--border);
@@ -592,6 +589,11 @@ const renderHtmlDocument = ({
 			.aside {
 				border-right: 0;
 				border-left: 1px solid var(--border);
+			}
+
+			.sidebar-inner,
+			.aside-inner {
+				padding-top: 0;
 			}
 
 			.sidebar-label,
@@ -1028,7 +1030,7 @@ const renderHtmlDocument = ({
 		</style>
 	</head>
 	<body>
-		<div class="app-shell">
+		<div class="app-shell" id="top">
 			<header class="topbar">
 				<a class="brand" href="#top">
 					<div class="brand-mark" aria-hidden="true">
@@ -1041,12 +1043,14 @@ const renderHtmlDocument = ({
 			</header>
 			<div class="layout">
 				<aside class="sidebar">
-					<p class="sidebar-label">Navigation</p>
-					<nav id="sidebar-nav">
-						<a class="nav-group-title" href="#introduction">Introduction</a>
-						<a class="nav-group-title" href="#modules" style="margin-bottom: 1.1rem;">Modules</a>
-						${renderSidebar(modules)}
-					</nav>
+					<div class="sidebar-inner">
+						<p class="sidebar-label">Navigation</p>
+						<nav id="sidebar-nav">
+							<a class="nav-group-title" href="#introduction">Introduction</a>
+							<a class="nav-group-title" href="#modules" style="margin-bottom: 1.1rem;">Modules</a>
+							${renderSidebar(modules)}
+						</nav>
+					</div>
 				</aside>
 				<main class="main">
 					${renderHero()}
@@ -1060,8 +1064,10 @@ const renderHtmlDocument = ({
 					</section>
 				</main>
 				<aside class="aside">
-					<p class="aside-label">On this page</p>
-					${renderOnThisPage(modules)}
+					<div class="aside-inner">
+						<p class="aside-label">On this page</p>
+						${renderOnThisPage(modules)}
+					</div>
 				</aside>
 			</div>
 		</div>
