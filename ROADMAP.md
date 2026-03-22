@@ -43,15 +43,15 @@
 
 ## Milestone 4: Core Rendering Model
 
-- [ ] Define the immediate-mode 2D drawing API.
-- [ ] Implement frame begin, frame end, and clear operations.
-- [ ] Implement draw commands for images, rectangles, circles, lines, and text.
-- [ ] Implement transforms, color tinting, blend controls, and draw order handling.
+- [x] Define the immediate-mode 2D drawing API.
+- [x] Implement frame begin, frame end, and clear operations.
+- [x] Implement draw commands for images, rectangles, circles, lines, and text.
+- [x] Implement transforms, color tinting, blend controls, and draw order handling.
 - [x] Implement a camera transform model for world-to-screen rendering.
-- [ ] Add render command recording so the user-facing API stays stable while the backend evolves.
+- [x] Add render command recording so the user-facing API stays stable while the backend evolves.
 - [ ] Add basic batching strategy for common 2D draw paths.
-- [ ] Add typed rendering errors where operations can fail meaningfully.
-- [ ] Add built-in visual effects support for fades, flashes, tinting, and simple screen effects without depending on custom shaders.
+- [x] Add typed rendering errors where operations can fail meaningfully.
+- [x] Add built-in visual effects support for fades, flashes, tinting, and simple screen effects without depending on custom shaders.
 
 ## Milestone 5: Text, Fonts, And Lightweight UI
 
@@ -65,14 +65,14 @@
 
 ## Milestone 6: Input
 
-- [ ] Implement raw keyboard input.
-- [ ] Implement raw mouse input.
-- [ ] Implement polling access for current input state.
-- [ ] Implement event-style access for presses, releases, wheel, and text entry where applicable.
-- [ ] Implement action mapping on top of raw input.
-- [ ] Implement rebindable action bindings.
-- [ ] Implement scene-aware input routing so overlays and menus can intentionally consume input.
-- [ ] Add typed errors for invalid or conflicting bindings where needed.
+- [x] Implement raw keyboard input.
+- [x] Implement raw mouse input.
+- [x] Implement polling access for current input state.
+- [x] Implement event-style access for presses, releases, wheel, and text entry where applicable.
+- [x] Implement action mapping on top of raw input.
+- [x] Implement rebindable action bindings.
+- [x] Implement scene-aware input routing so overlays and menus can intentionally consume input.
+- [x] Add typed errors for invalid or conflicting bindings where needed.
 
 ## Milestone 7: Maps And World Content
 
@@ -111,15 +111,15 @@
 
 ## Milestone 10: Audio
 
-- [ ] Define the audio service split between sound effects and music.
-- [ ] Implement audio asset loading through Effect.
-- [ ] Implement music playback controls.
-- [ ] Implement sound effect playback controls.
-- [ ] Implement overlapping sound effect playback.
-- [ ] Implement mixer buses for `master`, `music`, and `sfx`.
-- [ ] Implement audio resource ownership and teardown.
-- [ ] Add convenience helpers for common playback patterns while preserving lower-level handles.
-- [ ] Add typed audio errors for load and playback failure modes where meaningful.
+- [x] Define the audio service split between sound effects and music.
+- [x] Implement audio asset loading through Effect.
+- [x] Implement music playback controls.
+- [x] Implement sound effect playback controls.
+- [x] Implement overlapping sound effect playback.
+- [x] Implement mixer buses for `master`, `music`, and `sfx`.
+- [x] Implement audio resource ownership and teardown.
+- [x] Add convenience helpers for common playback patterns while preserving lower-level handles.
+- [x] Add typed audio errors for load and playback failure modes where meaningful.
 
 ## Milestone 11: Persistence
 
@@ -162,7 +162,7 @@
 - [x] Add persistence tests.
 - [x] Add collision and map validation tests.
 - [x] Add animation and tween tests.
-- [ ] Add service composition tests for common engine launch paths.
+- [x] Add service composition tests for common engine launch paths.
 
 ## Milestone 15: Starter And Sample Game Structure
 
