@@ -75,7 +75,7 @@
 			}
 		]
 	},
-	"include": ["src/**/*", "starter/**/*", "games/**/*"],
+	"include": ["src/**/*", "scripts/**/*", "starter/**/*", "games/**/*"],
 	"exclude": ["reference_repositories/**/*", "starter/main.ts"],
 	"$schema": "https://raw.githubusercontent.com/Effect-TS/tsgo/refs/heads/main/schema.json"
 }

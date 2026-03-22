@@ -1,0 +1,3437 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>effect2d Public API</title>
+		<meta name="description" content="The public entrypoint for the `effect2d` game engine." />
+		<style>
+			:root {
+				--bg: #0a0b10;
+				--bg-elevated: rgba(18, 20, 30, 0.88);
+				--bg-soft: rgba(255, 255, 255, 0.03);
+				--border: rgba(255, 255, 255, 0.08);
+				--border-strong: rgba(255, 255, 255, 0.14);
+				--text: #f3efe4;
+				--muted: #b8b3a7;
+				--accent: #9ae6b4;
+				--accent-strong: #d4ff72;
+				--accent-warm: #f8bf72;
+				--shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+				--hero-glow:
+					radial-gradient(circle at 20% 20%, rgba(154, 230, 180, 0.14), transparent 34%),
+					radial-gradient(circle at 80% 0%, rgba(248, 191, 114, 0.12), transparent 28%),
+					radial-gradient(circle at 50% 100%, rgba(76, 201, 240, 0.08), transparent 32%);
+				color-scheme: dark;
+				font-family:
+					"Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino,
+					"URW Palladio L", Georgia, serif;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			html {
+				scroll-behavior: smooth;
+			}
+
+			[id] {
+				scroll-margin-top: 108px;
+			}
+
+			body {
+				margin: 0;
+				background:
+					linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 24%),
+					var(--hero-glow),
+					var(--bg);
+				color: var(--text);
+			}
+
+			body::before {
+				content: "";
+				position: fixed;
+				inset: 0;
+				pointer-events: none;
+				background-image:
+					linear-gradient(rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+					linear-gradient(90deg, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+				background-size: 32px 32px;
+				mask-image: radial-gradient(circle at center, black 38%, transparent 95%);
+				opacity: 0.25;
+			}
+
+			a {
+				color: inherit;
+				text-decoration: none;
+			}
+
+			code,
+			pre,
+			input {
+				font-family:
+					"Berkeley Mono", "SFMono-Regular", Consolas, "Liberation Mono",
+					Menlo, monospace;
+			}
+
+			.app-shell {
+				min-height: 100vh;
+			}
+
+			.topbar {
+				position: sticky;
+				top: 0;
+				z-index: 40;
+				display: grid;
+				grid-template-columns: minmax(0, 1fr) minmax(260px, 420px) auto;
+				gap: 1rem;
+				align-items: center;
+				padding: 1rem 1.5rem;
+				border-bottom: 1px solid var(--border);
+				background: rgba(7, 9, 14, 0.82);
+				backdrop-filter: blur(22px);
+			}
+
+			.brand {
+				display: inline-flex;
+				align-items: center;
+				gap: 0.9rem;
+				font-size: 1.35rem;
+				font-weight: 700;
+				letter-spacing: 0.02em;
+			}
+
+			.brand-mark,
+			.hero-mark {
+				position: relative;
+				display: inline-grid;
+				gap: 0.18rem;
+			}
+
+			.brand-mark span,
+			.hero-mark span {
+				display: block;
+				width: 1.35rem;
+				height: 0.42rem;
+				border: 1px solid rgba(255, 255, 255, 0.14);
+				background: linear-gradient(135deg, var(--accent-strong), var(--accent));
+				clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+				filter: drop-shadow(0 0 10px rgba(154, 230, 180, 0.24));
+			}
+
+			.topbar-search {
+				position: relative;
+			}
+
+			.topbar-search input {
+				width: 100%;
+				padding: 0.95rem 3.5rem 0.95rem 1rem;
+				border: 1px solid var(--border);
+				border-radius: 14px;
+				background: rgba(255, 255, 255, 0.03);
+				color: var(--text);
+				font-size: 0.98rem;
+				outline: none;
+				transition:
+					border-color 180ms ease,
+					transform 180ms ease,
+					background 180ms ease;
+			}
+
+			.topbar-search input:focus {
+				border-color: rgba(154, 230, 180, 0.42);
+				background: rgba(255, 255, 255, 0.05);
+				transform: translateY(-1px);
+			}
+
+			.search-shortcut {
+				position: absolute;
+				top: 50%;
+				right: 0.8rem;
+				transform: translateY(-50%);
+				padding: 0.18rem 0.42rem;
+				border: 1px solid var(--border);
+				border-radius: 8px;
+				font-size: 0.78rem;
+				color: var(--muted);
+			}
+
+			.topbar-meta {
+				color: var(--muted);
+				font-size: 0.9rem;
+			}
+
+			.layout {
+				display: grid;
+				grid-template-columns: 300px minmax(0, 1fr) 240px;
+				gap: 0;
+			}
+
+			.sidebar,
+			.aside {
+				position: sticky;
+				top: 84px;
+				height: calc(100vh - 84px);
+				overflow: auto;
+				padding: 1.5rem 1.1rem 2rem;
+				border-right: 1px solid var(--border);
+				background: linear-gradient(180deg, rgba(255, 255, 255, 0.015), transparent);
+			}
+
+			.aside {
+				border-right: 0;
+				border-left: 1px solid var(--border);
+			}
+
+			.sidebar-label,
+			.aside-label,
+			.section-kicker,
+			.eyebrow,
+			.file-path,
+			.doc-kind {
+				font-family:
+					"Berkeley Mono", "SFMono-Regular", Consolas, "Liberation Mono",
+					Menlo, monospace;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+			}
+
+			.sidebar-label,
+			.aside-label {
+				margin: 0 0 1rem;
+				color: var(--muted);
+				font-size: 0.74rem;
+			}
+
+			.nav-group + .nav-group {
+				margin-top: 1.5rem;
+				padding-top: 1.5rem;
+				border-top: 1px solid var(--border);
+			}
+
+			.nav-group-title {
+				display: block;
+				margin-bottom: 0.8rem;
+				font-size: 1.05rem;
+				font-weight: 700;
+			}
+
+			.nav-file + .nav-file {
+				margin-top: 0.9rem;
+			}
+
+			.nav-file-title {
+				display: block;
+				margin-bottom: 0.45rem;
+				color: var(--muted);
+				font-size: 0.92rem;
+			}
+
+			.nav-entry {
+				display: flex;
+				align-items: baseline;
+				justify-content: space-between;
+				gap: 0.75rem;
+				padding: 0.38rem 0.5rem;
+				border-radius: 10px;
+				color: rgba(243, 239, 228, 0.92);
+				transition:
+					background 150ms ease,
+					transform 150ms ease,
+					color 150ms ease;
+			}
+
+			.nav-entry:hover,
+			.nav-entry:focus-visible {
+				background: rgba(255, 255, 255, 0.05);
+				color: var(--accent-strong);
+				transform: translateX(3px);
+			}
+
+			.nav-entry small {
+				color: var(--muted);
+				font-size: 0.72rem;
+			}
+
+			.main {
+				padding: 1.8rem 2rem 5rem;
+			}
+
+			.hero {
+				position: relative;
+				padding: 2.5rem 2.2rem 2.4rem;
+				border: 1px solid var(--border-strong);
+				background:
+					linear-gradient(135deg, rgba(154, 230, 180, 0.08), rgba(248, 191, 114, 0.05) 38%, rgba(255, 255, 255, 0.02)),
+					rgba(255, 255, 255, 0.02);
+				box-shadow: var(--shadow);
+				overflow: hidden;
+				animation: hero-enter 700ms cubic-bezier(0.2, 1, 0.2, 1);
+			}
+
+			.hero::after {
+				content: "";
+				position: absolute;
+				inset: auto -10% -35% 35%;
+				height: 260px;
+				background: radial-gradient(circle, rgba(212, 255, 114, 0.12), transparent 62%);
+				transform: rotate(-6deg);
+			}
+
+			.hero-brand {
+				position: relative;
+				z-index: 1;
+				display: flex;
+				align-items: center;
+				gap: 1rem;
+			}
+
+			.hero-mark span {
+				width: 2rem;
+				height: 0.62rem;
+			}
+
+			.eyebrow {
+				margin: 0 0 0.35rem;
+				color: var(--accent);
+				font-size: 0.75rem;
+			}
+
+			.hero h1 {
+				margin: 0;
+				font-size: clamp(2.9rem, 8vw, 5.8rem);
+				line-height: 0.95;
+				letter-spacing: -0.04em;
+			}
+
+			.hero-copy {
+				position: relative;
+				z-index: 1;
+				max-width: 44rem;
+				margin: 1.25rem 0 0;
+				color: rgba(243, 239, 228, 0.88);
+				font-size: 1.14rem;
+				line-height: 1.7;
+			}
+
+			.hero-actions {
+				position: relative;
+				z-index: 1;
+				display: flex;
+				flex-wrap: wrap;
+				gap: 0.8rem;
+				margin-top: 1.4rem;
+			}
+
+			.hero-actions a {
+				padding: 0.75rem 1rem;
+				border: 1px solid var(--border);
+				background: rgba(255, 255, 255, 0.03);
+				font-size: 0.95rem;
+				transition:
+					transform 160ms ease,
+					border-color 160ms ease,
+					background 160ms ease;
+			}
+
+			.hero-actions a:hover,
+			.hero-actions a:focus-visible {
+				transform: translateY(-2px);
+				border-color: rgba(154, 230, 180, 0.36);
+				background: rgba(154, 230, 180, 0.06);
+			}
+
+			.content-section {
+				margin-top: 2rem;
+				padding-top: 2rem;
+				border-top: 1px solid var(--border);
+			}
+
+			.section-kicker {
+				margin: 0 0 0.7rem;
+				color: var(--accent-warm);
+				font-size: 0.72rem;
+			}
+
+			.intro-section .prose > :first-child {
+				margin-top: 0;
+			}
+
+			.module-section > h2 {
+				margin: 0 0 1.2rem;
+				font-size: clamp(2rem, 4.2vw, 3rem);
+				letter-spacing: -0.03em;
+			}
+
+			.file-group + .file-group {
+				margin-top: 2rem;
+				padding-top: 2rem;
+				border-top: 1px solid var(--border);
+			}
+
+			.file-group-header h3 {
+				margin: 0.2rem 0 0;
+				font-size: 1.45rem;
+			}
+
+			.file-path {
+				margin: 0;
+				color: var(--muted);
+				font-size: 0.72rem;
+			}
+
+			.file-group-entries {
+				display: grid;
+				gap: 1rem;
+				margin-top: 1rem;
+			}
+
+			.doc-entry {
+				padding: 1rem 1.05rem 1.1rem;
+				border: 1px solid var(--border);
+				background: var(--bg-soft);
+				opacity: 0;
+				transform: translateY(16px);
+				animation: section-enter 500ms cubic-bezier(0.2, 1, 0.2, 1) forwards;
+			}
+
+			.doc-entry-meta {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				justify-content: space-between;
+				gap: 0.75rem;
+			}
+
+			.doc-kind {
+				display: inline-flex;
+				padding: 0.28rem 0.46rem;
+				border: 1px solid rgba(154, 230, 180, 0.24);
+				background: rgba(154, 230, 180, 0.07);
+				color: var(--accent-strong);
+				font-size: 0.68rem;
+			}
+
+			.doc-source {
+				color: var(--muted);
+				font-size: 0.84rem;
+			}
+
+			.doc-entry h4 {
+				margin: 0.8rem 0 0.7rem;
+				font-size: 1.45rem;
+				letter-spacing: -0.02em;
+			}
+
+			.prose {
+				color: rgba(243, 239, 228, 0.88);
+				line-height: 1.72;
+				font-size: 1rem;
+			}
+
+			.prose h1,
+			.prose h2,
+			.prose h3,
+			.prose h4 {
+				margin: 1.6em 0 0.65em;
+				letter-spacing: -0.03em;
+				line-height: 1.1;
+			}
+
+			.prose h1 {
+				font-size: 2.2rem;
+			}
+
+			.prose h2 {
+				font-size: 1.7rem;
+			}
+
+			.prose h3 {
+				font-size: 1.35rem;
+			}
+
+			.prose p,
+			.prose ul,
+			.prose ol,
+			.prose pre,
+			.prose table,
+			.prose blockquote {
+				margin: 0 0 1rem;
+			}
+
+			.prose ul,
+			.prose ol {
+				padding-left: 1.25rem;
+			}
+
+			.prose li + li {
+				margin-top: 0.42rem;
+			}
+
+			.prose code {
+				padding: 0.1rem 0.32rem;
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				background: rgba(255, 255, 255, 0.04);
+				border-radius: 6px;
+				font-size: 0.92em;
+			}
+
+			.prose pre {
+				overflow: auto;
+				padding: 0.95rem 1rem;
+				border: 1px solid var(--border);
+				background: rgba(7, 9, 14, 0.92);
+			}
+
+			.prose pre code {
+				padding: 0;
+				border: 0;
+				background: transparent;
+			}
+
+			.prose table {
+				width: 100%;
+				border-collapse: collapse;
+			}
+
+			.prose th,
+			.prose td {
+				padding: 0.7rem;
+				border-bottom: 1px solid var(--border);
+				text-align: left;
+			}
+
+			.prose a {
+				color: var(--accent-strong);
+				text-decoration: underline;
+				text-decoration-color: rgba(212, 255, 114, 0.36);
+				text-underline-offset: 0.15em;
+			}
+
+			.toc {
+				display: grid;
+				gap: 0.55rem;
+			}
+
+			.toc a {
+				color: var(--muted);
+				transition:
+					color 150ms ease,
+					transform 150ms ease;
+			}
+
+			.toc a:hover,
+			.toc a:focus-visible {
+				color: var(--accent-strong);
+				transform: translateX(2px);
+			}
+
+			.hidden-by-search {
+				display: none;
+			}
+
+			@keyframes hero-enter {
+				from {
+					opacity: 0;
+					transform: translateY(18px) scale(0.985);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0) scale(1);
+				}
+			}
+
+			@keyframes section-enter {
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+
+			@media (max-width: 1180px) {
+				.layout {
+					grid-template-columns: 280px minmax(0, 1fr);
+				}
+
+				.aside {
+					display: none;
+				}
+			}
+
+			@media (max-width: 920px) {
+				.topbar {
+					grid-template-columns: 1fr;
+				}
+
+				.layout {
+					grid-template-columns: 1fr;
+				}
+
+				.sidebar,
+				.aside {
+					position: static;
+					height: auto;
+					border: 0;
+				}
+
+				.sidebar {
+					padding-bottom: 0;
+				}
+
+				.main {
+					padding-top: 1rem;
+				}
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				html {
+					scroll-behavior: auto;
+				}
+
+				*,
+				*::before,
+				*::after {
+					animation: none;
+					transition: none;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<div class="app-shell">
+			<header class="topbar">
+				<a class="brand" href="#top">
+					<div class="brand-mark" aria-hidden="true">
+						<span></span>
+						<span></span>
+						<span></span>
+					</div>
+					<span>effect2d Docs</span>
+				</a>
+				<label class="topbar-search" aria-label="Search docs">
+					<input id="doc-search" type="search" placeholder="Search public API..." />
+					<span class="search-shortcut">/</span>
+				</label>
+			</header>
+			<div class="layout">
+				<aside class="sidebar">
+					<p class="sidebar-label">Navigation</p>
+					<nav id="sidebar-nav">
+						<a class="nav-group-title" href="#introduction">Introduction</a>
+						<a class="nav-group-title" href="#modules" style="margin-bottom: 1.1rem;">Modules</a>
+						
+					<section class="nav-group">
+						<a class="nav-group-title" href="#audio">Audio</a>
+						
+										<div class="nav-file nav-file-flat">
+											
+											<a class="nav-entry" href="#audio-audiobus" data-search="audiobus type audio audio">
+												<span>AudioBus</span>
+												<small>type</small>
+											</a>
+										
+											<a class="nav-entry" href="#audio-audiocuekind" data-search="audiocuekind type audio audio">
+												<span>AudioCueKind</span>
+												<small>type</small>
+											</a>
+										
+											<a class="nav-entry" href="#audio-audiocuedefinition" data-search="audiocuedefinition interface audio audio">
+												<span>AudioCueDefinition</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#audio-loadedaudiocue" data-search="loadedaudiocue interface audio audio">
+												<span>LoadedAudioCue</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#audio-audioplaybackoptions" data-search="audioplaybackoptions interface audio audio">
+												<span>AudioPlaybackOptions</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#audio-musicplayback" data-search="musicplayback interface audio audio">
+												<span>MusicPlayback</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#audio-soundplayback" data-search="soundplayback interface audio audio">
+												<span>SoundPlayback</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#audio-audiosnapshot" data-search="audiosnapshot interface audio audio">
+												<span>AudioSnapshot</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#audio-audio" data-search="audio class audio audio">
+												<span>Audio</span>
+												<small>class</small>
+											</a>
+										
+										</div>
+									
+					</section>
+				
+					<section class="nav-group">
+						<a class="nav-group-title" href="#graphics">Graphics</a>
+						
+										<div class="nav-file">
+											<a class="nav-file-title" href="#graphics-camera-ts">Camera</a>
+											
+											<a class="nav-entry" href="#graphics-cameravector" data-search="cameravector interface graphics camera">
+												<span>CameraVector</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-camerabounds" data-search="camerabounds interface graphics camera">
+												<span>CameraBounds</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-cameraviewport" data-search="cameraviewport interface graphics camera">
+												<span>CameraViewport</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-camerashakestate" data-search="camerashakestate interface graphics camera">
+												<span>CameraShakeState</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-camerastate" data-search="camerastate interface graphics camera">
+												<span>CameraState</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-makecamerastate" data-search="makecamerastate const graphics camera">
+												<span>makeCameraState</span>
+												<small>const</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-scenecamera" data-search="scenecamera class graphics camera">
+												<span>SceneCamera</span>
+												<small>class</small>
+											</a>
+										
+										</div>
+									
+										<div class="nav-file">
+											<a class="nav-file-title" href="#graphics-graphics-ts">Graphics</a>
+											
+											<a class="nav-entry" href="#graphics-color" data-search="color interface graphics graphics">
+												<span>Color</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-transform2d" data-search="transform2d interface graphics graphics">
+												<span>Transform2D</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-blendmode" data-search="blendmode type graphics graphics">
+												<span>BlendMode</span>
+												<small>type</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-rectangledrawmode" data-search="rectangledrawmode type graphics graphics">
+												<span>RectangleDrawMode</span>
+												<small>type</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-circledrawmode" data-search="circledrawmode type graphics graphics">
+												<span>CircleDrawMode</span>
+												<small>type</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-drawtextoptions" data-search="drawtextoptions interface graphics graphics">
+												<span>DrawTextOptions</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-drawcommand" data-search="drawcommand type graphics graphics">
+												<span>DrawCommand</span>
+												<small>type</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-framesnapshot" data-search="framesnapshot interface graphics graphics">
+												<span>FrameSnapshot</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-graphicsframenotopenerror" data-search="graphicsframenotopenerror class graphics graphics">
+												<span>GraphicsFrameNotOpenError</span>
+												<small>class</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-graphicstransformstackunderflowerror" data-search="graphicstransformstackunderflowerror class graphics graphics">
+												<span>GraphicsTransformStackUnderflowError</span>
+												<small>class</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-graphics" data-search="graphics class graphics graphics">
+												<span>Graphics</span>
+												<small>class</small>
+											</a>
+										
+										</div>
+									
+					</section>
+				
+					<section class="nav-group">
+						<a class="nav-group-title" href="#input">Input</a>
+						
+										<div class="nav-file nav-file-flat">
+											
+											<a class="nav-entry" href="#input-keycode" data-search="keycode type input input">
+												<span>KeyCode</span>
+												<small>type</small>
+											</a>
+										
+											<a class="nav-entry" href="#input-mousebutton" data-search="mousebutton type input input">
+												<span>MouseButton</span>
+												<small>type</small>
+											</a>
+										
+											<a class="nav-entry" href="#input-pointerposition" data-search="pointerposition interface input input">
+												<span>PointerPosition</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#input-inputevent" data-search="inputevent type input input">
+												<span>InputEvent</span>
+												<small>type</small>
+											</a>
+										
+											<a class="nav-entry" href="#input-inputtrigger" data-search="inputtrigger type input input">
+												<span>InputTrigger</span>
+												<small>type</small>
+											</a>
+										
+											<a class="nav-entry" href="#input-actionbinding" data-search="actionbinding interface input input">
+												<span>ActionBinding</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#input-actionstate" data-search="actionstate interface input input">
+												<span>ActionState</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#input-inputsnapshot" data-search="inputsnapshot interface input input">
+												<span>InputSnapshot</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#input-input" data-search="input class input input">
+												<span>Input</span>
+												<small>class</small>
+											</a>
+										
+										</div>
+									
+					</section>
+				
+					<section class="nav-group">
+						<a class="nav-group-title" href="#maps">Maps</a>
+						
+										<div class="nav-file">
+											<a class="nav-file-title" href="#maps-mapcontent-ts">MapContent</a>
+											
+											<a class="nav-entry" href="#maps-roommetadata" data-search="roommetadata type maps mapcontent">
+												<span>RoomMetadata</span>
+												<small>type</small>
+											</a>
+										
+											<a class="nav-entry" href="#maps-tileplane" data-search="tileplane interface maps mapcontent">
+												<span>TilePlane</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#maps-roomobject" data-search="roomobject interface maps mapcontent">
+												<span>RoomObject</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#maps-objectplane" data-search="objectplane interface maps mapcontent">
+												<span>ObjectPlane</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#maps-roomcontent" data-search="roomcontent interface maps mapcontent">
+												<span>RoomContent</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#maps-spawnpoint" data-search="spawnpoint interface maps mapcontent">
+												<span>SpawnPoint</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#maps-transitionzone" data-search="transitionzone interface maps mapcontent">
+												<span>TransitionZone</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#maps-triggerzone" data-search="triggerzone interface maps mapcontent">
+												<span>TriggerZone</span>
+												<small>interface</small>
+											</a>
+										
+										</div>
+									
+										<div class="nav-file">
+											<a class="nav-file-title" href="#maps-mapqueries-ts">MapQueries</a>
+											
+											<a class="nav-entry" href="#maps-roomobjects" data-search="roomobjects const maps mapqueries">
+												<span>roomObjects</span>
+												<small>const</small>
+											</a>
+										
+											<a class="nav-entry" href="#maps-roomobjectbyid" data-search="roomobjectbyid const maps mapqueries">
+												<span>roomObjectById</span>
+												<small>const</small>
+											</a>
+										
+											<a class="nav-entry" href="#maps-roomobjectsbykind" data-search="roomobjectsbykind const maps mapqueries">
+												<span>roomObjectsByKind</span>
+												<small>const</small>
+											</a>
+										
+											<a class="nav-entry" href="#maps-roomspawnpoints" data-search="roomspawnpoints const maps mapqueries">
+												<span>roomSpawnPoints</span>
+												<small>const</small>
+											</a>
+										
+											<a class="nav-entry" href="#maps-roomtransitionzones" data-search="roomtransitionzones const maps mapqueries">
+												<span>roomTransitionZones</span>
+												<small>const</small>
+											</a>
+										
+										</div>
+									
+										<div class="nav-file">
+											<a class="nav-file-title" href="#maps-maprepository-ts">MapRepository</a>
+											
+											<a class="nav-entry" href="#maps-maprepository" data-search="maprepository class maps maprepository">
+												<span>MapRepository</span>
+												<small>class</small>
+											</a>
+										
+										</div>
+									
+										<div class="nav-file">
+											<a class="nav-file-title" href="#maps-roombuilder-ts">RoomBuilder</a>
+											
+											<a class="nav-entry" href="#maps-definetileplane" data-search="definetileplane const maps roombuilder">
+												<span>defineTilePlane</span>
+												<small>const</small>
+											</a>
+										
+											<a class="nav-entry" href="#maps-defineobjectplane" data-search="defineobjectplane const maps roombuilder">
+												<span>defineObjectPlane</span>
+												<small>const</small>
+											</a>
+										
+											<a class="nav-entry" href="#maps-defineroom" data-search="defineroom const maps roombuilder">
+												<span>defineRoom</span>
+												<small>const</small>
+											</a>
+										
+											<a class="nav-entry" href="#maps-roomobject" data-search="roomobject const maps roombuilder">
+												<span>roomObject</span>
+												<small>const</small>
+											</a>
+										
+											<a class="nav-entry" href="#maps-spawnpoint" data-search="spawnpoint const maps roombuilder">
+												<span>spawnPoint</span>
+												<small>const</small>
+											</a>
+										
+											<a class="nav-entry" href="#maps-transitionzone" data-search="transitionzone const maps roombuilder">
+												<span>transitionZone</span>
+												<small>const</small>
+											</a>
+										
+											<a class="nav-entry" href="#maps-triggerzone" data-search="triggerzone const maps roombuilder">
+												<span>triggerZone</span>
+												<small>const</small>
+											</a>
+										
+											<a class="nav-entry" href="#maps-roommetadata" data-search="roommetadata const maps roombuilder">
+												<span>roomMetadata</span>
+												<small>const</small>
+											</a>
+										
+										</div>
+									
+					</section>
+				
+					<section class="nav-group">
+						<a class="nav-group-title" href="#native">Native</a>
+						
+										<div class="nav-file">
+											<a class="nav-file-title" href="#native-nativeboundary-ts">NativeBoundary</a>
+											
+											<a class="nav-entry" href="#native-nativeboundary" data-search="nativeboundary class native nativeboundary">
+												<span>NativeBoundary</span>
+												<small>class</small>
+											</a>
+										
+										</div>
+									
+										<div class="nav-file">
+											<a class="nav-file-title" href="#native-nativeframesource-ts">NativeFrameSource</a>
+											
+											<a class="nav-entry" href="#native-nativeframesource" data-search="nativeframesource class native nativeframesource">
+												<span>NativeFrameSource</span>
+												<small>class</small>
+											</a>
+										
+										</div>
+									
+										<div class="nav-file">
+											<a class="nav-file-title" href="#native-sdlcanvasnativebackend-ts">SdlCanvasNativeBackend</a>
+											
+											<a class="nav-entry" href="#native-sdlcanvasnativebackendoptions" data-search="sdlcanvasnativebackendoptions interface native sdlcanvasnativebackend">
+												<span>SdlCanvasNativeBackendOptions</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#native-makesdlcanvasnativebackendlayer" data-search="makesdlcanvasnativebackendlayer const native sdlcanvasnativebackend">
+												<span>makeSdlCanvasNativeBackendLayer</span>
+												<small>const</small>
+											</a>
+										
+											<a class="nav-entry" href="#native-makesdlcanvasnativeboundarylayer" data-search="makesdlcanvasnativeboundarylayer const native sdlcanvasnativebackend">
+												<span>makeSdlCanvasNativeBoundaryLayer</span>
+												<small>const</small>
+											</a>
+										
+										</div>
+									
+					</section>
+				
+					<section class="nav-group">
+						<a class="nav-group-title" href="#runtime">Runtime</a>
+						
+										<div class="nav-file">
+											<a class="nav-file-title" href="#runtime-engine-ts">Engine</a>
+											
+											<a class="nav-entry" href="#runtime-engine" data-search="engine class runtime engine">
+												<span>Engine</span>
+												<small>class</small>
+											</a>
+										
+										</div>
+									
+										<div class="nav-file">
+											<a class="nav-file-title" href="#runtime-engineconfig-ts">EngineConfig</a>
+											
+											<a class="nav-entry" href="#runtime-engineconfig" data-search="engineconfig interface runtime engineconfig">
+												<span>EngineConfig</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#runtime-defaultengineconfig" data-search="defaultengineconfig const runtime engineconfig">
+												<span>defaultEngineConfig</span>
+												<small>const</small>
+											</a>
+										
+										</div>
+									
+										<div class="nav-file">
+											<a class="nav-file-title" href="#runtime-launch-ts">Launch</a>
+											
+											<a class="nav-entry" href="#runtime-makeenginelayer" data-search="makeenginelayer const runtime launch">
+												<span>makeEngineLayer</span>
+												<small>const</small>
+											</a>
+										
+											<a class="nav-entry" href="#runtime-makeruntimelayer" data-search="makeruntimelayer const runtime launch">
+												<span>makeRuntimeLayer</span>
+												<small>const</small>
+											</a>
+										
+											<a class="nav-entry" href="#runtime-engineprogram" data-search="engineprogram const runtime launch">
+												<span>engineProgram</span>
+												<small>const</small>
+											</a>
+										
+											<a class="nav-entry" href="#runtime-seededengineprogram" data-search="seededengineprogram const runtime launch">
+												<span>seededEngineProgram</span>
+												<small>const</small>
+											</a>
+										
+										</div>
+									
+										<div class="nav-file">
+											<a class="nav-file-title" href="#runtime-randomsource-ts">RandomSource</a>
+											
+											<a class="nav-entry" href="#runtime-randomsource" data-search="randomsource class runtime randomsource">
+												<span>RandomSource</span>
+												<small>class</small>
+											</a>
+										
+											<a class="nav-entry" href="#runtime-withrandomseed" data-search="withrandomseed const runtime randomsource">
+												<span>withRandomSeed</span>
+												<small>const</small>
+											</a>
+										
+										</div>
+									
+										<div class="nav-file">
+											<a class="nav-file-title" href="#runtime-runtimeclock-ts">RuntimeClock</a>
+											
+											<a class="nav-entry" href="#runtime-runtimetimingsnapshot" data-search="runtimetimingsnapshot interface runtime runtimeclock">
+												<span>RuntimeTimingSnapshot</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#runtime-runtimeclock" data-search="runtimeclock class runtime runtimeclock">
+												<span>RuntimeClock</span>
+												<small>class</small>
+											</a>
+										
+										</div>
+									
+					</section>
+				
+					<section class="nav-group">
+						<a class="nav-group-title" href="#save">Save</a>
+						
+										<div class="nav-file">
+											<a class="nav-file-title" href="#save-savecoordinator-ts">SaveCoordinator</a>
+											
+											<a class="nav-entry" href="#save-savecoordinatoroptions" data-search="savecoordinatoroptions interface save savecoordinator">
+												<span>SaveCoordinatorOptions</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#save-savecoordinator" data-search="savecoordinator class save savecoordinator">
+												<span>SaveCoordinator</span>
+												<small>class</small>
+											</a>
+										
+										</div>
+									
+										<div class="nav-file">
+											<a class="nav-file-title" href="#save-savedocument-ts">SaveDocument</a>
+											
+											<a class="nav-entry" href="#save-saveslotid" data-search="saveslotid type save savedocument">
+												<span>SaveSlotId</span>
+												<small>type</small>
+											</a>
+										
+											<a class="nav-entry" href="#save-saveslotdocument" data-search="saveslotdocument interface save savedocument">
+												<span>SaveSlotDocument</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#save-savedocument" data-search="savedocument interface save savedocument">
+												<span>SaveDocument</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#save-saveparticipant" data-search="saveparticipant interface save savedocument">
+												<span>SaveParticipant</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#save-savemigration" data-search="savemigration interface save savedocument">
+												<span>SaveMigration</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#save-saveslotdocumentschema" data-search="saveslotdocumentschema const save savedocument">
+												<span>SaveSlotDocumentSchema</span>
+												<small>const</small>
+											</a>
+										
+											<a class="nav-entry" href="#save-savedocumentschema" data-search="savedocumentschema const save savedocument">
+												<span>SaveDocumentSchema</span>
+												<small>const</small>
+											</a>
+										
+										</div>
+									
+					</section>
+				
+					<section class="nav-group">
+						<a class="nav-group-title" href="#scene">Scene</a>
+						
+										<div class="nav-file">
+											<a class="nav-file-title" href="#scene-scene-ts">Scene</a>
+											
+											<a class="nav-entry" href="#scene-sceneid" data-search="sceneid type scene scene">
+												<span>SceneId</span>
+												<small>type</small>
+											</a>
+										
+											<a class="nav-entry" href="#scene-scenestacklevel" data-search="scenestacklevel type scene scene">
+												<span>SceneStackLevel</span>
+												<small>type</small>
+											</a>
+										
+											<a class="nav-entry" href="#scene-scenelifecycle" data-search="scenelifecycle interface scene scene">
+												<span>SceneLifecycle</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#scene-scenedefinition" data-search="scenedefinition interface scene scene">
+												<span>SceneDefinition</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#scene-sceneinstance" data-search="sceneinstance interface scene scene">
+												<span>SceneInstance</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#scene-scenestackentry" data-search="scenestackentry interface scene scene">
+												<span>SceneStackEntry</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#scene-scenestacksnapshot" data-search="scenestacksnapshot interface scene scene">
+												<span>SceneStackSnapshot</span>
+												<small>interface</small>
+											</a>
+										
+										</div>
+									
+										<div class="nav-file">
+											<a class="nav-file-title" href="#scene-scenedirector-ts">SceneDirector</a>
+											
+											<a class="nav-entry" href="#scene-scenedirector" data-search="scenedirector class scene scenedirector">
+												<span>SceneDirector</span>
+												<small>class</small>
+											</a>
+										
+										</div>
+									
+										<div class="nav-file">
+											<a class="nav-file-title" href="#scene-sceneregistry-ts">SceneRegistry</a>
+											
+											<a class="nav-entry" href="#scene-sceneregistry" data-search="sceneregistry class scene sceneregistry">
+												<span>SceneRegistry</span>
+												<small>class</small>
+											</a>
+										
+										</div>
+									
+					</section>
+				
+					<section class="nav-group">
+						<a class="nav-group-title" href="#script">Script</a>
+						
+										<div class="nav-file nav-file-flat">
+											
+											<a class="nav-entry" href="#script-dialogueprogress" data-search="dialogueprogress interface script script">
+												<span>DialogueProgress</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#script-dialoguescriptoptions" data-search="dialoguescriptoptions interface script script">
+												<span>DialogueScriptOptions</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#script-scriptevents" data-search="scriptevents class script script">
+												<span>ScriptEvents</span>
+												<small>class</small>
+											</a>
+										
+											<a class="nav-entry" href="#script-script" data-search="script class script script">
+												<span>Script</span>
+												<small>class</small>
+											</a>
+										
+										</div>
+									
+					</section>
+				
+					<section class="nav-group">
+						<a class="nav-group-title" href="#ui">UI</a>
+						
+										<div class="nav-file nav-file-flat">
+											
+											<a class="nav-entry" href="#ui-fontdefinition" data-search="fontdefinition interface ui ui">
+												<span>FontDefinition</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#ui-textline" data-search="textline interface ui ui">
+												<span>TextLine</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#ui-textlayout" data-search="textlayout interface ui ui">
+												<span>TextLayout</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#ui-uibounds" data-search="uibounds interface ui ui">
+												<span>UiBounds</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#ui-dialoguepage" data-search="dialoguepage interface ui ui">
+												<span>DialoguePage</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#ui-drawdialogueboxoptions" data-search="drawdialogueboxoptions interface ui ui">
+												<span>DrawDialogueBoxOptions</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#ui-menunavigationoptions" data-search="menunavigationoptions interface ui ui">
+												<span>MenuNavigationOptions</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#ui-menunavigationresult" data-search="menunavigationresult interface ui ui">
+												<span>MenuNavigationResult</span>
+												<small>interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#ui-ui" data-search="ui class ui ui">
+												<span>Ui</span>
+												<small>class</small>
+											</a>
+										
+										</div>
+									
+					</section>
+				
+					</nav>
+				</aside>
+				<main class="main">
+					
+	<section class="hero" id="top">
+		<div class="hero-brand">
+			<div class="hero-mark" aria-hidden="true">
+				<span></span>
+				<span></span>
+				<span></span>
+			</div>
+			<div>
+				<p class="eyebrow">Public API</p>
+				<h1>effect2d</h1>
+			</div>
+		</div>
+		<p class="hero-copy">The public entrypoint for the `effect2d` game engine.</p>
+		<div class="hero-actions">
+			<a href="#introduction">Read introduction</a>
+			<a href="#modules">Browse modules</a>
+		</div>
+	</section>
+
+					
+			<section class="content-section intro-section" id="introduction">
+				<div class="section-kicker">Overview</div>
+				<div class="prose"><p>The public entrypoint for the <code>effect2d</code> game engine.</p>
+<p>This module is the &quot;big bucket of Lego bricks&quot; entrypoint for building games
+with the engine. Most applications can import everything they need from here
+and only drop down into submodules when they want a more curated import
+boundary.</p>
+<h2 id="what-this-surface-area-includes">What this surface area includes</h2>
+<p>The root entrypoint re-exports the engine's public authoring APIs:</p>
+<ul>
+<li>Runtime bootstrapping and launch helpers such as
+<a href="#runtime-engine">Engine</a>, <a href="#runtime-engineconfig">EngineConfig</a>, <a href="#runtime-defaultengineconfig">defaultEngineConfig</a>,
+<a href="#runtime-makeruntimelayer">makeRuntimeLayer</a>, and <a href="#runtime-engineprogram">engineProgram</a></li>
+<li>Scene composition primitives such as <a href="#scene-scenedefinition">SceneDefinition</a>,
+<a href="#scene-scenedirector">SceneDirector</a>, and <a href="#scene-sceneregistry">SceneRegistry</a></li>
+<li>Core gameplay services including <a href="#graphics-graphics">Graphics</a>, <a href="#input-input">Input</a>,
+<a href="#audio-audio">Audio</a>, <a href="#script-script">Script</a>, <a href="#ui-ui">Ui</a>, and <a href="#save-savecoordinator">SaveCoordinator</a></li>
+<li>Supporting data models such as room content, save documents, camera state,
+input bindings, and audio cue definitions</li>
+<li>Native integration points such as <a href="#native-nativeboundary">NativeBoundary</a> and
+<a href="#native-makesdlcanvasnativeboundarylayer">makeSdlCanvasNativeBoundaryLayer</a> for playable desktop builds</li>
+</ul>
+<h2 id="mental-model-for-effect-engineers-who-are-new-to-game-development">Mental model for Effect engineers who are new to game development</h2>
+<p>If you already think in terms of <code>Layer</code>, <code>Effect</code>, services, scopes, and
+typed domain errors, you already know most of the architecture here.</p>
+<p>A game built with <code>effect2d</code> is usually organized around a small set of
+long-lived services:</p>
+<ul>
+<li><code>SceneDirector</code> decides which scene is active and manages scene lifecycle</li>
+<li><code>Graphics</code> records draw commands for the current frame</li>
+<li><code>Input</code> turns native keyboard and mouse events into stable action state</li>
+<li><code>Audio</code> manages music and overlapping sound effects as typed cues</li>
+<li><code>Script</code> coordinates timed sequences, dialogue, fades, and domain events</li>
+<li><code>Ui</code> helps with common text, menu, and dialogue presentation patterns</li>
+<li><code>SaveCoordinator</code> snapshots and restores participant state across save slots</li>
+</ul>
+<p>Your game code usually contributes domain-specific services on top of these:</p>
+<ul>
+<li>game state services such as player state, inventory, or combat rules</li>
+<li>gameplay directors that read input and mutate authored game state</li>
+<li>presentation directors that translate state into <code>Graphics</code> commands</li>
+<li>scene definitions that wire setup and teardown around those services</li>
+</ul>
+<h2 id="what-the-engine-handles-for-you">What the engine handles for you</h2>
+<p>The engine takes care of several pieces that game teams would otherwise have
+to reinvent:</p>
+<ul>
+<li>deterministic service wiring through <code>Layer</code></li>
+<li>a native launch boundary for desktop windowing, native input event
+collection, frame presentation, and audio synchronization</li>
+<li>frame recording through an immediate-mode graphics command model, meaning
+your game describes what to draw for the current frame right now as a list
+of draw commands like &quot;draw this image here&quot; or &quot;draw this text here&quot;
+instead of maintaining a long-lived retained scene tree like a DOM</li>
+<li>camera math, script orchestration, save migration plumbing, scene stack
+lifecycle, and typed error surfaces</li>
+<li>testability: most services can be exercised headlessly without opening a
+real window</li>
+</ul>
+<h2 id="what-kinds-of-games-this-engine-fits">What kinds of games this engine fits</h2>
+<p><code>effect2d</code> is best understood as a 2D authored-game engine for TypeScript
+and Effect developers. It is especially well suited to small-to-medium indie
+games where the game is built from explicit state, scenes, rooms, maps, UI,
+dialogue, and deterministic gameplay rules.</p>
+<p>Strong fits include:</p>
+<ul>
+<li>room-based or scene-based adventure games</li>
+<li>top-down exploration games</li>
+<li>tile-based games</li>
+<li>dialogue-heavy narrative games</li>
+<li>puzzle games</li>
+<li>UI-heavy and menu-heavy games</li>
+<li>small arcade or action games with authored encounters and simple collision</li>
+<li>games where save/load, scripting, and deterministic orchestration matter</li>
+</ul>
+<p>It does <strong>not</strong> have to be tile-based. Tile maps are a natural fit, but the
+engine can also support non-tile 2D games as long as they still fit the
+broader model of authored scenes, sprites or images, typed input actions, and
+explicit state transitions.</p>
+<h2 id="what-kinds-of-games-this-engine-is-not-aimed-at">What kinds of games this engine is not aimed at</h2>
+<p>This engine is currently <strong>not</strong> aimed at:</p>
+<ul>
+<li>3D games</li>
+<li>large open-world streaming games</li>
+<li>MMO or network-first game architectures</li>
+<li>heavy simulation or advanced physics sandbox games</li>
+<li>high-end rendering showcase games</li>
+<li>projects that need a giant built-in editor and asset pipeline ecosystem</li>
+</ul>
+<p>In other words, this engine is strongest when the game can be described as:</p>
+<ul>
+<li>2D</li>
+<li>authored</li>
+<li>scene-oriented</li>
+<li>deterministic</li>
+<li>service-oriented in the Effect style</li>
+</ul>
+<h2 id="what-the-engine-does-not-author-for-you">What the engine does not author for you</h2>
+<p>The engine intentionally does not decide your game design, content, or domain
+rules. You still own:</p>
+<ul>
+<li>your game state and domain model</li>
+<li>movement rules, combat rules, win/loss conditions, and progression logic</li>
+<li>authored assets, room content, and scene flow</li>
+<li>which optional services you use and how you compose them</li>
+</ul>
+<h2 id="typical-folder-structure">Typical folder structure</h2>
+<p>A practical game layout usually looks something like this:</p>
+<pre><code class="language-text">games/my-game/
+  assets/
+    audio/
+    fonts/
+    images/
+  game/
+    content/
+    directors/
+    input/
+    native/
+    scenes/
+    state/
+    MyGame.ts
+  main.ts
+  README.md
+</code></pre>
+<p>Common responsibilities:</p>
+<ul>
+<li><code>content/</code>: authored room data, constants, menus, encounter tables, etc.</li>
+<li><code>directors/</code>: frame-by-frame gameplay and presentation orchestration</li>
+<li><code>input/</code>: input binding declarations</li>
+<li><code>native/</code>: the game's <code>NativeFrameSource</code> wiring</li>
+<li><code>scenes/</code>: <code>SceneDefinition</code> values and scene-local bootstrapping</li>
+<li><code>state/</code>: Effect services that hold mutable game state</li>
+<li><code>MyGame.ts</code>: the composition root for Layers, bootstrap code, and programs</li>
+</ul>
+<h2 id="recommended-build-pattern">Recommended build pattern</h2>
+<p>A good starting sequence for a new game is:</p>
+<ol>
+<li>Start from <a href="#runtime-defaultengineconfig">defaultEngineConfig</a> and define your <code>gameId</code>,
+<code>startScene</code>, and tick rate.</li>
+<li>Create state services for the pieces of domain state your game owns.</li>
+<li>Register authored scenes with <a href="#scene-sceneregistry">SceneRegistry</a>.</li>
+<li>Add a gameplay director that reads <code>Input</code> and updates state.</li>
+<li>Add a presentation director that records <code>Graphics</code> commands.</li>
+<li>Expose a <code>NativeFrameSource</code> that steps gameplay and renders a frame.</li>
+<li>Use <a href="#runtime-makeruntimelayer">makeRuntimeLayer</a> or <a href="#runtime-makeenginelayer">makeEngineLayer</a> to compose the
+engine with your game's services.</li>
+<li>Use <a href="#native-makesdlcanvasnativeboundarylayer">makeSdlCanvasNativeBoundaryLayer</a> when you want a playable
+native desktop window.</li>
+</ol>
+<h2 id="when-to-stay-at-the-root-entrypoint">When to stay at the root entrypoint</h2>
+<p>Import from this file when:</p>
+<ul>
+<li>you are writing a game against the engine</li>
+<li>you are reading the engine as an application developer</li>
+<li>you want the documentation site to present the &quot;official&quot; public surface</li>
+</ul>
+<p>If you are contributing to the engine itself, the submodules are often a
+better place to work because they show tighter implementation boundaries.</p>
+</div>
+			</section>
+		
+					<section class="content-section" id="modules">
+						<div class="section-kicker">Reference</div>
+						<h2 style="margin: 0; font-size: clamp(2.1rem, 4.4vw, 3.1rem); letter-spacing: -0.03em;">Public modules</h2>
+						<div style="margin-top: 1.25rem;">
+							
+				<section class="content-section module-section" id="audio">
+					<div class="section-kicker">Module</div>
+					<h2>Audio</h2>
+					
+							<div class="file-group-entries file-group-entries-flat">
+								
+								<article
+									class="doc-entry"
+									id="audio-audiobus"
+									data-search="audiobus type audio audio"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">type</span>
+										<a class="doc-source" href="#audio-audiobus">src/audio/Audio.ts:3</a>
+									</div>
+									<h4>AudioBus</h4>
+									<div class="prose"><p>Logical buses supported by the mixer. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="audio-audiocuekind"
+									data-search="audiocuekind type audio audio"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">type</span>
+										<a class="doc-source" href="#audio-audiocuekind">src/audio/Audio.ts:6</a>
+									</div>
+									<h4>AudioCueKind</h4>
+									<div class="prose"><p>The cue categories understood by the engine. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="audio-audiocuedefinition"
+									data-search="audiocuedefinition interface audio audio"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#audio-audiocuedefinition">src/audio/Audio.ts:9</a>
+									</div>
+									<h4>AudioCueDefinition</h4>
+									<div class="prose"><p>Declares a reusable authored audio cue. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="audio-loadedaudiocue"
+									data-search="loadedaudiocue interface audio audio"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#audio-loadedaudiocue">src/audio/Audio.ts:18</a>
+									</div>
+									<h4>LoadedAudioCue</h4>
+									<div class="prose"><p>A loaded cue paired with its resolved kind. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="audio-audioplaybackoptions"
+									data-search="audioplaybackoptions interface audio audio"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#audio-audioplaybackoptions">src/audio/Audio.ts:23</a>
+									</div>
+									<h4>AudioPlaybackOptions</h4>
+									<div class="prose"><p>Optional playback overrides for an individual cue trigger. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="audio-musicplayback"
+									data-search="musicplayback interface audio audio"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#audio-musicplayback">src/audio/Audio.ts:30</a>
+									</div>
+									<h4>MusicPlayback</h4>
+									<div class="prose"><p>The current music channel state. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="audio-soundplayback"
+									data-search="soundplayback interface audio audio"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#audio-soundplayback">src/audio/Audio.ts:39</a>
+									</div>
+									<h4>SoundPlayback</h4>
+									<div class="prose"><p>A single overlapping sound-effect playback instance. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="audio-audiosnapshot"
+									data-search="audiosnapshot interface audio audio"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#audio-audiosnapshot">src/audio/Audio.ts:44</a>
+									</div>
+									<h4>AudioSnapshot</h4>
+									<div class="prose"><p>A complete snapshot of authored mixer state. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="audio-audio"
+									data-search="audio class audio audio"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">class</span>
+										<a class="doc-source" href="#audio-audio">src/audio/Audio.ts:190</a>
+									</div>
+									<h4>Audio</h4>
+									<div class="prose"><p>The engine's cue-driven audio service.</p>
+<p>Game code usually loads stable cue ids during startup and refers to those ids
+during play, instead of scattering file paths throughout gameplay logic. This
+keeps audio orchestration testable, deterministic, and portable across native
+backends.</p>
+</div>
+								</article>
+							
+							</div>
+						
+				</section>
+			
+				<section class="content-section module-section" id="graphics">
+					<div class="section-kicker">Module</div>
+					<h2>Graphics</h2>
+					
+							<section class="file-group" id="graphics-camera-ts">
+								<header class="file-group-header">
+									<p class="file-path">src/graphics/Camera.ts</p>
+									<h3>Camera</h3>
+								</header>
+								<div class="file-group-entries">
+									
+								<article
+									class="doc-entry"
+									id="graphics-cameravector"
+									data-search="cameravector interface graphics camera"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#graphics-cameravector">src/graphics/Camera.ts:3</a>
+									</div>
+									<h4>CameraVector</h4>
+									<div class="prose"><p>A 2D point or vector used by the camera API. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-camerabounds"
+									data-search="camerabounds interface graphics camera"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#graphics-camerabounds">src/graphics/Camera.ts:9</a>
+									</div>
+									<h4>CameraBounds</h4>
+									<div class="prose"><p>Bounds that clamp the camera's focal position.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-cameraviewport"
+									data-search="cameraviewport interface graphics camera"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#graphics-cameraviewport">src/graphics/Camera.ts:21</a>
+									</div>
+									<h4>CameraViewport</h4>
+									<div class="prose"><p>The authored viewport the camera projects into. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-camerashakestate"
+									data-search="camerashakestate interface graphics camera"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#graphics-camerashakestate">src/graphics/Camera.ts:27</a>
+									</div>
+									<h4>CameraShakeState</h4>
+									<div class="prose"><p>Transient screen-shake metadata. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-camerastate"
+									data-search="camerastate interface graphics camera"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#graphics-camerastate">src/graphics/Camera.ts:34</a>
+									</div>
+									<h4>CameraState</h4>
+									<div class="prose"><p>A complete snapshot of camera state.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-makecamerastate"
+									data-search="makecamerastate const graphics camera"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#graphics-makecamerastate">src/graphics/Camera.ts:65</a>
+									</div>
+									<h4>makeCameraState</h4>
+									<div class="prose"><p>Creates an initial camera state value.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-scenecamera"
+									data-search="scenecamera class graphics camera"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">class</span>
+										<a class="doc-source" href="#graphics-scenecamera">src/graphics/Camera.ts:226</a>
+									</div>
+									<h4>SceneCamera</h4>
+									<div class="prose"><p>A scene-local camera service for authored gameplay and presentation logic.</p>
+<p><code>SceneCamera</code> is the runtime-friendly companion to the pure camera helper
+functions in this module. Game code typically uses it to:</p>
+<ul>
+<li>define the viewport and zoom used by a scene</li>
+<li>clamp the camera to room bounds</li>
+<li>follow a player or focal target</li>
+<li>translate between world and screen coordinates</li>
+<li>apply temporary shake effects</li>
+</ul>
+<p>If your scene needs a camera at all, this is usually the service you inject.</p>
+</div>
+								</article>
+							
+								</div>
+							</section>
+						
+							<section class="file-group" id="graphics-graphics-ts">
+								<header class="file-group-header">
+									<p class="file-path">src/graphics/Graphics.ts</p>
+									<h3>Graphics</h3>
+								</header>
+								<div class="file-group-entries">
+									
+								<article
+									class="doc-entry"
+									id="graphics-color"
+									data-search="color interface graphics graphics"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#graphics-color">src/graphics/Graphics.ts:4</a>
+									</div>
+									<h4>Color</h4>
+									<div class="prose"><p>A normalized RGBA color used throughout the graphics API.</p>
+<p>All channels are expected to be in the inclusive range <code>0..1</code>.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-transform2d"
+									data-search="transform2d interface graphics graphics"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#graphics-transform2d">src/graphics/Graphics.ts:18</a>
+									</div>
+									<h4>Transform2D</h4>
+									<div class="prose"><p>A 2D transform recorded onto the graphics command stream.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-blendmode"
+									data-search="blendmode type graphics graphics"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">type</span>
+										<a class="doc-source" href="#graphics-blendmode">src/graphics/Graphics.ts:30</a>
+									</div>
+									<h4>BlendMode</h4>
+									<div class="prose"><p>Supported compositing modes for subsequent draw commands. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-rectangledrawmode"
+									data-search="rectangledrawmode type graphics graphics"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">type</span>
+										<a class="doc-source" href="#graphics-rectangledrawmode">src/graphics/Graphics.ts:33</a>
+									</div>
+									<h4>RectangleDrawMode</h4>
+									<div class="prose"><p>Supported rectangle rendering modes. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-circledrawmode"
+									data-search="circledrawmode type graphics graphics"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">type</span>
+										<a class="doc-source" href="#graphics-circledrawmode">src/graphics/Graphics.ts:36</a>
+									</div>
+									<h4>CircleDrawMode</h4>
+									<div class="prose"><p>Supported circle rendering modes. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-drawtextoptions"
+									data-search="drawtextoptions interface graphics graphics"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#graphics-drawtextoptions">src/graphics/Graphics.ts:39</a>
+									</div>
+									<h4>DrawTextOptions</h4>
+									<div class="prose"><p>Parameters for a text draw command.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-drawcommand"
+									data-search="drawcommand type graphics graphics"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">type</span>
+										<a class="doc-source" href="#graphics-drawcommand">src/graphics/Graphics.ts:51</a>
+									</div>
+									<h4>DrawCommand</h4>
+									<div class="prose"><p>A serializable render command recorded by <a href="#graphics-graphics">Graphics</a>.</p>
+<p>The native layer consumes these commands to present an actual frame. Game
+code usually records commands through the <code>Graphics</code> service rather than
+constructing <code>DrawCommand</code> objects directly.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-framesnapshot"
+									data-search="framesnapshot interface graphics graphics"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#graphics-framesnapshot">src/graphics/Graphics.ts:130</a>
+									</div>
+									<h4>FrameSnapshot</h4>
+									<div class="prose"><p>The graphics frame currently being recorded or most recently completed.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-graphicsframenotopenerror"
+									data-search="graphicsframenotopenerror class graphics graphics"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">class</span>
+										<a class="doc-source" href="#graphics-graphicsframenotopenerror">src/graphics/Graphics.ts:164</a>
+									</div>
+									<h4>GraphicsFrameNotOpenError</h4>
+									<div class="prose"><p>Indicates that game code attempted to record graphics commands without first
+opening a frame.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-graphicstransformstackunderflowerror"
+									data-search="graphicstransformstackunderflowerror class graphics graphics"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">class</span>
+										<a class="doc-source" href="#graphics-graphicstransformstackunderflowerror">src/graphics/Graphics.ts:177</a>
+									</div>
+									<h4>GraphicsTransformStackUnderflowError</h4>
+									<div class="prose"><p>Indicates that more transforms were popped than pushed during a frame.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-graphics"
+									data-search="graphics class graphics graphics"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">class</span>
+										<a class="doc-source" href="#graphics-graphics">src/graphics/Graphics.ts:216</a>
+									</div>
+									<h4>Graphics</h4>
+									<div class="prose"><p>Records immediate-mode rendering commands for the current frame.</p>
+<p>For frontend engineers, &quot;immediate-mode&quot; here means:</p>
+<ul>
+<li>each frame, your game code says what should be drawn right now</li>
+<li>those instructions are recorded as commands such as &quot;draw image&quot;, &quot;draw
+text&quot;, or &quot;draw rectangle&quot;</li>
+<li>once the frame ends, the native backend presents that recorded command list</li>
+</ul>
+<p>It does <strong>not</strong> mean the engine keeps a long-lived retained UI tree like the
+DOM and then diffs it later. Instead, each frame is authored fresh from the
+current game state.</p>
+<p><code>Graphics</code> is intentionally command-oriented instead of being a retained
+scene graph. Game code opens a frame, records the draw operations it wants to
+appear, and then hands the completed <a href="#graphics-framesnapshot">FrameSnapshot</a> to the native
+boundary for presentation.</p>
+<p>This service is a good fit for Effect users because it behaves like a typed,
+testable log of rendering intent:</p>
+<ul>
+<li>gameplay and presentation code can be tested headlessly by inspecting the
+resulting command stream</li>
+<li>native backends can focus on playback rather than business logic</li>
+<li>transforms, tints, blend modes, text, fades, and flashes all share the
+same deterministic recording model</li>
+</ul>
+</div>
+								</article>
+							
+								</div>
+							</section>
+						
+				</section>
+			
+				<section class="content-section module-section" id="input">
+					<div class="section-kicker">Module</div>
+					<h2>Input</h2>
+					
+							<div class="file-group-entries file-group-entries-flat">
+								
+								<article
+									class="doc-entry"
+									id="input-keycode"
+									data-search="keycode type input input"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">type</span>
+										<a class="doc-source" href="#input-keycode">src/input/Input.ts:3</a>
+									</div>
+									<h4>KeyCode</h4>
+									<div class="prose"><p>Keyboard key identifiers as reported by the native backend. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="input-mousebutton"
+									data-search="mousebutton type input input"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">type</span>
+										<a class="doc-source" href="#input-mousebutton">src/input/Input.ts:6</a>
+									</div>
+									<h4>MouseButton</h4>
+									<div class="prose"><p>Mouse button identifiers as reported by the native backend. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="input-pointerposition"
+									data-search="pointerposition interface input input"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#input-pointerposition">src/input/Input.ts:9</a>
+									</div>
+									<h4>PointerPosition</h4>
+									<div class="prose"><p>The latest known mouse or pointer position. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="input-inputevent"
+									data-search="inputevent type input input"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">type</span>
+										<a class="doc-source" href="#input-inputevent">src/input/Input.ts:15</a>
+									</div>
+									<h4>InputEvent</h4>
+									<div class="prose"><p>A raw native input event captured during the current frame.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="input-inputtrigger"
+									data-search="inputtrigger type input input"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">type</span>
+										<a class="doc-source" href="#input-inputtrigger">src/input/Input.ts:43</a>
+									</div>
+									<h4>InputTrigger</h4>
+									<div class="prose"><p>A declarative trigger that can activate a named gameplay action.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="input-actionbinding"
+									data-search="actionbinding interface input input"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#input-actionbinding">src/input/Input.ts:58</a>
+									</div>
+									<h4>ActionBinding</h4>
+									<div class="prose"><p>Maps a named gameplay action to one or more low-level triggers.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="input-actionstate"
+									data-search="actionstate interface input input"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#input-actionstate">src/input/Input.ts:68</a>
+									</div>
+									<h4>ActionState</h4>
+									<div class="prose"><p>The derived state of a named gameplay action for the current frame.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="input-inputsnapshot"
+									data-search="inputsnapshot interface input input"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#input-inputsnapshot">src/input/Input.ts:81</a>
+									</div>
+									<h4>InputSnapshot</h4>
+									<div class="prose"><p>A frame-local snapshot of raw input state.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="input-input"
+									data-search="input class input input"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">class</span>
+										<a class="doc-source" href="#input-input">src/input/Input.ts:289</a>
+									</div>
+									<h4>Input</h4>
+									<div class="prose"><p>The engine's action-oriented input service.</p>
+<p><code>Input</code> bridges the gap between native events and gameplay-friendly action
+queries. Game authors usually:</p>
+<ul>
+<li>declare a set of <a href="#input-actionbinding">ActionBinding</a> values</li>
+<li>call <code>setBindings(...)</code> during bootstrap</li>
+<li>read <code>actionState(...)</code> or <code>isActionPressed(...)</code> in gameplay systems</li>
+<li>inspect raw <code>events</code> or <code>pointerPosition</code> only when they need lower-level
+control</li>
+</ul>
+<p>The service keeps frame transitions explicit through <code>beginFrame</code>, which lets
+tests and native boundaries drive input deterministically.</p>
+</div>
+								</article>
+							
+							</div>
+						
+				</section>
+			
+				<section class="content-section module-section" id="maps">
+					<div class="section-kicker">Module</div>
+					<h2>Maps</h2>
+					
+							<section class="file-group" id="maps-mapcontent-ts">
+								<header class="file-group-header">
+									<p class="file-path">src/maps/MapContent.ts</p>
+									<h3>MapContent</h3>
+								</header>
+								<div class="file-group-entries">
+									
+								<article
+									class="doc-entry"
+									id="maps-roommetadata"
+									data-search="roommetadata type maps mapcontent"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">type</span>
+										<a class="doc-source" href="#maps-roommetadata">src/maps/MapContent.ts:1</a>
+									</div>
+									<h4>RoomMetadata</h4>
+									<div class="prose"><p>Free-form metadata attached to a room or room object. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="maps-tileplane"
+									data-search="tileplane interface maps mapcontent"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#maps-tileplane">src/maps/MapContent.ts:4</a>
+									</div>
+									<h4>TilePlane</h4>
+									<div class="prose"><p>A dense tile plane authored for a room. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="maps-roomobject"
+									data-search="roomobject interface maps mapcontent"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#maps-roomobject">src/maps/MapContent.ts:12</a>
+									</div>
+									<h4>RoomObject</h4>
+									<div class="prose"><p>A positioned authored room object. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="maps-objectplane"
+									data-search="objectplane interface maps mapcontent"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#maps-objectplane">src/maps/MapContent.ts:23</a>
+									</div>
+									<h4>ObjectPlane</h4>
+									<div class="prose"><p>A named collection of room objects. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="maps-roomcontent"
+									data-search="roomcontent interface maps mapcontent"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#maps-roomcontent">src/maps/MapContent.ts:29</a>
+									</div>
+									<h4>RoomContent</h4>
+									<div class="prose"><p>The canonical authored representation of a room. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="maps-spawnpoint"
+									data-search="spawnpoint interface maps mapcontent"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#maps-spawnpoint">src/maps/MapContent.ts:37</a>
+									</div>
+									<h4>SpawnPoint</h4>
+									<div class="prose"><p>A room object that identifies a spawn location. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="maps-transitionzone"
+									data-search="transitionzone interface maps mapcontent"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#maps-transitionzone">src/maps/MapContent.ts:46</a>
+									</div>
+									<h4>TransitionZone</h4>
+									<div class="prose"><p>A room object that moves the player to another room. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="maps-triggerzone"
+									data-search="triggerzone interface maps mapcontent"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#maps-triggerzone">src/maps/MapContent.ts:56</a>
+									</div>
+									<h4>TriggerZone</h4>
+									<div class="prose"><p>A generic authored trigger zone. @public</p>
+</div>
+								</article>
+							
+								</div>
+							</section>
+						
+							<section class="file-group" id="maps-mapqueries-ts">
+								<header class="file-group-header">
+									<p class="file-path">src/maps/MapQueries.ts</p>
+									<h3>MapQueries</h3>
+								</header>
+								<div class="file-group-entries">
+									
+								<article
+									class="doc-entry"
+									id="maps-roomobjects"
+									data-search="roomobjects const maps mapqueries"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#maps-roomobjects">src/maps/MapQueries.ts:8</a>
+									</div>
+									<h4>roomObjects</h4>
+									<div class="prose"><p>Returns every authored object across all object planes in a room. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="maps-roomobjectbyid"
+									data-search="roomobjectbyid const maps mapqueries"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#maps-roomobjectbyid">src/maps/MapQueries.ts:12</a>
+									</div>
+									<h4>roomObjectById</h4>
+									<div class="prose"><p>Finds one authored room object by id. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="maps-roomobjectsbykind"
+									data-search="roomobjectsbykind const maps mapqueries"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#maps-roomobjectsbykind">src/maps/MapQueries.ts:19</a>
+									</div>
+									<h4>roomObjectsByKind</h4>
+									<div class="prose"><p>Filters room objects by authored kind. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="maps-roomspawnpoints"
+									data-search="roomspawnpoints const maps mapqueries"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#maps-roomspawnpoints">src/maps/MapQueries.ts:26</a>
+									</div>
+									<h4>roomSpawnPoints</h4>
+									<div class="prose"><p>Returns all authored spawn points in a room. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="maps-roomtransitionzones"
+									data-search="roomtransitionzones const maps mapqueries"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#maps-roomtransitionzones">src/maps/MapQueries.ts:30</a>
+									</div>
+									<h4>roomTransitionZones</h4>
+									<div class="prose"><p>Returns all authored transition zones in a room. @public</p>
+</div>
+								</article>
+							
+								</div>
+							</section>
+						
+							<section class="file-group" id="maps-maprepository-ts">
+								<header class="file-group-header">
+									<p class="file-path">src/maps/MapRepository.ts</p>
+									<h3>MapRepository</h3>
+								</header>
+								<div class="file-group-entries">
+									
+								<article
+									class="doc-entry"
+									id="maps-maprepository"
+									data-search="maprepository class maps maprepository"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">class</span>
+										<a class="doc-source" href="#maps-maprepository">src/maps/MapRepository.ts:7</a>
+									</div>
+									<h4>MapRepository</h4>
+									<div class="prose"><p>A validated in-memory repository of authored rooms.</p>
+</div>
+								</article>
+							
+								</div>
+							</section>
+						
+							<section class="file-group" id="maps-roombuilder-ts">
+								<header class="file-group-header">
+									<p class="file-path">src/maps/RoomBuilder.ts</p>
+									<h3>RoomBuilder</h3>
+								</header>
+								<div class="file-group-entries">
+									
+								<article
+									class="doc-entry"
+									id="maps-definetileplane"
+									data-search="definetileplane const maps roombuilder"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#maps-definetileplane">src/maps/RoomBuilder.ts:12</a>
+									</div>
+									<h4>defineTilePlane</h4>
+									<div class="prose"><p>Identity helper for authored tile planes. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="maps-defineobjectplane"
+									data-search="defineobjectplane const maps roombuilder"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#maps-defineobjectplane">src/maps/RoomBuilder.ts:15</a>
+									</div>
+									<h4>defineObjectPlane</h4>
+									<div class="prose"><p>Identity helper for authored object planes. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="maps-defineroom"
+									data-search="defineroom const maps roombuilder"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#maps-defineroom">src/maps/RoomBuilder.ts:18</a>
+									</div>
+									<h4>defineRoom</h4>
+									<div class="prose"><p>Identity helper for authored rooms. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="maps-roomobject"
+									data-search="roomobject const maps roombuilder"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#maps-roomobject">src/maps/RoomBuilder.ts:21</a>
+									</div>
+									<h4>roomObject</h4>
+									<div class="prose"><p>Identity helper for generic room objects. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="maps-spawnpoint"
+									data-search="spawnpoint const maps roombuilder"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#maps-spawnpoint">src/maps/RoomBuilder.ts:24</a>
+									</div>
+									<h4>spawnPoint</h4>
+									<div class="prose"><p>Builds a typed spawn-point object. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="maps-transitionzone"
+									data-search="transitionzone const maps roombuilder"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#maps-transitionzone">src/maps/RoomBuilder.ts:30</a>
+									</div>
+									<h4>transitionZone</h4>
+									<div class="prose"><p>Builds a typed transition-zone object. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="maps-triggerzone"
+									data-search="triggerzone const maps roombuilder"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#maps-triggerzone">src/maps/RoomBuilder.ts:38</a>
+									</div>
+									<h4>triggerZone</h4>
+									<div class="prose"><p>Builds a typed trigger-zone object. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="maps-roommetadata"
+									data-search="roommetadata const maps roombuilder"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#maps-roommetadata">src/maps/RoomBuilder.ts:46</a>
+									</div>
+									<h4>roomMetadata</h4>
+									<div class="prose"><p>Identity helper for room metadata. @public</p>
+</div>
+								</article>
+							
+								</div>
+							</section>
+						
+				</section>
+			
+				<section class="content-section module-section" id="native">
+					<div class="section-kicker">Module</div>
+					<h2>Native</h2>
+					
+							<section class="file-group" id="native-nativeboundary-ts">
+								<header class="file-group-header">
+									<p class="file-path">src/native/NativeBoundary.ts</p>
+									<h3>NativeBoundary</h3>
+								</header>
+								<div class="file-group-entries">
+									
+								<article
+									class="doc-entry"
+									id="native-nativeboundary"
+									data-search="nativeboundary class native nativeboundary"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">class</span>
+										<a class="doc-source" href="#native-nativeboundary">src/native/NativeBoundary.ts:12</a>
+									</div>
+									<h4>NativeBoundary</h4>
+									<div class="prose"><p>The playable bridge between authored game services and a concrete native
+runtime.</p>
+<p><code>NativeBoundary</code> owns the real-time launch loop for a native build. It is
+responsible for:</p>
+<ul>
+<li>opening the native backend</li>
+<li>collecting native input events and applying them to <a href="#input-input">Input</a></li>
+<li>asking the active <a href="#native-nativeframesource">NativeFrameSource</a> for the next frame</li>
+<li>synchronizing authored audio state with the backend</li>
+<li>presenting frames and waiting for the next step</li>
+</ul>
+<p>Most application code does not implement this service directly. Instead it
+uses helpers such as <a href="#native-makesdlcanvasnativeboundarylayer">makeSdlCanvasNativeBoundaryLayer</a>.</p>
+</div>
+								</article>
+							
+								</div>
+							</section>
+						
+							<section class="file-group" id="native-nativeframesource-ts">
+								<header class="file-group-header">
+									<p class="file-path">src/native/NativeFrameSource.ts</p>
+									<h3>NativeFrameSource</h3>
+								</header>
+								<div class="file-group-entries">
+									
+								<article
+									class="doc-entry"
+									id="native-nativeframesource"
+									data-search="nativeframesource class native nativeframesource"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">class</span>
+										<a class="doc-source" href="#native-nativeframesource">src/native/NativeFrameSource.ts:6</a>
+									</div>
+									<h4>NativeFrameSource</h4>
+									<div class="prose"><p>Produces the next authored frame for the native runtime.</p>
+<p>Games usually provide this service by composing gameplay and presentation
+directors into one step that returns a <a href="#graphics-framesnapshot">FrameSnapshot</a>.</p>
+</div>
+								</article>
+							
+								</div>
+							</section>
+						
+							<section class="file-group" id="native-sdlcanvasnativebackend-ts">
+								<header class="file-group-header">
+									<p class="file-path">src/native/SdlCanvasNativeBackend.ts</p>
+									<h3>SdlCanvasNativeBackend</h3>
+								</header>
+								<div class="file-group-entries">
+									
+								<article
+									class="doc-entry"
+									id="native-sdlcanvasnativebackendoptions"
+									data-search="sdlcanvasnativebackendoptions interface native sdlcanvasnativebackend"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#native-sdlcanvasnativebackendoptions">src/native/SdlCanvasNativeBackend.ts:29</a>
+									</div>
+									<h4>SdlCanvasNativeBackendOptions</h4>
+									<div class="prose"><p>Configuration for the SDL + Canvas native backend.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="native-makesdlcanvasnativebackendlayer"
+									data-search="makesdlcanvasnativebackendlayer const native sdlcanvasnativebackend"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#native-makesdlcanvasnativebackendlayer">src/native/SdlCanvasNativeBackend.ts:409</a>
+									</div>
+									<h4>makeSdlCanvasNativeBackendLayer</h4>
+									<div class="prose"><p>Builds the SDL + Canvas implementation of <code>NativeBackend</code>.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="native-makesdlcanvasnativeboundarylayer"
+									data-search="makesdlcanvasnativeboundarylayer const native sdlcanvasnativebackend"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#native-makesdlcanvasnativeboundarylayer">src/native/SdlCanvasNativeBackend.ts:916</a>
+									</div>
+									<h4>makeSdlCanvasNativeBoundaryLayer</h4>
+									<div class="prose"><p>Builds a ready-to-use <a href="#native-nativeboundary">NativeBoundary</a> backed by SDL windowing and a
+Canvas renderer.</p>
+</div>
+								</article>
+							
+								</div>
+							</section>
+						
+				</section>
+			
+				<section class="content-section module-section" id="runtime">
+					<div class="section-kicker">Module</div>
+					<h2>Runtime</h2>
+					
+							<section class="file-group" id="runtime-engine-ts">
+								<header class="file-group-header">
+									<p class="file-path">src/runtime/Engine.ts</p>
+									<h3>Engine</h3>
+								</header>
+								<div class="file-group-entries">
+									
+								<article
+									class="doc-entry"
+									id="runtime-engine"
+									data-search="engine class runtime engine"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">class</span>
+										<a class="doc-source" href="#runtime-engine">src/runtime/Engine.ts:10</a>
+									</div>
+									<h4>Engine</h4>
+									<div class="prose"><p>The smallest runnable engine surface.</p>
+<p><code>Engine</code> is the service most applications eventually launch, but it is not
+usually the first thing authors wire by hand. In a typical game you compose
+a runtime with <a href="#runtime-makeruntimelayer">makeRuntimeLayer</a>, register your authored services, and
+then call <code>engine.launch()</code> or use <a href="#runtime-engineprogram">engineProgram</a>.</p>
+<p>This service intentionally stays narrow:</p>
+<ul>
+<li><code>config</code> exposes the validated engine configuration</li>
+<li><code>launch()</code> delegates to the active <a href="#native-nativeboundary">NativeBoundary</a></li>
+</ul>
+<p>Everything else that feels &quot;game-like&quot; lives in sibling services such as
+<a href="#graphics-graphics">Graphics</a>, <a href="#input-input">Input</a>, <a href="#audio-audio">Audio</a>, <a href="#scene-scenedirector">SceneDirector</a>, and
+your own game-specific state services.</p>
+</div>
+								</article>
+							
+								</div>
+							</section>
+						
+							<section class="file-group" id="runtime-engineconfig-ts">
+								<header class="file-group-header">
+									<p class="file-path">src/runtime/EngineConfig.ts</p>
+									<h3>EngineConfig</h3>
+								</header>
+								<div class="file-group-entries">
+									
+								<article
+									class="doc-entry"
+									id="runtime-engineconfig"
+									data-search="engineconfig interface runtime engineconfig"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#runtime-engineconfig">src/runtime/EngineConfig.ts:1</a>
+									</div>
+									<h4>EngineConfig</h4>
+									<div class="prose"><p>Describes the minimal engine-level settings required to boot a game.</p>
+<p>In most projects you start from <a href="#runtime-defaultengineconfig">defaultEngineConfig</a> and override only
+the fields that are specific to your game.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="runtime-defaultengineconfig"
+									data-search="defaultengineconfig const runtime engineconfig"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#runtime-defaultengineconfig">src/runtime/EngineConfig.ts:20</a>
+									</div>
+									<h4>defaultEngineConfig</h4>
+									<div class="prose"><p>A conservative starting configuration for new games.</p>
+<p>This value is intentionally plain and production-safe. Treat it as a base
+object to spread into a game-specific config rather than a one-size-fits-all
+preset.</p>
+</div>
+								</article>
+							
+								</div>
+							</section>
+						
+							<section class="file-group" id="runtime-launch-ts">
+								<header class="file-group-header">
+									<p class="file-path">src/runtime/Launch.ts</p>
+									<h3>Launch</h3>
+								</header>
+								<div class="file-group-entries">
+									
+								<article
+									class="doc-entry"
+									id="runtime-makeenginelayer"
+									data-search="makeenginelayer const runtime launch"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#runtime-makeenginelayer">src/runtime/Launch.ts:13</a>
+									</div>
+									<h4>makeEngineLayer</h4>
+									<div class="prose"><p>Builds the smallest engine layer necessary to launch through a native
+boundary.</p>
+<p>Use this when you already know which additional services you want to provide
+yourself and only need the validated <a href="#runtime-engine">Engine</a> service.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="runtime-makeruntimelayer"
+									data-search="makeruntimelayer const runtime launch"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#runtime-makeruntimelayer">src/runtime/Launch.ts:35</a>
+									</div>
+									<h4>makeRuntimeLayer</h4>
+									<div class="prose"><p>Builds the standard runtime layer for most games.</p>
+<p>This is the usual starting point for application authors. It bundles the
+validated <a href="#runtime-engine">Engine</a>, a deterministic <a href="#runtime-randomsource">RandomSource</a>, and a
+fixed-step <a href="#runtime-runtimeclock">RuntimeClock</a>. Most games merge this layer with their own
+state, scene, input, audio, graphics, and native frame services.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="runtime-engineprogram"
+									data-search="engineprogram const runtime launch"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#runtime-engineprogram">src/runtime/Launch.ts:66</a>
+									</div>
+									<h4>engineProgram</h4>
+									<div class="prose"><p>Launches the active <a href="#runtime-engine">Engine</a> from the environment.</p>
+<p>This program is useful when your surrounding application has already built
+and provided an <code>Engine</code> service.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="runtime-seededengineprogram"
+									data-search="seededengineprogram const runtime launch"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#runtime-seededengineprogram">src/runtime/Launch.ts:80</a>
+									</div>
+									<h4>seededEngineProgram</h4>
+									<div class="prose"><p>Launches the active engine while temporarily overriding randomness with the
+provided config seed.</p>
+<p>This is primarily useful for reproducible demos, tests, recordings, and
+deterministic debugging sessions.</p>
+</div>
+								</article>
+							
+								</div>
+							</section>
+						
+							<section class="file-group" id="runtime-randomsource-ts">
+								<header class="file-group-header">
+									<p class="file-path">src/runtime/RandomSource.ts</p>
+									<h3>RandomSource</h3>
+								</header>
+								<div class="file-group-entries">
+									
+								<article
+									class="doc-entry"
+									id="runtime-randomsource"
+									data-search="randomsource class runtime randomsource"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">class</span>
+										<a class="doc-source" href="#runtime-randomsource">src/runtime/RandomSource.ts:3</a>
+									</div>
+									<h4>RandomSource</h4>
+									<div class="prose"><p>A thin deterministic randomness service for authored gameplay logic.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="runtime-withrandomseed"
+									data-search="withrandomseed const runtime randomsource"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#runtime-withrandomseed">src/runtime/RandomSource.ts:42</a>
+									</div>
+									<h4>withRandomSeed</h4>
+									<div class="prose"><p>Runs an effect with a temporary deterministic random seed.</p>
+</div>
+								</article>
+							
+								</div>
+							</section>
+						
+							<section class="file-group" id="runtime-runtimeclock-ts">
+								<header class="file-group-header">
+									<p class="file-path">src/runtime/RuntimeClock.ts</p>
+									<h3>RuntimeClock</h3>
+								</header>
+								<div class="file-group-entries">
+									
+								<article
+									class="doc-entry"
+									id="runtime-runtimetimingsnapshot"
+									data-search="runtimetimingsnapshot interface runtime runtimeclock"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#runtime-runtimetimingsnapshot">src/runtime/RuntimeClock.ts:3</a>
+									</div>
+									<h4>RuntimeTimingSnapshot</h4>
+									<div class="prose"><p>Snapshot data exposed by the runtime clock. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="runtime-runtimeclock"
+									data-search="runtimeclock class runtime runtimeclock"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">class</span>
+										<a class="doc-source" href="#runtime-runtimeclock">src/runtime/RuntimeClock.ts:26</a>
+									</div>
+									<h4>RuntimeClock</h4>
+									<div class="prose"><p>Tracks frame timing and fixed-step sleep for a running game.</p>
+</div>
+								</article>
+							
+								</div>
+							</section>
+						
+				</section>
+			
+				<section class="content-section module-section" id="save">
+					<div class="section-kicker">Module</div>
+					<h2>Save</h2>
+					
+							<section class="file-group" id="save-savecoordinator-ts">
+								<header class="file-group-header">
+									<p class="file-path">src/save/SaveCoordinator.ts</p>
+									<h3>SaveCoordinator</h3>
+								</header>
+								<div class="file-group-entries">
+									
+								<article
+									class="doc-entry"
+									id="save-savecoordinatoroptions"
+									data-search="savecoordinatoroptions interface save savecoordinator"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#save-savecoordinatoroptions">src/save/SaveCoordinator.ts:63</a>
+									</div>
+									<h4>SaveCoordinatorOptions</h4>
+									<div class="prose"><p>Configuration for building a <a href="#save-savecoordinator">SaveCoordinator</a>.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="save-savecoordinator"
+									data-search="savecoordinator class save savecoordinator"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">class</span>
+										<a class="doc-source" href="#save-savecoordinator">src/save/SaveCoordinator.ts:76</a>
+									</div>
+									<h4>SaveCoordinator</h4>
+									<div class="prose"><p>Coordinates save snapshots, restores, imports, and migrations.</p>
+<p>Game authors typically provide a list of <a href="#save-saveparticipant">SaveParticipant</a> values, one
+per domain state area they want to persist. The coordinator handles the
+boring parts:</p>
+<ul>
+<li>composing those participant captures into a single document</li>
+<li>restoring participant state from a slot</li>
+<li>importing old documents through migrations</li>
+<li>exposing typed failures when documents are missing or incompatible</li>
+</ul>
+</div>
+								</article>
+							
+								</div>
+							</section>
+						
+							<section class="file-group" id="save-savedocument-ts">
+								<header class="file-group-header">
+									<p class="file-path">src/save/SaveDocument.ts</p>
+									<h3>SaveDocument</h3>
+								</header>
+								<div class="file-group-entries">
+									
+								<article
+									class="doc-entry"
+									id="save-saveslotid"
+									data-search="saveslotid type save savedocument"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">type</span>
+										<a class="doc-source" href="#save-saveslotid">src/save/SaveDocument.ts:4</a>
+									</div>
+									<h4>SaveSlotId</h4>
+									<div class="prose"><p>A stable identifier for a saved slot. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="save-saveslotdocument"
+									data-search="saveslotdocument interface save savedocument"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#save-saveslotdocument">src/save/SaveDocument.ts:7</a>
+									</div>
+									<h4>SaveSlotDocument</h4>
+									<div class="prose"><p>The persisted contents of a single save slot. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="save-savedocument"
+									data-search="savedocument interface save savedocument"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#save-savedocument">src/save/SaveDocument.ts:16</a>
+									</div>
+									<h4>SaveDocument</h4>
+									<div class="prose"><p>The full persisted save document for a game. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="save-saveparticipant"
+									data-search="saveparticipant interface save savedocument"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#save-saveparticipant">src/save/SaveDocument.ts:22</a>
+									</div>
+									<h4>SaveParticipant</h4>
+									<div class="prose"><p>Participates in save capture and restore.</p>
+<p>Each game-owned state service that wants to be saved can expose one
+<code>SaveParticipant</code>.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="save-savemigration"
+									data-search="savemigration interface save savedocument"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#save-savemigration">src/save/SaveDocument.ts:38</a>
+									</div>
+									<h4>SaveMigration</h4>
+									<div class="prose"><p>A typed migration between persisted save versions. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="save-saveslotdocumentschema"
+									data-search="saveslotdocumentschema const save savedocument"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#save-saveslotdocumentschema">src/save/SaveDocument.ts:49</a>
+									</div>
+									<h4>SaveSlotDocumentSchema</h4>
+									<div class="prose"><p>Runtime schema for a single save slot document. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="save-savedocumentschema"
+									data-search="savedocumentschema const save savedocument"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">const</span>
+										<a class="doc-source" href="#save-savedocumentschema">src/save/SaveDocument.ts:56</a>
+									</div>
+									<h4>SaveDocumentSchema</h4>
+									<div class="prose"><p>Runtime schema for the top-level save document. @public</p>
+</div>
+								</article>
+							
+								</div>
+							</section>
+						
+				</section>
+			
+				<section class="content-section module-section" id="scene">
+					<div class="section-kicker">Module</div>
+					<h2>Scene</h2>
+					
+							<section class="file-group" id="scene-scene-ts">
+								<header class="file-group-header">
+									<p class="file-path">src/scene/Scene.ts</p>
+									<h3>Scene</h3>
+								</header>
+								<div class="file-group-entries">
+									
+								<article
+									class="doc-entry"
+									id="scene-sceneid"
+									data-search="sceneid type scene scene"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">type</span>
+										<a class="doc-source" href="#scene-sceneid">src/scene/Scene.ts:3</a>
+									</div>
+									<h4>SceneId</h4>
+									<div class="prose"><p>Identifies a scene inside a game.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="scene-scenestacklevel"
+									data-search="scenestacklevel type scene scene"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">type</span>
+										<a class="doc-source" href="#scene-scenestacklevel">src/scene/Scene.ts:10</a>
+									</div>
+									<h4>SceneStackLevel</h4>
+									<div class="prose"><p>Distinguishes the primary gameplay scene from temporary overlay scenes such
+as pause menus, inventory sheets, or modal dialogue stacks.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="scene-scenelifecycle"
+									data-search="scenelifecycle interface scene scene"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#scene-scenelifecycle">src/scene/Scene.ts:18</a>
+									</div>
+									<h4>SceneLifecycle</h4>
+									<div class="prose"><p>The lifecycle hooks a scene instance can contribute to the runtime.</p>
+<p>A scene is responsible for its own setup, update, drawing, optional input
+handling, and teardown. Each hook runs in a scene-local <code>Scope</code>, which makes
+it natural to start background effects that should be cleaned up when the
+scene exits.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="scene-scenedefinition"
+									data-search="scenedefinition interface scene scene"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#scene-scenedefinition">src/scene/Scene.ts:36</a>
+									</div>
+									<h4>SceneDefinition</h4>
+									<div class="prose"><p>Declares how a scene is identified and instantiated.</p>
+<p>In application code you usually author a <code>SceneDefinition</code> as a constant and
+register it with <code>SceneRegistry.layer</code>.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="scene-sceneinstance"
+									data-search="sceneinstance interface scene scene"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#scene-sceneinstance">src/scene/Scene.ts:49</a>
+									</div>
+									<h4>SceneInstance</h4>
+									<div class="prose"><p>Represents a live instantiated scene managed by the engine.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="scene-scenestackentry"
+									data-search="scenestackentry interface scene scene"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#scene-scenestackentry">src/scene/Scene.ts:60</a>
+									</div>
+									<h4>SceneStackEntry</h4>
+									<div class="prose"><p>A single entry in the runtime scene stack.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="scene-scenestacksnapshot"
+									data-search="scenestacksnapshot interface scene scene"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#scene-scenestacksnapshot">src/scene/Scene.ts:70</a>
+									</div>
+									<h4>SceneStackSnapshot</h4>
+									<div class="prose"><p>A serializable view of the current scene stack.</p>
+</div>
+								</article>
+							
+								</div>
+							</section>
+						
+							<section class="file-group" id="scene-scenedirector-ts">
+								<header class="file-group-header">
+									<p class="file-path">src/scene/SceneDirector.ts</p>
+									<h3>SceneDirector</h3>
+								</header>
+								<div class="file-group-entries">
+									
+								<article
+									class="doc-entry"
+									id="scene-scenedirector"
+									data-search="scenedirector class scene scenedirector"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">class</span>
+										<a class="doc-source" href="#scene-scenedirector">src/scene/SceneDirector.ts:70</a>
+									</div>
+									<h4>SceneDirector</h4>
+									<div class="prose"><p>Coordinates scene lifecycle, scene transitions, and the overlay stack.</p>
+<p>This is the main scene-management service game authors use at runtime. It is
+responsible for:</p>
+<ul>
+<li>instantiating the configured start scene</li>
+<li>switching between primary scenes</li>
+<li>pushing and popping overlay scenes</li>
+<li>ensuring scene-local scopes are released when a scene exits</li>
+<li>providing a snapshot suitable for diagnostics and UI</li>
+</ul>
+<p>A common pattern is:</p>
+<ul>
+<li>register authored scenes with <a href="#scene-sceneregistry">SceneRegistry</a></li>
+<li>build <code>SceneDirector.layer(startSceneId)</code></li>
+<li>call <code>switchTo</code>, <code>pushOverlay</code>, or <code>popOverlay</code> from gameplay services</li>
+<li>let a native frame source call the active scene's update and draw work</li>
+</ul>
+</div>
+								</article>
+							
+								</div>
+							</section>
+						
+							<section class="file-group" id="scene-sceneregistry-ts">
+								<header class="file-group-header">
+									<p class="file-path">src/scene/SceneRegistry.ts</p>
+									<h3>SceneRegistry</h3>
+								</header>
+								<div class="file-group-entries">
+									
+								<article
+									class="doc-entry"
+									id="scene-sceneregistry"
+									data-search="sceneregistry class scene sceneregistry"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">class</span>
+										<a class="doc-source" href="#scene-sceneregistry">src/scene/SceneRegistry.ts:5</a>
+									</div>
+									<h4>SceneRegistry</h4>
+									<div class="prose"><p>A lookup table of authored scene definitions.</p>
+<p>The registry is intentionally simple: it answers &quot;which scene definition
+corresponds to this id?&quot; and exposes the complete authored set for tooling or
+diagnostics.</p>
+</div>
+								</article>
+							
+								</div>
+							</section>
+						
+				</section>
+			
+				<section class="content-section module-section" id="script">
+					<div class="section-kicker">Module</div>
+					<h2>Script</h2>
+					
+							<div class="file-group-entries file-group-entries-flat">
+								
+								<article
+									class="doc-entry"
+									id="script-dialogueprogress"
+									data-search="dialogueprogress interface script script"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#script-dialogueprogress">src/script/Script.ts:30</a>
+									</div>
+									<h4>DialogueProgress</h4>
+									<div class="prose"><p>The current state of a prepared dialogue sequence. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="script-dialoguescriptoptions"
+									data-search="dialoguescriptoptions interface script script"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#script-dialoguescriptoptions">src/script/Script.ts:38</a>
+									</div>
+									<h4>DialogueScriptOptions</h4>
+									<div class="prose"><p>Options for paginating authored dialogue text. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="script-scriptevents"
+									data-search="scriptevents class script script"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">class</span>
+										<a class="doc-source" href="#script-scriptevents">src/script/Script.ts:106</a>
+									</div>
+									<h4>ScriptEvents</h4>
+									<div class="prose"><p>A lightweight published-event journal for scripted sequences. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="script-script"
+									data-search="script class script script"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">class</span>
+										<a class="doc-source" href="#script-script">src/script/Script.ts:170</a>
+									</div>
+									<h4>Script</h4>
+									<div class="prose"><p>A convenience orchestration service for authored sequences.</p>
+</div>
+								</article>
+							
+							</div>
+						
+				</section>
+			
+				<section class="content-section module-section" id="ui">
+					<div class="section-kicker">Module</div>
+					<h2>UI</h2>
+					
+							<div class="file-group-entries file-group-entries-flat">
+								
+								<article
+									class="doc-entry"
+									id="ui-fontdefinition"
+									data-search="fontdefinition interface ui ui"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#ui-fontdefinition">src/ui/Ui.ts:10</a>
+									</div>
+									<h4>FontDefinition</h4>
+									<div class="prose"><p>A bitmap or authored font definition known to the UI service. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="ui-textline"
+									data-search="textline interface ui ui"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#ui-textline">src/ui/Ui.ts:20</a>
+									</div>
+									<h4>TextLine</h4>
+									<div class="prose"><p>A single wrapped line of measured text. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="ui-textlayout"
+									data-search="textlayout interface ui ui"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#ui-textlayout">src/ui/Ui.ts:26</a>
+									</div>
+									<h4>TextLayout</h4>
+									<div class="prose"><p>The measured layout of a text block. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="ui-uibounds"
+									data-search="uibounds interface ui ui"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#ui-uibounds">src/ui/Ui.ts:35</a>
+									</div>
+									<h4>UiBounds</h4>
+									<div class="prose"><p>Rectangular bounds used by UI drawing helpers. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="ui-dialoguepage"
+									data-search="dialoguepage interface ui ui"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#ui-dialoguepage">src/ui/Ui.ts:44</a>
+									</div>
+									<h4>DialoguePage</h4>
+									<div class="prose"><p>A single dialogue page produced by pagination. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="ui-drawdialogueboxoptions"
+									data-search="drawdialogueboxoptions interface ui ui"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#ui-drawdialogueboxoptions">src/ui/Ui.ts:52</a>
+									</div>
+									<h4>DrawDialogueBoxOptions</h4>
+									<div class="prose"><p>Options for drawing a dialogue box. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="ui-menunavigationoptions"
+									data-search="menunavigationoptions interface ui ui"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#ui-menunavigationoptions">src/ui/Ui.ts:62</a>
+									</div>
+									<h4>MenuNavigationOptions</h4>
+									<div class="prose"><p>Options for resolving conventional menu navigation. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="ui-menunavigationresult"
+									data-search="menunavigationresult interface ui ui"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">interface</span>
+										<a class="doc-source" href="#ui-menunavigationresult">src/ui/Ui.ts:73</a>
+									</div>
+									<h4>MenuNavigationResult</h4>
+									<div class="prose"><p>The result of a single menu navigation update. @public</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="ui-ui"
+									data-search="ui class ui ui"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind">class</span>
+										<a class="doc-source" href="#ui-ui">src/ui/Ui.ts:271</a>
+									</div>
+									<h4>Ui</h4>
+									<div class="prose"><p>High-level text, menu, and dialogue helpers built on top of <a href="#graphics-graphics">Graphics</a>.</p>
+</div>
+								</article>
+							
+							</div>
+						
+				</section>
+			
+						</div>
+					</section>
+				</main>
+				<aside class="aside">
+					<p class="aside-label">On this page</p>
+					
+	<nav class="toc">
+		<a href="#top">Top</a>
+		<a href="#introduction">Introduction</a>
+		<a href="#modules">Modules</a>
+		
+					<a href="#audio">Audio</a>
+				
+					<a href="#graphics">Graphics</a>
+				
+					<a href="#input">Input</a>
+				
+					<a href="#maps">Maps</a>
+				
+					<a href="#native">Native</a>
+				
+					<a href="#runtime">Runtime</a>
+				
+					<a href="#save">Save</a>
+				
+					<a href="#scene">Scene</a>
+				
+					<a href="#script">Script</a>
+				
+					<a href="#ui">UI</a>
+				
+	</nav>
+
+				</aside>
+			</div>
+		</div>
+		<script>
+			const searchInput = document.getElementById("doc-search");
+			const searchableEntries = Array.from(document.querySelectorAll("[data-search]"));
+			const focusSearch = (event) => {
+				if (!(event instanceof KeyboardEvent)) return;
+				if (event.key === "/" && document.activeElement !== searchInput) {
+					event.preventDefault();
+					searchInput?.focus();
+				}
+			};
+			const applySearch = () => {
+				const query = searchInput?.value.trim().toLowerCase() ?? "";
+				for (const element of searchableEntries) {
+					const haystack = element.getAttribute("data-search") ?? "";
+					element.classList.toggle("hidden-by-search", query.length > 0 && !haystack.includes(query));
+				}
+			};
+			searchInput?.addEventListener("input", applySearch);
+			window.addEventListener("keydown", focusSearch);
+			const observer = new IntersectionObserver((entries) => {
+				for (const entry of entries) {
+					if (entry.isIntersecting) {
+						entry.target.classList.add("in-view");
+					}
+				}
+			}, { threshold: 0.12 });
+			for (const card of document.querySelectorAll(".doc-entry")) {
+				observer.observe(card);
+			}
+		</script>
+	</body>
+</html>
