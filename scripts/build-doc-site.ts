@@ -270,13 +270,22 @@ const extractPublicEntries = (
 	return entries;
 };
 
+// Adds safe new-tab behavior to absolute http(s) links emitted by the markdown
+// renderer while leaving internal hash links untouched.
+const externalAnchorRegex = /<a\s+href="(https?:\/\/[^"]+)">/g;
+
 const renderMarkdown = (markdown: string): string =>
-	Bun.markdown.html(markdown, {
-		headings: {
-			autolink: false,
-			ids: true,
-		},
-	});
+	Bun.markdown
+		.html(markdown, {
+			headings: {
+				autolink: false,
+				ids: true,
+			},
+		})
+		.replace(
+			externalAnchorRegex,
+			'<a href="$1" target="_blank" rel="noopener noreferrer">',
+		);
 
 const renderHero = (): string => `
 	<section class="hero">
@@ -484,6 +493,11 @@ const renderHtmlDocument = ({
 
 			* {
 				box-sizing: border-box;
+			}
+
+			::selection {
+				background: rgba(163, 127, 255, 0.38);
+				color: #fff7ed;
 			}
 
 			.main [id] {

@@ -5,19 +5,20 @@
  * @public
  *
  * `effect2d` came out of wanting to learn game development in the same spirit
- * that made projects like Challacade's work feel so approachable: build a real
- * game, keep going long enough to understand the hard parts, and talk about
- * the craft in plain language. Lua and LÖVE have that energy. They make it
- * feel possible to sit down, try an idea, and slowly turn it into something
- * real. This engine is an attempt to bring that feeling into Effect and
- * TypeScript without losing what makes Effect valuable: explicit dependencies,
- * typed errors, observability, deterministic wiring, and a structure that
- * helps AI tools and human developers alike work on larger systems.
+ * that made projects like [Challacade](https://github.com/challacade)'s work
+ * feel so approachable: build a real game, keep going long enough to
+ * understand the hard parts, and talk about the craft in plain language. Lua
+ * and LÖVE have that energy. They make it feel possible to sit down, try an
+ * idea, and slowly turn it into something real. This engine is an attempt to
+ * bring that feeling into Effect and TypeScript without losing what makes
+ * Effect valuable: explicit dependencies, typed errors, observability,
+ * deterministic wiring, and a structure that helps AI tools and human
+ * developers alike work on larger systems.
  * If you come from web development, this is meant to make scenes, input,
  * rendering, audio, and game state feel easier to learn, easier to test, and
  * easier to keep growing.
  *
- * ## What this surface area includes
+ * ## What you get
  *
  * The root entrypoint re-exports the engine's public authoring APIs:
  *
@@ -33,9 +34,9 @@
  * - Native integration points such as {@link NativeBoundary} and
  *   {@link makeSdlCanvasNativeBoundaryLayer} for playable desktop builds
  *
- * ## Mental model for Effect engineers who are new to game development
+ * ## If you know Effect, you already know a lot
  *
- * If you already think in terms of `Layer`, `Effect`, services, scopes, and
+ * If you already think in terms of `Effect`, `Layer`, services, scopes, and
  * typed domain errors, you already know most of the architecture here.
  *
  * A game built with `effect2d` is usually organized around a small set of
@@ -56,7 +57,7 @@
  * - presentation directors that translate state into `Graphics` commands
  * - scene definitions that wire setup and teardown around those services
  *
- * ## What the engine handles for you
+ * ## What the engine takes care of
  *
  * The engine takes care of several pieces that game teams would otherwise have
  * to reinvent:
@@ -73,7 +74,7 @@
  * - testability: most services can be exercised headlessly without opening a
  *   real window
  *
- * ## What kinds of games this engine fits
+ * ## Where this engine shines
  *
  * `effect2d` is best understood as a 2D authored-game engine for TypeScript
  * and Effect developers. It is especially well suited to small-to-medium indie
@@ -96,7 +97,7 @@
  * broader model of authored scenes, sprites or images, typed input actions, and
  * explicit state transitions.
  *
- * ## What kinds of games this engine is not aimed at
+ * ## Where it is not a fit
  *
  * This engine is currently **not** aimed at:
  *
@@ -115,7 +116,7 @@
  * - deterministic
  * - service-oriented in the Effect style
  *
- * ## What the engine does not author for you
+ * ## What is still up to you
  *
  * The engine intentionally does not decide your game design, content, or domain
  * rules. You still own:
@@ -125,7 +126,7 @@
  * - authored assets, room content, and scene flow
  * - which optional services you use and how you compose them
  *
- * ## Typical folder structure
+ * ## One way to lay out a game
  *
  * A practical game layout usually looks something like this:
  *
@@ -157,7 +158,7 @@
  * - `state/`: Effect services that hold mutable game state
  * - `MyGame.ts`: the composition root for Layers, bootstrap code, and programs
  *
- * ## Recommended build pattern
+ * ## A good place to start
  *
  * A good starting sequence for a new game is:
  *
@@ -173,7 +174,7 @@
  * 8. Use {@link makeSdlCanvasNativeBoundaryLayer} when you want a playable
  *    native desktop window.
  *
- * ## When to stay at the root entrypoint
+ * ## When the root import is enough
  *
  * Import from this file when:
  *

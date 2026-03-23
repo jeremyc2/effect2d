@@ -33,6 +33,11 @@
 				box-sizing: border-box;
 			}
 
+			::selection {
+				background: rgba(163, 127, 255, 0.38);
+				color: #fff7ed;
+			}
+
 			.main [id] {
 				scroll-margin-top: calc(var(--header-height) + 16px);
 			}
@@ -1361,18 +1366,19 @@
 				<div class="section-kicker">Overview</div>
 				<div class="prose"><p>Build games with clear systems and room to grow.</p>
 <p><code>effect2d</code> came out of wanting to learn game development in the same spirit
-that made projects like Challacade's work feel so approachable: build a real
-game, keep going long enough to understand the hard parts, and talk about
-the craft in plain language. Lua and LÖVE have that energy. They make it
-feel possible to sit down, try an idea, and slowly turn it into something
-real. This engine is an attempt to bring that feeling into Effect and
-TypeScript without losing what makes Effect valuable: explicit dependencies,
-typed errors, observability, deterministic wiring, and a structure that
-helps AI tools and human developers alike work on larger systems.
+that made projects like <a href="https://github.com/challacade" target="_blank" rel="noopener noreferrer">Challacade</a>'s work
+feel so approachable: build a real game, keep going long enough to
+understand the hard parts, and talk about the craft in plain language. Lua
+and LÖVE have that energy. They make it feel possible to sit down, try an
+idea, and slowly turn it into something real. This engine is an attempt to
+bring that feeling into Effect and TypeScript without losing what makes
+Effect valuable: explicit dependencies, typed errors, observability,
+deterministic wiring, and a structure that helps AI tools and human
+developers alike work on larger systems.
 If you come from web development, this is meant to make scenes, input,
 rendering, audio, and game state feel easier to learn, easier to test, and
 easier to keep growing.</p>
-<h2 id="what-this-surface-area-includes">What this surface area includes</h2>
+<h2 id="what-you-get">What you get</h2>
 <p>The root entrypoint re-exports the engine's authoring APIs:</p>
 <ul>
 <li>Runtime bootstrapping and launch helpers such as
@@ -1387,8 +1393,8 @@ input bindings, and audio cue definitions</li>
 <li>Native integration points such as <a href="#native-nativeboundary">NativeBoundary</a> and
 <a href="#native-makesdlcanvasnativeboundarylayer">makeSdlCanvasNativeBoundaryLayer</a> for playable desktop builds</li>
 </ul>
-<h2 id="mental-model-for-effect-engineers-who-are-new-to-game-development">Mental model for Effect engineers who are new to game development</h2>
-<p>If you already think in terms of <code>Layer</code>, <code>Effect</code>, services, scopes, and
+<h2 id="if-you-know-effect-you-already-know-a-lot">If you know Effect, you already know a lot</h2>
+<p>If you already think in terms of <code>Effect</code>, <code>Layer</code>, services, scopes, and
 typed domain errors, you already know most of the architecture here.</p>
 <p>A game built with <code>effect2d</code> is usually organized around a small set of
 long-lived services:</p>
@@ -1408,7 +1414,7 @@ long-lived services:</p>
 <li>presentation directors that translate state into <code>Graphics</code> commands</li>
 <li>scene definitions that wire setup and teardown around those services</li>
 </ul>
-<h2 id="what-the-engine-handles-for-you">What the engine handles for you</h2>
+<h2 id="what-the-engine-takes-care-of">What the engine takes care of</h2>
 <p>The engine takes care of several pieces that game teams would otherwise have
 to reinvent:</p>
 <ul>
@@ -1424,7 +1430,7 @@ lifecycle, and typed error surfaces</li>
 <li>testability: most services can be exercised headlessly without opening a
 real window</li>
 </ul>
-<h2 id="what-kinds-of-games-this-engine-fits">What kinds of games this engine fits</h2>
+<h2 id="where-this-engine-shines">Where this engine shines</h2>
 <p><code>effect2d</code> is best understood as a 2D authored-game engine for TypeScript
 and Effect developers. It is especially well suited to small-to-medium indie
 games where the game is built from explicit state, scenes, rooms, maps, UI,
@@ -1444,7 +1450,7 @@ dialogue, and deterministic gameplay rules.</p>
 engine can also support non-tile 2D games as long as they still fit the
 broader model of authored scenes, sprites or images, typed input actions, and
 explicit state transitions.</p>
-<h2 id="what-kinds-of-games-this-engine-is-not-aimed-at">What kinds of games this engine is not aimed at</h2>
+<h2 id="where-it-is-not-a-fit">Where it is not a fit</h2>
 <p>This engine is currently <strong>not</strong> aimed at:</p>
 <ul>
 <li>3D games</li>
@@ -1462,7 +1468,7 @@ explicit state transitions.</p>
 <li>deterministic</li>
 <li>service-oriented in the Effect style</li>
 </ul>
-<h2 id="what-the-engine-does-not-author-for-you">What the engine does not author for you</h2>
+<h2 id="what-is-still-up-to-you">What is still up to you</h2>
 <p>The engine intentionally does not decide your game design, content, or domain
 rules. You still own:</p>
 <ul>
@@ -1471,7 +1477,7 @@ rules. You still own:</p>
 <li>authored assets, room content, and scene flow</li>
 <li>which optional services you use and how you compose them</li>
 </ul>
-<h2 id="typical-folder-structure">Typical folder structure</h2>
+<h2 id="one-way-to-lay-out-a-game">One way to lay out a game</h2>
 <p>A practical game layout usually looks something like this:</p>
 <pre><code class="language-text">games/my-game/
  assets/
@@ -1499,7 +1505,7 @@ rules. You still own:</p>
 <li><code>state/</code>: Effect services that hold mutable game state</li>
 <li><code>MyGame.ts</code>: the composition root for Layers, bootstrap code, and programs</li>
 </ul>
-<h2 id="recommended-build-pattern">Recommended build pattern</h2>
+<h2 id="a-good-place-to-start">A good place to start</h2>
 <p>A good starting sequence for a new game is:</p>
 <ol>
 <li>Start from <a href="#runtime-defaultengineconfig">defaultEngineConfig</a> and define your <code>gameId</code>,
@@ -1514,7 +1520,7 @@ engine with your game's services.</li>
 <li>Use <a href="#native-makesdlcanvasnativeboundarylayer">makeSdlCanvasNativeBoundaryLayer</a> when you want a playable
 native desktop window.</li>
 </ol>
-<h2 id="when-to-stay-at-the-root-entrypoint">When to stay at the root entrypoint</h2>
+<h2 id="when-the-root-import-is-enough">When the root import is enough</h2>
 <p>Import from this file when:</p>
 <ul>
 <li>you are writing a game against the engine</li>
