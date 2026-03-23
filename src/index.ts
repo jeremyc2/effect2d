@@ -1,13 +1,21 @@
 /**
- * The public entrypoint for the `effect2d` game engine.
+ * Build games with clear systems and room to grow.
  *
  * @packageDocumentation
  * @public
  *
- * This module is the "big bucket of Lego bricks" entrypoint for building games
- * with the engine. Most applications can import everything they need from here
- * and only drop down into submodules when they want a more curated import
- * boundary.
+ * `effect2d` came out of wanting to learn game development in the same spirit
+ * that made projects like Challacade's work feel so approachable: build a real
+ * game, keep going long enough to understand the hard parts, and talk about
+ * the craft in plain language. Lua and LÖVE have that energy. They make it
+ * feel possible to sit down, try an idea, and slowly turn it into something
+ * real. This engine is an attempt to bring that feeling into Effect and
+ * TypeScript without losing what makes Effect valuable: explicit dependencies,
+ * typed errors, observability, deterministic wiring, and a structure that
+ * helps AI tools and human developers alike work on larger systems.
+ * If you come from web development, this is meant to make scenes, input,
+ * rendering, audio, and game state feel easier to learn, easier to test, and
+ * easier to keep growing.
  *
  * ## What this surface area includes
  *
