@@ -20,8 +20,6 @@
  *
  * ## What you get
  *
- * The root entrypoint re-exports the engine's public authoring APIs:
- *
  * - Runtime bootstrapping and launch helpers such as
  *   {@link Engine}, {@link EngineConfig}, {@link defaultEngineConfig},
  *   {@link makeRuntimeLayer}, and {@link engineProgram}
@@ -39,7 +37,7 @@
  * If you already think in terms of `Effect`, `Layer`, services, scopes, and
  * typed domain errors, you already know most of the architecture here.
  *
- * A game built with `effect2d` is usually organized around a small set of
+ * A game built with `effect2d` is organized around a small set of
  * long-lived services:
  *
  * - `SceneDirector` decides which scene is active and manages scene lifecycle
@@ -50,7 +48,7 @@
  * - `Ui` helps with common text, menu, and dialogue presentation patterns
  * - `SaveCoordinator` snapshots and restores participant state across save slots
  *
- * Your game code usually contributes domain-specific services on top of these:
+ * Your game code contributes domain-specific services on top of these:
  *
  * - game state services such as player state, inventory, or combat rules
  * - gameplay directors that read input and mutate authored game state
@@ -58,9 +56,6 @@
  * - scene definitions that wire setup and teardown around those services
  *
  * ## What the engine takes care of
- *
- * The engine takes care of several pieces that game teams would otherwise have
- * to reinvent:
  *
  * - deterministic service wiring through `Layer`
  * - a native launch boundary for desktop windowing, native input event
@@ -81,8 +76,6 @@
  * games where the game is built from explicit state, scenes, rooms, maps, UI,
  * dialogue, and deterministic gameplay rules.
  *
- * Strong fits include:
- *
  * - room-based or scene-based adventure games
  * - top-down exploration games
  * - tile-based games
@@ -99,8 +92,6 @@
  *
  * ## Where it is not a fit
  *
- * This engine is currently **not** aimed at:
- *
  * - 3D games
  * - large open-world streaming games
  * - MMO or network-first game architectures
@@ -110,49 +101,35 @@
  *
  * ## What is still up to you
  *
- * The engine intentionally does not decide your game design, content, or domain
- * rules. You still own:
- *
  * - your game state and domain model
  * - movement rules, combat rules, win/loss conditions, and progression logic
  * - authored assets, room content, and scene flow
- * - which optional services you use and how you compose them
+ * - which services you use and how you compose them
  *
  * ## One way to lay out a game
  *
- * A practical game layout usually looks something like this:
+ * A practical game layout might look something like this, with each folder
+ * taking on a clear job:
  *
  * ```text
  * games/my-game/
  *   assets/
- *     audio/
- *     fonts/
- *     images/
+ *     audio/      # sound effects and music
+ *     fonts/      # typefaces used by menus and dialogue
+ *     images/     # sprites, backgrounds, and UI art
  *   game/
- *     content/
- *     directors/
- *     input/
- *     native/
- *     scenes/
- *     state/
- *     MyGame.ts
- *   main.ts
- *   README.md
+ *     content/    # authored room data, constants, and encounter tables
+ *     directors/  # frame-by-frame gameplay and presentation orchestration
+ *     input/      # input binding declarations
+ *     native/     # the game's NativeFrameSource wiring
+ *     scenes/     # SceneDefinition values and scene-local bootstrapping
+ *     state/      # Effect services that hold mutable game state
+ *     MyGame.ts   # the composition root for Layers, bootstrap code, and programs
+ *   main.ts       # startup entrypoint
+ *   README.md     # notes for the game itself
  * ```
  *
- * Common responsibilities:
- *
- * - `content/`: authored room data, constants, menus, encounter tables, etc.
- * - `directors/`: frame-by-frame gameplay and presentation orchestration
- * - `input/`: input binding declarations
- * - `native/`: the game's `NativeFrameSource` wiring
- * - `scenes/`: `SceneDefinition` values and scene-local bootstrapping
- * - `state/`: Effect services that hold mutable game state
- * - `MyGame.ts`: the composition root for Layers, bootstrap code, and programs
- *
  * ## A good place to start
- *
- * A good starting sequence for a new game is:
  *
  * 1. Start from {@link defaultEngineConfig} and define your `gameId`,
  *    `startScene`, and tick rate.
@@ -165,17 +142,6 @@
  *    engine with your game's services.
  * 8. Use {@link makeSdlCanvasNativeBoundaryLayer} when you want a playable
  *    native desktop window.
- *
- * ## When the root import is enough
- *
- * Import from this file when:
- *
- * - you are writing a game against the engine
- * - you are reading the engine as an application developer
- * - you want the documentation site to present the "official" public surface
- *
- * If you are contributing to the engine itself, the submodules are often a
- * better place to work because they show tighter implementation boundaries.
  */
 export * from "./animation/index.ts";
 export * from "./audio/index.ts";

@@ -524,7 +524,9 @@
 				overflow: auto;
 				padding: 0.95rem 1rem;
 				border: 1px solid var(--border);
-				background: rgba(7, 9, 14, 0.92);
+				background:
+					linear-gradient(180deg, rgba(154, 230, 180, 0.04), rgba(154, 230, 180, 0.015)),
+					rgba(7, 9, 14, 0.78);
 			}
 
 			.prose pre code {
@@ -644,7 +646,6 @@
 						<p class="sidebar-label">Navigation</p>
 						<nav id="sidebar-nav">
 							<a class="nav-group-title" href="#introduction">Introduction</a>
-							<a class="nav-group-title" href="#modules" style="margin-bottom: 1.1rem;">Modules</a>
 							
 					<section class="nav-group">
 						<a class="nav-group-title" href="#audio">Audio</a>
@@ -1379,7 +1380,6 @@ If you come from web development, this is meant to make scenes, input,
 rendering, audio, and game state feel easier to learn, easier to test, and
 easier to keep growing.</p>
 <h2 id="what-you-get">What you get</h2>
-<p>The root entrypoint re-exports the engine's authoring APIs:</p>
 <ul>
 <li>Runtime bootstrapping and launch helpers such as
 <a href="#runtime-engine">Engine</a>, <a href="#runtime-engineconfig">EngineConfig</a>, <a href="#runtime-defaultengineconfig">defaultEngineConfig</a>,
@@ -1396,7 +1396,7 @@ input bindings, and audio cue definitions</li>
 <h2 id="if-you-know-effect-you-already-know-a-lot">If you know Effect, you already know a lot</h2>
 <p>If you already think in terms of <code>Effect</code>, <code>Layer</code>, services, scopes, and
 typed domain errors, you already know most of the architecture here.</p>
-<p>A game built with <code>effect2d</code> is usually organized around a small set of
+<p>A game built with <code>effect2d</code> is organized around a small set of
 long-lived services:</p>
 <ul>
 <li><code>SceneDirector</code> decides which scene is active and manages scene lifecycle</li>
@@ -1407,7 +1407,7 @@ long-lived services:</p>
 <li><code>Ui</code> helps with common text, menu, and dialogue presentation patterns</li>
 <li><code>SaveCoordinator</code> snapshots and restores participant state across save slots</li>
 </ul>
-<p>Your game code usually contributes domain-specific services on top of these:</p>
+<p>Your game code contributes domain-specific services on top of these:</p>
 <ul>
 <li>game state services such as player state, inventory, or combat rules</li>
 <li>gameplay directors that read input and mutate authored game state</li>
@@ -1415,8 +1415,6 @@ long-lived services:</p>
 <li>scene definitions that wire setup and teardown around those services</li>
 </ul>
 <h2 id="what-the-engine-takes-care-of">What the engine takes care of</h2>
-<p>The engine takes care of several pieces that game teams would otherwise have
-to reinvent:</p>
 <ul>
 <li>deterministic service wiring through <code>Layer</code></li>
 <li>a native launch boundary for desktop windowing, native input event
@@ -1435,7 +1433,6 @@ real window</li>
 and Effect developers. It is especially well suited to small-to-medium indie
 games where the game is built from explicit state, scenes, rooms, maps, UI,
 dialogue, and deterministic gameplay rules.</p>
-<p>Strong fits include:</p>
 <ul>
 <li>room-based or scene-based adventure games</li>
 <li>top-down exploration games</li>
@@ -1451,7 +1448,6 @@ engine can also support non-tile 2D games as long as they still fit the
 broader model of authored scenes, sprites or images, typed input actions, and
 explicit state transitions.</p>
 <h2 id="where-it-is-not-a-fit">Where it is not a fit</h2>
-<p>This engine is currently <strong>not</strong> aimed at:</p>
 <ul>
 <li>3D games</li>
 <li>large open-world streaming games</li>
@@ -1461,44 +1457,32 @@ explicit state transitions.</p>
 <li>projects that need a giant built-in editor and asset pipeline ecosystem</li>
 </ul>
 <h2 id="what-is-still-up-to-you">What is still up to you</h2>
-<p>The engine intentionally does not decide your game design, content, or domain
-rules. You still own:</p>
 <ul>
 <li>your game state and domain model</li>
 <li>movement rules, combat rules, win/loss conditions, and progression logic</li>
 <li>authored assets, room content, and scene flow</li>
-<li>which optional services you use and how you compose them</li>
+<li>which services you use and how you compose them</li>
 </ul>
 <h2 id="one-way-to-lay-out-a-game">One way to lay out a game</h2>
-<p>A practical game layout usually looks something like this:</p>
+<p>A practical game layout might look something like this, with each folder
+taking on a clear job:</p>
 <pre><code class="language-text">games/my-game/
  assets/
- audio/
- fonts/
- images/
+ audio/ # sound effects and music
+ fonts/ # typefaces used by menus and dialogue
+ images/ # sprites, backgrounds, and UI art
  game/
- content/
- directors/
- input/
- native/
- scenes/
- state/
- MyGame.ts
- main.ts
- README.md
+ content/ # authored room data, constants, and encounter tables
+ directors/ # frame-by-frame gameplay and presentation orchestration
+ input/ # input binding declarations
+ native/ # the game's NativeFrameSource wiring
+ scenes/ # SceneDefinition values and scene-local bootstrapping
+ state/ # Effect services that hold mutable game state
+ MyGame.ts # the composition root for Layers, bootstrap code, and programs
+ main.ts # startup entrypoint
+ README.md # notes for the game itself
 </code></pre>
-<p>Common responsibilities:</p>
-<ul>
-<li><code>content/</code>: authored room data, constants, menus, encounter tables, etc.</li>
-<li><code>directors/</code>: frame-by-frame gameplay and presentation orchestration</li>
-<li><code>input/</code>: input binding declarations</li>
-<li><code>native/</code>: the game's <code>NativeFrameSource</code> wiring</li>
-<li><code>scenes/</code>: <code>SceneDefinition</code> values and scene-local bootstrapping</li>
-<li><code>state/</code>: Effect services that hold mutable game state</li>
-<li><code>MyGame.ts</code>: the composition root for Layers, bootstrap code, and programs</li>
-</ul>
 <h2 id="a-good-place-to-start">A good place to start</h2>
-<p>A good starting sequence for a new game is:</p>
 <ol>
 <li>Start from <a href="#runtime-defaultengineconfig">defaultEngineConfig</a> and define your <code>gameId</code>,
 <code>startScene</code>, and tick rate.</li>
@@ -1512,15 +1496,6 @@ engine with your game's services.</li>
 <li>Use <a href="#native-makesdlcanvasnativeboundarylayer">makeSdlCanvasNativeBoundaryLayer</a> when you want a playable
 native desktop window.</li>
 </ol>
-<h2 id="when-the-root-import-is-enough">When the root import is enough</h2>
-<p>Import from this file when:</p>
-<ul>
-<li>you are writing a game against the engine</li>
-<li>you are reading the engine as an application developer</li>
-<li>you want the documentation site to present the &quot;official&quot; surface</li>
-</ul>
-<p>If you are contributing to the engine itself, the submodules are often a
-better place to work because they show tighter implementation boundaries.</p>
 </div>
 			</section>
 		
@@ -1927,7 +1902,7 @@ opening a frame.</p>
 									</div>
 									<h4>Graphics</h4>
 									<div class="prose"><p>Records immediate-mode rendering commands for the current frame.</p>
-<p>For frontend engineers, &quot;immediate-mode&quot; here means:</p>
+<p>&quot;Immediate-mode&quot; means:</p>
 <ul>
 <li>each frame, your game code says what should be drawn right now</li>
 <li>those instructions are recorded as commands such as &quot;draw image&quot;, &quot;draw
@@ -3304,7 +3279,6 @@ diagnostics.</p>
 	<nav class="toc">
 		<a href="#top">Top</a>
 		<a href="#introduction">Introduction</a>
-		<a href="#modules">Modules</a>
 		
 					<a href="#audio">Audio</a>
 				

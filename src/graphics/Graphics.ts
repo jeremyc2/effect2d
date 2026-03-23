@@ -218,7 +218,7 @@ const appendCommand = Effect.fn("Graphics.appendCommand")(function* (
  *
  * @public
  *
- * For frontend engineers, "immediate-mode" here means:
+ * "Immediate-mode" means:
  *
  * - each frame, your game code says what should be drawn right now
  * - those instructions are recorded as commands such as "draw image", "draw

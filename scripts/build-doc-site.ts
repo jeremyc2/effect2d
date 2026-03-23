@@ -441,7 +441,6 @@ const renderOnThisPage = (modules: ReadonlyArray<ModuleDocGroup>): string => `
 	<nav class="toc">
 		<a href="#top">Top</a>
 		<a href="#introduction">Introduction</a>
-		<a href="#modules">Modules</a>
 		${modules
 			.map(
 				(moduleGroup) => `
@@ -986,7 +985,9 @@ const renderHtmlDocument = ({
 				overflow: auto;
 				padding: 0.95rem 1rem;
 				border: 1px solid var(--border);
-				background: rgba(7, 9, 14, 0.92);
+				background:
+					linear-gradient(180deg, rgba(154, 230, 180, 0.04), rgba(154, 230, 180, 0.015)),
+					rgba(7, 9, 14, 0.78);
 			}
 
 			.prose pre code {
@@ -1106,7 +1107,6 @@ const renderHtmlDocument = ({
 						<p class="sidebar-label">Navigation</p>
 						<nav id="sidebar-nav">
 							<a class="nav-group-title" href="#introduction">Introduction</a>
-							<a class="nav-group-title" href="#modules" style="margin-bottom: 1.1rem;">Modules</a>
 							${renderSidebar(modules)}
 						</nav>
 					</div>
