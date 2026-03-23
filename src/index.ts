@@ -108,14 +108,6 @@
  * - high-end rendering showcase games
  * - projects that need a giant built-in editor and asset pipeline ecosystem
  *
- * In other words, this engine is strongest when the game can be described as:
- *
- * - 2D
- * - authored
- * - scene-oriented
- * - deterministic
- * - service-oriented in the Effect style
- *
  * ## What is still up to you
  *
  * The engine intentionally does not decide your game design, content, or domain
