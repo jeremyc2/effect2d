@@ -1,11 +1,4 @@
-import sdl from "@kmamal/sdl";
-import {
-	type Canvas,
-	createCanvas,
-	GlobalFonts,
-	loadImage,
-	type SKRSContext2D,
-} from "@napi-rs/canvas";
+import type { Canvas, Image } from "@napi-rs/canvas";
 import { Effect, Layer, Option, Ref } from "effect";
 import type { Audio, AudioSnapshot } from "../audio/Audio.ts";
 import { EngineLaunchError } from "../errors/EngineError.ts";
@@ -25,6 +18,77 @@ import {
 } from "./NativeBackend.ts";
 import { NativeBoundary } from "./NativeBoundary.ts";
 import type { NativeFrameSource } from "./NativeFrameSource.ts";
+
+type SKRSContext2D = ReturnType<Canvas["getContext"]>;
+type LoadedImage = Image;
+
+interface SdlWindow {
+	readonly destroyed: boolean;
+	readonly height: number;
+	readonly pixelHeight: number;
+	readonly pixelWidth: number;
+	readonly width: number;
+	readonly destroy: () => void;
+	readonly on: {
+		(event: "close", handler: () => void): void;
+		(event: "resize", handler: () => void): void;
+		(
+			event: "keyDown",
+			handler: (event: { readonly key: string | null }) => void,
+		): void;
+		(
+			event: "keyUp",
+			handler: (event: { readonly key: string | null }) => void,
+		): void;
+		(
+			event: "mouseButtonDown",
+			handler: (event: { readonly button: number }) => void,
+		): void;
+		(
+			event: "mouseButtonUp",
+			handler: (event: { readonly button: number }) => void,
+		): void;
+		(
+			event: "mouseMove",
+			handler: (event: { readonly x: number; readonly y: number }) => void,
+		): void;
+		(
+			event: "mouseWheel",
+			handler: (event: { readonly dx: number; readonly dy: number }) => void,
+		): void;
+		(
+			event: "textInput",
+			handler: (event: { readonly text: string }) => void,
+		): void;
+	};
+	readonly render: (
+		width: number,
+		height: number,
+		stride: number,
+		format: string,
+		buffer: Buffer,
+		options: {
+			readonly dstRect: {
+				readonly height: number;
+				readonly width: number;
+				readonly x: number;
+				readonly y: number;
+			};
+			readonly scaling: "nearest";
+		},
+	) => void;
+}
+
+interface SdlModuleLike {
+	readonly video: {
+		readonly createWindow: (options: {
+			readonly height: number;
+			readonly resizable: boolean;
+			readonly title: string;
+			readonly width: number;
+		}) => SdlWindow;
+	};
+}
 
 /**
  * Configuration for the SDL + Canvas native backend.
@@ -189,7 +253,7 @@ const fontString = (family: string, sizePx: number): string =>
 const renderCommand = (
 	context: SKRSContext2D,
 	command: DrawCommand,
-	images: ReadonlyMap<string, Awaited<ReturnType<typeof loadImage>>>,
+	images: ReadonlyMap<string, LoadedImage>,
 	defaultFontFamily: string,
 	defaultFontSizePx: number,
 	fontAssetDefinitions: Readonly<
@@ -348,7 +412,7 @@ const renderCommand = (
 };
 
 const updateWindowSnapshot = (
-	window: ReturnType<typeof sdl.video.createWindow>,
+	window: SdlWindow,
 	title: string,
 ): NativeWindowSnapshot => ({
 	backend: "sdl",
@@ -432,6 +496,26 @@ export const makeSdlCanvasNativeBackendLayer = ({
 	Layer.effect(
 		NativeBackend,
 		Effect.gen(function* () {
+			const sdlModule = yield* Effect.tryPromise({
+				try: () => import("@kmamal/sdl"),
+				catch: (cause) =>
+					new EngineLaunchError({
+						module: "native",
+						reason: `Failed to load SDL bindings: ${String(cause)}`,
+					}),
+			});
+			const canvasModule = yield* Effect.tryPromise({
+				try: () => import("@napi-rs/canvas"),
+				catch: (cause) =>
+					new EngineLaunchError({
+						module: "native",
+						reason: `Failed to load Canvas bindings: ${String(cause)}`,
+					}),
+			});
+			const sdl = (Reflect.get(sdlModule, "default") ??
+				sdlModule) as SdlModuleLike;
+			const { GlobalFonts, createCanvas, loadImage } = canvasModule;
+
 			const diagnosticsRef = yield* Ref.make(
 				diagnosticsSnapshot(frameDelayMillis),
 			);
@@ -439,17 +523,12 @@ export const makeSdlCanvasNativeBackendLayer = ({
 			const soundProcessesRef = yield* Ref.make(
 				new Map<string, SpawnedAudioProcess>(),
 			);
-			const windowRef = yield* Ref.make<ReturnType<
-				typeof sdl.video.createWindow
-			> | null>(null);
+			const windowRef = yield* Ref.make<SdlWindow | null>(null);
 
 			let canvas: Canvas | null = null;
 			let context: SKRSContext2D | null = null;
 			let pendingInputEvents: Array<InputEvent> = [];
-			const loadedImages = new Map<
-				string,
-				Awaited<ReturnType<typeof loadImage>>
-			>();
+			const loadedImages = new Map<string, LoadedImage>();
 			const registeredFontDefinitions: Record<
 				string,
 				{
