@@ -26,6 +26,7 @@ const LogLevelSchema = Schema.Union([
 	Schema.Literal("warn"),
 ]);
 
+/** Indicates that a log call received an invalid message payload. @public */
 export class InvalidLogMessageError extends Schema.TaggedErrorClass<InvalidLogMessageError>()(
 	"InvalidLogMessageError",
 	{

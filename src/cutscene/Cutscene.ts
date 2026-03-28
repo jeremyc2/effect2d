@@ -32,6 +32,7 @@ export interface DialogueScriptOptions {
 	readonly text: string;
 }
 
+/** Indicates that dialogue advancement requested a page index outside the prepared page list. @public */
 export class DialoguePageOutOfRangeError extends Schema.TaggedErrorClass<DialoguePageOutOfRangeError>()(
 	"DialoguePageOutOfRangeError",
 	{

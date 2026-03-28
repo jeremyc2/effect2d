@@ -40,6 +40,7 @@ const defaultFlashColor: Color = {
 	red: 1,
 };
 
+/** Indicates that a sequence wait step count was invalid. @public */
 export class InvalidSequenceWaitError extends Schema.TaggedErrorClass<InvalidSequenceWaitError>()(
 	"InvalidSequenceWaitError",
 	{

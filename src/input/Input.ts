@@ -260,6 +260,7 @@ const nextSnapshot = (
 	}
 };
 
+/** Indicates that an action binding is structurally invalid. @public */
 export class InvalidInputBindingError extends Schema.TaggedErrorClass<InvalidInputBindingError>()(
 	"InvalidInputBindingError",
 	{
@@ -268,6 +269,7 @@ export class InvalidInputBindingError extends Schema.TaggedErrorClass<InvalidInp
 	},
 ) {}
 
+/** Indicates that one action declared the same trigger more than once. @public */
 export class InputBindingConflictError extends Schema.TaggedErrorClass<InputBindingConflictError>()(
 	"InputBindingConflictError",
 	{
@@ -276,6 +278,7 @@ export class InputBindingConflictError extends Schema.TaggedErrorClass<InputBind
 	},
 ) {}
 
+/** Indicates that code asked for an action that has not been bound. @public */
 export class UnknownInputActionError extends Schema.TaggedErrorClass<UnknownInputActionError>()(
 	"UnknownInputActionError",
 	{

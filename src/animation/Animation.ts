@@ -60,6 +60,7 @@ export interface AnimationTransition<Frame = number> {
 	readonly state: AnimationPlaybackState<Frame>;
 }
 
+/** Indicates that animation lookup referenced a clip id the library does not contain. @public */
 export class AnimationClipNotFoundError extends Schema.TaggedErrorClass<AnimationClipNotFoundError>()(
 	"AnimationClipNotFoundError",
 	{

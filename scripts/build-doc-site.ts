@@ -83,13 +83,16 @@ const escapeHtml = (value: string): string =>
 
 const slugify = (value: string): string =>
 	value
+		// Collapse any non-alphanumeric run into one dash so ids stay URL-safe.
 		.toLowerCase()
 		.replace(/[^a-z0-9]+/g, "-")
+		// Trim dashes that would otherwise remain at the edges.
 		.replace(/^-+|-+$/g, "");
 
 const toTitleCase = (value: string): string =>
 	moduleLabelOverrides[value] ??
 	value
+		// Split module ids like "runtime-clock" or "runtime_clock" into words.
 		.split(/[-_]/g)
 		.map((part) =>
 			part.length === 0 ? part : `${part[0]?.toUpperCase()}${part.slice(1)}`,
@@ -169,27 +172,38 @@ const collectPublicModules = Effect.fn("collectPublicModules")(function* (
 
 const cleanJsDocMarkdown = (rawBlock: string): string => {
 	const body = rawBlock
+		// Remove the opening JSDoc marker before processing the comment body.
 		.replace(/^\/\*\*/, "")
+		// Remove the closing JSDoc marker from the final line.
 		.replace(/\*\/$/, "")
 		.split("\n")
+		// Strip the leading "*" decoration from each JSDoc line.
 		.map((line) => line.replace(/^\s*\*\s?/, ""))
 		.map((line) =>
 			line
+				// Drop the generated-doc opt-in tag from rendered prose.
 				.replace(/\s*@public\b/g, "")
+				// Drop the package-docs tag from rendered prose.
 				.replace(/\s*@packageDocumentation\b/g, ""),
 		)
 		.join("\n")
 		.trim();
 
-	return body
-		.replace(/\b[Pp]ublic\b/g, "")
-		.replace(/ {2,}/g, " ")
-		.replace(/\s+([,.:;!?])/g, "$1")
-		.trim();
+	return (
+		body
+			// Remove stray "Public" wording left behind after tag cleanup.
+			.replace(/\b[Pp]ublic\b/g, "")
+			// Collapse repeated spaces introduced by normalization.
+			.replace(/ {2,}/g, " ")
+			// Remove spaces that appear before punctuation after cleanup.
+			.replace(/\s+([,.:;!?])/g, "$1")
+			.trim()
+	);
 };
 
 const extractSummary = (markdown: string): string => {
 	const paragraphs = markdown
+		// Split markdown into paragraph-sized chunks separated by blank lines.
 		.split(/\n\s*\n/g)
 		.map((part) => part.trim())
 		.filter((part) => part.length > 0)
@@ -230,6 +244,7 @@ const makeInlineLinks = (
 	slugBySymbol: ReadonlyMap<string, string>,
 ): string =>
 	markdown
+		// Turn inline code mentions of LÖVE/LÖVE 2D into one canonical external link.
 		.replace(/`(LÖVE(?: 2D)?)`/g, (_match, label: string) => {
 			return `[${label}](${loveWebsiteUrl})`;
 		})
@@ -339,6 +354,7 @@ function extractServiceMembers(
 	}> = [];
 
 	for (const match of serviceSignature.matchAll(
+		// Capture `readonly memberName: signature;` lines from the service contract.
 		/readonly\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*:\s*([\s\S]*?);/g,
 	)) {
 		const name = match[1];
@@ -349,6 +365,7 @@ function extractServiceMembers(
 
 		members.push({
 			name,
+			// Flatten multiline signatures so each method fits on one rendered line.
 			signature: `${name}: ${rawSignature.replace(/\s+/g, " ").trim()}`,
 		});
 	}
@@ -1458,6 +1475,7 @@ const main = Effect.gen(function* () {
 					return {
 						entries,
 						fileLabel:
+							// Show a clean nav label without the TypeScript file suffix.
 							filePath.split("/").at(-1)?.replace(/\.ts$/, "") ?? filePath,
 						filePath,
 						slug: `${slugify(moduleSpec.moduleId)}-${slugify(

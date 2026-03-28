@@ -101,6 +101,7 @@ const resolveLoop = (
 	cue: LoadedAudioCue,
 ) => options?.loop ?? cue.defaultLoop;
 
+/** Indicates that a cue id was registered more than once. @public */
 export class DuplicateAudioCueError extends Schema.TaggedErrorClass<DuplicateAudioCueError>()(
 	"DuplicateAudioCueError",
 	{
@@ -108,6 +109,7 @@ export class DuplicateAudioCueError extends Schema.TaggedErrorClass<DuplicateAud
 	},
 ) {}
 
+/** Indicates that an authored cue definition failed validation. @public */
 export class InvalidAudioCueError extends Schema.TaggedErrorClass<InvalidAudioCueError>()(
 	"InvalidAudioCueError",
 	{
@@ -116,6 +118,7 @@ export class InvalidAudioCueError extends Schema.TaggedErrorClass<InvalidAudioCu
 	},
 ) {}
 
+/** Indicates that a bus volume fell outside the inclusive 0..1 range. @public */
 export class InvalidAudioBusVolumeError extends Schema.TaggedErrorClass<InvalidAudioBusVolumeError>()(
 	"InvalidAudioBusVolumeError",
 	{
@@ -124,6 +127,7 @@ export class InvalidAudioBusVolumeError extends Schema.TaggedErrorClass<InvalidA
 	},
 ) {}
 
+/** Indicates that playback referenced a cue id that has not been loaded. @public */
 export class UnknownAudioCueError extends Schema.TaggedErrorClass<UnknownAudioCueError>()(
 	"UnknownAudioCueError",
 	{
@@ -131,6 +135,7 @@ export class UnknownAudioCueError extends Schema.TaggedErrorClass<UnknownAudioCu
 	},
 ) {}
 
+/** Indicates that code referenced a sound playback handle that no longer exists. @public */
 export class UnknownSoundPlaybackError extends Schema.TaggedErrorClass<UnknownSoundPlaybackError>()(
 	"UnknownSoundPlaybackError",
 	{
@@ -138,6 +143,7 @@ export class UnknownSoundPlaybackError extends Schema.TaggedErrorClass<UnknownSo
 	},
 ) {}
 
+/** Indicates that a cue was used as music vs sfx in the wrong context. @public */
 export class WrongAudioCueKindError extends Schema.TaggedErrorClass<WrongAudioCueKindError>()(
 	"WrongAudioCueKindError",
 	{

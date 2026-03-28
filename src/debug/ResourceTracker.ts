@@ -25,6 +25,7 @@ const initialResourceTrackerState: ResourceTrackerState = {
 	records: new Map<string, ResourceRecord>(),
 };
 
+/** Indicates that a tracked resource record was missing required data. @public */
 export class InvalidResourceRecordError extends Schema.TaggedErrorClass<InvalidResourceRecordError>()(
 	"InvalidResourceRecordError",
 	{
@@ -33,6 +34,7 @@ export class InvalidResourceRecordError extends Schema.TaggedErrorClass<InvalidR
 	},
 ) {}
 
+/** Indicates that code referenced a tracked resource id that has not been registered. @public */
 export class UnknownTrackedResourceError extends Schema.TaggedErrorClass<UnknownTrackedResourceError>()(
 	"UnknownTrackedResourceError",
 	{

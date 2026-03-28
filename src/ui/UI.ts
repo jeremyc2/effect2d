@@ -110,6 +110,7 @@ const black: Color = {
 	red: 0,
 };
 
+/** Indicates that a font id was loaded more than once into the UI service. @public */
 export class DuplicateFontError extends Schema.TaggedErrorClass<DuplicateFontError>()(
 	"DuplicateFontError",
 	{
@@ -117,6 +118,7 @@ export class DuplicateFontError extends Schema.TaggedErrorClass<DuplicateFontErr
 	},
 ) {}
 
+/** Indicates that a font definition is missing required authored data. @public */
 export class InvalidFontDefinitionError extends Schema.TaggedErrorClass<InvalidFontDefinitionError>()(
 	"InvalidFontDefinitionError",
 	{
@@ -125,6 +127,7 @@ export class InvalidFontDefinitionError extends Schema.TaggedErrorClass<InvalidF
 	},
 ) {}
 
+/** Indicates that text layout or drawing referenced an unknown font id. @public */
 export class UnknownFontError extends Schema.TaggedErrorClass<UnknownFontError>()(
 	"UnknownFontError",
 	{
