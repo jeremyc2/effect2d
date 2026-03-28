@@ -1,4 +1,8 @@
 import { Effect, Layer, Ref, Schema, ServiceMap } from "effect";
+import {
+	recordSaveRestore,
+	recordSaveWrite,
+} from "../debug/GameplayMetrics.ts";
 import type {
 	SaveDocument,
 	SaveMigration,
@@ -152,6 +156,11 @@ export class SaveCoordinator extends ServiceMap.Service<
 
 				const snapshotSlot = Effect.fn("SaveCoordinator.snapshotSlot")(
 					function* (slotId: SaveSlotId) {
+						yield* Effect.annotateCurrentSpan({
+							"effect2d.save.participant_count": participants.length,
+							"effect2d.save.slot_id": slotId,
+							"effect2d.save.version": version,
+						});
 						const participantStates: Record<
 							string,
 							Readonly<Record<string, unknown>>
@@ -174,6 +183,12 @@ export class SaveCoordinator extends ServiceMap.Service<
 				) {
 					const slot = yield* snapshotSlot(slotId);
 					const currentDocument = yield* Ref.get(documentRef);
+					yield* Effect.logInfo("Writing save slot.").pipe(
+						Effect.annotateLogs({
+							"effect2d.save.slot_id": slotId,
+							"effect2d.save.version": version,
+						}),
+					);
 					const nextDocument: SaveDocument = {
 						...currentDocument,
 						slots: {
@@ -184,12 +199,17 @@ export class SaveCoordinator extends ServiceMap.Service<
 					};
 
 					yield* Ref.set(documentRef, nextDocument);
+					yield* recordSaveWrite(slotId);
 					return nextDocument;
 				});
 
 				const restoreSlot = Effect.fn("SaveCoordinator.restoreSlot")(function* (
 					slotId: SaveSlotId,
 				) {
+					yield* Effect.annotateCurrentSpan({
+						"effect2d.save.slot_id": slotId,
+						"effect2d.save.version": version,
+					});
 					const currentDocument = yield* Ref.get(documentRef);
 					const slot = currentDocument.slots[slotId];
 
@@ -197,11 +217,18 @@ export class SaveCoordinator extends ServiceMap.Service<
 						return yield* new SaveSlotNotFoundError({ slotId });
 					}
 
+					yield* Effect.logInfo("Restoring save slot.").pipe(
+						Effect.annotateLogs({
+							"effect2d.save.slot_id": slotId,
+							"effect2d.save.version": version,
+						}),
+					);
 					for (const participant of participants) {
 						yield* participant.restore(
 							slot.participantStates[participant.key] ?? {},
 						);
 					}
+					yield* recordSaveRestore(slotId);
 				});
 
 				const importDocument = Effect.fn("SaveCoordinator.importDocument")(
@@ -209,6 +236,16 @@ export class SaveCoordinator extends ServiceMap.Service<
 						const decodedDocument = yield* Schema.decodeUnknownEffect(
 							SaveDocumentSchema,
 						)(document).pipe(Effect.mapError(createDecodeError));
+						yield* Effect.annotateCurrentSpan({
+							"effect2d.save.imported_version": decodedDocument.version,
+							"effect2d.save.target_version": version,
+						});
+						yield* Effect.logInfo("Importing save document.").pipe(
+							Effect.annotateLogs({
+								"effect2d.save.imported_version": decodedDocument.version,
+								"effect2d.save.target_version": version,
+							}),
+						);
 						const migratedDocument =
 							decodedDocument.version === version
 								? decodedDocument

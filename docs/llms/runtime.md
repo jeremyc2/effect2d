@@ -185,7 +185,7 @@ surrounding runtime layer.
 ### RuntimeTimingSnapshot
 
 - Kind: interface
-- Source: `src/runtime/RuntimeClock.ts:3`
+- Source: `src/runtime/RuntimeClock.ts:4`
 
 Snapshot data exposed by the runtime clock.
 
@@ -197,7 +197,7 @@ to assert how many fixed ticks or rendered frames have elapsed.
 ### RuntimeClock
 
 - Kind: service
-- Source: `src/runtime/RuntimeClock.ts:33`
+- Source: `src/runtime/RuntimeClock.ts:34`
 
 Tracks frame timing and fixed-step sleep for a running game.
 

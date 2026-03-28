@@ -10,12 +10,14 @@
 		"build:docs": "bun scripts/build-doc-site.ts",
 		"beacon-run:native": "bun games/beacon-run/main.ts",
 		"cavern:native": "bun games/cavern/main.ts",
+		"commentary": "bun scripts/gameplay-commentary.ts",
 		"test": "bun test --path-ignore-patterns 'reference_repositories/**'",
 		"check:staged": "bun --bun biome check --write --staged",
 		"check": "bun --bun biome check --write",
 		"prepare": "effect-tsgo patch"
 	},
 	"dependencies": {
+		"@effect/platform-bun": "^4.0.0-beta.42",
 		"effect": "^4.0.0-beta.42",
 		"node-web-audio-api": "^1.0.9",
 		"skia-canvas": "^3.0.8"

@@ -1,4 +1,5 @@
 import { Effect, Layer, Ref, ServiceMap } from "effect";
+import { setCollisionBodyCount } from "../debug/GameplayMetrics.ts";
 
 /** Axis-aligned bounding box collision shape. @public */
 export interface Aabb {
@@ -197,21 +198,23 @@ export class CollisionWorld extends ServiceMap.Service<
 			const registerBody = Effect.fn("CollisionWorld.registerBody")(function* (
 				body: CollisionBody,
 			) {
-				yield* Ref.update(bodies, (current) => {
+				const bodyCount = yield* Ref.modify(bodies, (current) => {
 					const next = new Map(current);
 					next.set(body.id, body);
-					return next;
+					return [next.size, next] as const;
 				});
+				yield* setCollisionBodyCount(bodyCount);
 			});
 
 			const removeBody = Effect.fn("CollisionWorld.removeBody")(function* (
 				bodyId: string,
 			) {
-				yield* Ref.update(bodies, (current) => {
+				const bodyCount = yield* Ref.modify(bodies, (current) => {
 					const next = new Map(current);
 					next.delete(bodyId);
-					return next;
+					return [next.size, next] as const;
 				});
+				yield* setCollisionBodyCount(bodyCount);
 			});
 
 			const queryOverlaps = Effect.fn("CollisionWorld.queryOverlaps")(

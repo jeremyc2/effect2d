@@ -721,12 +721,18 @@ export function makeSkiaNativeBackendLayer({
 					}
 
 					if (activeMusic.source !== null) {
-						try {
-							activeMusic.source.onended = null;
-							activeMusic.source.stop();
-						} catch {
-							// Source nodes throw if they are already stopped.
-						}
+						const source = activeMusic.source;
+						source.onended = null;
+						void runFork(
+							Effect.try({
+								try: () => source.stop(),
+								catch: (cause) =>
+									new EngineLaunchError({
+										module: "native",
+										reason: `Failed to stop music source: ${String(cause)}`,
+									}),
+							}).pipe(Effect.ignore),
+						);
 						activeMusic.source.disconnect();
 					}
 
@@ -813,12 +819,17 @@ export function makeSkiaNativeBackendLayer({
 						return;
 					}
 
-					try {
-						activeSound.source.onended = null;
-						activeSound.source.stop();
-					} catch {
-						// The source may already have stopped.
-					}
+					activeSound.source.onended = null;
+					void runFork(
+						Effect.try({
+							try: () => activeSound.source.stop(),
+							catch: (cause) =>
+								new EngineLaunchError({
+									module: "native",
+									reason: `Failed to stop sound playback ${playbackId}: ${String(cause)}`,
+								}),
+						}).pipe(Effect.ignore),
+					);
 					activeSound.source.disconnect();
 					activeSound.gainNode.disconnect();
 					activeSounds.delete(playbackId);

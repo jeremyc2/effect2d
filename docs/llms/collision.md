@@ -7,35 +7,35 @@
 ### Aabb
 
 - Kind: interface
-- Source: `src/collision/CollisionWorld.ts:3`
+- Source: `src/collision/CollisionWorld.ts:4`
 
 Axis-aligned bounding box collision shape.
 
 ### Circle
 
 - Kind: interface
-- Source: `src/collision/CollisionWorld.ts:11`
+- Source: `src/collision/CollisionWorld.ts:12`
 
 Circle collision shape described by center position and radius.
 
 ### CollisionGroup
 
 - Kind: type
-- Source: `src/collision/CollisionWorld.ts:18`
+- Source: `src/collision/CollisionWorld.ts:19`
 
 Free-form collision channel name such as `"player"`, `"enemy"`, or `"wall"`.
 
 ### CollisionMask
 
 - Kind: type
-- Source: `src/collision/CollisionWorld.ts:21`
+- Source: `src/collision/CollisionWorld.ts:22`
 
 List of groups a query or body should interact with. An empty mask means "match every group".
 
 ### CollisionShape
 
 - Kind: type
-- Source: `src/collision/CollisionWorld.ts:24`
+- Source: `src/collision/CollisionWorld.ts:25`
 
 Supported collision shape variants.
 
@@ -48,7 +48,7 @@ Available kinds:
 ### CollisionBody
 
 - Kind: interface
-- Source: `src/collision/CollisionWorld.ts:43`
+- Source: `src/collision/CollisionWorld.ts:44`
 
 Registered collision participant stored in the world.
 
@@ -60,70 +60,70 @@ Registered collision participant stored in the world.
 ### Hitbox
 
 - Kind: interface
-- Source: `src/collision/CollisionWorld.ts:59`
+- Source: `src/collision/CollisionWorld.ts:60`
 
 Conventional damage-dealing body payload used by gameplay code on top of the core collision types.
 
 ### Hurtbox
 
 - Kind: interface
-- Source: `src/collision/CollisionWorld.ts:65`
+- Source: `src/collision/CollisionWorld.ts:66`
 
 Conventional recipient body payload used by gameplay code on top of the core collision types.
 
 ### doesAabbOverlap
 
 - Kind: function
-- Source: `src/collision/CollisionWorld.ts:78`
+- Source: `src/collision/CollisionWorld.ts:79`
 
 Pure overlap test for two axis-aligned rectangles.
 
 ### doesCircleOverlap
 
 - Kind: function
-- Source: `src/collision/CollisionWorld.ts:88`
+- Source: `src/collision/CollisionWorld.ts:89`
 
 Pure overlap test for two circles.
 
 ### doesAabbOverlapCircle
 
 - Kind: function
-- Source: `src/collision/CollisionWorld.ts:97`
+- Source: `src/collision/CollisionWorld.ts:98`
 
 Pure overlap test between an axis-aligned rectangle and a circle.
 
 ### doesShapeOverlap
 
 - Kind: function
-- Source: `src/collision/CollisionWorld.ts:107`
+- Source: `src/collision/CollisionWorld.ts:108`
 
 Pure overlap test that dispatches to the correct shape-specific algorithm.
 
 ### getTileIndex
 
 - Kind: function
-- Source: `src/collision/CollisionWorld.ts:131`
+- Source: `src/collision/CollisionWorld.ts:132`
 
 Converts a 2D tile coordinate into a flat row-major array index.
 
 ### getTileAt
 
 - Kind: function
-- Source: `src/collision/CollisionWorld.ts:136`
+- Source: `src/collision/CollisionWorld.ts:137`
 
 Reads one tile id from a flat row-major tile array.
 
 ### isSolidTileAt
 
 - Kind: function
-- Source: `src/collision/CollisionWorld.ts:146`
+- Source: `src/collision/CollisionWorld.ts:147`
 
 Returns whether the addressed tile exists and belongs to the provided solid tile set.
 
 ### CollisionWorld
 
 - Kind: service
-- Source: `src/collision/CollisionWorld.ts:158`
+- Source: `src/collision/CollisionWorld.ts:159`
 
 Minimal in-memory collision registry and overlap query service.
 

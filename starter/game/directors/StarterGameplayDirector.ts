@@ -250,6 +250,10 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 					maxWidth: 160,
 					text: "A lantern flickers in the dark. Press Space to take it.",
 				});
+				yield* Effect.annotateCurrentSpan({
+					"effect2d.game.dialogue_id": "lantern-intro",
+					"effect2d.game.dialogue_page_count": pages.length,
+				});
 				yield* dialogueState.open("lantern-intro", pages);
 				yield* sequence.waitSteps(1);
 				yield* gameplayState.markIntroSequencePlayed;
@@ -296,6 +300,10 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 					worldSnapshot.currentRoomId === "lantern-room" &&
 					overlappingBodies.some((body) => body.id === lanternBodyId)
 				) {
+					yield* Effect.annotateCurrentSpan({
+						"effect2d.game.pickup_id": "lantern",
+						"effect2d.game.room_id": worldSnapshot.currentRoomId,
+					});
 					yield* gameplayState.collectLantern;
 					yield* worldState.lightLantern;
 					yield* worldState.addItem("lantern");
@@ -325,6 +333,10 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 					worldSnapshot.lanternLit &&
 					overlappingBodies.some((body) => body.id === enemyBodyId)
 				) {
+					yield* Effect.annotateCurrentSpan({
+						"effect2d.game.enemy_id": "slime",
+						"effect2d.game.room_id": worldSnapshot.currentRoomId,
+					});
 					yield* gameplayState.defeatEnemy;
 					yield* sequence.playSoundCue("slime-hit");
 					yield* dialogueState.open(
@@ -351,6 +363,9 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 			const stepFrame = Effect.fn("StarterGameplayDirector.stepFrame")(
 				function* () {
 					const activeSceneId = (yield* sceneDirector.snapshot).activeSceneId;
+					yield* Effect.annotateCurrentSpan({
+						"effect2d.game.scene_id": activeSceneId ?? "none",
+					});
 					const cancelAction = yield* input.actionState("menu-cancel");
 					const confirmAction = yield* input.actionState("menu-confirm");
 					const debugToggle = yield* input.actionState("debug-toggle");
@@ -394,6 +409,10 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 						["room-exit"],
 					);
 					if (exitTriggers.some((body) => body.id === exitBodyId)) {
+						yield* Effect.annotateCurrentSpan({
+							"effect2d.game.room_id": "lantern-room",
+							"effect2d.game.transition": "overworld-room->lantern-room",
+						});
 						yield* roomState.enterRoom("lantern-room");
 						yield* dialogueState.clear;
 						const lanternEntry =

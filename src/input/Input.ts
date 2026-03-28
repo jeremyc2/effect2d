@@ -1,4 +1,5 @@
 import { Effect, Layer, Ref, Schema, ServiceMap } from "effect";
+import { recordInputEvent } from "../debug/GameplayMetrics.ts";
 
 /** Keyboard key identifiers as reported by the active native backend. @public */
 export type KeyCode = string;
@@ -396,6 +397,10 @@ export class Input extends ServiceMap.Service<
 			const applyEvent = Effect.fn("Input.applyEvent")(function* (
 				event: InputEvent,
 			) {
+				yield* Effect.annotateCurrentSpan({
+					"effect2d.input.event_type": event.type,
+				});
+				yield* recordInputEvent(event.type);
 				yield* Ref.update(stateRef, (state) => ({
 					...state,
 					current: nextSnapshot(state.current, event),
@@ -419,6 +424,9 @@ export class Input extends ServiceMap.Service<
 			const setBindings = Effect.fn("Input.setBindings")(function* (
 				nextBindings: ReadonlyArray<ActionBinding>,
 			) {
+				yield* Effect.annotateCurrentSpan({
+					"effect2d.input.binding_count": nextBindings.length,
+				});
 				const validatedBindings = new Map<string, ActionBinding>();
 
 				for (const binding of nextBindings) {
@@ -430,12 +438,21 @@ export class Input extends ServiceMap.Service<
 					...state,
 					bindings: validatedBindings,
 				}));
+				yield* Effect.logDebug("Registered input bindings.").pipe(
+					Effect.annotateLogs({
+						"effect2d.input.binding_count": nextBindings.length,
+					}),
+				);
 			});
 
 			const bindAction = Effect.fn("Input.bindAction")(function* (
 				binding: ActionBinding,
 			) {
 				const validated = yield* validateBinding(binding);
+				yield* Effect.annotateCurrentSpan({
+					"effect2d.input.action": validated.action,
+					"effect2d.input.trigger_count": validated.triggers.length,
+				});
 				yield* Ref.update(stateRef, (state) => ({
 					...state,
 					bindings: new Map(state.bindings).set(validated.action, validated),

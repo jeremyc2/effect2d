@@ -192,6 +192,9 @@ export class BeaconRunGameplayDirector extends ServiceMap.Service<
 				"BeaconRunGameplayDirector.applyMovement",
 			)(function* () {
 				const currentRoom = yield* beaconRunRoomState.snapshot;
+				yield* Effect.annotateCurrentSpan({
+					"effect2d.game.room_id": currentRoom.id,
+				});
 				const directions = [
 					{
 						action: "move-left",
@@ -249,6 +252,10 @@ export class BeaconRunGameplayDirector extends ServiceMap.Service<
 					expeditionSnapshot.currentRoomId === "shrine-room" &&
 					overlappingBodies.some((body) => body.id === beaconBodyId)
 				) {
+					yield* Effect.annotateCurrentSpan({
+						"effect2d.game.beacon_id": "north-beacon",
+						"effect2d.game.room_id": expeditionSnapshot.currentRoomId,
+					});
 					yield* expeditionState.lightBeacon("north-beacon");
 					yield* sequence.playSoundCue("beacon-ignite");
 					yield* engineLogger.info("Beacon Run beacon lit.", {
@@ -262,6 +269,9 @@ export class BeaconRunGameplayDirector extends ServiceMap.Service<
 			const stepFrame = Effect.fn("BeaconRunGameplayDirector.stepFrame")(
 				function* () {
 					const activeSceneId = (yield* sceneDirector.snapshot).activeSceneId;
+					yield* Effect.annotateCurrentSpan({
+						"effect2d.game.scene_id": activeSceneId ?? "none",
+					});
 					const cancelAction = yield* input.actionState("menu-cancel");
 					const confirmAction = yield* input.actionState("menu-confirm");
 					const debugToggle = yield* input.actionState("debug-toggle");
@@ -301,6 +311,10 @@ export class BeaconRunGameplayDirector extends ServiceMap.Service<
 						["room-exit"],
 					);
 					if (exitTriggers.some((body) => body.id === exitBodyId)) {
+						yield* Effect.annotateCurrentSpan({
+							"effect2d.game.room_id": "shrine-room",
+							"effect2d.game.transition": "field-room->shrine-room",
+						});
 						yield* beaconRunRoomState.enterRoom("shrine-room");
 						const shrineEntry =
 							yield* beaconRunRoomState.currentObjectById("shrine-entry");

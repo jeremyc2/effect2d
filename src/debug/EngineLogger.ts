@@ -45,6 +45,33 @@ const LogLevelSchema = Schema.Union([
 	Schema.Literal("warn"),
 ]);
 
+function forwardToEffectLogger(entry: LogEntry): Effect.Effect<void> {
+	const annotations = {
+		"effect2d.engine_logger.channel": "debug-overlay",
+		"effect2d.engine_logger.sequence": entry.sequence,
+		...entry.context,
+	};
+
+	switch (entry.level) {
+		case "debug":
+			return Effect.logDebug(entry.message).pipe(
+				Effect.annotateLogs(annotations),
+			);
+		case "error":
+			return Effect.logError(entry.message).pipe(
+				Effect.annotateLogs(annotations),
+			);
+		case "info":
+			return Effect.logInfo(entry.message).pipe(
+				Effect.annotateLogs(annotations),
+			);
+		case "warn":
+			return Effect.logWarning(entry.message).pipe(
+				Effect.annotateLogs(annotations),
+			);
+	}
+}
+
 /** Indicates that a log call received an invalid message payload. @public */
 export class InvalidLogMessageError extends Schema.TaggedErrorClass<InvalidLogMessageError>()(
 	"InvalidLogMessageError",
@@ -110,18 +137,24 @@ export class EngineLogger extends ServiceMap.Service<
 					});
 				}
 
-				yield* Ref.update(stateRef, (state) => ({
-					entries: [
-						...state.entries,
+				const entry = yield* Ref.modify(stateRef, (state) => {
+					const nextEntry = {
+						context,
+						level,
+						message,
+						sequence: state.nextSequence,
+					} satisfies LogEntry;
+
+					return [
+						nextEntry,
 						{
-							context,
-							level,
-							message,
-							sequence: state.nextSequence,
-						},
-					],
-					nextSequence: state.nextSequence + 1,
-				}));
+							entries: [...state.entries, nextEntry],
+							nextSequence: state.nextSequence + 1,
+						} satisfies EngineLoggerState,
+					] as const;
+				});
+
+				yield* forwardToEffectLogger(entry);
 			});
 
 			return EngineLogger.of({

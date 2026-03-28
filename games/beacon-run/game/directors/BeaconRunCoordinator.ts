@@ -45,6 +45,10 @@ export class BeaconRunCoordinator extends ServiceMap.Service<
 					litBeaconIds: [],
 					missionComplete: false,
 				});
+				yield* Effect.annotateCurrentSpan({
+					"effect2d.game.room_id": "field-room",
+					"effect2d.game.sequence": "begin-expedition",
+				});
 				yield* beaconRunRoomState.enterRoom("field-room");
 				yield* engineLogger.info("Beacon Run expedition started.", {
 					roomId: "field-room",
@@ -53,6 +57,9 @@ export class BeaconRunCoordinator extends ServiceMap.Service<
 
 			const processEvents = Effect.gen(function* () {
 				const events = yield* sequenceEvents.drain;
+				yield* Effect.annotateCurrentSpan({
+					"effect2d.sequence.event_count": events.length,
+				});
 
 				for (const event of events) {
 					switch (event.type) {

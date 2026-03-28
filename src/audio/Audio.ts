@@ -1,4 +1,5 @@
 import { Effect, Layer, Ref, Schema, ServiceMap } from "effect";
+import { setActiveSfxCount } from "../debug/GameplayMetrics.ts";
 
 /** Logical buses supported by the mixer. @public */
 export type AudioBus = "master" | "music" | "sfx";
@@ -259,6 +260,11 @@ export class Audio extends ServiceMap.Service<
 				kind: AudioCueKind,
 				definition: AudioCueDefinition,
 			) {
+				yield* Effect.annotateCurrentSpan({
+					"effect2d.audio.cue_id": definition.cueId,
+					"effect2d.audio.kind": kind,
+					"effect2d.audio.source_path": definition.sourcePath,
+				});
 				const validated = yield* validateCueDefinition(definition);
 				const state = yield* Ref.get(stateRef);
 
@@ -275,6 +281,12 @@ export class Audio extends ServiceMap.Service<
 						kind,
 					}),
 				}));
+				yield* Effect.logDebug("Registered audio cue.").pipe(
+					Effect.annotateLogs({
+						"effect2d.audio.cue_id": validated.cueId,
+						"effect2d.audio.kind": kind,
+					}),
+				);
 			});
 
 			const loadMusic = Effect.fn("Audio.loadMusic")(function* (
@@ -316,6 +328,13 @@ export class Audio extends ServiceMap.Service<
 				options?: AudioPlaybackOptions,
 			) {
 				const cue = yield* resolveCue(cueId, "music");
+				yield* Effect.annotateCurrentSpan({
+					"effect2d.audio.cue_id": cueId,
+					"effect2d.audio.kind": "music",
+					"effect2d.audio.loop": resolveLoop(options, cue),
+					"effect2d.audio.pitch": resolvePitch(options, cue),
+					"effect2d.audio.volume": resolveVolume(options, cue),
+				});
 				yield* Ref.update(stateRef, (state) => ({
 					...state,
 					music: {
@@ -362,11 +381,17 @@ export class Audio extends ServiceMap.Service<
 				const cue = yield* resolveCue(cueId, "sfx");
 				const state = yield* Ref.get(stateRef);
 				const playbackId = `${cueId}#${state.nextPlaybackId}`;
+				yield* Effect.annotateCurrentSpan({
+					"effect2d.audio.cue_id": cueId,
+					"effect2d.audio.kind": "sfx",
+					"effect2d.audio.loop": resolveLoop(options, cue),
+					"effect2d.audio.pitch": resolvePitch(options, cue),
+					"effect2d.audio.playback_id": playbackId,
+					"effect2d.audio.volume": resolveVolume(options, cue),
+				});
 
-				yield* Ref.update(stateRef, (current) => ({
-					...current,
-					nextPlaybackId: current.nextPlaybackId + 1,
-					sounds: [
+				const activeSfxCount = yield* Ref.modify(stateRef, (current) => {
+					const sounds = [
 						...current.sounds,
 						{
 							cueId,
@@ -376,8 +401,18 @@ export class Audio extends ServiceMap.Service<
 							playbackId,
 							volume: resolveVolume(options, cue),
 						},
-					],
-				}));
+					];
+
+					return [
+						sounds.length,
+						{
+							...current,
+							nextPlaybackId: current.nextPlaybackId + 1,
+							sounds,
+						},
+					] as const;
+				});
+				yield* setActiveSfxCount(activeSfxCount);
 
 				return playbackId;
 			});
@@ -385,6 +420,9 @@ export class Audio extends ServiceMap.Service<
 			const stopSound = Effect.fn("Audio.stopSound")(function* (
 				playbackId: string,
 			) {
+				yield* Effect.annotateCurrentSpan({
+					"effect2d.audio.playback_id": playbackId,
+				});
 				const state = yield* Ref.get(stateRef);
 
 				if (
@@ -395,23 +433,40 @@ export class Audio extends ServiceMap.Service<
 					});
 				}
 
-				yield* Ref.update(stateRef, (current) => ({
-					...current,
-					sounds: current.sounds.filter(
+				const activeSfxCount = yield* Ref.modify(stateRef, (current) => {
+					const sounds = current.sounds.filter(
 						(playback) => playback.playbackId !== playbackId,
-					),
-				}));
+					);
+					return [
+						sounds.length,
+						{
+							...current,
+							sounds,
+						},
+					] as const;
+				});
+				yield* setActiveSfxCount(activeSfxCount);
 			});
 
 			const completeSound = Effect.fn("Audio.completeSound")(function* (
 				playbackId: string,
 			) {
-				yield* Ref.update(stateRef, (current) => ({
-					...current,
-					sounds: current.sounds.filter(
+				yield* Effect.annotateCurrentSpan({
+					"effect2d.audio.playback_id": playbackId,
+				});
+				const activeSfxCount = yield* Ref.modify(stateRef, (current) => {
+					const sounds = current.sounds.filter(
 						(playback) => playback.playbackId !== playbackId,
-					),
-				}));
+					);
+					return [
+						sounds.length,
+						{
+							...current,
+							sounds,
+						},
+					] as const;
+				});
+				yield* setActiveSfxCount(activeSfxCount);
 			});
 
 			const setBusVolume = Effect.fn("Audio.setBusVolume")(function* (
@@ -419,6 +474,16 @@ export class Audio extends ServiceMap.Service<
 				volume: number,
 			) {
 				yield* validateBusVolume(bus, volume);
+				yield* Effect.annotateCurrentSpan({
+					"effect2d.audio.bus": bus,
+					"effect2d.audio.volume": volume,
+				});
+				yield* Effect.logDebug("Adjusted audio bus volume.").pipe(
+					Effect.annotateLogs({
+						"effect2d.audio.bus": bus,
+						"effect2d.audio.volume": volume,
+					}),
+				);
 				yield* Ref.update(stateRef, (state) => ({
 					...state,
 					busVolumes: {
@@ -432,7 +497,7 @@ export class Audio extends ServiceMap.Service<
 				...state,
 				music: null,
 				sounds: [],
-			}));
+			})).pipe(Effect.tap(() => setActiveSfxCount(0)));
 
 			const snapshot = Ref.get(stateRef).pipe(
 				Effect.map(

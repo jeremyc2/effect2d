@@ -82,14 +82,14 @@ order without relying on wall-clock timestamps.
 ### InvalidLogMessageError
 
 - Kind: error
-- Source: `src/debug/EngineLogger.ts:48`
+- Source: `src/debug/EngineLogger.ts:75`
 
 Indicates that a log call received an invalid message payload.
 
 ### EngineLogger
 
 - Kind: service
-- Source: `src/debug/EngineLogger.ts:57`
+- Source: `src/debug/EngineLogger.ts:84`
 
 A small structured log service for gameplay diagnostics and debug tooling.
 

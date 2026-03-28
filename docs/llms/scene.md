@@ -107,7 +107,7 @@ transitions without depending on scene internals.
 ### SceneDirector
 
 - Kind: service
-- Source: `src/scene/SceneDirector.ts:70`
+- Source: `src/scene/SceneDirector.ts:73`
 
 Coordinates scene lifecycle, scene transitions, and the overlay stack.
 

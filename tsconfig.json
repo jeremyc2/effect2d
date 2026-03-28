@@ -29,19 +29,24 @@
 		"plugins": [
 			{
 				"name": "@effect/language-service",
+				"ignoreEffectSuggestionsInTscExitCode": false,
+				"missingDiagnosticNextLine": "error",
 				"diagnosticSeverity": {
 					"anyUnknownInErrorContext": "error",
+					"classSelfMismatch": "error",
 					"catchAllToMapError": "error",
 					"catchUnfailableEffect": "error",
 					"deterministicKeys": "error",
 					"duplicatePackage": "error",
 					"effectFnIife": "error",
+					"effectFnImplicitAny": "error",
 					"effectFnOpportunity": "error",
 					"effectGenUsesAdapter": "error",
 					"effectInFailure": "error",
 					"effectInVoidSuccess": "error",
 					"effectMapVoid": "error",
 					"effectSucceedWithVoid": "error",
+					"floatingEffect": "error",
 					"extendsNativeError": "error",
 					"genericEffectServices": "error",
 					"globalConsole": "error",
@@ -56,14 +61,22 @@
 					"globalRandomInEffect": "error",
 					"globalTimers": "error",
 					"globalTimersInEffect": "error",
+					"importFromBarrel": "error",
 					"instanceOfSchema": "error",
 					"layerMergeAllWithDependencies": "error",
 					"leakingRequirements": "error",
+					"missingEffectContext": "error",
+					"missingEffectError": "error",
+					"missingLayerContext": "error",
+					"missingReturnYieldStar": "error",
+					"missingStarInYieldEffectGen": "error",
 					"missedPipeableOpportunity": "error",
 					"missingEffectServiceDependency": "error",
 					"multipleEffectProvide": "error",
 					"nodeBuiltinImport": "error",
 					"outdatedApi": "error",
+					"outdatedEffectCodegen": "error",
+					"overriddenSchemaConstructor": "error",
 					"preferSchemaOverJson": "error",
 					"redundantSchemaTagIdentifier": "error",
 					"returnEffectInGen": "error",
@@ -80,12 +93,13 @@
 					"unnecessaryEffectGen": "error",
 					"unnecessaryFailYieldableError": "error",
 					"unnecessaryPipe": "error",
-					"unnecessaryPipeChain": "error"
+					"unnecessaryPipeChain": "error",
+					"unsupportedServiceAccessors": "error"
 				}
 			}
 		]
 	},
 	"include": ["src/**/*", "scripts/**/*", "starter/**/*", "games/**/*"],
-	"exclude": ["reference_repositories/**/*", "starter/main.ts"],
-	"$schema": "https://raw.githubusercontent.com/Effect-TS/tsgo/refs/heads/main/schema.json"
+	"exclude": ["reference_repositories/**/*"],
+	"$schema": "./node_modules/@effect/language-service/schema.json"
 }

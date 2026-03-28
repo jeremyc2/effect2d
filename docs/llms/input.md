@@ -7,28 +7,28 @@
 ### KeyCode
 
 - Kind: type
-- Source: `src/input/Input.ts:3`
+- Source: `src/input/Input.ts:4`
 
 Keyboard key identifiers as reported by the active native backend.
 
 ### MouseButton
 
 - Kind: type
-- Source: `src/input/Input.ts:6`
+- Source: `src/input/Input.ts:7`
 
 Mouse button identifiers as reported by the native backend.
 
 ### PointerPosition
 
 - Kind: interface
-- Source: `src/input/Input.ts:9`
+- Source: `src/input/Input.ts:10`
 
 The latest known mouse or pointer position.
 
 ### InputEvent
 
 - Kind: type
-- Source: `src/input/Input.ts:15`
+- Source: `src/input/Input.ts:16`
 
 A raw native input event captured during the current frame.
 
@@ -44,7 +44,7 @@ Available event variants:
 ### InputTrigger
 
 - Kind: type
-- Source: `src/input/Input.ts:50`
+- Source: `src/input/Input.ts:51`
 
 A declarative trigger that can activate a named gameplay action.
 
@@ -57,7 +57,7 @@ Available trigger kinds:
 ### ActionBinding
 
 - Kind: interface
-- Source: `src/input/Input.ts:69`
+- Source: `src/input/Input.ts:70`
 
 Maps a named gameplay action to one or more low-level triggers.
 
@@ -76,7 +76,7 @@ const jumpBinding: ActionBinding = {
 ### ActionState
 
 - Kind: interface
-- Source: `src/input/Input.ts:89`
+- Source: `src/input/Input.ts:90`
 
 The derived state of a named gameplay action for the current frame.
 
@@ -88,7 +88,7 @@ while `isPressed` stays true until the trigger is released or consumed.
 ### InputSnapshot
 
 - Kind: interface
-- Source: `src/input/Input.ts:105`
+- Source: `src/input/Input.ts:106`
 
 A frame-local snapshot of raw input state.
 
@@ -100,28 +100,28 @@ to inspect the exact events captured during a frame.
 ### InvalidInputBindingError
 
 - Kind: error
-- Source: `src/input/Input.ts:263`
+- Source: `src/input/Input.ts:264`
 
 Indicates that an action binding is structurally invalid.
 
 ### InputBindingConflictError
 
 - Kind: error
-- Source: `src/input/Input.ts:272`
+- Source: `src/input/Input.ts:273`
 
 Indicates that one action declared the same trigger more than once.
 
 ### UnknownInputActionError
 
 - Kind: error
-- Source: `src/input/Input.ts:281`
+- Source: `src/input/Input.ts:282`
 
 Indicates that code asked for an action that has not been bound.
 
 ### Input
 
 - Kind: service
-- Source: `src/input/Input.ts:322`
+- Source: `src/input/Input.ts:323`
 
 The engine's action-oriented input service.
 

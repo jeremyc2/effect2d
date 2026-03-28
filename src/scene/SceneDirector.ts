@@ -29,6 +29,9 @@ const topScene = (
 const instantiateScene = Effect.fn("SceneDirector.instantiateScene")(function* (
 	sceneDefinition: SceneDefinition,
 ) {
+	yield* Effect.annotateCurrentSpan({
+		"effect2d.scene.id": sceneDefinition.id,
+	});
 	const scope = yield* Scope.make();
 	const lifecycle = yield* Scope.provide(scope)(sceneDefinition.instantiate);
 
@@ -144,7 +147,22 @@ export class SceneDirector extends ServiceMap.Service<
 				) {
 					const nextScene = yield* sceneRegistry.get(sceneId);
 					const currentStack = yield* Ref.get(stack);
+					const previousSceneId =
+						currentStack[currentStack.length - 1]?.instance.definition.id ??
+						"none";
 					const nextSceneInstance = yield* instantiateScene(nextScene);
+					yield* Effect.annotateCurrentSpan({
+						"effect2d.scene.from": previousSceneId,
+						"effect2d.scene.to": sceneId,
+						"effect2d.scene.transition": "switch",
+					});
+					yield* Effect.logInfo("Switching active scene.").pipe(
+						Effect.annotateLogs({
+							"effect2d.scene.from": previousSceneId,
+							"effect2d.scene.to": sceneId,
+							"effect2d.scene.transition": "switch",
+						}),
+					);
 
 					for (const entry of currentStack.toReversed()) {
 						yield* releaseSceneInstance(entry.instance);
@@ -168,6 +186,21 @@ export class SceneDirector extends ServiceMap.Service<
 					const overlayScene = yield* sceneRegistry.get(sceneId);
 					const currentStack = yield* Ref.get(stack);
 					const overlaySceneInstance = yield* instantiateScene(overlayScene);
+					const parentSceneId =
+						currentStack[currentStack.length - 1]?.instance.definition.id ??
+						"none";
+					yield* Effect.annotateCurrentSpan({
+						"effect2d.scene.overlay_parent": parentSceneId,
+						"effect2d.scene.overlay_scene": sceneId,
+						"effect2d.scene.transition": "push-overlay",
+					});
+					yield* Effect.logDebug("Pushing overlay scene.").pipe(
+						Effect.annotateLogs({
+							"effect2d.scene.overlay_parent": parentSceneId,
+							"effect2d.scene.overlay_scene": sceneId,
+							"effect2d.scene.transition": "push-overlay",
+						}),
+					);
 
 					yield* Ref.set(stack, [
 						...currentStack,
@@ -185,6 +218,10 @@ export class SceneDirector extends ServiceMap.Service<
 				const popOverlay = Effect.fn("SceneDirector.popOverlay")(function* () {
 					const currentStack = yield* Ref.get(stack);
 					const currentEntry = yield* topScene(currentStack);
+					yield* Effect.annotateCurrentSpan({
+						"effect2d.scene.overlay_scene": currentEntry.instance.definition.id,
+						"effect2d.scene.transition": "pop-overlay",
+					});
 
 					if (currentEntry.level !== "overlay") {
 						return yield* new OverlayStackUnderflowError({
@@ -193,6 +230,13 @@ export class SceneDirector extends ServiceMap.Service<
 						});
 					}
 
+					yield* Effect.logDebug("Popping overlay scene.").pipe(
+						Effect.annotateLogs({
+							"effect2d.scene.overlay_scene":
+								currentEntry.instance.definition.id,
+							"effect2d.scene.transition": "pop-overlay",
+						}),
+					);
 					yield* releaseSceneInstance(currentEntry.instance);
 					yield* Ref.set(stack, currentStack.slice(0, -1));
 				});

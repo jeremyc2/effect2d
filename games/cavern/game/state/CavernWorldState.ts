@@ -1,4 +1,5 @@
 import { Effect, Layer, Ref, ServiceMap } from "effect";
+import { recordRoomTransition } from "../../../../src/debug/GameplayMetrics.ts";
 import {
 	type CavernRoomId,
 	cavernStartingRoomId,
@@ -29,9 +30,16 @@ export class CavernWorldState extends ServiceMap.Service<
 			const setCurrentRoom = Effect.fn("CavernWorldState.setCurrentRoom")(
 				function* (roomId: CavernRoomId) {
 					getCavernRoom(roomId);
+					const previousRoomId = (yield* Ref.get(stateRef)).currentRoomId;
 					yield* Ref.set(stateRef, {
 						currentRoomId: roomId,
 					});
+					if (previousRoomId !== roomId) {
+						yield* recordRoomTransition({
+							fromRoomId: previousRoomId,
+							toRoomId: roomId,
+						});
+					}
 				},
 			);
 

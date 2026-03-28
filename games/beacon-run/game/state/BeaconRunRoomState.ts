@@ -1,4 +1,5 @@
 import { Effect, Layer, Ref, ServiceMap } from "effect";
+import { recordRoomTransition } from "../../../../src/debug/GameplayMetrics.ts";
 import {
 	getRoomObjectById as getRoomObjectByIdInContent,
 	MapRepository,
@@ -43,8 +44,15 @@ export class BeaconRunRoomState extends ServiceMap.Service<
 			const enterRoom = Effect.fn("BeaconRunRoomState.enterRoom")(function* (
 				roomId: string,
 			) {
+				const previousRoomId = (yield* Ref.get(roomRef)).id;
 				yield* expeditionState.enterRoom(roomId);
 				yield* loadRoom(roomId);
+				if (previousRoomId !== roomId) {
+					yield* recordRoomTransition({
+						fromRoomId: previousRoomId,
+						toRoomId: roomId,
+					});
+				}
 			});
 
 			const getRoomObjectById = Effect.fn(

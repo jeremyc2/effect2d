@@ -52,6 +52,19 @@ export class Engine extends ServiceMap.Service<
 
 				const nativeBoundary = yield* NativeBoundary;
 				const launch = Effect.fn("Engine.launch")(function* () {
+					yield* Effect.annotateCurrentSpan({
+						"effect2d.engine.game_id": config.gameId,
+						"effect2d.engine.random_seed": config.randomSeed,
+						"effect2d.engine.start_scene": config.startScene,
+						"effect2d.engine.target_tps": config.targetTicksPerSecond,
+					});
+					yield* Effect.logInfo("Launching engine runtime.").pipe(
+						Effect.annotateLogs({
+							"effect2d.engine.game_id": config.gameId,
+							"effect2d.engine.start_scene": config.startScene,
+							"effect2d.engine.target_tps": config.targetTicksPerSecond,
+						}),
+					);
 					yield* nativeBoundary.initialize(config.gameId);
 				});
 

@@ -38,6 +38,9 @@ export class MapRepository extends ServiceMap.Service<
 				const loadRoom = Effect.fn("MapRepository.loadRoom")(function* (
 					roomId: string,
 				) {
+					yield* Effect.annotateCurrentSpan({
+						"effect2d.map.room_id": roomId,
+					});
 					const room = validatedRooms.get(roomId);
 					if (room === undefined) {
 						return yield* new MapValidationError({
@@ -51,6 +54,10 @@ export class MapRepository extends ServiceMap.Service<
 
 				const getRoomObjectById = Effect.fn("MapRepository.getRoomObjectById")(
 					function* (roomId: string, objectId: string) {
+						yield* Effect.annotateCurrentSpan({
+							"effect2d.map.object_id": objectId,
+							"effect2d.map.room_id": roomId,
+						});
 						const room = yield* loadRoom(roomId);
 						const objectEntry = getRoomObjectByIdInContent(room, objectId);
 

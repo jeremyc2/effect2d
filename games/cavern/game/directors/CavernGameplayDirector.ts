@@ -84,6 +84,10 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 				if (button === undefined) {
 					return;
 				}
+				yield* Effect.annotateCurrentSpan({
+					"effect2d.game.menu_button_id": button.id,
+					"effect2d.game.menu_index": index,
+				});
 
 				yield* audio.playSfx("menu-click");
 
@@ -169,6 +173,9 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 
 				const worldSnapshot = yield* cavernWorldState.snapshot;
 				const currentRoom = getCavernRoom(worldSnapshot.currentRoomId);
+				yield* Effect.annotateCurrentSpan({
+					"effect2d.game.room_id": currentRoom.id,
+				});
 				const playerSnapshot = yield* cavernPlayerState.snapshot;
 				let nextX = playerSnapshot.position.x;
 				let nextY = playerSnapshot.position.y;
@@ -225,6 +232,10 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 				);
 
 				if (activeTransition !== undefined) {
+					yield* Effect.annotateCurrentSpan({
+						"effect2d.game.transition_target_room_id":
+							activeTransition.targetRoomId,
+					});
 					const targetRoom = getCavernRoom(activeTransition.targetRoomId);
 					yield* cavernWorldState.setCurrentRoom(targetRoom.id);
 					yield* cavernPlayerState.moveTo(
@@ -256,6 +267,9 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 			const stepFrame = Effect.fn("CavernGameplayDirector.stepFrame")(
 				function* () {
 					const activeSceneId = (yield* sceneDirector.snapshot).activeSceneId;
+					yield* Effect.annotateCurrentSpan({
+						"effect2d.game.scene_id": activeSceneId ?? "none",
+					});
 					if (activeSceneId === "main-menu") {
 						yield* updateMenuSelection();
 						return;

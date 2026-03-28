@@ -89,6 +89,10 @@ export class StarterCoordinator extends ServiceMap.Service<
 					"starter-overworld-room",
 					"Starter opening room is active.",
 				);
+				yield* Effect.annotateCurrentSpan({
+					"effect2d.game.room_id": "overworld-room",
+					"effect2d.game.sequence": "new-game",
+				});
 				yield* engineLogger.info("Starter coordinator began a new game.", {
 					roomId: "overworld-room",
 				});
@@ -115,6 +119,9 @@ export class StarterCoordinator extends ServiceMap.Service<
 
 			const processEvents = Effect.gen(function* () {
 				const events = yield* sequenceEvents.drain;
+				yield* Effect.annotateCurrentSpan({
+					"effect2d.sequence.event_count": events.length,
+				});
 
 				for (const event of events) {
 					switch (event.type) {

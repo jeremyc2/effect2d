@@ -1,4 +1,5 @@
 import { Clock, Duration, Effect, Layer, Ref, ServiceMap } from "effect";
+import { recordFrameTime } from "../debug/GameplayMetrics.ts";
 
 /**
  * Snapshot data exposed by the runtime clock.
@@ -66,15 +67,25 @@ export class RuntimeClock extends ServiceMap.Service<
 
 				const beginFrame = Effect.fn("RuntimeClock.beginFrame")(function* () {
 					const now = yield* Clock.currentTimeMillis;
-					yield* Ref.update(state, (current) => ({
-						frameCount: current.frameCount + 1,
-						lastFrameDeltaMillis:
-							current.lastFrameStartedAtMillis === null
-								? 0
-								: now - current.lastFrameStartedAtMillis,
-						lastFrameStartedAtMillis: now,
-						tickCount: current.tickCount,
-					}));
+					const previousFrameStartedAtMillis = yield* Ref.modify(
+						state,
+						(current) =>
+							[
+								current.lastFrameStartedAtMillis,
+								{
+									frameCount: current.frameCount + 1,
+									lastFrameDeltaMillis:
+										current.lastFrameStartedAtMillis === null
+											? 0
+											: now - current.lastFrameStartedAtMillis,
+									lastFrameStartedAtMillis: now,
+									tickCount: current.tickCount,
+								},
+							] as const,
+					);
+					if (previousFrameStartedAtMillis !== null) {
+						yield* recordFrameTime(now - previousFrameStartedAtMillis);
+					}
 				});
 
 				const advanceTick = Effect.fn("RuntimeClock.advanceTick")(function* () {

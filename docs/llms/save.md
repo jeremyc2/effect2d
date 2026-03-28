@@ -7,7 +7,7 @@
 ### SaveCoordinatorOptions
 
 - Kind: interface
-- Source: `src/save/SaveCoordinator.ts:64`
+- Source: `src/save/SaveCoordinator.ts:68`
 
 Configuration for building a [SaveCoordinator](./llms/save.md#save-savecoordinator).
 
@@ -20,7 +20,7 @@ persisted formats across released versions.
 ### SaveCoordinator
 
 - Kind: service
-- Source: `src/save/SaveCoordinator.ts:81`
+- Source: `src/save/SaveCoordinator.ts:85`
 
 Coordinates save snapshots, restores, imports, and migrations.
 
