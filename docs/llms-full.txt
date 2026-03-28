@@ -718,50 +718,202 @@ programs.
 
 > Public Debug API.
 
+## DebugOverlay
+
+### DebugRoomMarker
+
+- Kind: interface
+- Source: `src/debug/DebugOverlay.ts:13`
+
+A room marker surfaced in the debug overlay.
+
+### ResourceDiagnostic
+
+- Kind: interface
+- Source: `src/debug/DebugOverlay.ts:20`
+
+A simplified resource status row surfaced in the debug overlay.
+
+### FrameTimingDiagnostics
+
+- Kind: interface
+- Source: `src/debug/DebugOverlay.ts:27`
+
+Timing numbers formatted for the debug overlay snapshot.
+
+### DebugOverlaySnapshot
+
+- Kind: interface
+- Source: `src/debug/DebugOverlay.ts:36`
+
+The complete diagnostic state captured by the debug overlay.
+
+
+
+This combines timing, logs, scene stack information, collision bodies,
+resource state, and optional camera metadata into one snapshot that tools or
+tests can inspect.
+
+### DebugOverlayDrawModel
+
+- Kind: interface
+- Source: `src/debug/DebugOverlay.ts:67`
+
+A text-first representation of the debug overlay.
+
+
+
+`lines` is the ready-to-render compact summary, while `snapshot` keeps the
+full structured data for richer tooling.
+
 ## EngineLogger
+
+### LogLevel
+
+- Kind: type
+- Source: `src/debug/EngineLogger.ts:3`
+
+Structured log severities understood by the engine logger.
+
+
+
+Available levels:
+- `debug`
+- `info`
+- `warn`
+- `error`
+
+### LogEntry
+
+- Kind: interface
+- Source: `src/debug/EngineLogger.ts:16`
+
+One structured log record captured by the engine logger.
+
+
+
+`sequence` is monotonically increasing so tooling can preserve authored log
+order without relying on wall-clock timestamps.
 
 ### InvalidLogMessageError
 
 - Kind: error
-- Source: `src/debug/EngineLogger.ts:29`
+- Source: `src/debug/EngineLogger.ts:48`
 
 Indicates that a log call received an invalid message payload.
 
+### EngineLogger
+
+- Kind: service
+- Source: `src/debug/EngineLogger.ts:57`
+
+A small structured log service for gameplay diagnostics and debug tooling.
+
+
+
+`EngineLogger` stores ordered in-memory log entries that other services such
+as the debug overlay can inspect. Reach for it when you want reproducible,
+test-friendly diagnostic events without coupling your game code to
+`console.log`.
+
+```ts
+const logger = yield* EngineLogger;
+
+yield* logger.info("Loaded room", { roomId: "cavern-entrance" });
+```
+
+#### Methods
+
+- `clear: Effect.Effect<void>`
+- `debug: ( message: string, context?: Readonly<Record<string, string | number | boolean>>, ) => Effect.Effect<void, InvalidLogMessageError>`
+- `entries: Effect.Effect<ReadonlyArray<LogEntry>>`
+- `error: ( message: string, context?: Readonly<Record<string, string | number | boolean>>, ) => Effect.Effect<void, InvalidLogMessageError>`
+- `info: ( message: string, context?: Readonly<Record<string, string | number | boolean>>, ) => Effect.Effect<void, InvalidLogMessageError>`
+- `warn: ( message: string, context?: Readonly<Record<string, string | number | boolean>>, ) => Effect.Effect<void, InvalidLogMessageError>`
+
 ## ResourceTracker
+
+### ResourceKind
+
+- Kind: type
+- Source: `src/debug/ResourceTracker.ts:4`
+
+Conventional resource categories used by the tracker.
+
+
+
+Use these when you want the debug overlay and diagnostics to distinguish
+images, audio, fonts, maps, or other authored assets.
+
+### ResourceState
+
+- Kind: type
+- Source: `src/debug/ResourceTracker.ts:22`
+
+Lifecycle state reported for one tracked resource.
+
+### ResourceRecord
+
+- Kind: interface
+- Source: `src/debug/ResourceTracker.ts:25`
+
+A diagnostic snapshot for one tracked resource entry.
+
+
+
+`details` is free-form text for the last useful note you want surfaced in
+tooling, such as an asset path or a failure reason.
 
 ### InvalidResourceRecordError
 
 - Kind: error
-- Source: `src/debug/ResourceTracker.ts:28`
+- Source: `src/debug/ResourceTracker.ts:45`
 
 Indicates that a tracked resource record was missing required data.
 
 ### UnknownTrackedResourceError
 
 - Kind: error
-- Source: `src/debug/ResourceTracker.ts:37`
+- Source: `src/debug/ResourceTracker.ts:54`
 
 Indicates that code referenced a tracked resource id that has not been registered.
 
-# Errors
+### ResourceTracker
 
-> Public Errors API.
+- Kind: service
+- Source: `src/debug/ResourceTracker.ts:62`
 
-## EngineError
+Tracks high-level resource lifecycle state for diagnostics and debug UI.
 
-### EngineLaunchError
 
-- Kind: error
-- Source: `src/errors/EngineError.ts:3`
 
-Indicates that engine startup failed while initializing a runtime module.
+Reach for `ResourceTracker` when your game loads authored assets or other
+long-lived resources and you want a lightweight way to report whether each
+resource is pending, loaded, faulted, or released. The starter and sample
+games use it so the debug overlay can show asset health without coupling the
+overlay directly to every loader.
 
-### EngineConfigurationError
+Common usage flow:
+1. `register` or `registerScoped` when a resource begins loading
+2. `setLoaded` once it is ready
+3. `fault` if loading fails
+4. `release` when the resource is no longer live
 
-- Kind: error
-- Source: `src/errors/EngineError.ts:12`
+```ts
+const tracker = yield* ResourceTracker;
 
-Indicates that engine configuration was invalid before launch.
+yield* tracker.register("title-screen", "image", "assets/title-screen.png");
+yield* tracker.setLoaded("title-screen");
+```
+
+#### Methods
+
+- `fault: ( id: string, details?: string, ) => Effect.Effect<void, UnknownTrackedResourceError>`
+- `records: Effect.Effect<ReadonlyArray<ResourceRecord>>`
+- `register: ( id: string, kind: ResourceKind, details?: string, ) => Effect.Effect<void, InvalidResourceRecordError>`
+- `registerScoped: ( id: string, kind: ResourceKind, details?: string, ) => Effect.Effect<void, InvalidResourceRecordError, Scope.Scope>`
+- `release: ( id: string, ) => Effect.Effect<void, UnknownTrackedResourceError>`
+- `setLoaded: ( id: string, details?: string, ) => Effect.Effect<void, UnknownTrackedResourceError>`
 
 # Graphics
 
@@ -1456,6 +1608,73 @@ Identity helper for room metadata when you want inline authored objects to stay 
 
 > Public Native API.
 
+## NativeBackend
+
+### NativeWindowSnapshot
+
+- Kind: interface
+- Source: `src/native/NativeBackend.ts:8`
+
+The current native window state exposed by the backend.
+
+### NativeRendererSnapshot
+
+- Kind: interface
+- Source: `src/native/NativeBackend.ts:19`
+
+Renderer capabilities and counters exposed by the native backend.
+
+### NativeAudioOutputSnapshot
+
+- Kind: interface
+- Source: `src/native/NativeBackend.ts:28`
+
+Native audio output capabilities and current playback state.
+
+### NativeTimingSnapshot
+
+- Kind: interface
+- Source: `src/native/NativeBackend.ts:39`
+
+Native frame pacing information exposed by the backend.
+
+### NativeBackendDiagnostics
+
+- Kind: interface
+- Source: `src/native/NativeBackend.ts:45`
+
+A combined diagnostic snapshot for the active native backend.
+
+
+
+This is useful for startup diagnostics, test assertions, and debug screens
+that need to inspect renderer, audio, timing, and window state together.
+
+### NativeBackend
+
+- Kind: service
+- Source: `src/native/NativeBackend.ts:63`
+
+Low-level native runtime adapter used by [NativeBoundary](./llms/native.md#native-nativeboundary).
+
+
+
+Most games do not implement or consume `NativeBackend` directly. Instead
+they use a helper such as [makeSkiaNativeBoundaryLayer](./llms/native.md#native-makeskianativeboundarylayer), which wires a
+concrete backend into [NativeBoundary](./llms/native.md#native-nativeboundary). This service exists so the
+engine can separate authored frame production from platform-specific window,
+input, rendering, and audio work.
+
+#### Methods
+
+- `close: Effect.Effect<void>`
+- `diagnostics: Effect.Effect<NativeBackendDiagnostics>`
+- `drainInputEvents: Effect.Effect< ReadonlyArray<InputEvent>, EngineLaunchError >`
+- `open: (gameId: string) => Effect.Effect<void, EngineLaunchError>`
+- `presentFrame: ( frame: FrameSnapshot, ) => Effect.Effect<void, EngineLaunchError>`
+- `syncAudio: ( snapshot: AudioSnapshot, ) => Effect.Effect<ReadonlyArray<string>, EngineLaunchError>`
+- `waitForNextFrame: Effect.Effect<void, EngineLaunchError>`
+
 ## NativeBoundary
 
 ### NativeBoundary
@@ -1513,17 +1732,23 @@ directors into one step that returns a [FrameSnapshot](./llms/graphics.md#graphi
 
 Configuration for the Skia native backend.
 
+
+
+This is the main option bag used by [makeSkiaNativeBoundaryLayer](./llms/native.md#native-makeskianativeboundarylayer).
+Typical games set window title and size, logical render size, and their
+authored image and font asset paths here.
+
 ### makeSkiaNativeBackendLayer
 
 - Kind: function
-- Source: `src/native/SkiaNativeBackend.ts:535`
+- Source: `src/native/SkiaNativeBackend.ts:539`
 
-Builds the Skia implementation of `NativeBackend`.
+Builds the Skia implementation of [NativeBackend](./llms/native.md#native-nativebackend).
 
 ### makeSkiaNativeBoundaryLayer
 
 - Kind: function
-- Source: `src/native/SkiaNativeBackend.ts:1331`
+- Source: `src/native/SkiaNativeBackend.ts:1335`
 
 Builds a ready-to-use [NativeBoundary](./llms/native.md#native-nativeboundary) backed by a Skia window and
 renderer.
@@ -1537,7 +1762,7 @@ renderer.
 ### Engine
 
 - Kind: service
-- Source: `src/runtime/Engine.ts:10`
+- Source: `src/runtime/Engine.ts:9`
 
 The smallest runnable engine surface.
 
@@ -1596,12 +1821,28 @@ This value is intentionally plain and production-safe. Treat it as a base
 object to spread into a game-specific config rather than a one-size-fits-all
 preset.
 
+## EngineError
+
+### EngineLaunchError
+
+- Kind: error
+- Source: `src/runtime/EngineError.ts:3`
+
+Indicates that engine startup failed while initializing a runtime module.
+
+### EngineConfigurationError
+
+- Kind: error
+- Source: `src/runtime/EngineError.ts:12`
+
+Indicates that engine configuration was invalid before launch.
+
 ## Launch
 
 ### makeEngineLayer
 
 - Kind: function
-- Source: `src/runtime/Launch.ts:13`
+- Source: `src/runtime/Launch.ts:12`
 
 Builds the smallest engine layer necessary to launch through a native
 boundary.
@@ -1617,7 +1858,7 @@ random source and fixed-step runtime clock.
 ### makeRuntimeLayer
 
 - Kind: function
-- Source: `src/runtime/Launch.ts:39`
+- Source: `src/runtime/Launch.ts:38`
 
 Builds the standard runtime layer for most games.
 
@@ -1637,7 +1878,7 @@ const runtimeLayer = makeRuntimeLayer(engineConfig, {
 ### engineProgram
 
 - Kind: const
-- Source: `src/runtime/Launch.ts:76`
+- Source: `src/runtime/Launch.ts:75`
 
 Launches the active [Engine](./llms/runtime.md#runtime-engine) from the environment.
 
@@ -1649,7 +1890,7 @@ and provided an `Engine` service.
 ### seededEngineProgram
 
 - Kind: function
-- Source: `src/runtime/Launch.ts:90`
+- Source: `src/runtime/Launch.ts:89`
 
 Launches the active engine while temporarily overriding randomness with the
 provided config seed.
@@ -1703,12 +1944,30 @@ surrounding runtime layer.
 
 Snapshot data exposed by the runtime clock.
 
+
+
+This is mainly useful for diagnostics, debug overlays, and tests that need
+to assert how many fixed ticks or rendered frames have elapsed.
+
 ### RuntimeClock
 
 - Kind: service
-- Source: `src/runtime/RuntimeClock.ts:26`
+- Source: `src/runtime/RuntimeClock.ts:33`
 
 Tracks frame timing and fixed-step sleep for a running game.
+
+
+
+Most authored game code does not manipulate time directly. Instead, the
+runtime uses `RuntimeClock` to:
+
+- mark the start of each rendered frame with `beginFrame()`
+- count fixed simulation ticks with `advanceTick()`
+- expose timing data through `snapshot()`
+- sleep for one configured fixed step with `sleepFixedStep`
+
+This keeps frame pacing and diagnostics reproducible in tests while still
+giving tools a simple place to read current timing state.
 
 #### Methods
 

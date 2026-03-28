@@ -152,7 +152,6 @@ export * from "./audio/index.ts";
 export * from "./collision/index.ts";
 export * from "./cutscene/index.ts";
 export * from "./debug/index.ts";
-export * from "./errors/index.ts";
 export * from "./graphics/index.ts";
 export * from "./input/index.ts";
 export * from "./maps/index.ts";

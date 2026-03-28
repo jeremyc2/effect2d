@@ -7,7 +7,7 @@
 	"scripts": {
 		"typecheck": "tsgo",
 		"all": "bun typecheck && bun check && bun run test",
-		"docs:build": "bun scripts/build-doc-site.ts",
+		"build:docs": "bun scripts/build-doc-site.ts",
 		"beacon-run:native": "bun games/beacon-run/main.ts",
 		"cavern:native": "bun games/cavern/main.ts",
 		"test": "bun test --path-ignore-patterns 'reference_repositories/**'",

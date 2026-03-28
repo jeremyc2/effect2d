@@ -10,18 +10,21 @@ import { SceneDirector } from "../scene/SceneDirector.ts";
 import { EngineLogger, type LogEntry } from "./EngineLogger.ts";
 import { ResourceTracker } from "./ResourceTracker.ts";
 
+/** A room marker surfaced in the debug overlay. @public */
 export interface DebugRoomMarker {
 	readonly id: string;
 	readonly kind: string;
 	readonly position: CameraVector;
 }
 
+/** A simplified resource status row surfaced in the debug overlay. @public */
 export interface ResourceDiagnostic {
 	readonly id: string;
 	readonly kind: string;
 	readonly state: "faulted" | "loaded" | "pending" | "released";
 }
 
+/** Timing numbers formatted for the debug overlay snapshot. @public */
 export interface FrameTimingDiagnostics {
 	readonly fixedTickMillis: number;
 	readonly fps: number;
@@ -30,6 +33,15 @@ export interface FrameTimingDiagnostics {
 	readonly tickCount: number;
 }
 
+/**
+ * The complete diagnostic state captured by the debug overlay.
+ *
+ * @public
+ *
+ * This combines timing, logs, scene stack information, collision bodies,
+ * resource state, and optional camera metadata into one snapshot that tools or
+ * tests can inspect.
+ */
 export interface DebugOverlaySnapshot {
 	readonly camera: {
 		readonly bounds: CameraBounds | null;
@@ -52,6 +64,14 @@ export interface DebugOverlaySnapshot {
 	readonly timing: FrameTimingDiagnostics;
 }
 
+/**
+ * A text-first representation of the debug overlay.
+ *
+ * @public
+ *
+ * `lines` is the ready-to-render compact summary, while `snapshot` keeps the
+ * full structured data for richer tooling.
+ */
 export interface DebugOverlayDrawModel {
 	readonly lines: ReadonlyArray<string>;
 	readonly snapshot: DebugOverlaySnapshot;
@@ -72,6 +92,17 @@ const initialState: DebugOverlayState = {
 	authoredResources: [],
 	roomMarkers: [],
 };
+
+/**
+ * Collects cross-service diagnostics for a debug UI or test harness.
+ *
+ * @public
+ *
+ * `DebugOverlay` does not draw anything by itself. Instead it aggregates state
+ * from services such as {@link SceneDirector}, {@link RuntimeClock},
+ * {@link EngineLogger}, and {@link ResourceTracker} into a single snapshot or
+ * lightweight draw model that your own presentation code can render.
+ */
 
 function formatFps(lastFrameDeltaMillis: number): number {
 	return lastFrameDeltaMillis <= 0

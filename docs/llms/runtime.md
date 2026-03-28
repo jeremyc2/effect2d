@@ -7,7 +7,7 @@
 ### Engine
 
 - Kind: service
-- Source: `src/runtime/Engine.ts:10`
+- Source: `src/runtime/Engine.ts:9`
 
 The smallest runnable engine surface.
 
@@ -66,12 +66,28 @@ This value is intentionally plain and production-safe. Treat it as a base
 object to spread into a game-specific config rather than a one-size-fits-all
 preset.
 
+## EngineError
+
+### EngineLaunchError
+
+- Kind: error
+- Source: `src/runtime/EngineError.ts:3`
+
+Indicates that engine startup failed while initializing a runtime module.
+
+### EngineConfigurationError
+
+- Kind: error
+- Source: `src/runtime/EngineError.ts:12`
+
+Indicates that engine configuration was invalid before launch.
+
 ## Launch
 
 ### makeEngineLayer
 
 - Kind: function
-- Source: `src/runtime/Launch.ts:13`
+- Source: `src/runtime/Launch.ts:12`
 
 Builds the smallest engine layer necessary to launch through a native
 boundary.
@@ -87,7 +103,7 @@ random source and fixed-step runtime clock.
 ### makeRuntimeLayer
 
 - Kind: function
-- Source: `src/runtime/Launch.ts:39`
+- Source: `src/runtime/Launch.ts:38`
 
 Builds the standard runtime layer for most games.
 
@@ -107,7 +123,7 @@ const runtimeLayer = makeRuntimeLayer(engineConfig, {
 ### engineProgram
 
 - Kind: const
-- Source: `src/runtime/Launch.ts:76`
+- Source: `src/runtime/Launch.ts:75`
 
 Launches the active [Engine](./llms/runtime.md#runtime-engine) from the environment.
 
@@ -119,7 +135,7 @@ and provided an `Engine` service.
 ### seededEngineProgram
 
 - Kind: function
-- Source: `src/runtime/Launch.ts:90`
+- Source: `src/runtime/Launch.ts:89`
 
 Launches the active engine while temporarily overriding randomness with the
 provided config seed.
@@ -173,12 +189,30 @@ surrounding runtime layer.
 
 Snapshot data exposed by the runtime clock.
 
+
+
+This is mainly useful for diagnostics, debug overlays, and tests that need
+to assert how many fixed ticks or rendered frames have elapsed.
+
 ### RuntimeClock
 
 - Kind: service
-- Source: `src/runtime/RuntimeClock.ts:26`
+- Source: `src/runtime/RuntimeClock.ts:33`
 
 Tracks frame timing and fixed-step sleep for a running game.
+
+
+
+Most authored game code does not manipulate time directly. Instead, the
+runtime uses `RuntimeClock` to:
+
+- mark the start of each rendered frame with `beginFrame()`
+- count fixed simulation ticks with `advanceTick()`
+- expose timing data through `snapshot()`
+- sleep for one configured fixed step with `sleepFixedStep`
+
+This keeps frame pacing and diagnostics reproducible in tests while still
+giving tools a simple place to read current timing state.
 
 #### Methods
 

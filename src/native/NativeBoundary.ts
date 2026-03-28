@@ -1,8 +1,8 @@
 import { Effect, Layer, ServiceMap } from "effect";
 
 import { Audio } from "../audio/Audio.ts";
-import { EngineLaunchError } from "../errors/EngineError.ts";
 import { Input } from "../input/Input.ts";
+import { EngineLaunchError } from "../runtime/EngineError.ts";
 import {
 	NativeBackend,
 	type NativeBackendDiagnostics,

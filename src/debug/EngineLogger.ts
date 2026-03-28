@@ -1,7 +1,26 @@
 import { Effect, Layer, Ref, Schema, ServiceMap } from "effect";
 
+/**
+ * Structured log severities understood by the engine logger.
+ *
+ * @public
+ *
+ * Available levels:
+ * - `debug`
+ * - `info`
+ * - `warn`
+ * - `error`
+ */
 export type LogLevel = "debug" | "error" | "info" | "warn";
 
+/**
+ * One structured log record captured by the engine logger.
+ *
+ * @public
+ *
+ * `sequence` is monotonically increasing so tooling can preserve authored log
+ * order without relying on wall-clock timestamps.
+ */
 export interface LogEntry {
 	readonly context: Readonly<Record<string, string | number | boolean>>;
 	readonly level: LogLevel;
@@ -35,6 +54,22 @@ export class InvalidLogMessageError extends Schema.TaggedErrorClass<InvalidLogMe
 	},
 ) {}
 
+/**
+ * A small structured log service for gameplay diagnostics and debug tooling.
+ *
+ * @public
+ *
+ * `EngineLogger` stores ordered in-memory log entries that other services such
+ * as the debug overlay can inspect. Reach for it when you want reproducible,
+ * test-friendly diagnostic events without coupling your game code to
+ * `console.log`.
+ *
+ * ```ts
+ * const logger = yield* EngineLogger;
+ *
+ * yield* logger.info("Loaded room", { roomId: "cavern-entrance" });
+ * ```
+ */
 export class EngineLogger extends ServiceMap.Service<
 	EngineLogger,
 	{

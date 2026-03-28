@@ -1,12 +1,11 @@
 import { Effect, Layer } from "effect";
-
-import type {
-	EngineConfigurationError,
-	EngineLaunchError,
-} from "../errors/EngineError.ts";
 import type { NativeBoundary } from "../native/NativeBoundary.ts";
 import { Engine } from "./Engine.ts";
 import type { EngineConfig } from "./EngineConfig.ts";
+import type {
+	EngineConfigurationError,
+	EngineLaunchError,
+} from "./EngineError.ts";
 import { RandomSource, withRandomSeed } from "./RandomSource.ts";
 import { RuntimeClock } from "./RuntimeClock.ts";
 

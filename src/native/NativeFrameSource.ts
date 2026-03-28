@@ -1,7 +1,7 @@
 import { type Effect, ServiceMap } from "effect";
 
-import type { EngineLaunchError } from "../errors/EngineError.ts";
 import type { FrameSnapshot } from "../graphics/Graphics.ts";
+import type { EngineLaunchError } from "../runtime/EngineError.ts";
 
 /**
  * Produces the next authored frame for the native runtime.

@@ -1,11 +1,10 @@
 import { Effect, Layer, ServiceMap } from "effect";
-
+import { NativeBoundary } from "../native/NativeBoundary.ts";
+import type { EngineConfig } from "./EngineConfig.ts";
 import {
 	EngineConfigurationError,
 	type EngineLaunchError,
-} from "../errors/EngineError.ts";
-import { NativeBoundary } from "../native/NativeBoundary.ts";
-import type { EngineConfig } from "./EngineConfig.ts";
+} from "./EngineError.ts";
 
 /**
  * The smallest runnable engine surface.

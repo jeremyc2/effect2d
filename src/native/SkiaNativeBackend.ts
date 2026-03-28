@@ -14,13 +14,13 @@ import {
 	Window,
 } from "skia-canvas";
 import type { Audio, AudioSnapshot } from "../audio/Audio.ts";
-import { EngineLaunchError } from "../errors/EngineError.ts";
 import type {
 	Color,
 	DrawCommand,
 	FrameSnapshot,
 } from "../graphics/Graphics.ts";
 import type { Input, InputEvent } from "../input/Input.ts";
+import { EngineLaunchError } from "../runtime/EngineError.ts";
 import {
 	type NativeAudioOutputSnapshot,
 	NativeBackend,
@@ -39,6 +39,10 @@ type LoadedImage = Image;
  * Configuration for the Skia native backend.
  *
  * @public
+ *
+ * This is the main option bag used by {@link makeSkiaNativeBoundaryLayer}.
+ * Typical games set window title and size, logical render size, and their
+ * authored image and font asset paths here.
  */
 export interface SkiaNativeBackendOptions {
 	readonly defaultFontFamily?: string;

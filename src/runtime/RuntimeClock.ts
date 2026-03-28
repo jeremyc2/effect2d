@@ -1,6 +1,13 @@
 import { Clock, Duration, Effect, Layer, Ref, ServiceMap } from "effect";
 
-/** Snapshot data exposed by the runtime clock. @public */
+/**
+ * Snapshot data exposed by the runtime clock.
+ *
+ * @public
+ *
+ * This is mainly useful for diagnostics, debug overlays, and tests that need
+ * to assert how many fixed ticks or rendered frames have elapsed.
+ */
 export interface RuntimeTimingSnapshot {
 	readonly fixedTickMillis: number;
 	readonly frameCount: number;
@@ -27,6 +34,17 @@ const initialRuntimeClockState: RuntimeClockState = {
  * Tracks frame timing and fixed-step sleep for a running game.
  *
  * @public
+ *
+ * Most authored game code does not manipulate time directly. Instead, the
+ * runtime uses `RuntimeClock` to:
+ *
+ * - mark the start of each rendered frame with `beginFrame()`
+ * - count fixed simulation ticks with `advanceTick()`
+ * - expose timing data through `snapshot()`
+ * - sleep for one configured fixed step with `sleepFixedStep`
+ *
+ * This keeps frame pacing and diagnostics reproducible in tests while still
+ * giving tools a simple place to read current timing state.
  */
 export class RuntimeClock extends ServiceMap.Service<
 	RuntimeClock,

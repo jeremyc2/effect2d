@@ -1,6 +1,14 @@
 import { Effect, Layer, Ref, Schema, type Scope, ServiceMap } from "effect";
 import type { ResourceDiagnostic } from "./DebugOverlay.ts";
 
+/**
+ * Conventional resource categories used by the tracker.
+ *
+ * @public
+ *
+ * Use these when you want the debug overlay and diagnostics to distinguish
+ * images, audio, fonts, maps, or other authored assets.
+ */
 export type ResourceKind =
 	| "animation"
 	| "audio"
@@ -11,8 +19,17 @@ export type ResourceKind =
 	| "script"
 	| "texture";
 
+/** Lifecycle state reported for one tracked resource. @public */
 export type ResourceState = ResourceDiagnostic["state"];
 
+/**
+ * A diagnostic snapshot for one tracked resource entry.
+ *
+ * @public
+ *
+ * `details` is free-form text for the last useful note you want surfaced in
+ * tooling, such as an asset path or a failure reason.
+ */
 export interface ResourceRecord extends ResourceDiagnostic {
 	readonly details: string | null;
 }
@@ -42,6 +59,30 @@ export class UnknownTrackedResourceError extends Schema.TaggedErrorClass<Unknown
 	},
 ) {}
 
+/**
+ * Tracks high-level resource lifecycle state for diagnostics and debug UI.
+ *
+ * @public
+ *
+ * Reach for `ResourceTracker` when your game loads authored assets or other
+ * long-lived resources and you want a lightweight way to report whether each
+ * resource is pending, loaded, faulted, or released. The starter and sample
+ * games use it so the debug overlay can show asset health without coupling the
+ * overlay directly to every loader.
+ *
+ * Common usage flow:
+ * 1. `register` or `registerScoped` when a resource begins loading
+ * 2. `setLoaded` once it is ready
+ * 3. `fault` if loading fails
+ * 4. `release` when the resource is no longer live
+ *
+ * ```ts
+ * const tracker = yield* ResourceTracker;
+ *
+ * yield* tracker.register("title-screen", "image", "assets/title-screen.png");
+ * yield* tracker.setLoaded("title-screen");
+ * ```
+ */
 export class ResourceTracker extends ServiceMap.Service<
 	ResourceTracker,
 	{

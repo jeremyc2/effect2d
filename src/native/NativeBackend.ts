@@ -1,10 +1,11 @@
 import { type Effect, ServiceMap } from "effect";
 
 import type { AudioSnapshot } from "../audio/Audio.ts";
-import type { EngineLaunchError } from "../errors/EngineError.ts";
 import type { FrameSnapshot } from "../graphics/Graphics.ts";
 import type { InputEvent } from "../input/Input.ts";
+import type { EngineLaunchError } from "../runtime/EngineError.ts";
 
+/** The current native window state exposed by the backend. @public */
 export interface NativeWindowSnapshot {
 	readonly backend: string;
 	readonly height: number;
@@ -15,6 +16,7 @@ export interface NativeWindowSnapshot {
 	readonly width: number;
 }
 
+/** Renderer capabilities and counters exposed by the native backend. @public */
 export interface NativeRendererSnapshot {
 	readonly backend: string;
 	readonly frameCount: number;
@@ -23,6 +25,7 @@ export interface NativeRendererSnapshot {
 	readonly supportsText: boolean;
 }
 
+/** Native audio output capabilities and current playback state. @public */
 export interface NativeAudioOutputSnapshot {
 	readonly activeSoundCount: number;
 	readonly backend: string;
@@ -33,11 +36,20 @@ export interface NativeAudioOutputSnapshot {
 	readonly supportsVolume: boolean;
 }
 
+/** Native frame pacing information exposed by the backend. @public */
 export interface NativeTimingSnapshot {
 	readonly backend: string;
 	readonly frameDelayMillis: number;
 }
 
+/**
+ * A combined diagnostic snapshot for the active native backend.
+ *
+ * @public
+ *
+ * This is useful for startup diagnostics, test assertions, and debug screens
+ * that need to inspect renderer, audio, timing, and window state together.
+ */
 export interface NativeBackendDiagnostics {
 	readonly audio: NativeAudioOutputSnapshot;
 	readonly initialized: boolean;
@@ -48,6 +60,17 @@ export interface NativeBackendDiagnostics {
 	readonly window: NativeWindowSnapshot | null;
 }
 
+/**
+ * Low-level native runtime adapter used by {@link NativeBoundary}.
+ *
+ * @public
+ *
+ * Most games do not implement or consume `NativeBackend` directly. Instead
+ * they use a helper such as {@link makeSkiaNativeBoundaryLayer}, which wires a
+ * concrete backend into {@link NativeBoundary}. This service exists so the
+ * engine can separate authored frame production from platform-specific window,
+ * input, rendering, and audio work.
+ */
 export class NativeBackend extends ServiceMap.Service<
 	NativeBackend,
 	{
