@@ -3,7 +3,13 @@ import { Effect, Layer, Ref, Schema, ServiceMap } from "effect";
 /** Logical buses supported by the mixer. @public */
 export type AudioBus = "master" | "music" | "sfx";
 
-/** The cue categories understood by the engine. @public */
+/** The cue categories understood by the engine.
+ * @public
+ *
+ * The engine understands two cue kinds: "music" and "sfx".
+ * - "music" cues are intended to play continuously and loop until stopped.
+ * - "sfx" cues are intended to play once and then stop.
+ */
 export type AudioCueKind = "music" | "sfx";
 
 /** Declares a reusable authored audio cue. @public */

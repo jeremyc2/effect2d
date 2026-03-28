@@ -25,7 +25,7 @@ import { NativeFrameSource } from "./NativeFrameSource.ts";
  * - presenting frames and waiting for the next step
  *
  * Most application code does not implement this service directly. Instead it
- * uses helpers such as {@link makeSdlCanvasNativeBoundaryLayer}.
+ * uses helpers such as {@link makeSkiaNativeBoundaryLayer}.
  */
 export class NativeBoundary extends ServiceMap.Service<
 	NativeBoundary,

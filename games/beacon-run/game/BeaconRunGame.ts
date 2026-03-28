@@ -10,13 +10,13 @@ import {
 	Input,
 	MapRepository,
 	makeRuntimeLayer,
-	makeSdlCanvasNativeBoundaryLayer,
+	makeSkiaNativeBoundaryLayer,
 	NativeBoundary,
 	ResourceTracker,
 	SceneDirector,
 	SceneRegistry,
-	Script,
-	ScriptEvents,
+	Sequence,
+	SequenceEvents,
 	Ui,
 } from "../../../src/index.ts";
 import { beaconRunRooms } from "./content/BeaconRunRooms.ts";
@@ -126,13 +126,9 @@ const beaconRunDebugOverlayLayer = DebugOverlay.layer.pipe(
 	),
 );
 
-const beaconRunScriptLayer = Script.layer.pipe(
+const beaconRunSequenceLayer = Sequence.layer.pipe(
 	Layer.provide(
-		Layer.mergeAll(
-			beaconRunEngineCapabilityLayer,
-			beaconRunSceneDirectorLayer,
-			beaconRunUiLayer,
-		),
+		Layer.mergeAll(beaconRunEngineCapabilityLayer, beaconRunSceneDirectorLayer),
 	),
 );
 
@@ -141,7 +137,7 @@ const beaconRunCoordinatorLayer = BeaconRunCoordinator.layer.pipe(
 		Layer.mergeAll(
 			beaconRunCapabilityLayer,
 			beaconRunRoomStateLayer,
-			ScriptEvents.layer,
+			SequenceEvents.layer,
 		),
 	),
 );
@@ -153,7 +149,7 @@ const beaconRunGameplayDirectorLayer = BeaconRunGameplayDirector.layer.pipe(
 			beaconRunDebugOverlayLayer,
 			beaconRunRoomStateLayer,
 			beaconRunSceneDirectorLayer,
-			beaconRunScriptLayer,
+			beaconRunSequenceLayer,
 		),
 	),
 );
@@ -179,8 +175,8 @@ const beaconRunNativeFrameSourceLayer = BeaconRunNativeFrameSourceLive.pipe(
 	),
 );
 
-export const beaconRunPlayableNativeBoundaryLayer =
-	makeSdlCanvasNativeBoundaryLayer({
+export const beaconRunPlayableNativeBoundaryLayer = makeSkiaNativeBoundaryLayer(
+	{
 		defaultFontPath: "games/beacon-run/assets/fonts/ui-body.ttf",
 		defaultFontSizePx: 16,
 		imageAssetPaths: {
@@ -199,11 +195,12 @@ export const beaconRunPlayableNativeBoundaryLayer =
 		title: "effect2d: Beacon Run",
 		windowHeight: 768,
 		windowWidth: 1024,
-	}).pipe(
-		Layer.provide(
-			Layer.mergeAll(beaconRunCapabilityLayer, beaconRunNativeFrameSourceLayer),
-		),
-	);
+	},
+).pipe(
+	Layer.provide(
+		Layer.mergeAll(beaconRunCapabilityLayer, beaconRunNativeFrameSourceLayer),
+	),
+);
 
 const beaconRunSaveParticipantsLayer = BeaconRunSaveParticipants.layer.pipe(
 	Layer.provide(beaconRunStateLayer),
@@ -219,9 +216,9 @@ export const BeaconRunLive = Layer.mergeAll(
 	beaconRunRoomStateLayer,
 	beaconRunSceneDirectorLayer,
 	beaconRunSceneRegistryLayer,
-	beaconRunScriptLayer,
+	beaconRunSequenceLayer,
 	beaconRunUiLayer,
-	ScriptEvents.layer,
+	SequenceEvents.layer,
 	beaconRunSaveParticipantsLayer,
 );
 

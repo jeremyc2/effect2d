@@ -9,7 +9,7 @@ import {
 	type UnknownTrackedResourceError,
 } from "../../../src/debug/ResourceTracker.ts";
 import type { MapValidationError } from "../../../src/maps/MapError.ts";
-import { ScriptEvents } from "../../../src/script/Script.ts";
+import { SequenceEvents } from "../../../src/sequence/Sequence.ts";
 import { DebugSettingsState } from "../state/DebugSettingsState.ts";
 import { DialogueState } from "../state/DialogueState.ts";
 import { GameplayState } from "../state/GameplayState.ts";
@@ -42,7 +42,7 @@ export class StarterCoordinator extends ServiceMap.Service<
 			const playerState = yield* PlayerState;
 			const resourceTracker = yield* ResourceTracker;
 			const roomState = yield* RoomState;
-			const scriptEvents = yield* ScriptEvents;
+			const sequenceEvents = yield* SequenceEvents;
 			const worldState = yield* WorldState;
 
 			const beginNewGame = Effect.gen(function* () {
@@ -98,7 +98,7 @@ export class StarterCoordinator extends ServiceMap.Service<
 			const recordSceneChange = Effect.fn(
 				"StarterCoordinator.recordSceneChange",
 			)(function* (sceneId: string) {
-				yield* scriptEvents.publish({
+				yield* sequenceEvents.publish({
 					sceneId,
 					type: "scene-changed",
 				});
@@ -107,14 +107,14 @@ export class StarterCoordinator extends ServiceMap.Service<
 			const recordSaveCompleted = Effect.fn(
 				"StarterCoordinator.recordSaveCompleted",
 			)(function* (slotId: string) {
-				yield* scriptEvents.publish({
+				yield* sequenceEvents.publish({
 					slotId,
 					type: "save-completed",
 				});
 			});
 
 			const processEvents = Effect.gen(function* () {
-				const events = yield* scriptEvents.drain;
+				const events = yield* sequenceEvents.drain;
 
 				for (const event of events) {
 					switch (event.type) {

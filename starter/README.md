@@ -15,7 +15,7 @@ It demonstrates:
 - starter music and sound-effect cues
 - collision-driven interactions and debug overlay rendering
 - authored code-defined rooms loaded through `MapRepository`
-- selective event-driven follow-up through `ScriptEvents`
+- selective event-driven follow-up through `SequenceEvents`
 - input bindings
 - save participants
 - dialogue progress carried by save participants

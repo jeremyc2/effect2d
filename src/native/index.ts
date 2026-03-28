@@ -1,4 +1,4 @@
 export * from "./NativeBackend.ts";
 export * from "./NativeBoundary.ts";
 export * from "./NativeFrameSource.ts";
-export * from "./SdlCanvasNativeBackend.ts";
+export * from "./SkiaNativeBackend.ts";

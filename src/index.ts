@@ -26,11 +26,12 @@
  * - Scene composition primitives such as {@link SceneDefinition},
  *   {@link SceneDirector}, and {@link SceneRegistry}
  * - Core gameplay services including {@link Graphics}, {@link Input},
- *   {@link Audio}, {@link Script}, {@link Ui}, and {@link SaveCoordinator}
+ *   {@link Audio}, {@link Sequence}, {@link Cutscene}, {@link Ui}, and
+ *   {@link SaveCoordinator}
  * - Supporting data models such as room content, save documents, camera state,
  *   input bindings, and audio cue definitions
  * - Native integration points such as {@link NativeBoundary} and
- *   {@link makeSdlCanvasNativeBoundaryLayer} for playable desktop builds
+ *   {@link makeSkiaNativeBoundaryLayer} for playable desktop builds
  *
  * ## If you know Effect, you already know a lot
  *
@@ -44,7 +45,10 @@
  * - `Graphics` records draw commands for the current frame
  * - `Input` turns native keyboard and mouse events into stable action state
  * - `Audio` manages music and overlapping sound effects as typed cues
- * - `Script` coordinates timed sequences, dialogue, fades, and domain events
+ * - `Sequence` coordinates timed gameplay beats such as waits, scene switches,
+ *   fades, flashes, and audio cues
+ * - `Cutscene` builds higher-level cinematic helpers on top of `Sequence` and
+ *   `Ui`
  * - `Ui` helps with common text, menu, and dialogue presentation patterns
  * - `SaveCoordinator` snapshots and restores participant state across save slots
  *
@@ -64,7 +68,7 @@
  *   your game describes what to draw for the current frame right now as a list
  *   of draw commands like "draw this image here" or "draw this text here"
  *   instead of maintaining a long-lived retained scene tree like a DOM
- * - camera math, script orchestration, save migration plumbing, scene stack
+ * - camera math, sequence orchestration, save migration plumbing, scene stack
  *   lifecycle, and typed error surfaces
  * - testability: most services can be exercised headlessly without opening a
  *   real window
@@ -140,12 +144,13 @@
  * 6. Expose a `NativeFrameSource` that steps gameplay and renders a frame.
  * 7. Use {@link makeRuntimeLayer} or {@link makeEngineLayer} to compose the
  *    engine with your game's services.
- * 8. Use {@link makeSdlCanvasNativeBoundaryLayer} when you want a playable
+ * 8. Use {@link makeSkiaNativeBoundaryLayer} when you want a playable
  *    native desktop window.
  */
 export * from "./animation/index.ts";
 export * from "./audio/index.ts";
 export * from "./collision/index.ts";
+export * from "./cutscene/index.ts";
 export * from "./debug/index.ts";
 export * from "./errors/index.ts";
 export * from "./graphics/index.ts";
@@ -155,5 +160,5 @@ export * from "./native/index.ts";
 export * from "./runtime/index.ts";
 export * from "./save/index.ts";
 export * from "./scene/index.ts";
-export * from "./script/index.ts";
+export * from "./sequence/index.ts";
 export * from "./ui/index.ts";

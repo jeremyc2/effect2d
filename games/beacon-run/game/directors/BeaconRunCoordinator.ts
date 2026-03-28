@@ -4,7 +4,7 @@ import {
 	type InvalidLogMessageError,
 } from "../../../../src/debug/EngineLogger.ts";
 import type { MapValidationError } from "../../../../src/maps/MapError.ts";
-import { ScriptEvents } from "../../../../src/script/Script.ts";
+import { SequenceEvents } from "../../../../src/sequence/Sequence.ts";
 import { BeaconRunRoomState } from "../state/BeaconRunRoomState.ts";
 import { ExpeditionState } from "../state/ExpeditionState.ts";
 import { ScoutState } from "../state/ScoutState.ts";
@@ -26,7 +26,7 @@ export class BeaconRunCoordinator extends ServiceMap.Service<
 			const engineLogger = yield* EngineLogger;
 			const expeditionState = yield* ExpeditionState;
 			const scoutState = yield* ScoutState;
-			const scriptEvents = yield* ScriptEvents;
+			const sequenceEvents = yield* SequenceEvents;
 
 			const beginExpedition = Effect.gen(function* () {
 				const fieldSpawn = yield* beaconRunRoomState.roomObjectById(
@@ -52,7 +52,7 @@ export class BeaconRunCoordinator extends ServiceMap.Service<
 			}).pipe(Effect.withSpan("BeaconRunCoordinator.beginExpedition"));
 
 			const processEvents = Effect.gen(function* () {
-				const events = yield* scriptEvents.drain;
+				const events = yield* sequenceEvents.drain;
 
 				for (const event of events) {
 					switch (event.type) {
@@ -73,7 +73,7 @@ export class BeaconRunCoordinator extends ServiceMap.Service<
 			const recordSceneChange = Effect.fn(
 				"BeaconRunCoordinator.recordSceneChange",
 			)(function* (sceneId: string) {
-				yield* scriptEvents.publish({
+				yield* sequenceEvents.publish({
 					sceneId,
 					type: "scene-changed",
 				});

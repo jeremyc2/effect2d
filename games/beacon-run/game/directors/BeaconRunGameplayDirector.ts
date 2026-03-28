@@ -12,7 +12,7 @@ import {
 	SceneDirector,
 	type SceneNotFoundError,
 	type SceneStackEmptyError,
-	Script,
+	Sequence,
 	type UnknownAudioCueError,
 	type UnknownInputActionError,
 	type WrongAudioCueKindError,
@@ -112,7 +112,7 @@ export class BeaconRunGameplayDirector extends ServiceMap.Service<
 			const expeditionState = yield* ExpeditionState;
 			const input = yield* Input;
 			const sceneDirector = yield* SceneDirector;
-			const script = yield* Script;
+			const sequence = yield* Sequence;
 			const scoutState = yield* ScoutState;
 
 			const scoutShape = Effect.fn("BeaconRunGameplayDirector.scoutShape")(
@@ -247,7 +247,7 @@ export class BeaconRunGameplayDirector extends ServiceMap.Service<
 					overlappingBodies.some((body) => body.id === beaconBodyId)
 				) {
 					yield* expeditionState.lightBeacon("north-beacon");
-					yield* script.playSoundCue("beacon-ignite");
+					yield* sequence.playSoundCue("beacon-ignite");
 					yield* engineLogger.info("Beacon Run beacon lit.", {
 						beaconId: "north-beacon",
 					});
@@ -265,23 +265,23 @@ export class BeaconRunGameplayDirector extends ServiceMap.Service<
 
 					if (activeSceneId === "title") {
 						if (confirmAction.justPressed) {
-							yield* script.playSoundCue("menu-confirm");
-							yield* script.switchScene("field");
+							yield* sequence.playSoundCue("menu-confirm");
+							yield* sequence.switchScene("field");
 						}
 						return;
 					}
 
 					if (activeSceneId === "pause") {
 						if (cancelAction.justPressed || confirmAction.justPressed) {
-							yield* script.playSoundCue("pause-toggle");
-							yield* script.popOverlayScene();
+							yield* sequence.playSoundCue("pause-toggle");
+							yield* sequence.popOverlayScene();
 						}
 						return;
 					}
 
 					if (cancelAction.justPressed) {
-						yield* script.playSoundCue("pause-toggle");
-						yield* script.pushOverlayScene("pause");
+						yield* sequence.playSoundCue("pause-toggle");
+						yield* sequence.pushOverlayScene("pause");
 						return;
 					}
 
@@ -308,7 +308,7 @@ export class BeaconRunGameplayDirector extends ServiceMap.Service<
 								y: shrineEntry.y,
 							}),
 						);
-						yield* script.playSoundCue("room-transition");
+						yield* sequence.playSoundCue("room-transition");
 						yield* engineLogger.info("Beacon Run room transition completed.", {
 							roomId: "shrine-room",
 						});

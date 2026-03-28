@@ -37,9 +37,8 @@ The current native runtime is split in two layers:
 
 The initial practical implementation is:
 
-- SDL for macOS windowing and raw input
-- Canvas2D via `@napi-rs/canvas` for frame presentation
-- `afplay` as the first macOS audio output path
+- Skia via `skia-canvas` for native windowing, input, and frame presentation
+- `node-web-audio-api` as the in-process native audio output path
 
 This is intentionally a thin backend contract rather than a second engine hidden under `native`.
 

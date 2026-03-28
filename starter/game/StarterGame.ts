@@ -2,6 +2,7 @@ import { Effect, Layer } from "effect";
 import {
 	Audio,
 	CollisionWorld,
+	Cutscene,
 	DebugOverlay,
 	defaultEngineConfig,
 	Engine,
@@ -14,8 +15,8 @@ import {
 	ResourceTracker,
 	SceneDirector,
 	SceneRegistry,
-	Script,
-	ScriptEvents,
+	Sequence,
+	SequenceEvents,
 	Ui,
 } from "../../src/index.ts";
 import { starterRooms } from "./content/StarterRooms.ts";
@@ -128,14 +129,14 @@ const starterDebugOverlayLayer = DebugOverlay.layer.pipe(
 	),
 );
 
-const starterScriptLayer = Script.layer.pipe(
+const starterSequenceLayer = Sequence.layer.pipe(
 	Layer.provide(
-		Layer.mergeAll(
-			starterEngineCapabilityLayer,
-			starterSceneDirectorLayer,
-			starterUiLayer,
-		),
+		Layer.mergeAll(starterEngineCapabilityLayer, starterSceneDirectorLayer),
 	),
+);
+
+const starterCutsceneLayer = Cutscene.layer.pipe(
+	Layer.provide(Layer.mergeAll(starterSequenceLayer, starterUiLayer)),
 );
 
 const starterSaveParticipantsLayer = StarterSaveParticipants.layer.pipe(
@@ -148,7 +149,7 @@ const starterCoordinatorLayer = StarterCoordinator.layer.pipe(
 			starterCapabilityLayer,
 			starterMapRepositoryLayer,
 			starterRoomStateLayer,
-			ScriptEvents.layer,
+			SequenceEvents.layer,
 			starterStateLayer,
 		),
 	),
@@ -158,12 +159,13 @@ const starterGameplayDirectorLayer = StarterGameplayDirector.layer.pipe(
 	Layer.provide(
 		Layer.mergeAll(
 			starterCapabilityLayer,
-			ScriptEvents.layer,
+			starterCutsceneLayer,
+			SequenceEvents.layer,
+			starterSequenceLayer,
 			starterSceneDirectorLayer,
 			starterRoomStateLayer,
 			starterUiLayer,
 			starterDebugOverlayLayer,
-			starterScriptLayer,
 		),
 	),
 );
@@ -190,9 +192,10 @@ export const StarterGameLive = Layer.mergeAll(
 	starterRoomStateLayer,
 	starterSceneDirectorLayer,
 	starterSceneRegistryLayer,
-	starterScriptLayer,
+	starterSequenceLayer,
+	starterCutsceneLayer,
 	starterUiLayer,
-	ScriptEvents.layer,
+	SequenceEvents.layer,
 	starterSaveParticipantsLayer,
 );
 

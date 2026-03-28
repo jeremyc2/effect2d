@@ -25,23 +25,6 @@ import type {
 	SceneNotFoundError,
 	SceneStackEmptyError,
 } from "../scene/SceneError.ts";
-import { type DialoguePage, Ui, type UnknownFontError } from "../ui/Ui.ts";
-
-/** The current state of a prepared dialogue sequence. @public */
-export interface DialogueProgress {
-	readonly hasNextPage: boolean;
-	readonly isComplete: boolean;
-	readonly page: DialoguePage;
-	readonly pageIndex: number;
-}
-
-/** Options for paginating authored dialogue text. @public */
-export interface DialogueScriptOptions {
-	readonly fontId: string;
-	readonly maxLines: number;
-	readonly maxWidth: number;
-	readonly text: string;
-}
 
 const defaultFadeColor: Color = {
 	alpha: 1,
@@ -57,22 +40,14 @@ const defaultFlashColor: Color = {
 	red: 1,
 };
 
-export class InvalidScriptWaitError extends Schema.TaggedErrorClass<InvalidScriptWaitError>()(
-	"InvalidScriptWaitError",
+export class InvalidSequenceWaitError extends Schema.TaggedErrorClass<InvalidSequenceWaitError>()(
+	"InvalidSequenceWaitError",
 	{
 		steps: Schema.Number,
 	},
 ) {}
 
-export class DialoguePageOutOfRangeError extends Schema.TaggedErrorClass<DialoguePageOutOfRangeError>()(
-	"DialoguePageOutOfRangeError",
-	{
-		pageCount: Schema.Number,
-		pageIndex: Schema.Number,
-	},
-) {}
-
-export type ScriptEvent =
+export type SequenceEvent =
 	| {
 			readonly amount: number;
 			readonly entityId: string;
@@ -95,31 +70,31 @@ export type ScriptEvent =
 			readonly type: "save-completed";
 	  };
 
-interface ScriptEventJournalState {
-	readonly events: ReadonlyArray<ScriptEvent>;
+interface SequenceEventJournalState {
+	readonly events: ReadonlyArray<SequenceEvent>;
 }
 
-const initialScriptEventJournalState: ScriptEventJournalState = {
+const initialSequenceEventJournalState: SequenceEventJournalState = {
 	events: [],
 };
 
-/** A lightweight published-event journal for scripted sequences. @public */
-export class ScriptEvents extends ServiceMap.Service<
-	ScriptEvents,
+/** A lightweight published-event journal for authored sequences. @public */
+export class SequenceEvents extends ServiceMap.Service<
+	SequenceEvents,
 	{
 		readonly clear: Effect.Effect<void>;
-		readonly drain: Effect.Effect<ReadonlyArray<ScriptEvent>>;
-		readonly publish: (event: ScriptEvent) => Effect.Effect<void>;
-		readonly snapshot: Effect.Effect<ReadonlyArray<ScriptEvent>>;
+		readonly drain: Effect.Effect<ReadonlyArray<SequenceEvent>>;
+		readonly publish: (event: SequenceEvent) => Effect.Effect<void>;
+		readonly snapshot: Effect.Effect<ReadonlyArray<SequenceEvent>>;
 	}
->()("effect2d/script/Script/ScriptEvents") {
+>()("effect2d/sequence/Sequence/SequenceEvents") {
 	static readonly layer = Layer.effect(
-		ScriptEvents,
+		SequenceEvents,
 		Effect.gen(function* () {
-			const stateRef = yield* Ref.make(initialScriptEventJournalState);
+			const stateRef = yield* Ref.make(initialSequenceEventJournalState);
 
-			const publish = Effect.fn("ScriptEvents.publish")(function* (
-				event: ScriptEvent,
+			const publish = Effect.fn("SequenceEvents.publish")(function* (
+				event: SequenceEvent,
 			) {
 				yield* Ref.update(stateRef, (state) => ({
 					...state,
@@ -142,7 +117,7 @@ export class ScriptEvents extends ServiceMap.Service<
 				return events;
 			});
 
-			return ScriptEvents.of({
+			return SequenceEvents.of({
 				clear,
 				drain,
 				publish,
@@ -152,33 +127,14 @@ export class ScriptEvents extends ServiceMap.Service<
 	);
 }
 
-const nthDialoguePage = Effect.fn("Script.nthDialoguePage")(function* (
-	pages: ReadonlyArray<DialoguePage>,
-	pageIndex: number,
-) {
-	const page = pages[pageIndex];
-	if (page === undefined) {
-		return yield* new DialoguePageOutOfRangeError({
-			pageCount: pages.length,
-			pageIndex,
-		});
-	}
-
-	return page;
-});
-
 /**
- * A convenience orchestration service for authored sequences.
+ * A convenience orchestration service for authored gameplay beats over time.
  *
  * @public
  */
-export class Script extends ServiceMap.Service<
-	Script,
+export class Sequence extends ServiceMap.Service<
+	Sequence,
 	{
-		readonly advanceDialogue: (
-			pages: ReadonlyArray<DialoguePage>,
-			pageIndex: number,
-		) => Effect.Effect<DialogueProgress, DialoguePageOutOfRangeError>;
 		readonly fade: (
 			opacity: number,
 			color?: Color,
@@ -204,13 +160,10 @@ export class Script extends ServiceMap.Service<
 			void,
 			OverlayStackUnderflowError | SceneStackEmptyError
 		>;
-		readonly prepareDialogue: (
-			options: DialogueScriptOptions,
-		) => Effect.Effect<ReadonlyArray<DialoguePage>, UnknownFontError>;
 		readonly pushOverlayScene: (
 			sceneId: SceneId,
 		) => Effect.Effect<void, SceneNotFoundError | SceneStackEmptyError>;
-		readonly runSequence: (
+		readonly run: (
 			effects: ReadonlyArray<Effect.Effect<void>>,
 		) => Effect.Effect<void>;
 		readonly switchScene: (
@@ -218,23 +171,22 @@ export class Script extends ServiceMap.Service<
 		) => Effect.Effect<void, SceneNotFoundError | SceneStackEmptyError>;
 		readonly waitSteps: (
 			steps: number,
-		) => Effect.Effect<void, InvalidScriptWaitError>;
+		) => Effect.Effect<void, InvalidSequenceWaitError>;
 	}
->()("effect2d/script/Script") {
+>()("effect2d/sequence/Sequence") {
 	static readonly layer = Layer.effect(
-		Script,
+		Sequence,
 		Effect.gen(function* () {
 			const audio = yield* Audio;
 			const graphics = yield* Graphics;
 			const runtimeClock = yield* RuntimeClock;
 			const sceneDirector = yield* SceneDirector;
-			const ui = yield* Ui;
 
-			const waitSteps = Effect.fn("Script.waitSteps")(function* (
+			const waitSteps = Effect.fn("Sequence.waitSteps")(function* (
 				steps: number,
 			) {
 				if (!Number.isInteger(steps) || steps < 0) {
-					return yield* new InvalidScriptWaitError({
+					return yield* new InvalidSequenceWaitError({
 						steps,
 					});
 				}
@@ -244,7 +196,7 @@ export class Script extends ServiceMap.Service<
 				}
 			});
 
-			const runSequence = Effect.fn("Script.runSequence")(function* (
+			const run = Effect.fn("Sequence.run")(function* (
 				effects: ReadonlyArray<Effect.Effect<void>>,
 			) {
 				yield* Effect.forEach(effects, (effect) => effect, {
@@ -252,73 +204,51 @@ export class Script extends ServiceMap.Service<
 				});
 			});
 
-			const playMusicCue = Effect.fn("Script.playMusicCue")(function* (
+			const playMusicCue = Effect.fn("Sequence.playMusicCue")(function* (
 				cueId: string,
 			) {
 				yield* audio.playMusic(cueId, { loop: true });
 			});
 
-			const playSoundCue = Effect.fn("Script.playSoundCue")(function* (
+			const playSoundCue = Effect.fn("Sequence.playSoundCue")(function* (
 				cueId: string,
 			) {
 				return yield* audio.playSfx(cueId);
 			});
 
-			const fade = Effect.fn("Script.fade")(function* (
+			const fade = Effect.fn("Sequence.fade")(function* (
 				opacity: number,
 				color: Color = defaultFadeColor,
 			) {
 				yield* graphics.drawFade(opacity, color);
 			});
 
-			const flash = Effect.fn("Script.flash")(function* (
+			const flash = Effect.fn("Sequence.flash")(function* (
 				intensity: number,
 				color: Color = defaultFlashColor,
 			) {
 				yield* graphics.drawFlash(intensity, color);
 			});
 
-			const prepareDialogue = Effect.fn("Script.prepareDialogue")(function* (
-				options: DialogueScriptOptions,
-			) {
-				return yield* ui.paginateDialogue({
-					fontId: options.fontId,
-					maxLines: options.maxLines,
-					maxWidth: options.maxWidth,
-					text: options.text,
-				});
-			});
-
-			const advanceDialogue = Effect.fn("Script.advanceDialogue")(function* (
-				pages: ReadonlyArray<DialoguePage>,
-				pageIndex: number,
-			) {
-				const page = yield* nthDialoguePage(pages, pageIndex);
-				return {
-					hasNextPage: page.hasNextPage,
-					isComplete: !page.hasNextPage,
-					page,
-					pageIndex,
-				} satisfies DialogueProgress;
-			});
-
-			const switchScene = Effect.fn("Script.switchScene")(function* (
+			const switchScene = Effect.fn("Sequence.switchScene")(function* (
 				sceneId: SceneId,
 			) {
 				yield* sceneDirector.switchTo(sceneId);
 			});
 
-			const pushOverlayScene = Effect.fn("Script.pushOverlayScene")(function* (
-				sceneId: SceneId,
-			) {
-				yield* sceneDirector.pushOverlay(sceneId);
-			});
+			const pushOverlayScene = Effect.fn("Sequence.pushOverlayScene")(
+				function* (sceneId: SceneId) {
+					yield* sceneDirector.pushOverlay(sceneId);
+				},
+			);
 
-			const popOverlayScene = Effect.fn("Script.popOverlayScene")(function* () {
-				yield* sceneDirector.popOverlay();
-			});
+			const popOverlayScene = Effect.fn("Sequence.popOverlayScene")(
+				function* () {
+					yield* sceneDirector.popOverlay();
+				},
+			);
 
-			const fork = Effect.fn("Script.fork")(function* <
+			const fork = Effect.fn("Sequence.fork")(function* <
 				Success,
 				Failure,
 				Requirements,
@@ -328,17 +258,15 @@ export class Script extends ServiceMap.Service<
 				);
 			});
 
-			return Script.of({
-				advanceDialogue,
+			return Sequence.of({
 				fade,
 				flash,
 				fork,
 				playMusicCue,
 				playSoundCue,
 				popOverlayScene,
-				prepareDialogue,
 				pushOverlayScene,
-				runSequence,
+				run,
 				switchScene,
 				waitSteps,
 			});

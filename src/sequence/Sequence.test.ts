@@ -3,14 +3,12 @@ import { Effect, Fiber, Layer, Ref } from "effect";
 import { TestClock } from "effect/testing";
 import { Audio } from "../audio/Audio.ts";
 import { Graphics } from "../graphics/Graphics.ts";
-import { Input } from "../input/Input.ts";
 import { RuntimeClock } from "../runtime/RuntimeClock.ts";
 import type { SceneDefinition, SceneId } from "../scene/Scene.ts";
 import { SceneDirector } from "../scene/SceneDirector.ts";
 import { SceneRegistry } from "../scene/SceneRegistry.ts";
 import { runLayerEffect } from "../testing/runEffectTest.ts";
-import { Ui } from "../ui/Ui.ts";
-import { Script, ScriptEvents } from "./Script.ts";
+import { Sequence, SequenceEvents } from "./Sequence.ts";
 
 const makeScene = (id: SceneId): SceneDefinition => ({
 	id,
@@ -23,7 +21,7 @@ const makeScene = (id: SceneId): SceneDefinition => ({
 	}),
 });
 
-const makeScriptLayer = () => {
+const makeSequenceLayer = () => {
 	const sceneRegistryLayer = SceneRegistry.layer([
 		makeScene("overworld"),
 		makeScene("pause"),
@@ -31,34 +29,31 @@ const makeScriptLayer = () => {
 	const sceneDirectorLayer = SceneDirector.layer("overworld").pipe(
 		Layer.provide(sceneRegistryLayer),
 	);
-	const uiDependencies = Layer.mergeAll(Graphics.layer, Input.layer);
 	const dependencies = Layer.mergeAll(
 		Audio.layer,
 		Graphics.layer,
-		Input.layer,
 		RuntimeClock.layer(60),
 		TestClock.layer(),
-		Ui.layer.pipe(Layer.provide(uiDependencies)),
 		sceneDirectorLayer,
 	);
 
 	return Layer.mergeAll(
 		dependencies,
-		ScriptEvents.layer,
-		Script.layer.pipe(Layer.provide(dependencies)),
+		SequenceEvents.layer,
+		Sequence.layer.pipe(Layer.provide(dependencies)),
 	);
 };
 
-describe("Script", () => {
-	test("orchestrates timing, audio, fades, and dialogue preparation", async () => {
+describe("Sequence", () => {
+	test("orchestrates timing, audio, fades, and scene flow", async () => {
 		await runLayerEffect(
-			makeScriptLayer(),
+			makeSequenceLayer(),
 			Effect.gen(function* () {
 				const audio = yield* Audio;
 				const graphics = yield* Graphics;
 				const runtimeClock = yield* RuntimeClock;
-				const script = yield* Script;
-				const ui = yield* Ui;
+				const sceneDirector = yield* SceneDirector;
+				const sequence = yield* Sequence;
 
 				yield* audio.loadMusic({
 					cueId: "overworld-theme",
@@ -74,33 +69,19 @@ describe("Script", () => {
 					defaultVolume: 0.7,
 					sourcePath: "audio/sfx/confirm.wav",
 				});
-				yield* ui.loadFont({
-					fontId: "dialogue",
-					glyphWidth: 8,
-					lineHeight: 10,
-					sourcePath: "fonts/dialogue.ttf",
-				});
 
-				const waitFiber = yield* script.waitSteps(2).pipe(Effect.forkChild);
+				const waitFiber = yield* sequence.waitSteps(2).pipe(Effect.forkChild);
 				yield* TestClock.adjust(34);
 				yield* Fiber.await(waitFiber);
 
 				yield* graphics.beginFrame;
-				const pages = yield* script.prepareDialogue({
-					fontId: "dialogue",
-					maxLines: 2,
-					maxWidth: 80,
-					text: "Keep your lantern close. The cave swallows weak light.",
-				});
-				const firstPage = yield* script.advanceDialogue(pages, 0);
-				yield* script.fade(0.5);
-				yield* script.flash(0.25);
-				yield* script.playMusicCue("overworld-theme");
-				const playbackId = yield* script.playSoundCue("confirm");
+				yield* sequence.fade(0.5);
+				yield* sequence.flash(0.25);
+				yield* sequence.playMusicCue("overworld-theme");
+				const playbackId = yield* sequence.playSoundCue("confirm");
+				yield* sequence.switchScene("pause");
 				const frame = yield* graphics.endFrame;
 
-				expect(firstPage.page.pageIndex).toBe(0);
-				expect(firstPage.hasNextPage).toBe(true);
 				expect(frame.commands.map((command) => command.type)).toContain(
 					"draw-fade",
 				);
@@ -116,19 +97,20 @@ describe("Script", () => {
 				expect((yield* runtimeClock.snapshot()).fixedTickMillis).toBe(
 					1_000 / 60,
 				);
+				expect((yield* sceneDirector.snapshot).activeSceneId).toBe("pause");
 			}),
 		);
 	});
 
-	test("forks scoped scripts that are canceled when the scope closes", async () => {
+	test("forks scoped sequences that are canceled when the scope closes", async () => {
 		await runLayerEffect(
-			makeScriptLayer(),
+			makeSequenceLayer(),
 			Effect.gen(function* () {
-				const script = yield* Script;
+				const sequence = yield* Sequence;
 				const finishedRef = yield* Ref.make(false);
 
 				yield* Effect.scoped(
-					script
+					sequence
 						.fork(
 							Effect.forever(Effect.sleep("1 second")).pipe(
 								Effect.ensuring(Ref.set(finishedRef, true)),
@@ -144,9 +126,9 @@ describe("Script", () => {
 
 	test("captures and drains selective typed domain events", async () => {
 		await runLayerEffect(
-			makeScriptLayer(),
+			makeSequenceLayer(),
 			Effect.gen(function* () {
-				const events = yield* ScriptEvents;
+				const events = yield* SequenceEvents;
 
 				yield* events.publish({
 					entityId: "player",

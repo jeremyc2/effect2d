@@ -32,7 +32,8 @@ The "Aliases to Avoid" column is intentionally strict. We use it to prevent mult
 | Timing Hook | A native wait or scheduling point that helps pace frame presentation. | sleep hack, event loop trick |
 | Update | The simulation phase where game state advances. | reducer pass, render prep |
 | Draw | The rendering phase where the frame's visuals are submitted. | render component, paint UI |
-| Script | An Effect program that sequences gameplay events over time. | workflow, saga, async flow |
+| Sequence | An Effect-backed orchestration helper for timed gameplay beats over time. | workflow, saga, async flow |
+| Cutscene | A cinematic non-interactive scene built from sequences plus UI presentation. | intro, cinematic, storyboard |
 | Transition | A controlled change between scenes, rooms, or overlays. | route change, navigation |
 
 ## World And Content
@@ -103,7 +104,6 @@ The "Aliases to Avoid" column is intentionally strict. We use it to prevent mult
 | Sound Effect | A short gameplay audio event. | clip only, media asset |
 | Music | A longer-running background audio track. | soundtrack only, media stream |
 | Audio Output Path | The concrete native route that turns engine audio state into audible sound on the machine. | media player integration, soundtrack system |
-| `afplay` | The current macOS command-line playback path used for the first native audio output implementation. | final audio architecture, mixer engine |
 | Mixer Bus | A controllable audio channel group such as master, music, or sfx. | audio context, playlist |
 
 ## Persistence And Testing

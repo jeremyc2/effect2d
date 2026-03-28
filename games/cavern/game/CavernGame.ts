@@ -7,7 +7,7 @@ import {
 	Graphics,
 	Input,
 	makeRuntimeLayer,
-	makeSdlCanvasNativeBoundaryLayer,
+	makeSkiaNativeBoundaryLayer,
 	NativeBoundary,
 	ResourceTracker,
 	SceneCamera,
@@ -118,52 +118,51 @@ const cavernNativeFrameSourceLayer = CavernNativeFrameSourceLive.pipe(
 	),
 );
 
-export const cavernPlayableNativeBoundaryLayer =
-	makeSdlCanvasNativeBoundaryLayer({
-		defaultFontFamily: "RussoOne",
-		defaultFontPath: "games/cavern/assets/fonts/RussoOne-Regular.ttf",
-		defaultFontSizePx: 48,
-		fontAssetDefinitions: {
-			"intro-font": {
-				family: "VT323",
-				sizePx: 42,
-				sourcePath: "games/cavern/assets/fonts/VT323-Regular.ttf",
-			},
-			"menu-button": {
-				family: "RussoOne",
-				sizePx: 48,
-				sourcePath: "games/cavern/assets/fonts/RussoOne-Regular.ttf",
-			},
-			"menu-message": {
-				family: "RussoOne",
-				sizePx: 32,
-				sourcePath: "games/cavern/assets/fonts/RussoOne-Regular.ttf",
-			},
-			"menu-title": {
-				family: "RussoOne",
-				sizePx: 146,
-				sourcePath: "games/cavern/assets/fonts/RussoOne-Regular.ttf",
-			},
+export const cavernPlayableNativeBoundaryLayer = makeSkiaNativeBoundaryLayer({
+	defaultFontFamily: "RussoOne",
+	defaultFontPath: "games/cavern/assets/fonts/RussoOne-Regular.ttf",
+	defaultFontSizePx: 48,
+	fontAssetDefinitions: {
+		"intro-font": {
+			family: "VT323",
+			sizePx: 42,
+			sourcePath: "games/cavern/assets/fonts/VT323-Regular.ttf",
 		},
-		imageAssetPaths: {
-			"environment-bg": "games/cavern/assets/images/environment/bg.png",
-			"environment-wall": "games/cavern/assets/images/environment/wall.png",
-			"icon-github": "games/cavern/assets/images/ui/github.png",
-			"icon-sound": "games/cavern/assets/images/ui/sound.png",
-			"player-new": "games/cavern/assets/images/player/newPlayer.png",
+		"menu-button": {
+			family: "RussoOne",
+			sizePx: 48,
+			sourcePath: "games/cavern/assets/fonts/RussoOne-Regular.ttf",
 		},
-		logicalHeight: 768,
-		logicalWidth: 1152,
-		preferIntegerScaling: false,
-		resizable: true,
-		title: "CAVERN",
-		windowHeight: 960,
-		windowWidth: 1440,
-	}).pipe(
-		Layer.provide(
-			Layer.mergeAll(cavernCapabilityLayer, cavernNativeFrameSourceLayer),
-		),
-	);
+		"menu-message": {
+			family: "RussoOne",
+			sizePx: 32,
+			sourcePath: "games/cavern/assets/fonts/RussoOne-Regular.ttf",
+		},
+		"menu-title": {
+			family: "RussoOne",
+			sizePx: 146,
+			sourcePath: "games/cavern/assets/fonts/RussoOne-Regular.ttf",
+		},
+	},
+	imageAssetPaths: {
+		"environment-bg": "games/cavern/assets/images/environment/bg.png",
+		"environment-wall": "games/cavern/assets/images/environment/wall.png",
+		"icon-github": "games/cavern/assets/images/ui/github.png",
+		"icon-sound": "games/cavern/assets/images/ui/sound.png",
+		"player-new": "games/cavern/assets/images/player/newPlayer.png",
+	},
+	logicalHeight: 768,
+	logicalWidth: 1152,
+	preferIntegerScaling: false,
+	resizable: true,
+	title: "CAVERN",
+	windowHeight: 960,
+	windowWidth: 1440,
+}).pipe(
+	Layer.provide(
+		Layer.mergeAll(cavernCapabilityLayer, cavernNativeFrameSourceLayer),
+	),
+);
 
 export const CavernLive = Layer.mergeAll(
 	cavernCapabilityLayer,

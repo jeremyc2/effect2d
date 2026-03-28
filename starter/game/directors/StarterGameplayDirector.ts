@@ -3,18 +3,19 @@ import type { CollisionBody } from "../../../src/collision/CollisionWorld.ts";
 import type { CameraVector } from "../../../src/graphics/Camera.ts";
 import {
 	CollisionWorld,
+	Cutscene,
 	DebugOverlay,
 	EngineLogger,
 	Input,
 	type InvalidLogMessageError,
-	type InvalidScriptWaitError,
+	type InvalidSequenceWaitError,
 	type OverlayStackUnderflowError,
 	roomObjectById,
 	SceneDirector,
 	type SceneNotFoundError,
 	type SceneStackEmptyError,
-	Script,
-	ScriptEvents,
+	Sequence,
+	SequenceEvents,
 	type UnknownAudioCueError,
 	type UnknownFontError,
 	type UnknownInputActionError,
@@ -57,7 +58,7 @@ const aabbBody = (
 
 type StarterGameplayDirectorFailure =
 	| InvalidLogMessageError
-	| InvalidScriptWaitError
+	| InvalidSequenceWaitError
 	| OverlayStackUnderflowError
 	| MapValidationError
 	| SceneNotFoundError
@@ -72,7 +73,7 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 	{
 		readonly runIntroSequence: () => Effect.Effect<
 			void,
-			InvalidLogMessageError | InvalidScriptWaitError | UnknownFontError
+			InvalidLogMessageError | InvalidSequenceWaitError | UnknownFontError
 		>;
 		readonly stepFrame: () => Effect.Effect<
 			void,
@@ -92,8 +93,9 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 			const playerState = yield* PlayerState;
 			const roomState = yield* RoomState;
 			const sceneDirector = yield* SceneDirector;
-			const script = yield* Script;
-			const scriptEvents = yield* ScriptEvents;
+			const cutscene = yield* Cutscene;
+			const sequence = yield* Sequence;
+			const sequenceEvents = yield* SequenceEvents;
 			const worldState = yield* WorldState;
 
 			const syncCollisionBodies = Effect.fn(
@@ -235,14 +237,14 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 					return;
 				}
 
-				const pages = yield* script.prepareDialogue({
+				const pages = yield* cutscene.prepareDialogue({
 					fontId: "ui-body",
 					maxLines: 2,
 					maxWidth: 160,
 					text: "A lantern flickers in the dark. Press Space to take it.",
 				});
 				yield* dialogueState.open("lantern-intro", pages);
-				yield* script.waitSteps(1);
+				yield* sequence.waitSteps(1);
 				yield* gameplayState.markIntroSequencePlayed;
 				yield* engineLogger.info("Starter intro sequence played.", {
 					dialoguePageCount: pages.length,
@@ -290,17 +292,17 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 					yield* gameplayState.collectLantern;
 					yield* worldState.lightLantern;
 					yield* worldState.addItem("lantern");
-					yield* script.playSoundCue("pickup-lantern");
+					yield* sequence.playSoundCue("pickup-lantern");
 					yield* dialogueState.open(
 						"lantern-picked-up",
-						yield* script.prepareDialogue({
+						yield* cutscene.prepareDialogue({
 							fontId: "ui-body",
 							maxLines: 2,
 							maxWidth: 160,
 							text: "The lantern steadies your path.",
 						}),
 					);
-					yield* scriptEvents.publish({
+					yield* sequenceEvents.publish({
 						pickupId: "lantern",
 						type: "pickup-collected",
 					});
@@ -317,17 +319,17 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 					overlappingBodies.some((body) => body.id === enemyBodyId)
 				) {
 					yield* gameplayState.defeatEnemy;
-					yield* script.playSoundCue("slime-hit");
+					yield* sequence.playSoundCue("slime-hit");
 					yield* dialogueState.open(
 						"slime-defeated",
-						yield* script.prepareDialogue({
+						yield* cutscene.prepareDialogue({
 							fontId: "ui-body",
 							maxLines: 2,
 							maxWidth: 160,
 							text: "The slime recoils from the light and fades away.",
 						}),
 					);
-					yield* scriptEvents.publish({
+					yield* sequenceEvents.publish({
 						enemyId: "slime",
 						type: "enemy-defeated",
 					});
@@ -348,23 +350,23 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 
 					if (activeSceneId === "main-menu") {
 						if (confirmAction.justPressed) {
-							yield* script.playSoundCue("menu-confirm");
-							yield* script.switchScene("overworld");
+							yield* sequence.playSoundCue("menu-confirm");
+							yield* sequence.switchScene("overworld");
 						}
 						return;
 					}
 
 					if (activeSceneId === "pause-overlay") {
 						if (cancelAction.justPressed || confirmAction.justPressed) {
-							yield* script.playSoundCue("pause-toggle");
-							yield* script.popOverlayScene();
+							yield* sequence.playSoundCue("pause-toggle");
+							yield* sequence.popOverlayScene();
 						}
 						return;
 					}
 
 					if (cancelAction.justPressed) {
-						yield* script.playSoundCue("pause-toggle");
-						yield* script.pushOverlayScene("pause-overlay");
+						yield* sequence.playSoundCue("pause-toggle");
+						yield* sequence.pushOverlayScene("pause-overlay");
 						return;
 					}
 
@@ -393,7 +395,7 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 							x: lanternEntry.x,
 							y: lanternEntry.y,
 						});
-						yield* script.playSoundCue("room-transition");
+						yield* sequence.playSoundCue("room-transition");
 						yield* engineLogger.info("Starter room transition completed.", {
 							roomId: "lantern-room",
 						});

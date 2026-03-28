@@ -14,7 +14,7 @@ This game currently exercises:
 - a beacon-lighting objective
 - save participants for game-specific progress
 - a dedicated gameplay and presentation path
-- a native SDL window backed by Canvas2D for real keyboard-driven play
+- a native Skia window for real keyboard-driven play
 
 The entry point is [main.ts](./main.ts).
 The composition root is [BeaconRunGame.ts](./game/BeaconRunGame.ts).
@@ -39,9 +39,8 @@ Controls:
 
 The current native pass is focused on a real playable window with live device hooks:
 
-- SDL owns the macOS window and raw input events
-- Canvas2D draws the recorded `Graphics` frame to the SDL window
-- macOS `afplay` is the initial native audio output path
+- Skia owns the native window, input events, and frame presentation
+- `node-web-audio-api` is the native audio output path
 - borrowed local assets under `games/beacon-run/assets` provide the initial images and font
 - the first music/sfx files are local placeholder assets so the native path stays fully repo-local
 

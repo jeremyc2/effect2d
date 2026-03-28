@@ -702,6 +702,30 @@
 					</section>
 				
 					<section class="nav-group">
+						<a class="nav-group-title" href="#cutscene">Cutscene</a>
+						
+										<div class="nav-file nav-file-flat">
+											
+											<a class="nav-entry" href="#cutscene-dialogueprogress">
+												<span>DialogueProgress</span>
+												<small class="nav-kind nav-kind-interface">interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#cutscene-dialoguescriptoptions">
+												<span>DialogueScriptOptions</span>
+												<small class="nav-kind nav-kind-interface">interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#cutscene-cutscene">
+												<span>Cutscene</span>
+												<small class="nav-kind nav-kind-class">class</small>
+											</a>
+										
+										</div>
+									
+					</section>
+				
+					<section class="nav-group">
 						<a class="nav-group-title" href="#graphics">Graphics</a>
 						
 										<div class="nav-file">
@@ -1019,20 +1043,20 @@
 										</div>
 									
 										<div class="nav-file">
-											<a class="nav-file-title" href="#native-sdlcanvasnativebackend-ts">SdlCanvasNativeBackend</a>
+											<a class="nav-file-title" href="#native-skianativebackend-ts">SkiaNativeBackend</a>
 											
-											<a class="nav-entry" href="#native-sdlcanvasnativebackendoptions">
-												<span>SdlCanvasNativeBackendOptions</span>
+											<a class="nav-entry" href="#native-skianativebackendoptions">
+												<span>SkiaNativeBackendOptions</span>
 												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
-											<a class="nav-entry" href="#native-makesdlcanvasnativebackendlayer">
-												<span>makeSdlCanvasNativeBackendLayer</span>
+											<a class="nav-entry" href="#native-makeskianativebackendlayer">
+												<span>makeSkiaNativeBackendLayer</span>
 												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
-											<a class="nav-entry" href="#native-makesdlcanvasnativeboundarylayer">
-												<span>makeSdlCanvasNativeBoundaryLayer</span>
+											<a class="nav-entry" href="#native-makeskianativeboundarylayer">
+												<span>makeSkiaNativeBoundaryLayer</span>
 												<small class="nav-kind nav-kind-const">const</small>
 											</a>
 										
@@ -1251,27 +1275,17 @@
 					</section>
 				
 					<section class="nav-group">
-						<a class="nav-group-title" href="#script">Script</a>
+						<a class="nav-group-title" href="#sequence">Sequence</a>
 						
 										<div class="nav-file nav-file-flat">
 											
-											<a class="nav-entry" href="#script-dialogueprogress">
-												<span>DialogueProgress</span>
-												<small class="nav-kind nav-kind-interface">interface</small>
-											</a>
-										
-											<a class="nav-entry" href="#script-dialoguescriptoptions">
-												<span>DialogueScriptOptions</span>
-												<small class="nav-kind nav-kind-interface">interface</small>
-											</a>
-										
-											<a class="nav-entry" href="#script-scriptevents">
-												<span>ScriptEvents</span>
+											<a class="nav-entry" href="#sequence-sequenceevents">
+												<span>SequenceEvents</span>
 												<small class="nav-kind nav-kind-class">class</small>
 											</a>
 										
-											<a class="nav-entry" href="#script-script">
-												<span>Script</span>
+											<a class="nav-entry" href="#sequence-sequence">
+												<span>Sequence</span>
 												<small class="nav-kind nav-kind-class">class</small>
 											</a>
 										
@@ -1387,11 +1401,12 @@ easier to keep growing.</p>
 <li>Scene composition primitives such as <a href="#scene-scenedefinition">SceneDefinition</a>,
 <a href="#scene-scenedirector">SceneDirector</a>, and <a href="#scene-sceneregistry">SceneRegistry</a></li>
 <li>Core gameplay services including <a href="#graphics-graphics">Graphics</a>, <a href="#input-input">Input</a>,
-<a href="#audio-audio">Audio</a>, <a href="#script-script">Script</a>, <a href="#ui-ui">Ui</a>, and <a href="#save-savecoordinator">SaveCoordinator</a></li>
+<a href="#audio-audio">Audio</a>, <a href="#sequence-sequence">Sequence</a>, <a href="#cutscene-cutscene">Cutscene</a>, <a href="#ui-ui">Ui</a>, and
+<a href="#save-savecoordinator">SaveCoordinator</a></li>
 <li>Supporting data models such as room content, save documents, camera state,
 input bindings, and audio cue definitions</li>
 <li>Native integration points such as <a href="#native-nativeboundary">NativeBoundary</a> and
-<a href="#native-makesdlcanvasnativeboundarylayer">makeSdlCanvasNativeBoundaryLayer</a> for playable desktop builds</li>
+<a href="#native-makeskianativeboundarylayer">makeSkiaNativeBoundaryLayer</a> for playable desktop builds</li>
 </ul>
 <h2 id="if-you-know-effect-you-already-know-a-lot">If you know Effect, you already know a lot</h2>
 <p>If you already think in terms of <code>Effect</code>, <code>Layer</code>, services, scopes, and
@@ -1403,7 +1418,10 @@ long-lived services:</p>
 <li><code>Graphics</code> records draw commands for the current frame</li>
 <li><code>Input</code> turns native keyboard and mouse events into stable action state</li>
 <li><code>Audio</code> manages music and overlapping sound effects as typed cues</li>
-<li><code>Script</code> coordinates timed sequences, dialogue, fades, and domain events</li>
+<li><code>Sequence</code> coordinates timed gameplay beats such as waits, scene switches,
+fades, flashes, and audio cues</li>
+<li><code>Cutscene</code> builds higher-level cinematic helpers on top of <code>Sequence</code> and
+<code>Ui</code></li>
 <li><code>Ui</code> helps with common text, menu, and dialogue presentation patterns</li>
 <li><code>SaveCoordinator</code> snapshots and restores participant state across save slots</li>
 </ul>
@@ -1423,7 +1441,7 @@ collection, frame presentation, and audio synchronization</li>
 your game describes what to draw for the current frame right now as a list
 of draw commands like &quot;draw this image here&quot; or &quot;draw this text here&quot;
 instead of maintaining a long-lived retained scene tree like a DOM</li>
-<li>camera math, script orchestration, save migration plumbing, scene stack
+<li>camera math, sequence orchestration, save migration plumbing, scene stack
 lifecycle, and typed error surfaces</li>
 <li>testability: most services can be exercised headlessly without opening a
 real window</li>
@@ -1493,7 +1511,7 @@ taking on a clear job:</p>
 <li>Expose a <code>NativeFrameSource</code> that steps gameplay and renders a frame.</li>
 <li>Use <a href="#runtime-makeruntimelayer">makeRuntimeLayer</a> or <a href="#runtime-makeenginelayer">makeEngineLayer</a> to compose the
 engine with your game's services.</li>
-<li>Use <a href="#native-makesdlcanvasnativeboundarylayer">makeSdlCanvasNativeBoundaryLayer</a> when you want a playable
+<li>Use <a href="#native-makeskianativeboundarylayer">makeSkiaNativeBoundaryLayer</a> when you want a playable
 native desktop window.</li>
 </ol>
 </div>
@@ -1533,6 +1551,11 @@ native desktop window.</li>
 									</div>
 									<h4>AudioCueKind</h4>
 									<div class="prose"><p>The cue categories understood by the engine.</p>
+<p>The engine understands two cue kinds: &quot;music&quot; and &quot;sfx&quot;.</p>
+<ul>
+<li>&quot;music&quot; cues are intended to play continuously and loop until stopped.</li>
+<li>&quot;sfx&quot; cues are intended to play once and then stop.</li>
+</ul>
 </div>
 								</article>
 							
@@ -1542,7 +1565,7 @@ native desktop window.</li>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#audio-audiocuedefinition">src/audio/Audio.ts:9</a>
+										<a class="doc-source" href="#audio-audiocuedefinition">src/audio/Audio.ts:15</a>
 									</div>
 									<h4>AudioCueDefinition</h4>
 									<div class="prose"><p>Declares a reusable authored audio cue.</p>
@@ -1555,7 +1578,7 @@ native desktop window.</li>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#audio-loadedaudiocue">src/audio/Audio.ts:18</a>
+										<a class="doc-source" href="#audio-loadedaudiocue">src/audio/Audio.ts:24</a>
 									</div>
 									<h4>LoadedAudioCue</h4>
 									<div class="prose"><p>A loaded cue paired with its resolved kind.</p>
@@ -1568,7 +1591,7 @@ native desktop window.</li>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#audio-audioplaybackoptions">src/audio/Audio.ts:23</a>
+										<a class="doc-source" href="#audio-audioplaybackoptions">src/audio/Audio.ts:29</a>
 									</div>
 									<h4>AudioPlaybackOptions</h4>
 									<div class="prose"><p>Optional playback overrides for an individual cue trigger.</p>
@@ -1581,7 +1604,7 @@ native desktop window.</li>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#audio-musicplayback">src/audio/Audio.ts:30</a>
+										<a class="doc-source" href="#audio-musicplayback">src/audio/Audio.ts:36</a>
 									</div>
 									<h4>MusicPlayback</h4>
 									<div class="prose"><p>The current music channel state.</p>
@@ -1594,7 +1617,7 @@ native desktop window.</li>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#audio-soundplayback">src/audio/Audio.ts:39</a>
+										<a class="doc-source" href="#audio-soundplayback">src/audio/Audio.ts:45</a>
 									</div>
 									<h4>SoundPlayback</h4>
 									<div class="prose"><p>A single overlapping sound-effect playback instance.</p>
@@ -1607,7 +1630,7 @@ native desktop window.</li>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#audio-audiosnapshot">src/audio/Audio.ts:44</a>
+										<a class="doc-source" href="#audio-audiosnapshot">src/audio/Audio.ts:50</a>
 									</div>
 									<h4>AudioSnapshot</h4>
 									<div class="prose"><p>A complete snapshot of authored mixer state.</p>
@@ -1620,7 +1643,7 @@ native desktop window.</li>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-class">class</span>
-										<a class="doc-source" href="#audio-audio">src/audio/Audio.ts:190</a>
+										<a class="doc-source" href="#audio-audio">src/audio/Audio.ts:196</a>
 									</div>
 									<h4>Audio</h4>
 									<div class="prose"><p>The engine's cue-driven audio service.</p>
@@ -1628,6 +1651,56 @@ native desktop window.</li>
 during play, instead of scattering file paths throughout gameplay logic. This
 keeps audio orchestration testable, deterministic, and portable across native
 backends.</p>
+</div>
+								</article>
+							
+							</div>
+						
+				</section>
+			
+				<section class="content-section module-section" id="cutscene">
+					<div class="section-kicker">Module</div>
+					<h2>Cutscene</h2>
+					
+							<div class="file-group-entries file-group-entries-flat">
+								
+								<article
+									class="doc-entry"
+									id="cutscene-dialogueprogress"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-interface">interface</span>
+										<a class="doc-source" href="#cutscene-dialogueprogress">src/cutscene/Cutscene.ts:19</a>
+									</div>
+									<h4>DialogueProgress</h4>
+									<div class="prose"><p>The current state of a prepared cutscene dialogue sequence.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="cutscene-dialoguescriptoptions"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-interface">interface</span>
+										<a class="doc-source" href="#cutscene-dialoguescriptoptions">src/cutscene/Cutscene.ts:27</a>
+									</div>
+									<h4>DialogueScriptOptions</h4>
+									<div class="prose"><p>Options for paginating authored dialogue text.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="cutscene-cutscene"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-class">class</span>
+										<a class="doc-source" href="#cutscene-cutscene">src/cutscene/Cutscene.ts:58</a>
+									</div>
+									<h4>Cutscene</h4>
+									<div class="prose"><p>A higher-level cinematic helper built on top of <a href="#sequence-sequence">Sequence</a> and
+<a href="#ui-ui">Ui</a>.</p>
 </div>
 								</article>
 							
@@ -2435,7 +2508,7 @@ responsible for:</p>
 <li>presenting frames and waiting for the next step</li>
 </ul>
 <p>Most application code does not implement this service directly. Instead it
-uses helpers such as <a href="#native-makesdlcanvasnativeboundarylayer">makeSdlCanvasNativeBoundaryLayer</a>.</p>
+uses helpers such as <a href="#native-makeskianativeboundarylayer">makeSkiaNativeBoundaryLayer</a>.</p>
 </div>
 								</article>
 							
@@ -2467,50 +2540,50 @@ directors into one step that returns a <a href="#graphics-framesnapshot">FrameSn
 								</div>
 							</section>
 						
-							<section class="file-group" id="native-sdlcanvasnativebackend-ts">
+							<section class="file-group" id="native-skianativebackend-ts">
 								<header class="file-group-header">
-									<p class="file-path">src/native/SdlCanvasNativeBackend.ts</p>
-									<h3>SdlCanvasNativeBackend</h3>
+									<p class="file-path">src/native/SkiaNativeBackend.ts</p>
+									<h3>SkiaNativeBackend</h3>
 								</header>
 								<div class="file-group-entries">
 									
 								<article
 									class="doc-entry"
-									id="native-sdlcanvasnativebackendoptions"
+									id="native-skianativebackendoptions"
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#native-sdlcanvasnativebackendoptions">src/native/SdlCanvasNativeBackend.ts:93</a>
+										<a class="doc-source" href="#native-skianativebackendoptions">src/native/SkiaNativeBackend.ts:38</a>
 									</div>
-									<h4>SdlCanvasNativeBackendOptions</h4>
-									<div class="prose"><p>Configuration for the SDL + Canvas native backend.</p>
+									<h4>SkiaNativeBackendOptions</h4>
+									<div class="prose"><p>Configuration for the Skia native backend.</p>
 </div>
 								</article>
 							
 								<article
 									class="doc-entry"
-									id="native-makesdlcanvasnativebackendlayer"
+									id="native-makeskianativebackendlayer"
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#native-makesdlcanvasnativebackendlayer">src/native/SdlCanvasNativeBackend.ts:473</a>
+										<a class="doc-source" href="#native-makeskianativebackendlayer">src/native/SkiaNativeBackend.ts:526</a>
 									</div>
-									<h4>makeSdlCanvasNativeBackendLayer</h4>
-									<div class="prose"><p>Builds the SDL + Canvas implementation of <code>NativeBackend</code>.</p>
+									<h4>makeSkiaNativeBackendLayer</h4>
+									<div class="prose"><p>Builds the Skia implementation of <code>NativeBackend</code>.</p>
 </div>
 								</article>
 							
 								<article
 									class="doc-entry"
-									id="native-makesdlcanvasnativeboundarylayer"
+									id="native-makeskianativeboundarylayer"
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#native-makesdlcanvasnativeboundarylayer">src/native/SdlCanvasNativeBackend.ts:995</a>
+										<a class="doc-source" href="#native-makeskianativeboundarylayer">src/native/SkiaNativeBackend.ts:1319</a>
 									</div>
-									<h4>makeSdlCanvasNativeBoundaryLayer</h4>
-									<div class="prose"><p>Builds a ready-to-use <a href="#native-nativeboundary">NativeBoundary</a> backed by SDL windowing and a
-Canvas renderer.</p>
+									<h4>makeSkiaNativeBoundaryLayer</h4>
+									<div class="prose"><p>Builds a ready-to-use <a href="#native-nativeboundary">NativeBoundary</a> backed by a Skia window and
+renderer.</p>
 </div>
 								</article>
 							
@@ -3080,61 +3153,35 @@ diagnostics.</p>
 						
 				</section>
 			
-				<section class="content-section module-section" id="script">
+				<section class="content-section module-section" id="sequence">
 					<div class="section-kicker">Module</div>
-					<h2>Script</h2>
+					<h2>Sequence</h2>
 					
 							<div class="file-group-entries file-group-entries-flat">
 								
 								<article
 									class="doc-entry"
-									id="script-dialogueprogress"
-								>
-									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#script-dialogueprogress">src/script/Script.ts:30</a>
-									</div>
-									<h4>DialogueProgress</h4>
-									<div class="prose"><p>The current state of a prepared dialogue sequence.</p>
-</div>
-								</article>
-							
-								<article
-									class="doc-entry"
-									id="script-dialoguescriptoptions"
-								>
-									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#script-dialoguescriptoptions">src/script/Script.ts:38</a>
-									</div>
-									<h4>DialogueScriptOptions</h4>
-									<div class="prose"><p>Options for paginating authored dialogue text.</p>
-</div>
-								</article>
-							
-								<article
-									class="doc-entry"
-									id="script-scriptevents"
+									id="sequence-sequenceevents"
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-class">class</span>
-										<a class="doc-source" href="#script-scriptevents">src/script/Script.ts:106</a>
+										<a class="doc-source" href="#sequence-sequenceevents">src/sequence/Sequence.ts:81</a>
 									</div>
-									<h4>ScriptEvents</h4>
-									<div class="prose"><p>A lightweight published-event journal for scripted sequences.</p>
+									<h4>SequenceEvents</h4>
+									<div class="prose"><p>A lightweight published-event journal for authored sequences.</p>
 </div>
 								</article>
 							
 								<article
 									class="doc-entry"
-									id="script-script"
+									id="sequence-sequence"
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-class">class</span>
-										<a class="doc-source" href="#script-script">src/script/Script.ts:170</a>
+										<a class="doc-source" href="#sequence-sequence">src/sequence/Sequence.ts:130</a>
 									</div>
-									<h4>Script</h4>
-									<div class="prose"><p>A convenience orchestration service for authored sequences.</p>
+									<h4>Sequence</h4>
+									<div class="prose"><p>A convenience orchestration service for authored gameplay beats over time.</p>
 </div>
 								</article>
 							
@@ -3282,6 +3329,8 @@ diagnostics.</p>
 		
 					<a href="#audio">Audio</a>
 				
+					<a href="#cutscene">Cutscene</a>
+				
 					<a href="#graphics">Graphics</a>
 				
 					<a href="#input">Input</a>
@@ -3296,7 +3345,7 @@ diagnostics.</p>
 				
 					<a href="#scene">Scene</a>
 				
-					<a href="#script">Script</a>
+					<a href="#sequence">Sequence</a>
 				
 					<a href="#ui">UI</a>
 				
