@@ -1,15 +1,41 @@
 import { Effect, Layer, Schema, ServiceMap } from "effect";
 
+/**
+ * Author-time description of a named clip.
+ *
+ * @public
+ *
+ * `Frame` is intentionally generic so the same helper can drive sprite-sheet
+ * frame indices, texture ids, or richer authored frame payloads.
+ *
+ * ```ts
+ * const walk = defineAnimationClip({
+ *   id: "walk",
+ *   frames: [0, 1, 2, 3],
+ *   framesPerSecond: 12,
+ * });
+ * ```
+ */
 export interface AnimationClip<Frame = number> {
 	readonly frames: ReadonlyArray<Frame>;
 	readonly framesPerSecond: number;
 	readonly id: string;
 }
 
+/** Playback behavior for the ends of a clip. `loop` wraps, `once` stops. @public */
 export type AnimationPlaybackMode = "loop" | "once";
 
+/** Direction the clip advances through its `frames` array. @public */
 export type AnimationDirection = "forward" | "reverse";
 
+/**
+ * Runtime state for a playing clip.
+ *
+ * @public
+ *
+ * This is a pure data value, so gameplay code can keep it in its own state
+ * service and advance it each tick without depending on a runtime singleton.
+ */
 export interface AnimationPlaybackState<Frame = number> {
 	readonly clip: AnimationClip<Frame>;
 	readonly direction: AnimationDirection;
@@ -20,6 +46,14 @@ export interface AnimationPlaybackState<Frame = number> {
 	readonly speed: number;
 }
 
+/**
+ * Result of switching from one clip to another.
+ *
+ * @public
+ *
+ * `preservePlayback` keeps direction, mode, speed, and elapsed playback when a
+ * state machine wants the next clip to inherit momentum from the previous one.
+ */
 export interface AnimationTransition<Frame = number> {
 	readonly nextClipId: string;
 	readonly preservePlayback?: boolean;
@@ -33,6 +67,7 @@ export class AnimationClipNotFoundError extends Schema.TaggedErrorClass<Animatio
 	},
 ) {}
 
+/** Runtime state for a scalar tween created with {@link startScalarTween}. @public */
 export interface ScalarTweenState {
 	readonly durationSeconds: number;
 	readonly elapsedSeconds: number;
@@ -42,11 +77,13 @@ export interface ScalarTweenState {
 	readonly to: number;
 }
 
+/** Minimal 2D vector used by the tween helpers in this module. @public */
 export interface Vec2 {
 	readonly x: number;
 	readonly y: number;
 }
 
+/** Runtime state for a 2D tween created with {@link startVec2Tween}. @public */
 export interface Vec2TweenState {
 	readonly durationSeconds: number;
 	readonly elapsedSeconds: number;
@@ -56,10 +93,12 @@ export interface Vec2TweenState {
 	readonly to: Vec2;
 }
 
+/** Supported tween easing names. `linear` is constant speed. `ease-in-out-quad` eases both ends. @public */
 export type TweenEasing = "ease-in-out-quad" | "linear";
 
-const clamp = (value: number, minimum: number, maximum: number): number =>
-	Math.min(maximum, Math.max(minimum, value));
+function clampValue(value: number, minimum: number, maximum: number): number {
+	return Math.min(maximum, Math.max(minimum, value));
+}
 
 const normalizePlaybackIndex = (
 	frameCount: number,
@@ -73,80 +112,122 @@ const normalizePlaybackIndex = (
 	return wrappedIndex < 0 ? wrappedIndex + frameCount : wrappedIndex;
 };
 
-const playbackRate = (direction: AnimationDirection, speed: number): number =>
-	(direction === "forward" ? 1 : -1) * Math.max(speed, 0);
+function getPlaybackRate(direction: AnimationDirection, speed: number): number {
+	return (direction === "forward" ? 1 : -1) * Math.max(speed, 0);
+}
 
-const applyEasing = (easing: TweenEasing, t: number): number => {
+function getEasedValue(easing: TweenEasing, t: number): number {
 	switch (easing) {
 		case "ease-in-out-quad":
 			return t < 0.5 ? 2 * t * t : 1 - (-2 * t + 2) ** 2 / 2;
 		case "linear":
 			return t;
 	}
-};
+}
 
-export const defineAnimationClip = <Frame>(
+/**
+ * Identity helper that preserves clip inference at the call site.
+ *
+ * @public
+ */
+export function defineAnimationClip<Frame>(
 	clip: AnimationClip<Frame>,
-): AnimationClip<Frame> => clip;
+): AnimationClip<Frame> {
+	return clip;
+}
 
-export const startAnimation = <Frame>(
+/**
+ * Creates initial playback state for a clip.
+ *
+ * @public
+ *
+ * ```ts
+ * const state = startAnimation(walk, { mode: "loop", speed: 1 });
+ * ```
+ */
+export function startAnimation<Frame>(
 	clip: AnimationClip<Frame>,
 	options?: {
 		readonly direction?: AnimationDirection;
 		readonly mode?: AnimationPlaybackMode;
 		readonly speed?: number;
 	},
-): AnimationPlaybackState<Frame> => ({
-	clip,
-	direction: options?.direction ?? "forward",
-	elapsedSeconds: 0,
-	frameIndex:
-		(options?.direction ?? "forward") === "forward"
-			? 0
-			: Math.max(clip.frames.length - 1, 0),
-	isPlaying: true,
-	mode: options?.mode ?? "loop",
-	speed: options?.speed ?? 1,
-});
+): AnimationPlaybackState<Frame> {
+	return {
+		clip,
+		direction: options?.direction ?? "forward",
+		elapsedSeconds: 0,
+		frameIndex:
+			(options?.direction ?? "forward") === "forward"
+				? 0
+				: Math.max(clip.frames.length - 1, 0),
+		isPlaying: true,
+		mode: options?.mode ?? "loop",
+		speed: options?.speed ?? 1,
+	};
+}
 
-export const currentAnimationFrame = <Frame>(
+/** Reads the frame payload currently selected by the playback state. @public */
+export function getCurrentAnimationFrame<Frame>(
 	state: AnimationPlaybackState<Frame>,
-): Frame => state.clip.frames[state.frameIndex] as Frame;
+): Frame {
+	return state.clip.frames[state.frameIndex] as Frame;
+}
 
-export const pauseAnimation = <Frame>(
+/** Returns a copy of the state with playback halted at the current frame. @public */
+export function pauseAnimation<Frame>(
 	state: AnimationPlaybackState<Frame>,
-): AnimationPlaybackState<Frame> => ({
-	...state,
-	isPlaying: false,
-});
+): AnimationPlaybackState<Frame> {
+	return {
+		...state,
+		isPlaying: false,
+	};
+}
 
-export const resumeAnimation = <Frame>(
+/** Returns a copy of the state with playback resumed. @public */
+export function resumeAnimation<Frame>(
 	state: AnimationPlaybackState<Frame>,
-): AnimationPlaybackState<Frame> => ({
-	...state,
-	isPlaying: true,
-});
+): AnimationPlaybackState<Frame> {
+	return {
+		...state,
+		isPlaying: true,
+	};
+}
 
-export const setAnimationDirection = <Frame>(
+/** Switches only the playback direction without resetting elapsed time. @public */
+export function setAnimationDirection<Frame>(
 	state: AnimationPlaybackState<Frame>,
 	direction: AnimationDirection,
-): AnimationPlaybackState<Frame> => ({
-	...state,
-	direction,
-});
+): AnimationPlaybackState<Frame> {
+	return {
+		...state,
+		direction,
+	};
+}
 
-export const setAnimationSpeed = <Frame>(
+/** Clamps the speed to zero or above and keeps the rest of the state intact. @public */
+export function setAnimationSpeed<Frame>(
 	state: AnimationPlaybackState<Frame>,
 	speed: number,
-): AnimationPlaybackState<Frame> => ({
-	...state,
-	speed: Math.max(speed, 0),
-});
+): AnimationPlaybackState<Frame> {
+	return {
+		...state,
+		speed: Math.max(speed, 0),
+	};
+}
 
-export const advanceAnimation = <Frame>(
+/**
+ * Advances playback by a fixed amount of simulated time.
+ *
+ * @public
+ *
+ * Most games call this once per update tick with the same `deltaSeconds` value
+ * they use for their gameplay simulation.
+ */
+export function advanceAnimation<Frame>(
 	state: AnimationPlaybackState<Frame>,
 	deltaSeconds: number,
-): AnimationPlaybackState<Frame> => {
+): AnimationPlaybackState<Frame> {
 	if (!state.isPlaying || state.clip.frames.length <= 1 || deltaSeconds <= 0) {
 		return state;
 	}
@@ -154,7 +235,7 @@ export const advanceAnimation = <Frame>(
 	const frameDurationSeconds = 1 / state.clip.framesPerSecond;
 	const totalFramesAdvanced =
 		(state.elapsedSeconds +
-			deltaSeconds * playbackRate(state.direction, state.speed)) /
+			deltaSeconds * getPlaybackRate(state.direction, state.speed)) /
 		frameDurationSeconds;
 	const nextFrameIndex = Math.trunc(totalFramesAdvanced);
 	const tentativeFrameIndex =
@@ -162,7 +243,7 @@ export const advanceAnimation = <Frame>(
 		nextFrameIndex;
 
 	if (state.mode === "once") {
-		const clampedFrameIndex = clamp(
+		const clampedFrameIndex = clampValue(
 			tentativeFrameIndex,
 			0,
 			state.clip.frames.length - 1,
@@ -176,7 +257,7 @@ export const advanceAnimation = <Frame>(
 			...state,
 			elapsedSeconds:
 				state.elapsedSeconds +
-				deltaSeconds * playbackRate(state.direction, state.speed),
+				deltaSeconds * getPlaybackRate(state.direction, state.speed),
 			frameIndex: clampedFrameIndex,
 			isPlaying: isComplete ? false : state.isPlaying,
 		};
@@ -186,69 +267,89 @@ export const advanceAnimation = <Frame>(
 		...state,
 		elapsedSeconds:
 			state.elapsedSeconds +
-			deltaSeconds * playbackRate(state.direction, state.speed),
+			deltaSeconds * getPlaybackRate(state.direction, state.speed),
 		frameIndex: normalizePlaybackIndex(
 			state.clip.frames.length,
 			tentativeFrameIndex,
 		),
 	};
-};
+}
 
-export const transitionAnimation = <Frame>(
+/**
+ * Builds the next clip state when an animation state machine changes clips.
+ *
+ * @public
+ */
+export function transitionAnimation<Frame>(
 	currentState: AnimationPlaybackState<Frame>,
 	nextClip: AnimationClip<Frame>,
 	options?: {
 		readonly preservePlayback?: boolean;
 	},
-): AnimationTransition<Frame> => ({
-	nextClipId: nextClip.id,
-	state:
-		options?.preservePlayback === true
-			? {
-					...startAnimation(nextClip, {
+): AnimationTransition<Frame> {
+	return {
+		nextClipId: nextClip.id,
+		state:
+			options?.preservePlayback === true
+				? {
+						...startAnimation(nextClip, {
+							direction: currentState.direction,
+							mode: currentState.mode,
+							speed: currentState.speed,
+						}),
+						elapsedSeconds: currentState.elapsedSeconds,
+					}
+				: startAnimation(nextClip, {
 						direction: currentState.direction,
 						mode: currentState.mode,
 						speed: currentState.speed,
 					}),
-					elapsedSeconds: currentState.elapsedSeconds,
-				}
-			: startAnimation(nextClip, {
-					direction: currentState.direction,
-					mode: currentState.mode,
-					speed: currentState.speed,
-				}),
-	preservePlayback: options?.preservePlayback ?? false,
-});
+		preservePlayback: options?.preservePlayback ?? false,
+	};
+}
 
-export const startScalarTween = (
+/**
+ * Creates a tween that moves from one scalar value to another over time.
+ *
+ * @public
+ */
+export function startScalarTween(
 	from: number,
 	to: number,
 	durationSeconds: number,
 	easing: TweenEasing = "linear",
-): ScalarTweenState => ({
-	durationSeconds: Math.max(durationSeconds, 0),
-	elapsedSeconds: 0,
-	easing,
-	from,
-	isComplete: durationSeconds <= 0,
-	to,
-});
+): ScalarTweenState {
+	return {
+		durationSeconds: Math.max(durationSeconds, 0),
+		elapsedSeconds: 0,
+		easing,
+		from,
+		isComplete: durationSeconds <= 0,
+		to,
+	};
+}
 
-export const scalarTweenValue = (state: ScalarTweenState): number => {
+/** Evaluates the current scalar tween value. @public */
+export function getScalarTweenValue(state: ScalarTweenState): number {
 	if (state.durationSeconds <= 0) {
 		return state.to;
 	}
 
-	const progress = clamp(state.elapsedSeconds / state.durationSeconds, 0, 1);
-	return (
-		state.from + (state.to - state.from) * applyEasing(state.easing, progress)
+	const progress = clampValue(
+		state.elapsedSeconds / state.durationSeconds,
+		0,
+		1,
 	);
-};
+	return (
+		state.from + (state.to - state.from) * getEasedValue(state.easing, progress)
+	);
+}
 
-export const advanceScalarTween = (
+/** Advances a scalar tween by `deltaSeconds`. @public */
+export function advanceScalarTween(
 	state: ScalarTweenState,
 	deltaSeconds: number,
-): ScalarTweenState => {
+): ScalarTweenState {
 	if (state.isComplete || deltaSeconds <= 0) {
 		return state;
 	}
@@ -263,40 +364,53 @@ export const advanceScalarTween = (
 		elapsedSeconds,
 		isComplete: elapsedSeconds >= state.durationSeconds,
 	};
-};
+}
 
-export const startVec2Tween = (
+/**
+ * Creates a tween between two 2D points.
+ *
+ * @public
+ */
+export function startVec2Tween(
 	from: Vec2,
 	to: Vec2,
 	durationSeconds: number,
 	easing: TweenEasing = "linear",
-): Vec2TweenState => ({
-	durationSeconds: Math.max(durationSeconds, 0),
-	elapsedSeconds: 0,
-	easing,
-	from,
-	isComplete: durationSeconds <= 0,
-	to,
-});
+): Vec2TweenState {
+	return {
+		durationSeconds: Math.max(durationSeconds, 0),
+		elapsedSeconds: 0,
+		easing,
+		from,
+		isComplete: durationSeconds <= 0,
+		to,
+	};
+}
 
-export const vec2TweenValue = (state: Vec2TweenState): Vec2 => {
+/** Evaluates the current 2D tween value. @public */
+export function getVec2TweenValue(state: Vec2TweenState): Vec2 {
 	if (state.durationSeconds <= 0) {
 		return state.to;
 	}
 
-	const progress = clamp(state.elapsedSeconds / state.durationSeconds, 0, 1);
-	const easedProgress = applyEasing(state.easing, progress);
+	const progress = clampValue(
+		state.elapsedSeconds / state.durationSeconds,
+		0,
+		1,
+	);
+	const easedProgress = getEasedValue(state.easing, progress);
 
 	return {
 		x: state.from.x + (state.to.x - state.from.x) * easedProgress,
 		y: state.from.y + (state.to.y - state.from.y) * easedProgress,
 	};
-};
+}
 
-export const advanceVec2Tween = (
+/** Advances a 2D tween by `deltaSeconds`. @public */
+export function advanceVec2Tween(
 	state: Vec2TweenState,
 	deltaSeconds: number,
-): Vec2TweenState => {
+): Vec2TweenState {
 	if (state.isComplete || deltaSeconds <= 0) {
 		return state;
 	}
@@ -311,20 +425,27 @@ export const advanceVec2Tween = (
 		elapsedSeconds,
 		isComplete: elapsedSeconds >= state.durationSeconds,
 	};
-};
+}
 
-export const fadeTween = (
+export function createFadeTween(
 	fromOpacity: number,
 	toOpacity: number,
 	durationSeconds: number,
-): ScalarTweenState =>
-	startScalarTween(fromOpacity, toOpacity, durationSeconds, "linear");
+): ScalarTweenState {
+	return startScalarTween(fromOpacity, toOpacity, durationSeconds, "linear");
+}
 
-export const flashTween = (
+export function createFlashTween(
 	peakIntensity: number,
 	durationSeconds: number,
-): ScalarTweenState =>
-	startScalarTween(peakIntensity, 0, durationSeconds, "ease-in-out-quad");
+): ScalarTweenState {
+	return startScalarTween(
+		peakIntensity,
+		0,
+		durationSeconds,
+		"ease-in-out-quad",
+	);
+}
 
 export class AnimationLibrary extends ServiceMap.Service<
 	AnimationLibrary,

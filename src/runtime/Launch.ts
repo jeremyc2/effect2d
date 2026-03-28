@@ -18,8 +18,11 @@ import { RuntimeClock } from "./RuntimeClock.ts";
  *
  * Use this when you already know which additional services you want to provide
  * yourself and only need the validated {@link Engine} service.
+ *
+ * `makeRuntimeLayer` is the better default when you also want the standard
+ * random source and fixed-step runtime clock.
  */
-export const makeEngineLayer = (
+export function makeEngineLayer(
 	config: EngineConfig,
 	{
 		nativeBoundaryLayer,
@@ -29,8 +32,9 @@ export const makeEngineLayer = (
 			EngineLaunchError
 		>;
 	},
-): Layer.Layer<Engine, EngineConfigurationError | EngineLaunchError> =>
-	Engine.layer(config).pipe(Layer.provide(nativeBoundaryLayer));
+): Layer.Layer<Engine, EngineConfigurationError | EngineLaunchError> {
+	return Engine.layer(config).pipe(Layer.provide(nativeBoundaryLayer));
+}
 
 /**
  * Builds the standard runtime layer for most games.
@@ -41,8 +45,14 @@ export const makeEngineLayer = (
  * validated {@link Engine}, a deterministic {@link RandomSource}, and a
  * fixed-step {@link RuntimeClock}. Most games merge this layer with their own
  * state, scene, input, audio, graphics, and native frame services.
+ *
+ * ```ts
+ * const runtimeLayer = makeRuntimeLayer(engineConfig, {
+ *   nativeBoundaryLayer,
+ * });
+ * ```
  */
-export const makeRuntimeLayer = (
+export function makeRuntimeLayer(
 	config: EngineConfig,
 	{
 		nativeBoundaryLayer,
@@ -55,13 +65,13 @@ export const makeRuntimeLayer = (
 ): Layer.Layer<
 	Engine | RandomSource | RuntimeClock,
 	EngineConfigurationError | EngineLaunchError
-> => {
+> {
 	const engineLayer = makeEngineLayer(config, { nativeBoundaryLayer });
 	const runtimeClockLayer = RuntimeClock.layer(config.targetTicksPerSecond);
 	const randomSourceLayer = RandomSource.layer(config.randomSeed);
 
 	return Layer.mergeAll(engineLayer, runtimeClockLayer, randomSourceLayer);
-};
+}
 
 /**
  * Launches the active {@link Engine} from the environment.
@@ -86,7 +96,8 @@ export const engineProgram: Effect.Effect<void, EngineLaunchError, Engine> =
  * This is primarily useful for reproducible demos, tests, recordings, and
  * deterministic debugging sessions.
  */
-export const seededEngineProgram = (
+export function seededEngineProgram(
 	config: EngineConfig,
-): Effect.Effect<void, EngineLaunchError, Engine> =>
-	withRandomSeed(engineProgram, config.randomSeed);
+): Effect.Effect<void, EngineLaunchError, Engine> {
+	return withRandomSeed(engineProgram, config.randomSeed);
+}

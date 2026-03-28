@@ -16,10 +16,11 @@ import {
 	SaveSlotNotFoundError,
 } from "./SaveError.ts";
 
-const toDecodeError = (error: unknown): SaveDocumentDecodeError =>
-	new SaveDocumentDecodeError({
+function createDecodeError(error: unknown): SaveDocumentDecodeError {
+	return new SaveDocumentDecodeError({
 		details: error instanceof Error ? error.message : String(error),
 	});
+}
 
 const applyMigrations = Effect.fn("SaveCoordinator.applyMigrations")(function* (
 	document: SaveDocument,
@@ -64,6 +65,10 @@ const applyMigrations = Effect.fn("SaveCoordinator.applyMigrations")(function* (
  * Configuration for building a {@link SaveCoordinator}.
  *
  * @public
+ *
+ * `participants` is the important part: one entry per state area you want to
+ * capture and restore. `migrations` is only needed after you start evolving
+ * persisted formats across released versions.
  */
 export interface SaveCoordinatorOptions {
 	readonly initialDocument?: SaveDocument;
@@ -86,6 +91,13 @@ export interface SaveCoordinatorOptions {
  * - restoring participant state from a slot
  * - importing old documents through migrations
  * - exposing typed failures when documents are missing or incompatible
+ *
+ * ```ts
+ * const saveLayer = SaveCoordinator.layer({
+ *   version: 1,
+ *   participants: [playerSaveParticipant, worldSaveParticipant],
+ * });
+ * ```
  */
 export class SaveCoordinator extends ServiceMap.Service<
 	SaveCoordinator,
@@ -112,7 +124,7 @@ export class SaveCoordinator extends ServiceMap.Service<
 	static readonly layer = ({
 		initialDocument,
 		migrations = [],
-		nowMillis = () => Date.now(),
+		nowMillis = () => Math.round(performance.timeOrigin + performance.now()),
 		participants,
 		version,
 	}: SaveCoordinatorOptions) =>
@@ -196,7 +208,7 @@ export class SaveCoordinator extends ServiceMap.Service<
 					function* (document: unknown) {
 						const decodedDocument = yield* Schema.decodeUnknownEffect(
 							SaveDocumentSchema,
-						)(document).pipe(Effect.mapError(toDecodeError));
+						)(document).pipe(Effect.mapError(createDecodeError));
 						const migratedDocument =
 							decodedDocument.version === version
 								? decodedDocument

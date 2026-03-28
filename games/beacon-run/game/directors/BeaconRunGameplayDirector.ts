@@ -5,10 +5,10 @@ import {
 	CollisionWorld,
 	DebugOverlay,
 	EngineLogger,
+	getRoomObjectById,
 	Input,
 	type InvalidLogMessageError,
 	type OverlayStackUnderflowError,
-	roomObjectById,
 	SceneDirector,
 	type SceneNotFoundError,
 	type SceneStackEmptyError,
@@ -29,27 +29,29 @@ const scoutBodyId = "beacon-run-scout";
 const exitBodyId = "beacon-run-exit";
 const beaconBodyId = "beacon-run-beacon";
 
-const aabbBody = (
+function createAabbBody(
 	id: string,
 	group: string,
 	position: CameraVector,
 	size: { readonly height: number; readonly width: number },
 	isTrigger = true,
-): CollisionBody => ({
-	group,
-	id,
-	isTrigger,
-	mask: ["player"],
-	shape: {
-		kind: "aabb",
+): CollisionBody {
+	return {
+		group,
+		id,
+		isTrigger,
+		mask: ["player"],
 		shape: {
-			height: size.height,
-			width: size.width,
-			x: position.x,
-			y: position.y,
+			kind: "aabb",
+			shape: {
+				height: size.height,
+				width: size.width,
+				x: position.x,
+				y: position.y,
+			},
 		},
-	},
-});
+	};
+}
 
 type BeaconRunGameplayDirectorFailure =
 	| InvalidLogMessageError
@@ -61,21 +63,22 @@ type BeaconRunGameplayDirectorFailure =
 	| UnknownInputActionError
 	| WrongAudioCueKindError;
 
-const clamp = (value: number, minimum: number, maximum: number): number =>
-	Math.max(minimum, Math.min(maximum, value));
+function clampValue(value: number, minimum: number, maximum: number): number {
+	return Math.max(minimum, Math.min(maximum, value));
+}
 
-const roomPixelSize = (room: {
+function getRoomPixelSize(room: {
 	readonly tilePlanes: ReadonlyArray<{
 		readonly width: number;
 		readonly height: number;
 	}>;
-}) => {
+}) {
 	const terrainPlane = room.tilePlanes[0];
 	return {
 		height: (terrainPlane?.height ?? 6) * tileSize,
 		width: (terrainPlane?.width ?? 8) * tileSize,
 	};
-};
+}
 
 const clampScoutPosition = (
 	room: {
@@ -86,10 +89,10 @@ const clampScoutPosition = (
 	},
 	position: CameraVector,
 ): CameraVector => {
-	const roomSize = roomPixelSize(room);
+	const roomSize = getRoomPixelSize(room);
 	return {
-		x: clamp(position.x, 0, Math.max(0, roomSize.width - scoutSize)),
-		y: clamp(position.y, 0, Math.max(0, roomSize.height - scoutSize)),
+		x: clampValue(position.x, 0, Math.max(0, roomSize.width - scoutSize)),
+		y: clampValue(position.y, 0, Math.max(0, roomSize.height - scoutSize)),
 	};
 };
 
@@ -136,11 +139,11 @@ export class BeaconRunGameplayDirector extends ServiceMap.Service<
 				const currentRoom = yield* beaconRunRoomState.snapshot;
 				const expeditionSnapshot = yield* expeditionState.snapshot;
 				const scoutSnapshot = yield* scoutState.snapshot;
-				const exitZone = roomObjectById(currentRoom, "to-shrine-room");
-				const beacon = roomObjectById(currentRoom, "north-beacon");
+				const exitZone = getRoomObjectById(currentRoom, "to-shrine-room");
+				const beacon = getRoomObjectById(currentRoom, "north-beacon");
 
 				const bodies: Array<CollisionBody> = [
-					aabbBody(
+					createAabbBody(
 						scoutBodyId,
 						"player",
 						scoutSnapshot.position,
@@ -151,7 +154,7 @@ export class BeaconRunGameplayDirector extends ServiceMap.Service<
 
 				if (exitZone !== undefined) {
 					bodies.push(
-						aabbBody(
+						createAabbBody(
 							exitBodyId,
 							"room-exit",
 							{ x: exitZone.x, y: exitZone.y },
@@ -165,7 +168,7 @@ export class BeaconRunGameplayDirector extends ServiceMap.Service<
 					!expeditionSnapshot.litBeaconIds.includes("north-beacon")
 				) {
 					bodies.push(
-						aabbBody(
+						createAabbBody(
 							beaconBodyId,
 							"beacon",
 							{ x: beacon.x, y: beacon.y },

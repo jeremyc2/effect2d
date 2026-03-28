@@ -1,15 +1,15 @@
 import { describe, expect, test } from "bun:test";
 import {
 	followCameraTarget,
+	getScreenPositionFromWorld,
+	getWorldPositionFromScreen,
 	makeCameraState,
-	screenToWorld,
 	setCameraBounds,
 	setCameraPosition,
 	setCameraZoom,
 	startCameraShake,
-	stepCameraFollow,
-	stepCameraShake,
-	worldToScreen,
+	updateCameraFollow,
+	updateCameraShake,
 } from "./Camera.ts";
 
 describe("Camera", () => {
@@ -22,11 +22,11 @@ describe("Camera", () => {
 			2,
 		);
 
-		expect(worldToScreen(camera, { x: 20, y: 30 })).toEqual({
+		expect(getScreenPositionFromWorld(camera, { x: 20, y: 30 })).toEqual({
 			x: 180,
 			y: 110,
 		});
-		expect(screenToWorld(camera, { x: 180, y: 110 })).toEqual({
+		expect(getWorldPositionFromScreen(camera, { x: 180, y: 110 })).toEqual({
 			x: 20,
 			y: 30,
 		});
@@ -50,7 +50,7 @@ describe("Camera", () => {
 	});
 
 	test("follows a target and keeps that target clamped to bounds", () => {
-		const followed = stepCameraFollow(
+		const followed = updateCameraFollow(
 			followCameraTarget(
 				setCameraBounds(makeCameraState(), {
 					maxX: 30,
@@ -70,8 +70,8 @@ describe("Camera", () => {
 
 	test("advances and expires camera shake over time", () => {
 		const shaken = startCameraShake(makeCameraState(), 6, 1);
-		const midShake = stepCameraShake(shaken, 0.5);
-		const finishedShake = stepCameraShake(midShake, 0.5);
+		const midShake = updateCameraShake(shaken, 0.5);
+		const finishedShake = updateCameraShake(midShake, 0.5);
 
 		expect(midShake.shake).not.toBeNull();
 		expect(finishedShake.shake).toBeNull();

@@ -5,6 +5,14 @@
  *
  * In most projects you start from {@link defaultEngineConfig} and override only
  * the fields that are specific to your game.
+ *
+ * ```ts
+ * const engineConfig: EngineConfig = {
+ *   ...defaultEngineConfig,
+ *   gameId: "beacon-run",
+ *   startScene: "title",
+ * };
+ * ```
  */
 export interface EngineConfig {
 	/** A stable identifier used for save data, diagnostics, and launch context. */

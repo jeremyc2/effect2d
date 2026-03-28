@@ -1,7 +1,7 @@
 import { Effect, Layer, ServiceMap } from "effect";
 import type { RoomContent } from "./MapContent.ts";
 import { MapValidationError } from "./MapError.ts";
-import { roomObjectById as roomObjectByIdInContent } from "./MapQueries.ts";
+import { getRoomObjectById as getRoomObjectByIdInContent } from "./MapQueries.ts";
 import { validateRoom } from "./MapValidation.ts";
 
 /**
@@ -15,7 +15,7 @@ export class MapRepository extends ServiceMap.Service<
 		readonly loadRoom: (
 			roomId: string,
 		) => Effect.Effect<RoomContent, MapValidationError>;
-		readonly roomObjectById: (
+		readonly getRoomObjectById: (
 			roomId: string,
 			objectId: string,
 		) => Effect.Effect<
@@ -49,10 +49,10 @@ export class MapRepository extends ServiceMap.Service<
 					return room;
 				});
 
-				const roomObjectById = Effect.fn("MapRepository.roomObjectById")(
+				const getRoomObjectById = Effect.fn("MapRepository.getRoomObjectById")(
 					function* (roomId: string, objectId: string) {
 						const room = yield* loadRoom(roomId);
-						const objectEntry = roomObjectByIdInContent(room, objectId);
+						const objectEntry = getRoomObjectByIdInContent(room, objectId);
 
 						if (objectEntry === undefined) {
 							return yield* new MapValidationError({
@@ -66,8 +66,8 @@ export class MapRepository extends ServiceMap.Service<
 				);
 
 				return MapRepository.of({
+					getRoomObjectById,
 					loadRoom,
-					roomObjectById,
 				});
 			}),
 		);

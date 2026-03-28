@@ -4,6 +4,13 @@ This document turns the project glossary into practical naming guidance for code
 
 The goal is to keep names aligned with [UBIQUITOUS_LANGUAGE.md](../UBIQUITOUS_LANGUAGE.md) so we do not accidentally import web-app language into the engine.
 
+## Function And Method Naming
+
+- Use `function` declarations for module top-level functions instead of `const name = (...) => ...`.
+- Top-level utility functions should start with a verb such as `get`, `set`, `create`, `update`, `is`, `has`, `does`, or `format`.
+- Use `method` only for public callable members on Effect services.
+- Service methods should also prefer verb-led names when they perform work or read data.
+
 ## Prefer Game-Engine Terms
 
 Use:

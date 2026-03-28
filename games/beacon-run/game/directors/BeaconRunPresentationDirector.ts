@@ -4,8 +4,8 @@ import {
 	Graphics,
 	type GraphicsFrameNotOpenError,
 	type GraphicsTransformStackUnderflowError,
+	getRoomObjectById,
 	RuntimeClock,
-	roomObjectById,
 	SceneDirector,
 	type SceneStackEmptyError,
 	Ui,
@@ -42,7 +42,7 @@ const worldBackground = {
 	red: 0.1,
 };
 
-const tileColor = (tileId: number) => {
+function getTileColor(tileId: number) {
 	switch (tileId) {
 		case 0:
 			return { alpha: 1, blue: 0.2, green: 0.22, red: 0.16 };
@@ -55,15 +55,17 @@ const tileColor = (tileId: number) => {
 		default:
 			return { alpha: 1, blue: 0.22, green: 0.12, red: 0.3 };
 	}
-};
+}
 
-const worldToViewport = (position: {
+function getViewportPositionFromWorld(position: {
 	readonly x: number;
 	readonly y: number;
-}) => ({
-	x: playfield.x + position.x,
-	y: playfield.y + position.y,
-});
+}) {
+	return {
+		x: playfield.x + position.x,
+		y: playfield.y + position.y,
+	};
+}
 
 type BeaconRunPresentationDirectorFailure =
 	| GraphicsFrameNotOpenError
@@ -171,46 +173,46 @@ export class BeaconRunPresentationDirector extends ServiceMap.Service<
 							}
 
 							yield* graphics.drawRectangle(
-								worldToViewport({ x: x * 16, y: y * 16 }),
+								getViewportPositionFromWorld({ x: x * 16, y: y * 16 }),
 								{ height: 16, width: 16 },
 								"fill",
-								tileColor(tile),
+								getTileColor(tile),
 							);
 						}
 					}
 				}
 
-				const beacon = roomObjectById(room, "north-beacon");
+				const beacon = getRoomObjectById(room, "north-beacon");
 				if (beacon !== undefined) {
 					yield* graphics.drawImage(
 						expeditionSnapshot.litBeaconIds.includes("north-beacon")
 							? "beacon-lit"
 							: "beacon-unlit",
-						worldToViewport({ x: beacon.x, y: beacon.y }),
+						getViewportPositionFromWorld({ x: beacon.x, y: beacon.y }),
 						{ height: beacon.height, width: beacon.width },
 					);
 				}
 
 				yield* graphics.drawImage(
 					"scout-idle",
-					worldToViewport(scoutSnapshot.position),
+					getViewportPositionFromWorld(scoutSnapshot.position),
 					{
 						height: 16,
 						width: 16,
 					},
 				);
 
-				const exitZone = roomObjectById(room, "to-shrine-room");
+				const exitZone = getRoomObjectById(room, "to-shrine-room");
 				if (exitZone !== undefined) {
 					yield* graphics.drawRectangle(
-						worldToViewport({ x: exitZone.x, y: exitZone.y }),
+						getViewportPositionFromWorld({ x: exitZone.x, y: exitZone.y }),
 						{ height: exitZone.height, width: exitZone.width },
 						"stroke",
 						{ alpha: 0.95, blue: 0.92, green: 0.92, red: 0.92 },
 					);
 					yield* ui.drawTextBlock({
 						fontId: "ui-body",
-						position: worldToViewport({
+						position: getViewportPositionFromWorld({
 							x: Math.max(0, exitZone.x - 10),
 							y: Math.max(0, exitZone.y - 14),
 						}),

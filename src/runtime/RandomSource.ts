@@ -4,6 +4,9 @@ import { Effect, Layer, Random, ServiceMap } from "effect";
  * A thin deterministic randomness service for authored gameplay logic.
  *
  * @public
+ *
+ * Use this instead of calling `Math.random()` directly when you want gameplay
+ * tests and recordings to be reproducible from a seed.
  */
 export class RandomSource extends ServiceMap.Service<
 	RandomSource,
@@ -43,9 +46,13 @@ export class RandomSource extends ServiceMap.Service<
  * Runs an effect with a temporary deterministic random seed.
  *
  * @public
+ *
+ * This is useful for one-off reproducible operations without rebuilding the
+ * surrounding runtime layer.
  */
-export const withRandomSeed = <Success, Failure, Requirements>(
+export function withRandomSeed<Success, Failure, Requirements>(
 	effect: Effect.Effect<Success, Failure, Requirements>,
 	seed?: number | string,
-): Effect.Effect<Success, Failure, Requirements> =>
-	seed === undefined ? effect : effect.pipe(Random.withSeed(seed));
+): Effect.Effect<Success, Failure, Requirements> {
+	return seed === undefined ? effect : effect.pipe(Random.withSeed(seed));
+}

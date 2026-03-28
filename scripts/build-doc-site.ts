@@ -440,7 +440,7 @@ const renderSidebar = (modules: ReadonlyArray<ModuleDocGroup>): string =>
 const renderOnThisPage = (modules: ReadonlyArray<ModuleDocGroup>): string => `
 	<nav class="toc">
 		<a href="#top">Top</a>
-		<a href="#introduction">Introduction</a>
+		<a href="#introduction">Overview</a>
 		${modules
 			.map(
 				(moduleGroup) => `
@@ -548,6 +548,8 @@ const renderHtmlDocument = ({
 				z-index: 40;
 				display: flex;
 				align-items: center;
+				justify-content: space-between;
+				gap: 1rem;
 				padding: 1rem 1.5rem;
 				border-bottom: 1px solid var(--border);
 				background: rgba(7, 9, 14, 0.82);
@@ -561,6 +563,57 @@ const renderHtmlDocument = ({
 				font-size: 1.35rem;
 				font-weight: 700;
 				letter-spacing: 0.02em;
+			}
+
+			.topbar-links {
+				display: flex;
+				align-items: center;
+				justify-content: flex-end;
+				gap: 0.85rem;
+				flex-wrap: wrap;
+			}
+
+			.topbar-link {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				min-height: 2.45rem;
+				padding: 0.58rem 0.98rem;
+				border: 1px solid rgba(255, 255, 255, 0.1);
+				border-radius: 999px;
+				background:
+					linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+					rgba(255, 255, 255, 0.02);
+				box-shadow:
+					inset 0 1px 0 rgba(255, 255, 255, 0.08),
+					0 14px 28px rgba(0, 0, 0, 0.22);
+				color: rgba(243, 239, 228, 0.94);
+				font-family:
+					"Berkeley Mono", "SFMono-Regular", Consolas, "Liberation Mono",
+					Menlo, monospace;
+				font-size: 0.78rem;
+				font-weight: 700;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				transition:
+					transform 160ms ease,
+					border-color 160ms ease,
+					background 160ms ease,
+					color 160ms ease,
+					box-shadow 160ms ease;
+			}
+
+			.topbar-link:hover,
+			.topbar-link:focus-visible {
+				border-color: rgba(212, 255, 114, 0.45);
+				background:
+					linear-gradient(135deg, rgba(212, 255, 114, 0.18), rgba(154, 230, 180, 0.08)),
+					rgba(255, 255, 255, 0.04);
+				color: var(--accent-strong);
+				transform: translateY(-1px);
+				box-shadow:
+					inset 0 1px 0 rgba(255, 255, 255, 0.12),
+					0 18px 30px rgba(0, 0, 0, 0.28);
 			}
 
 			.brand-mark,
@@ -1055,6 +1108,15 @@ const renderHtmlDocument = ({
 			}
 
 			@media (max-width: 920px) {
+				.topbar {
+					flex-wrap: wrap;
+				}
+
+				.topbar-links {
+					width: 100%;
+					justify-content: flex-start;
+				}
+
 				.layout {
 					grid-template-columns: 1fr;
 				}
@@ -1100,13 +1162,17 @@ const renderHtmlDocument = ({
 					</div>
 					<span>effect2d Docs</span>
 				</a>
+				<nav class="topbar-links" aria-label="Primary">
+					<a class="topbar-link" href="#where-this-engine-shines">Ideas</a>
+					<a class="topbar-link" href="#quick-start">Quick Start</a>
+				</nav>
 			</header>
 			<div class="layout">
 				<aside class="sidebar">
 					<div class="sidebar-inner">
 						<p class="sidebar-label">Navigation</p>
 						<nav id="sidebar-nav">
-							<a class="nav-group-title" href="#introduction">Introduction</a>
+							<a class="nav-group-title" href="#introduction">Overview</a>
 							${renderSidebar(modules)}
 						</nav>
 					</div>

@@ -29,7 +29,7 @@ export class BeaconRunCoordinator extends ServiceMap.Service<
 			const sequenceEvents = yield* SequenceEvents;
 
 			const beginExpedition = Effect.gen(function* () {
-				const fieldSpawn = yield* beaconRunRoomState.roomObjectById(
+				const fieldSpawn = yield* beaconRunRoomState.getRoomObjectById(
 					"field-room",
 					"field-spawn",
 				);

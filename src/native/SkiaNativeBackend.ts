@@ -94,38 +94,44 @@ const white: Color = {
 	red: 1,
 };
 
-const rendererSnapshot = (): NativeRendererSnapshot => ({
-	backend: "skia",
-	frameCount: 0,
-	supportsBlendModes: ["add", "alpha", "multiply"],
-	supportsImages: true,
-	supportsText: true,
-});
+function createRendererSnapshot(): NativeRendererSnapshot {
+	return {
+		backend: "skia",
+		frameCount: 0,
+		supportsBlendModes: ["add", "alpha", "multiply"],
+		supportsImages: true,
+		supportsText: true,
+	};
+}
 
-const audioSnapshot = (): NativeAudioOutputSnapshot => ({
-	activeSoundCount: 0,
-	backend: "node-web-audio-api",
-	currentMusicCueId: null,
-	supportsLoopingMusic: true,
-	supportsPauseResume: true,
-	supportsPitch: true,
-	supportsVolume: true,
-});
+function createAudioSnapshot(): NativeAudioOutputSnapshot {
+	return {
+		activeSoundCount: 0,
+		backend: "node-web-audio-api",
+		currentMusicCueId: null,
+		supportsLoopingMusic: true,
+		supportsPauseResume: true,
+		supportsPitch: true,
+		supportsVolume: true,
+	};
+}
 
-const timingSnapshot = (frameDelayMillis: number): NativeTimingSnapshot => ({
-	backend: "effect-sleep",
-	frameDelayMillis,
-});
+function createTimingSnapshot(frameDelayMillis: number): NativeTimingSnapshot {
+	return {
+		backend: "effect-sleep",
+		frameDelayMillis,
+	};
+}
 
 const diagnosticsSnapshot = (
 	frameDelayMillis: number,
 ): NativeBackendDiagnostics => ({
-	audio: audioSnapshot(),
+	audio: createAudioSnapshot(),
 	initialized: false,
 	inputEventCount: 0,
 	lastError: null,
-	renderer: rendererSnapshot(),
-	timing: timingSnapshot(frameDelayMillis),
+	renderer: createRendererSnapshot(),
+	timing: createTimingSnapshot(frameDelayMillis),
 	window: null,
 });
 
@@ -150,7 +156,7 @@ const toCanvasBlendMode = (
 	}
 };
 
-const normalizeKey = (key: string | null): string | null => {
+function normalizeKey(key: string | null): string | null {
 	switch (key) {
 		case null:
 			return null;
@@ -185,9 +191,9 @@ const normalizeKey = (key: string | null): string | null => {
 
 			return key.length === 1 ? key.toUpperCase() : key;
 	}
-};
+}
 
-const placeholderColor = (imageId: string): string => {
+function getPlaceholderColor(imageId: string): string {
 	let hash = 0;
 	for (const character of imageId) {
 		hash = (hash * 31 + character.charCodeAt(0)) >>> 0;
@@ -197,7 +203,7 @@ const placeholderColor = (imageId: string): string => {
 	const green = 80 + ((hash >> 8) % 120);
 	const blue = 80 + ((hash >> 16) % 120);
 	return `rgb(${red}, ${green}, ${blue})`;
-};
+}
 
 const drawMissingImage = (
 	context: SkiaContext2D,
@@ -207,7 +213,7 @@ const drawMissingImage = (
 	width: number,
 	height: number,
 ) => {
-	context.fillStyle = placeholderColor(imageId);
+	context.fillStyle = getPlaceholderColor(imageId);
 	context.fillRect(x, y, width, height);
 	context.strokeStyle = "rgba(255,255,255,0.9)";
 	context.strokeRect(x, y, width, height);
@@ -217,8 +223,9 @@ const drawMissingImage = (
 	context.fillText(imageId.slice(0, 12), x + 2, y + 2, Math.max(0, width - 4));
 };
 
-const fontString = (family: string, sizePx: number): string =>
-	`${sizePx}px "${family}", "Monaco"`;
+function formatFontString(family: string, sizePx: number): string {
+	return `${sizePx}px "${family}", "Monaco"`;
+}
 
 const renderCommand = (
 	context: SkiaContext2D,
@@ -362,7 +369,7 @@ const renderCommand = (
 					? undefined
 					: fontAssetDefinitions[command.fontId];
 			context.fillStyle = toRgba(white, state.tint.alpha);
-			context.font = fontString(
+			context.font = formatFontString(
 				nativeFont?.family ?? defaultFontFamily,
 				nativeFont?.sizePx ?? defaultFontSizePx,
 			);
@@ -493,7 +500,9 @@ const updateWindowSnapshot = (
 	width: window.width,
 });
 
-const clampUnit = (value: number): number => Math.max(0, Math.min(1, value));
+function clampUnit(value: number): number {
+	return Math.max(0, Math.min(1, value));
+}
 
 const aspectFitRect = (
 	containerWidth: number,
@@ -528,7 +537,7 @@ const aspectFitRect = (
  *
  * @public
  */
-export const makeSkiaNativeBackendLayer = ({
+export function makeSkiaNativeBackendLayer({
 	defaultFontFamily = "effect2d-native",
 	defaultFontPath,
 	defaultFontSizePx = 8,
@@ -542,11 +551,13 @@ export const makeSkiaNativeBackendLayer = ({
 	logicalWidth = windowWidth,
 	preferIntegerScaling = true,
 	resizable = true,
-}: SkiaNativeBackendOptions): Layer.Layer<NativeBackend, EngineLaunchError> =>
-	Layer.effect(
+}: SkiaNativeBackendOptions): Layer.Layer<NativeBackend, EngineLaunchError> {
+	return Layer.effect(
 		NativeBackend,
 		Effect.scoped(
 			Effect.gen(function* () {
+				const services = yield* Effect.services<never>();
+				const runFork = Effect.runForkWith(services);
 				const diagnosticsRef = yield* Ref.make(
 					diagnosticsSnapshot(frameDelayMillis),
 				);
@@ -906,7 +917,7 @@ export const makeSkiaNativeBackendLayer = ({
 
 					if (!App.running && appLaunchPromise === null) {
 						appLaunchPromise = App.launch().catch((cause) => {
-							void Effect.runPromise(
+							void runFork(
 								recordError(`Skia app loop failed: ${String(cause)}`),
 							);
 							throw cause;
@@ -1012,7 +1023,7 @@ export const makeSkiaNativeBackendLayer = ({
 
 					window.on("close", () => {
 						App.quit();
-						void Effect.runPromise(
+						void runFork(
 							resetAudioRuntime().pipe(
 								Effect.andThen(markWindowClosed()),
 								Effect.catchCause((cause) =>
@@ -1022,7 +1033,7 @@ export const makeSkiaNativeBackendLayer = ({
 						);
 					});
 					window.on("resize", () => {
-						void Effect.runPromise(
+						void runFork(
 							Ref.update(diagnosticsRef, (diagnostics) => ({
 								...diagnostics,
 								window: updateWindowSnapshot(window, title),
@@ -1315,6 +1326,7 @@ export const makeSkiaNativeBackendLayer = ({
 			}),
 		),
 	);
+}
 
 /**
  * Builds a ready-to-use {@link NativeBoundary} backed by a Skia window and
@@ -1322,11 +1334,14 @@ export const makeSkiaNativeBackendLayer = ({
  *
  * @public
  */
-export const makeSkiaNativeBoundaryLayer = (
+export function makeSkiaNativeBoundaryLayer(
 	options: SkiaNativeBackendOptions,
 ): Layer.Layer<
 	NativeBoundary,
 	EngineLaunchError,
 	Audio | Input | NativeFrameSource
-> =>
-	NativeBoundary.layer.pipe(Layer.provide(makeSkiaNativeBackendLayer(options)));
+> {
+	return NativeBoundary.layer.pipe(
+		Layer.provide(makeSkiaNativeBackendLayer(options)),
+	);
+}

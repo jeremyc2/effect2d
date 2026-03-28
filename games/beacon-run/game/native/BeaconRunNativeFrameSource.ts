@@ -3,11 +3,12 @@ import { EngineLaunchError, NativeFrameSource } from "../../../../src/index.ts";
 import { BeaconRunGameplayDirector } from "../directors/BeaconRunGameplayDirector.ts";
 import { BeaconRunPresentationDirector } from "../directors/BeaconRunPresentationDirector.ts";
 
-const toEngineLaunchError = (reason: string) =>
-	new EngineLaunchError({
+function createEngineLaunchError(reason: string) {
+	return new EngineLaunchError({
 		module: "native",
 		reason,
 	});
+}
 
 export const BeaconRunNativeFrameSourceLive = Layer.effect(
 	NativeFrameSource,
@@ -18,12 +19,16 @@ export const BeaconRunNativeFrameSourceLive = Layer.effect(
 		const nextFrame = Effect.gen(function* () {
 			const gameplayExit = yield* Effect.exit(gameplayDirector.stepFrame());
 			if (Exit.isFailure(gameplayExit)) {
-				return yield* toEngineLaunchError("Beacon Run gameplay frame failed.");
+				return yield* createEngineLaunchError(
+					"Beacon Run gameplay frame failed.",
+				);
 			}
 
 			const renderExit = yield* Effect.exit(presentationDirector.renderFrame());
 			if (Exit.isFailure(renderExit)) {
-				return yield* toEngineLaunchError("Beacon Run render frame failed.");
+				return yield* createEngineLaunchError(
+					"Beacon Run render frame failed.",
+				);
 			}
 
 			return renderExit.value;

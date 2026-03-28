@@ -24,7 +24,7 @@ export interface DialogueProgress {
 	readonly pageIndex: number;
 }
 
-/** Options for paginating authored dialogue text. @public */
+/** Options for paginating authored dialogue text into pages that fit a dialogue box. @public */
 export interface DialogueScriptOptions {
 	readonly fontId: string;
 	readonly maxLines: number;
@@ -60,6 +60,10 @@ const nthDialoguePage = Effect.fn("Cutscene.nthDialoguePage")(function* (
  * {@link Ui}.
  *
  * @public
+ *
+ * Reach for `Cutscene` when you want a friendlier API around dialogue prep and
+ * scene-sequence operations, but still want to stay inside ordinary Effect
+ * programs.
  */
 export class Cutscene extends ServiceMap.Service<
 	Cutscene,

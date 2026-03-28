@@ -15,13 +15,13 @@ import {
 } from "../../../../src/index.ts";
 import { cavernMenuButtons } from "../content/CavernMenu.ts";
 import {
-	applyTransitionSpawn,
 	cavernCameraZoom,
 	cavernViewport,
+	doesRectangleIntersect,
 	getCavernRoom,
 	getPlayerVisualCenter,
-	rectangleIntersects,
-	roomToCameraBounds,
+	getRoomCameraBounds,
+	getTransitionSpawnPosition,
 } from "../content/CavernWorld.ts";
 import { CavernMenuState } from "../state/CavernMenuState.ts";
 import { CavernPlayerState } from "../state/CavernPlayerState.ts";
@@ -33,8 +33,9 @@ const playerSize = {
 	width: 80,
 } as const;
 
-const clamp = (value: number, minimum: number, maximum: number): number =>
-	Math.max(minimum, Math.min(maximum, value));
+function clampValue(value: number, minimum: number, maximum: number): number {
+	return Math.max(minimum, Math.min(maximum, value));
+}
 
 const isPointInsideButton = (
 	x: number,
@@ -208,8 +209,8 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 				);
 
 				const candidatePosition = {
-					x: clamp(nextX, movementMinX, movementMaxX),
-					y: clamp(nextY, movementMinY, movementMaxY),
+					x: clampValue(nextX, movementMinX, movementMaxX),
+					y: clampValue(nextY, movementMinY, movementMaxY),
 				};
 				yield* cavernPlayerState.moveTo(candidatePosition);
 
@@ -220,14 +221,14 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 					y: candidatePosition.y,
 				};
 				const activeTransition = currentRoom.transitions.find((transition) =>
-					rectangleIntersects(playerRectangle, transition),
+					doesRectangleIntersect(playerRectangle, transition),
 				);
 
 				if (activeTransition !== undefined) {
 					const targetRoom = getCavernRoom(activeTransition.targetRoomId);
 					yield* cavernWorldState.setCurrentRoom(targetRoom.id);
 					yield* cavernPlayerState.moveTo(
-						applyTransitionSpawn(
+						getTransitionSpawnPosition(
 							activeTransition,
 							targetRoom,
 							candidatePosition,
@@ -242,7 +243,7 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 				yield* sceneCamera.setViewport(cavernViewport);
 				yield* sceneCamera.setZoom(cavernCameraZoom);
 				yield* sceneCamera.setBounds(
-					roomToCameraBounds(updatedRoom, cavernViewport, cavernCameraZoom),
+					getRoomCameraBounds(updatedRoom, cavernViewport, cavernCameraZoom),
 				);
 				yield* sceneCamera.follow(
 					getPlayerVisualCenter(updatedPlayerSnapshot.position, playerSize),

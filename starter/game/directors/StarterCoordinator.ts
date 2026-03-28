@@ -46,11 +46,11 @@ export class StarterCoordinator extends ServiceMap.Service<
 			const worldState = yield* WorldState;
 
 			const beginNewGame = Effect.gen(function* () {
-				const overworldSpawn = yield* roomState.roomObjectById(
+				const overworldSpawn = yield* roomState.getRoomObjectById(
 					"overworld-room",
 					"spawn-player",
 				);
-				const slimeEnemy = yield* roomState.roomObjectById(
+				const slimeEnemy = yield* roomState.getRoomObjectById(
 					"lantern-room",
 					"slime-enemy",
 				);

@@ -6,11 +6,11 @@ import {
 	Cutscene,
 	DebugOverlay,
 	EngineLogger,
+	getRoomObjectById,
 	Input,
 	type InvalidLogMessageError,
 	type InvalidSequenceWaitError,
 	type OverlayStackUnderflowError,
-	roomObjectById,
 	SceneDirector,
 	type SceneNotFoundError,
 	type SceneStackEmptyError,
@@ -34,27 +34,29 @@ const exitBodyId = "starter-room-exit";
 const lanternBodyId = "starter-lantern";
 const enemyBodyId = "starter-slime";
 
-const aabbBody = (
+function createAabbBody(
 	id: string,
 	group: string,
 	position: CameraVector,
 	size: { readonly height: number; readonly width: number },
 	isTrigger = true,
-): CollisionBody => ({
-	group,
-	id,
-	isTrigger,
-	mask: ["player"],
-	shape: {
-		kind: "aabb",
+): CollisionBody {
+	return {
+		group,
+		id,
+		isTrigger,
+		mask: ["player"],
 		shape: {
-			height: size.height,
-			width: size.width,
-			x: position.x,
-			y: position.y,
+			kind: "aabb",
+			shape: {
+				height: size.height,
+				width: size.width,
+				x: position.x,
+				y: position.y,
+			},
 		},
-	},
-});
+	};
+}
 
 type StarterGameplayDirectorFailure =
 	| InvalidLogMessageError
@@ -104,12 +106,12 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 				const gameplaySnapshot = yield* gameplayState.snapshot;
 				const playerSnapshot = yield* playerState.snapshot;
 				const currentRoom = yield* roomState.snapshot;
-				const exitZone = roomObjectById(currentRoom, "to-lantern-room");
-				const lanternPickup = roomObjectById(currentRoom, "lantern-pickup");
-				const slimeEnemy = roomObjectById(currentRoom, "slime-enemy");
+				const exitZone = getRoomObjectById(currentRoom, "to-lantern-room");
+				const lanternPickup = getRoomObjectById(currentRoom, "lantern-pickup");
+				const slimeEnemy = getRoomObjectById(currentRoom, "slime-enemy");
 
 				const bodies: Array<CollisionBody> = [
-					aabbBody(
+					createAabbBody(
 						playerBodyId,
 						"player",
 						playerSnapshot.position,
@@ -120,7 +122,7 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 
 				if (exitZone !== undefined) {
 					bodies.push(
-						aabbBody(
+						createAabbBody(
 							exitBodyId,
 							"room-exit",
 							{ x: exitZone.x, y: exitZone.y },
@@ -134,7 +136,7 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 					!gameplaySnapshot.lanternPickupCollected
 				) {
 					bodies.push(
-						aabbBody(
+						createAabbBody(
 							lanternBodyId,
 							"pickup",
 							{ x: lanternPickup.x, y: lanternPickup.y },
@@ -145,10 +147,15 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 
 				if (slimeEnemy !== undefined && !gameplaySnapshot.enemyDefeated) {
 					bodies.push(
-						aabbBody(enemyBodyId, "enemy", gameplaySnapshot.enemyPosition, {
-							height: slimeEnemy.height,
-							width: slimeEnemy.width,
-						}),
+						createAabbBody(
+							enemyBodyId,
+							"enemy",
+							gameplaySnapshot.enemyPosition,
+							{
+								height: slimeEnemy.height,
+								width: slimeEnemy.width,
+							},
+						),
 					);
 				}
 

@@ -73,25 +73,30 @@ const initialState: DebugOverlayState = {
 	roomMarkers: [],
 };
 
-const formatFps = (lastFrameDeltaMillis: number): number =>
-	lastFrameDeltaMillis <= 0 ? 0 : Math.round(1_000 / lastFrameDeltaMillis);
+function formatFps(lastFrameDeltaMillis: number): number {
+	return lastFrameDeltaMillis <= 0
+		? 0
+		: Math.round(1_000 / lastFrameDeltaMillis);
+}
 
-const formatDrawModel = (
+function formatDrawModel(
 	snapshot: DebugOverlaySnapshot,
-): DebugOverlayDrawModel => ({
-	lines: [
-		`overlay: ${snapshot.enabled ? "enabled" : "disabled"}`,
-		`fps: ${snapshot.timing.fps}`,
-		`frame-delta-ms: ${snapshot.timing.lastFrameDeltaMillis}`,
-		`tick-count: ${snapshot.timing.tickCount}`,
-		`active-scene: ${snapshot.sceneStack.activeSceneId ?? "none"}`,
-		`collision-bodies: ${snapshot.collisionBodies.length}`,
-		`room-markers: ${snapshot.roomMarkers.length}`,
-		`resources: ${snapshot.resources.length}`,
-		`logs: ${snapshot.logs.length}`,
-	],
-	snapshot,
-});
+): DebugOverlayDrawModel {
+	return {
+		lines: [
+			`overlay: ${snapshot.enabled ? "enabled" : "disabled"}`,
+			`fps: ${snapshot.timing.fps}`,
+			`frame-delta-ms: ${snapshot.timing.lastFrameDeltaMillis}`,
+			`tick-count: ${snapshot.timing.tickCount}`,
+			`active-scene: ${snapshot.sceneStack.activeSceneId ?? "none"}`,
+			`collision-bodies: ${snapshot.collisionBodies.length}`,
+			`room-markers: ${snapshot.roomMarkers.length}`,
+			`resources: ${snapshot.resources.length}`,
+			`logs: ${snapshot.logs.length}`,
+		],
+		snapshot,
+	};
+}
 
 export class DebugOverlay extends ServiceMap.Service<
 	DebugOverlay,

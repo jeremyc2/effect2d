@@ -3,10 +3,10 @@ import { Effect, Exit } from "effect";
 import { runEffectTest } from "../testing/runEffectTest.ts";
 import { deserializeRoom, serializeRoom } from "./MapSerialization.ts";
 import {
+	createTransitionZone,
 	defineObjectPlane,
 	defineRoom,
 	defineTilePlane,
-	transitionZone,
 } from "./RoomBuilder.ts";
 
 const sampleRoom = defineRoom({
@@ -18,7 +18,7 @@ const sampleRoom = defineRoom({
 		defineObjectPlane({
 			id: "markers",
 			entries: [
-				transitionZone({
+				createTransitionZone({
 					id: "east-exit",
 					metadata: {
 						targetRoomId: "next-room",

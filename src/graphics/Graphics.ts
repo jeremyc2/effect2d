@@ -27,19 +27,22 @@ export interface Transform2D {
 	readonly translation: CameraVector;
 }
 
-/** Supported compositing modes for subsequent draw commands. @public */
+/** Supported compositing modes for subsequent draw commands: `alpha`, `add`, and `multiply`. @public */
 export type BlendMode = "add" | "alpha" | "multiply";
 
-/** Supported rectangle rendering modes. @public */
+/** Rectangle draw styles. `fill` paints the interior, `stroke` draws only the outline. @public */
 export type RectangleDrawMode = "fill" | "stroke";
 
-/** Supported circle rendering modes. @public */
+/** Circle draw styles. `fill` paints the interior, `stroke` draws only the outline. @public */
 export type CircleDrawMode = "fill" | "stroke";
 
 /**
  * Parameters for a text draw command.
  *
  * @public
+ *
+ * `align` controls how the text is anchored at `position`. Supplying `fontId`
+ * lets the native backend pick an authored bitmap or custom font.
  */
 export interface DrawTextOptions {
 	readonly align?: "center" | "left" | "right";
@@ -131,6 +134,9 @@ export type DrawCommand =
  * The graphics frame currently being recorded or most recently completed.
  *
  * @public
+ *
+ * `transformDepth` is especially useful in tests because it tells you whether
+ * a presentation system forgot to balance `pushTransform` and `popTransform`.
  */
 export interface FrameSnapshot {
 	readonly commands: ReadonlyArray<DrawCommand>;

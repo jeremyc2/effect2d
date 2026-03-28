@@ -1,6 +1,6 @@
 import { Effect, Layer, Ref, ServiceMap } from "effect";
 
-/** A 2D point or vector used by the camera API. @public */
+/** A 2D point or vector used by the camera API. World and screen coordinates both use this shape. @public */
 export interface CameraVector {
 	readonly x: number;
 	readonly y: number;
@@ -10,6 +10,9 @@ export interface CameraVector {
  * Bounds that clamp the camera's focal position.
  *
  * @public
+ *
+ * These bounds constrain the camera center, not the top-left corner of the
+ * viewport.
  */
 export interface CameraBounds {
 	readonly maxX: number;
@@ -18,13 +21,13 @@ export interface CameraBounds {
 	readonly minY: number;
 }
 
-/** The authored viewport the camera projects into. @public */
+/** The authored viewport the camera projects into. This is usually your game's internal render resolution. @public */
 export interface CameraViewport {
 	readonly height: number;
 	readonly width: number;
 }
 
-/** Transient screen-shake metadata. @public */
+/** Transient screen-shake metadata managed by the pure shake helpers in this module. @public */
 export interface CameraShakeState {
 	readonly durationSeconds: number;
 	readonly elapsedSeconds: number;
@@ -35,6 +38,8 @@ export interface CameraShakeState {
  * A complete snapshot of camera state.
  *
  * @public
+ *
+ * `position` is the current camera center in world space.
  */
 export interface CameraState {
 	readonly bounds: CameraBounds | null;
@@ -45,8 +50,9 @@ export interface CameraState {
 	readonly zoom: number;
 }
 
-const clamp = (value: number, minimum: number, maximum: number): number =>
-	Math.min(maximum, Math.max(minimum, value));
+function clampValue(value: number, minimum: number, maximum: number): number {
+	return Math.min(maximum, Math.max(minimum, value));
+}
 
 const clampPosition = (
 	position: CameraVector,
@@ -57,8 +63,8 @@ const clampPosition = (
 	}
 
 	return {
-		x: clamp(position.x, bounds.minX, bounds.maxX),
-		y: clamp(position.y, bounds.minY, bounds.maxY),
+		x: clampValue(position.x, bounds.minX, bounds.maxX),
+		y: clampValue(position.y, bounds.minY, bounds.maxY),
 	};
 };
 
@@ -66,95 +72,122 @@ const clampPosition = (
  * Creates an initial camera state value.
  *
  * @public
+ *
+ * ```ts
+ * const camera = makeCameraState({
+ *   viewport: { width: 320, height: 180 },
+ *   zoom: 2,
+ * });
+ * ```
  */
-export const makeCameraState = (options?: {
+export function makeCameraState(options?: {
 	readonly bounds?: CameraBounds | null;
 	readonly position?: CameraVector;
 	readonly viewport?: CameraViewport;
 	readonly zoom?: number;
-}): CameraState => ({
-	bounds: options?.bounds ?? null,
-	followTarget: null,
-	position: clampPosition(
-		options?.position ?? { x: 0, y: 0 },
-		options?.bounds ?? null,
-	),
-	shake: null,
-	viewport: options?.viewport ?? {
-		height: 180,
-		width: 320,
-	},
-	zoom: Math.max(options?.zoom ?? 1, 0.01),
-});
+}): CameraState {
+	return {
+		bounds: options?.bounds ?? null,
+		followTarget: null,
+		position: clampPosition(
+			options?.position ?? { x: 0, y: 0 },
+			options?.bounds ?? null,
+		),
+		shake: null,
+		viewport: options?.viewport ?? {
+			height: 180,
+			width: 320,
+		},
+		zoom: Math.max(options?.zoom ?? 1, 0.01),
+	};
+}
 
-export const setCameraViewport = (
+/** Replaces the camera viewport without changing position or zoom. @public */
+export function setCameraViewport(
 	state: CameraState,
 	viewport: CameraViewport,
-): CameraState => ({
-	...state,
-	viewport,
-});
+): CameraState {
+	return {
+		...state,
+		viewport,
+	};
+}
 
-export const setCameraBounds = (
+/** Sets or clears camera clamping bounds and immediately reclamps the current position. @public */
+export function setCameraBounds(
 	state: CameraState,
 	bounds: CameraBounds | null,
-): CameraState => ({
-	...state,
-	bounds,
-	position: clampPosition(state.position, bounds),
-});
+): CameraState {
+	return {
+		...state,
+		bounds,
+		position: clampPosition(state.position, bounds),
+	};
+}
 
-export const setCameraPosition = (
+/** Moves the camera to a world-space position, respecting bounds when present. @public */
+export function setCameraPosition(
 	state: CameraState,
 	position: CameraVector,
-): CameraState => ({
-	...state,
-	position: clampPosition(position, state.bounds),
-});
+): CameraState {
+	return {
+		...state,
+		position: clampPosition(position, state.bounds),
+	};
+}
 
-export const setCameraZoom = (
-	state: CameraState,
-	zoom: number,
-): CameraState => ({
-	...state,
-	zoom: Math.max(zoom, 0.01),
-});
+/** Changes zoom while enforcing a tiny positive minimum to avoid invalid projection math. @public */
+export function setCameraZoom(state: CameraState, zoom: number): CameraState {
+	return {
+		...state,
+		zoom: Math.max(zoom, 0.01),
+	};
+}
 
-export const followCameraTarget = (
+/** Starts or stops following a world-space target. When a target is set, position snaps to it immediately. @public */
+export function followCameraTarget(
 	state: CameraState,
 	target: CameraVector | null,
-): CameraState => ({
-	...state,
-	followTarget: target,
-	position:
-		target === null ? state.position : clampPosition(target, state.bounds),
-});
+): CameraState {
+	return {
+		...state,
+		followTarget: target,
+		position:
+			target === null ? state.position : clampPosition(target, state.bounds),
+	};
+}
 
-export const stepCameraFollow = (state: CameraState): CameraState =>
-	state.followTarget === null
+/** Applies the current follow target to the camera position for this tick. @public */
+export function updateCameraFollow(state: CameraState): CameraState {
+	return state.followTarget === null
 		? state
 		: {
 				...state,
 				position: clampPosition(state.followTarget, state.bounds),
 			};
+}
 
-export const startCameraShake = (
+/** Starts a simple decay-based shake effect. @public */
+export function startCameraShake(
 	state: CameraState,
 	intensity: number,
 	durationSeconds: number,
-): CameraState => ({
-	...state,
-	shake: {
-		durationSeconds: Math.max(durationSeconds, 0),
-		elapsedSeconds: 0,
-		intensity: Math.max(intensity, 0),
-	},
-});
+): CameraState {
+	return {
+		...state,
+		shake: {
+			durationSeconds: Math.max(durationSeconds, 0),
+			elapsedSeconds: 0,
+			intensity: Math.max(intensity, 0),
+		},
+	};
+}
 
-export const stepCameraShake = (
+/** Advances shake timing and clears the shake once its duration expires. @public */
+export function updateCameraShake(
 	state: CameraState,
 	deltaSeconds: number,
-): CameraState => {
+): CameraState {
 	if (state.shake === null || deltaSeconds <= 0) {
 		return state;
 	}
@@ -174,9 +207,10 @@ export const stepCameraShake = (
 						elapsedSeconds,
 					},
 	};
-};
+}
 
-export const shakeOffset = (state: CameraState): CameraVector => {
+/** Computes the current shake offset that will be applied during projection. @public */
+export function getCameraShakeOffset(state: CameraState): CameraVector {
 	if (state.shake === null || state.shake.durationSeconds <= 0) {
 		return { x: 0, y: 0 };
 	}
@@ -189,13 +223,14 @@ export const shakeOffset = (state: CameraState): CameraVector => {
 		x: strength,
 		y: -strength,
 	};
-};
+}
 
-export const worldToScreen = (
+/** Projects a world-space point into screen space using the current position, zoom, and shake offset. @public */
+export function getScreenPositionFromWorld(
 	state: CameraState,
 	worldPoint: CameraVector,
-): CameraVector => {
-	const offset = shakeOffset(state);
+): CameraVector {
+	const offset = getCameraShakeOffset(state);
 	return {
 		x:
 			(worldPoint.x - state.position.x + offset.x) * state.zoom +
@@ -204,13 +239,14 @@ export const worldToScreen = (
 			(worldPoint.y - state.position.y + offset.y) * state.zoom +
 			state.viewport.height / 2,
 	};
-};
+}
 
-export const screenToWorld = (
+/** Converts a screen-space point back into world space using the current camera state. @public */
+export function getWorldPositionFromScreen(
 	state: CameraState,
 	screenPoint: CameraVector,
-): CameraVector => {
-	const offset = shakeOffset(state);
+): CameraVector {
+	const offset = getCameraShakeOffset(state);
 	return {
 		x:
 			(screenPoint.x - state.viewport.width / 2) / state.zoom +
@@ -221,7 +257,7 @@ export const screenToWorld = (
 			state.position.y -
 			offset.y,
 	};
-};
+}
 
 /**
  * A scene-local camera service for authored gameplay and presentation logic.
@@ -325,21 +361,21 @@ export class SceneCamera extends ServiceMap.Service<
 					deltaSeconds: number,
 				) {
 					yield* Ref.update(stateRef, (state) =>
-						stepCameraShake(stepCameraFollow(state), deltaSeconds),
+						updateCameraShake(updateCameraFollow(state), deltaSeconds),
 					);
 				});
 
 				const worldPointToScreen = Effect.fn("SceneCamera.worldToScreen")(
 					function* (worldPoint: CameraVector) {
 						const state = yield* Ref.get(stateRef);
-						return worldToScreen(state, worldPoint);
+						return getScreenPositionFromWorld(state, worldPoint);
 					},
 				);
 
 				const screenPointToWorld = Effect.fn("SceneCamera.screenToWorld")(
 					function* (screenPoint: CameraVector) {
 						const state = yield* Ref.get(stateRef);
-						return screenToWorld(state, screenPoint);
+						return getWorldPositionFromScreen(state, screenPoint);
 					},
 				);
 

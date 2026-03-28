@@ -1,11 +1,11 @@
 import {
+	createSpawnPoint,
+	createTransitionZone,
 	defineObjectPlane,
 	defineRoom,
+	defineRoomMetadata,
+	defineRoomObject,
 	defineTilePlane,
-	roomMetadata,
-	roomObject,
-	spawnPoint,
-	transitionZone,
 } from "../../../../src/maps/index.ts";
 
 const fieldTiles = [
@@ -21,7 +21,7 @@ const shrineTiles = [
 export const beaconRunRooms = [
 	defineRoom({
 		id: "field-room",
-		metadata: roomMetadata({
+		metadata: defineRoomMetadata({
 			backgroundImageId: "field-room-background",
 			description: "A wind-swept field below the ridge.",
 			displayName: "Open Field",
@@ -31,7 +31,7 @@ export const beaconRunRooms = [
 			defineObjectPlane({
 				id: "markers",
 				entries: [
-					spawnPoint({
+					createSpawnPoint({
 						id: "field-spawn",
 						height: 16,
 						metadata: { spawnId: "field-spawn" },
@@ -39,7 +39,7 @@ export const beaconRunRooms = [
 						x: 24,
 						y: 32,
 					}),
-					transitionZone({
+					createTransitionZone({
 						id: "to-shrine-room",
 						height: 32,
 						metadata: {
@@ -64,7 +64,7 @@ export const beaconRunRooms = [
 	}),
 	defineRoom({
 		id: "shrine-room",
-		metadata: roomMetadata({
+		metadata: defineRoomMetadata({
 			backgroundImageId: "shrine-room-background",
 			description: "An old shrine waiting for signal fire.",
 			displayName: "Beacon Shrine",
@@ -74,7 +74,7 @@ export const beaconRunRooms = [
 			defineObjectPlane({
 				id: "markers",
 				entries: [
-					spawnPoint({
+					createSpawnPoint({
 						id: "shrine-entry",
 						height: 16,
 						metadata: { spawnId: "shrine-entry" },
@@ -82,7 +82,7 @@ export const beaconRunRooms = [
 						x: 8,
 						y: 32,
 					}),
-					roomObject({
+					defineRoomObject({
 						id: "north-beacon",
 						height: 14,
 						kind: "beacon",

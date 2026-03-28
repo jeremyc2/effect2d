@@ -45,15 +45,16 @@ const toSerializationError = (
 		operation,
 	});
 
-export const serializeRoom = (
+export function serializeRoom(
 	room: RoomContent,
-): Effect.Effect<string, MapSerializationError> =>
-	validateRoom(room).pipe(
+): Effect.Effect<string, MapSerializationError> {
+	return validateRoom(room).pipe(
 		Effect.flatMap((validatedRoom) =>
 			Schema.encodeUnknownEffect(RoomContentFromJsonString)(validatedRoom),
 		),
 		Effect.mapError((error) => toSerializationError("serialize", error)),
 	);
+}
 
 export const deserializeRoom = Effect.fn("MapSerialization.deserializeRoom")(
 	function* (serializedRoom: string) {

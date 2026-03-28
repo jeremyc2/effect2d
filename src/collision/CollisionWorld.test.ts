@@ -5,8 +5,8 @@ import {
 	type CollisionBody,
 	type CollisionShape,
 	CollisionWorld,
+	getTileAt,
 	isSolidTileAt,
-	tileAt,
 } from "./CollisionWorld.ts";
 
 describe("CollisionWorld", () => {
@@ -76,8 +76,8 @@ describe("CollisionWorld", () => {
 		const tiles = [0, 1, 2, 3];
 		const solidTileIds = new Set([1, 3]);
 
-		expect(tileAt(tiles, 2, 1, 0)).toBe(1);
-		expect(tileAt(tiles, 2, 0, 3)).toBeUndefined();
+		expect(getTileAt(tiles, 2, 1, 0)).toBe(1);
+		expect(getTileAt(tiles, 2, 0, 3)).toBeUndefined();
 		expect(isSolidTileAt(tiles, 2, 1, 0, solidTileIds)).toBe(true);
 		expect(isSolidTileAt(tiles, 2, 0, 0, solidTileIds)).toBe(false);
 	});

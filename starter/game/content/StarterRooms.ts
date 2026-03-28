@@ -1,11 +1,11 @@
 import {
+	createSpawnPoint,
+	createTransitionZone,
 	defineObjectPlane,
 	defineRoom,
+	defineRoomMetadata,
+	defineRoomObject,
 	defineTilePlane,
-	roomMetadata,
-	roomObject,
-	spawnPoint,
-	transitionZone,
 } from "../../../src/maps/index.ts";
 
 const overworldTerrainTiles = [
@@ -21,7 +21,7 @@ const lanternTerrainTiles = [
 export const starterRooms = [
 	defineRoom({
 		id: "overworld-room",
-		metadata: roomMetadata({
+		metadata: defineRoomMetadata({
 			backgroundImageId: "room-overworld",
 			description: "Starter overworld entrance.",
 			displayName: "Overworld",
@@ -30,7 +30,7 @@ export const starterRooms = [
 			defineObjectPlane({
 				id: "markers",
 				entries: [
-					spawnPoint({
+					createSpawnPoint({
 						id: "spawn-player",
 						height: 16,
 						metadata: {
@@ -40,7 +40,7 @@ export const starterRooms = [
 						x: 32,
 						y: 32,
 					}),
-					transitionZone({
+					createTransitionZone({
 						id: "to-lantern-room",
 						height: 32,
 						metadata: {
@@ -65,7 +65,7 @@ export const starterRooms = [
 	}),
 	defineRoom({
 		id: "lantern-room",
-		metadata: roomMetadata({
+		metadata: defineRoomMetadata({
 			backgroundImageId: "room-lantern",
 			description: "Starter lantern chamber.",
 			displayName: "Lantern Room",
@@ -75,7 +75,7 @@ export const starterRooms = [
 			defineObjectPlane({
 				id: "markers",
 				entries: [
-					spawnPoint({
+					createSpawnPoint({
 						id: "lantern-entry",
 						height: 16,
 						metadata: {
@@ -85,7 +85,7 @@ export const starterRooms = [
 						x: 8,
 						y: 32,
 					}),
-					roomObject({
+					defineRoomObject({
 						id: "lantern-pickup",
 						height: 12,
 						kind: "pickup",
@@ -96,7 +96,7 @@ export const starterRooms = [
 						x: 24,
 						y: 32,
 					}),
-					roomObject({
+					defineRoomObject({
 						id: "slime-enemy",
 						height: 14,
 						kind: "enemy",

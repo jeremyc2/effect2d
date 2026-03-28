@@ -4,13 +4,13 @@ import { Cause, Effect, Exit, Result, Schema } from "effect";
 import { MapValidationError } from "./MapError.ts";
 import { validateRoom } from "./MapValidation.ts";
 import {
+	createSpawnPoint,
+	createTransitionZone,
 	defineObjectPlane,
 	defineRoom,
+	defineRoomMetadata,
+	defineRoomObject,
 	defineTilePlane,
-	roomMetadata,
-	roomObject,
-	spawnPoint,
-	transitionZone,
 } from "./RoomBuilder.ts";
 
 const isMapValidationError = Schema.is(MapValidationError);
@@ -19,14 +19,14 @@ describe("validateRoom", () => {
 	test("accepts valid code-defined room content", async () => {
 		const room = defineRoom({
 			id: "start-room",
-			metadata: roomMetadata({
+			metadata: defineRoomMetadata({
 				biome: "cavern",
 			}),
 			objectPlanes: [
 				defineObjectPlane({
 					id: "markers",
 					entries: [
-						spawnPoint({
+						createSpawnPoint({
 							id: "spawn-player",
 							height: 16,
 							metadata: {
@@ -36,7 +36,7 @@ describe("validateRoom", () => {
 							x: 32,
 							y: 48,
 						}),
-						transitionZone({
+						createTransitionZone({
 							id: "to-boss-room",
 							height: 32,
 							metadata: {
@@ -67,12 +67,12 @@ describe("validateRoom", () => {
 	test("rejects transition zones that do not declare a target room", async () => {
 		const room = defineRoom({
 			id: "broken-room",
-			metadata: roomMetadata({}),
+			metadata: defineRoomMetadata({}),
 			objectPlanes: [
 				defineObjectPlane({
 					id: "markers",
 					entries: [
-						roomObject({
+						defineRoomObject({
 							id: "broken-transition",
 							height: 16,
 							kind: "transition-zone",

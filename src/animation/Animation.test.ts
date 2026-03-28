@@ -3,20 +3,20 @@ import {
 	advanceAnimation,
 	advanceScalarTween,
 	advanceVec2Tween,
-	currentAnimationFrame,
+	createFadeTween,
+	createFlashTween,
 	defineAnimationClip,
-	fadeTween,
-	flashTween,
+	getCurrentAnimationFrame,
+	getScalarTweenValue,
+	getVec2TweenValue,
 	pauseAnimation,
 	resumeAnimation,
-	scalarTweenValue,
 	setAnimationDirection,
 	setAnimationSpeed,
 	startAnimation,
 	startScalarTween,
 	startVec2Tween,
 	transitionAnimation,
-	vec2TweenValue,
 } from "./Animation.ts";
 
 describe("Animation", () => {
@@ -30,7 +30,7 @@ describe("Animation", () => {
 		const advanced = advanceAnimation(startAnimation(idle), 0.25);
 
 		expect(advanced.frameIndex).toBe(2);
-		expect(currentAnimationFrame(advanced)).toBe("idle-2");
+		expect(getCurrentAnimationFrame(advanced)).toBe("idle-2");
 	});
 
 	test("supports pausing, resuming, speed changes, and reverse playback", () => {
@@ -102,11 +102,11 @@ describe("Tween", () => {
 			1,
 		);
 
-		expect(scalarTweenValue(halfway)).toBe(5);
+		expect(getScalarTweenValue(halfway)).toBe(5);
 		expect(halfway.isComplete).toBe(false);
 
 		const completed = advanceScalarTween(halfway, 1);
-		expect(scalarTweenValue(completed)).toBe(10);
+		expect(getScalarTweenValue(completed)).toBe(10);
 		expect(completed.isComplete).toBe(true);
 	});
 
@@ -116,17 +116,17 @@ describe("Tween", () => {
 			0.5,
 		);
 
-		expect(vec2TweenValue(tween)).toEqual({
+		expect(getVec2TweenValue(tween)).toEqual({
 			x: 5,
 			y: 2.5,
 		});
 	});
 
 	test("provides fade and flash utility tweens", () => {
-		const fade = advanceScalarTween(fadeTween(0, 1, 1), 0.5);
-		const flash = advanceScalarTween(flashTween(1, 1), 0.5);
+		const fade = advanceScalarTween(createFadeTween(0, 1, 1), 0.5);
+		const flash = advanceScalarTween(createFlashTween(1, 1), 0.5);
 
-		expect(scalarTweenValue(fade)).toBe(0.5);
-		expect(scalarTweenValue(flash)).toBe(0.5);
+		expect(getScalarTweenValue(fade)).toBe(0.5);
+		expect(getScalarTweenValue(flash)).toBe(0.5);
 	});
 });

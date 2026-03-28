@@ -91,10 +91,10 @@ const rectanglesOverlap = (
 	overlapsOnAxis(left.x, left.width, right.x, right.width) &&
 	overlapsOnAxis(left.y, left.height, right.y, right.height);
 
-const backgroundOffset = (position: number, tileExtent: number): number => {
+function getBackgroundOffset(position: number, tileExtent: number): number {
 	const modulo = position % tileExtent;
 	return modulo < 0 ? modulo + tileExtent : modulo;
-};
+}
 
 export class CavernPresentationDirector extends ServiceMap.Service<
 	CavernPresentationDirector,
@@ -272,8 +272,8 @@ export class CavernPresentationDirector extends ServiceMap.Service<
 				"CavernPresentationDirector.drawCameraParallax",
 			)(function* () {
 				const camera = yield* sceneCamera.snapshot;
-				const offsetX = backgroundOffset(camera.position.x / 2, 512);
-				const offsetY = backgroundOffset(camera.position.y / 2, 512);
+				const offsetX = getBackgroundOffset(camera.position.x / 2, 512);
+				const offsetY = getBackgroundOffset(camera.position.y / 2, 512);
 				for (
 					let screenY = -512;
 					screenY < cavernViewport.height + 512;

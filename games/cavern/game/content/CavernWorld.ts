@@ -257,37 +257,42 @@ export const cavernRooms = {
 	},
 } as const satisfies Record<CavernRoomId, CavernRoomDefinition>;
 
-export const getCavernRoom = (roomId: CavernRoomId): CavernRoomDefinition =>
-	cavernRooms[roomId];
+export function getCavernRoom(roomId: CavernRoomId): CavernRoomDefinition {
+	return cavernRooms[roomId];
+}
 
-export const getPlayerVisualCenter = (
+export function getPlayerVisualCenter(
 	position: CameraVector,
 	playerSize: {
 		readonly height: number;
 		readonly width: number;
 	},
-): CameraVector => ({
-	x: position.x + playerSize.width / 2,
-	y: position.y + playerSize.height / 2,
-});
+): CameraVector {
+	return {
+		x: position.x + playerSize.width / 2,
+		y: position.y + playerSize.height / 2,
+	};
+}
 
-const halfVisibleWorld = (
+function getHalfVisibleWorld(
 	viewport: CameraViewport,
 	zoom: number,
 ): {
 	readonly height: number;
 	readonly width: number;
-} => ({
-	height: viewport.height / (2 * zoom),
-	width: viewport.width / (2 * zoom),
-});
+} {
+	return {
+		height: viewport.height / (2 * zoom),
+		width: viewport.width / (2 * zoom),
+	};
+}
 
-export const roomToCameraBounds = (
+export function getRoomCameraBounds(
 	room: CavernRoomDefinition,
 	viewport: CameraViewport,
 	zoom: number,
-): CameraBounds => {
-	const halfVisible = halfVisibleWorld(viewport, zoom);
+): CameraBounds {
+	const halfVisible = getHalfVisibleWorld(viewport, zoom);
 
 	return {
 		maxX: room.bounds.x + room.bounds.width - halfVisible.width,
@@ -295,23 +300,28 @@ export const roomToCameraBounds = (
 		minX: room.bounds.x + halfVisible.width,
 		minY: room.bounds.y + halfVisible.height,
 	};
-};
+}
 
-const overlapsOnAxis = (
+function doesOverlapOnAxis(
 	startA: number,
 	lengthA: number,
 	startB: number,
 	lengthB: number,
-): boolean => startA < startB + lengthB && startA + lengthA > startB;
+): boolean {
+	return startA < startB + lengthB && startA + lengthA > startB;
+}
 
-export const rectangleIntersects = (
+export function doesRectangleIntersect(
 	left: CavernRectangle,
 	right: CavernRectangle,
-): boolean =>
-	overlapsOnAxis(left.x, left.width, right.x, right.width) &&
-	overlapsOnAxis(left.y, left.height, right.y, right.height);
+): boolean {
+	return (
+		doesOverlapOnAxis(left.x, left.width, right.x, right.width) &&
+		doesOverlapOnAxis(left.y, left.height, right.y, right.height)
+	);
+}
 
-export const applyTransitionSpawn = (
+export function getTransitionSpawnPosition(
 	transition: CavernTransitionDefinition,
 	targetRoom: CavernRoomDefinition,
 	playerPosition: CameraVector,
@@ -319,23 +329,25 @@ export const applyTransitionSpawn = (
 		readonly height: number;
 		readonly width: number;
 	},
-): CameraVector => ({
-	x:
-		transition.spawnX === 0
-			? playerPosition.x
-			: transition.spawnX > 0
-				? transition.spawnX
-				: targetRoom.bounds.x +
-					targetRoom.bounds.width +
-					transition.spawnX -
-					playerSize.width,
-	y:
-		transition.spawnY === 0
-			? playerPosition.y
-			: transition.spawnY > 0
-				? transition.spawnY
-				: targetRoom.bounds.y +
-					targetRoom.bounds.height +
-					transition.spawnY -
-					playerSize.height,
-});
+): CameraVector {
+	return {
+		x:
+			transition.spawnX === 0
+				? playerPosition.x
+				: transition.spawnX > 0
+					? transition.spawnX
+					: targetRoom.bounds.x +
+						targetRoom.bounds.width +
+						transition.spawnX -
+						playerSize.width,
+		y:
+			transition.spawnY === 0
+				? playerPosition.y
+				: transition.spawnY > 0
+					? transition.spawnY
+					: targetRoom.bounds.y +
+						targetRoom.bounds.height +
+						transition.spawnY -
+						playerSize.height,
+	};
+}

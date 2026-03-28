@@ -87,6 +87,8 @@
 				z-index: 40;
 				display: flex;
 				align-items: center;
+				justify-content: space-between;
+				gap: 1rem;
 				padding: 1rem 1.5rem;
 				border-bottom: 1px solid var(--border);
 				background: rgba(7, 9, 14, 0.82);
@@ -100,6 +102,57 @@
 				font-size: 1.35rem;
 				font-weight: 700;
 				letter-spacing: 0.02em;
+			}
+
+			.topbar-links {
+				display: flex;
+				align-items: center;
+				justify-content: flex-end;
+				gap: 0.85rem;
+				flex-wrap: wrap;
+			}
+
+			.topbar-link {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				min-height: 2.45rem;
+				padding: 0.58rem 0.98rem;
+				border: 1px solid rgba(255, 255, 255, 0.1);
+				border-radius: 999px;
+				background:
+					linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+					rgba(255, 255, 255, 0.02);
+				box-shadow:
+					inset 0 1px 0 rgba(255, 255, 255, 0.08),
+					0 14px 28px rgba(0, 0, 0, 0.22);
+				color: rgba(243, 239, 228, 0.94);
+				font-family:
+					"Berkeley Mono", "SFMono-Regular", Consolas, "Liberation Mono",
+					Menlo, monospace;
+				font-size: 0.78rem;
+				font-weight: 700;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				transition:
+					transform 160ms ease,
+					border-color 160ms ease,
+					background 160ms ease,
+					color 160ms ease,
+					box-shadow 160ms ease;
+			}
+
+			.topbar-link:hover,
+			.topbar-link:focus-visible {
+				border-color: rgba(212, 255, 114, 0.45);
+				background:
+					linear-gradient(135deg, rgba(212, 255, 114, 0.18), rgba(154, 230, 180, 0.08)),
+					rgba(255, 255, 255, 0.04);
+				color: var(--accent-strong);
+				transform: translateY(-1px);
+				box-shadow:
+					inset 0 1px 0 rgba(255, 255, 255, 0.12),
+					0 18px 30px rgba(0, 0, 0, 0.28);
 			}
 
 			.brand-mark,
@@ -594,6 +647,15 @@
 			}
 
 			@media (max-width: 920px) {
+				.topbar {
+					flex-wrap: wrap;
+				}
+
+				.topbar-links {
+					width: 100%;
+					justify-content: flex-start;
+				}
+
 				.layout {
 					grid-template-columns: 1fr;
 				}
@@ -639,14 +701,147 @@
 					</div>
 					<span>effect2d Docs</span>
 				</a>
+				<nav class="topbar-links" aria-label="Primary">
+					<a class="topbar-link" href="#where-this-engine-shines">Ideas</a>
+					<a class="topbar-link" href="#quick-start">Quick Start</a>
+				</nav>
 			</header>
 			<div class="layout">
 				<aside class="sidebar">
 					<div class="sidebar-inner">
 						<p class="sidebar-label">Navigation</p>
 						<nav id="sidebar-nav">
-							<a class="nav-group-title" href="#introduction">Introduction</a>
+							<a class="nav-group-title" href="#introduction">Overview</a>
 							
+					<section class="nav-group">
+						<a class="nav-group-title" href="#animation">Animation</a>
+						
+										<div class="nav-file nav-file-flat">
+											
+											<a class="nav-entry" href="#animation-animationclip">
+												<span>AnimationClip</span>
+												<small class="nav-kind nav-kind-interface">interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-animationplaybackmode">
+												<span>AnimationPlaybackMode</span>
+												<small class="nav-kind nav-kind-type">type</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-animationdirection">
+												<span>AnimationDirection</span>
+												<small class="nav-kind nav-kind-type">type</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-animationplaybackstate">
+												<span>AnimationPlaybackState</span>
+												<small class="nav-kind nav-kind-interface">interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-animationtransition">
+												<span>AnimationTransition</span>
+												<small class="nav-kind nav-kind-interface">interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-scalartweenstate">
+												<span>ScalarTweenState</span>
+												<small class="nav-kind nav-kind-interface">interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-vec2">
+												<span>Vec2</span>
+												<small class="nav-kind nav-kind-interface">interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-vec2tweenstate">
+												<span>Vec2TweenState</span>
+												<small class="nav-kind nav-kind-interface">interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-tweeneasing">
+												<span>TweenEasing</span>
+												<small class="nav-kind nav-kind-type">type</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-defineanimationclip">
+												<span>defineAnimationClip</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-startanimation">
+												<span>startAnimation</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-getcurrentanimationframe">
+												<span>getCurrentAnimationFrame</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-pauseanimation">
+												<span>pauseAnimation</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-resumeanimation">
+												<span>resumeAnimation</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-setanimationdirection">
+												<span>setAnimationDirection</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-setanimationspeed">
+												<span>setAnimationSpeed</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-advanceanimation">
+												<span>advanceAnimation</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-transitionanimation">
+												<span>transitionAnimation</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-startscalartween">
+												<span>startScalarTween</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-getscalartweenvalue">
+												<span>getScalarTweenValue</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-advancescalartween">
+												<span>advanceScalarTween</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-startvec2tween">
+												<span>startVec2Tween</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-getvec2tweenvalue">
+												<span>getVec2TweenValue</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#animation-advancevec2tween">
+												<span>advanceVec2Tween</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+										</div>
+									
+					</section>
+				
 					<section class="nav-group">
 						<a class="nav-group-title" href="#audio">Audio</a>
 						
@@ -694,6 +889,96 @@
 										
 											<a class="nav-entry" href="#audio-audio">
 												<span>Audio</span>
+												<small class="nav-kind nav-kind-class">class</small>
+											</a>
+										
+										</div>
+									
+					</section>
+				
+					<section class="nav-group">
+						<a class="nav-group-title" href="#collision">Collision</a>
+						
+										<div class="nav-file">
+											<a class="nav-file-title" href="#collision-collisionworld-ts">CollisionWorld</a>
+											
+											<a class="nav-entry" href="#collision-aabb">
+												<span>Aabb</span>
+												<small class="nav-kind nav-kind-interface">interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#collision-circle">
+												<span>Circle</span>
+												<small class="nav-kind nav-kind-interface">interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#collision-collisiongroup">
+												<span>CollisionGroup</span>
+												<small class="nav-kind nav-kind-type">type</small>
+											</a>
+										
+											<a class="nav-entry" href="#collision-collisionmask">
+												<span>CollisionMask</span>
+												<small class="nav-kind nav-kind-type">type</small>
+											</a>
+										
+											<a class="nav-entry" href="#collision-collisionshape">
+												<span>CollisionShape</span>
+												<small class="nav-kind nav-kind-type">type</small>
+											</a>
+										
+											<a class="nav-entry" href="#collision-collisionbody">
+												<span>CollisionBody</span>
+												<small class="nav-kind nav-kind-interface">interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#collision-hitbox">
+												<span>Hitbox</span>
+												<small class="nav-kind nav-kind-interface">interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#collision-hurtbox">
+												<span>Hurtbox</span>
+												<small class="nav-kind nav-kind-interface">interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#collision-doesaabboverlap">
+												<span>doesAabbOverlap</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#collision-doescircleoverlap">
+												<span>doesCircleOverlap</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#collision-doesaabboverlapcircle">
+												<span>doesAabbOverlapCircle</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#collision-doesshapeoverlap">
+												<span>doesShapeOverlap</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#collision-gettileindex">
+												<span>getTileIndex</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#collision-gettileat">
+												<span>getTileAt</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#collision-issolidtileat">
+												<span>isSolidTileAt</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#collision-collisionworld">
+												<span>CollisionWorld</span>
 												<small class="nav-kind nav-kind-class">class</small>
 											</a>
 										
@@ -758,7 +1043,62 @@
 										
 											<a class="nav-entry" href="#graphics-makecamerastate">
 												<span>makeCameraState</span>
-												<small class="nav-kind nav-kind-const">const</small>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-setcameraviewport">
+												<span>setCameraViewport</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-setcamerabounds">
+												<span>setCameraBounds</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-setcameraposition">
+												<span>setCameraPosition</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-setcamerazoom">
+												<span>setCameraZoom</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-followcameratarget">
+												<span>followCameraTarget</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-updatecamerafollow">
+												<span>updateCameraFollow</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-startcamerashake">
+												<span>startCameraShake</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-updatecamerashake">
+												<span>updateCameraShake</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-getcamerashakeoffset">
+												<span>getCameraShakeOffset</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-getscreenpositionfromworld">
+												<span>getScreenPositionFromWorld</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#graphics-getworldpositionfromscreen">
+												<span>getWorldPositionFromScreen</span>
+												<small class="nav-kind nav-kind-function">function</small>
 											</a>
 										
 											<a class="nav-entry" href="#graphics-scenecamera">
@@ -935,29 +1275,29 @@
 										<div class="nav-file">
 											<a class="nav-file-title" href="#maps-mapqueries-ts">MapQueries</a>
 											
-											<a class="nav-entry" href="#maps-roomobjects">
-												<span>roomObjects</span>
-												<small class="nav-kind nav-kind-const">const</small>
+											<a class="nav-entry" href="#maps-getroomobjects">
+												<span>getRoomObjects</span>
+												<small class="nav-kind nav-kind-function">function</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-roomobjectbyid">
-												<span>roomObjectById</span>
-												<small class="nav-kind nav-kind-const">const</small>
+											<a class="nav-entry" href="#maps-getroomobjectbyid">
+												<span>getRoomObjectById</span>
+												<small class="nav-kind nav-kind-function">function</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-roomobjectsbykind">
-												<span>roomObjectsByKind</span>
-												<small class="nav-kind nav-kind-const">const</small>
+											<a class="nav-entry" href="#maps-getroomobjectsbykind">
+												<span>getRoomObjectsByKind</span>
+												<small class="nav-kind nav-kind-function">function</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-roomspawnpoints">
-												<span>roomSpawnPoints</span>
-												<small class="nav-kind nav-kind-const">const</small>
+											<a class="nav-entry" href="#maps-getroomspawnpoints">
+												<span>getRoomSpawnPoints</span>
+												<small class="nav-kind nav-kind-function">function</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-roomtransitionzones">
-												<span>roomTransitionZones</span>
-												<small class="nav-kind nav-kind-const">const</small>
+											<a class="nav-entry" href="#maps-getroomtransitionzones">
+												<span>getRoomTransitionZones</span>
+												<small class="nav-kind nav-kind-function">function</small>
 											</a>
 										
 										</div>
@@ -977,42 +1317,42 @@
 											
 											<a class="nav-entry" href="#maps-definetileplane">
 												<span>defineTilePlane</span>
-												<small class="nav-kind nav-kind-const">const</small>
+												<small class="nav-kind nav-kind-function">function</small>
 											</a>
 										
 											<a class="nav-entry" href="#maps-defineobjectplane">
 												<span>defineObjectPlane</span>
-												<small class="nav-kind nav-kind-const">const</small>
+												<small class="nav-kind nav-kind-function">function</small>
 											</a>
 										
 											<a class="nav-entry" href="#maps-defineroom">
 												<span>defineRoom</span>
-												<small class="nav-kind nav-kind-const">const</small>
+												<small class="nav-kind nav-kind-function">function</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-roomobject">
-												<span>roomObject</span>
-												<small class="nav-kind nav-kind-const">const</small>
+											<a class="nav-entry" href="#maps-defineroomobject">
+												<span>defineRoomObject</span>
+												<small class="nav-kind nav-kind-function">function</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-spawnpoint">
-												<span>spawnPoint</span>
-												<small class="nav-kind nav-kind-const">const</small>
+											<a class="nav-entry" href="#maps-createspawnpoint">
+												<span>createSpawnPoint</span>
+												<small class="nav-kind nav-kind-function">function</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-transitionzone">
-												<span>transitionZone</span>
-												<small class="nav-kind nav-kind-const">const</small>
+											<a class="nav-entry" href="#maps-createtransitionzone">
+												<span>createTransitionZone</span>
+												<small class="nav-kind nav-kind-function">function</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-triggerzone">
-												<span>triggerZone</span>
-												<small class="nav-kind nav-kind-const">const</small>
+											<a class="nav-entry" href="#maps-createtriggerzone">
+												<span>createTriggerZone</span>
+												<small class="nav-kind nav-kind-function">function</small>
 											</a>
 										
-											<a class="nav-entry" href="#maps-roommetadata">
-												<span>roomMetadata</span>
-												<small class="nav-kind nav-kind-const">const</small>
+											<a class="nav-entry" href="#maps-defineroommetadata">
+												<span>defineRoomMetadata</span>
+												<small class="nav-kind nav-kind-function">function</small>
 											</a>
 										
 										</div>
@@ -1052,12 +1392,12 @@
 										
 											<a class="nav-entry" href="#native-makeskianativebackendlayer">
 												<span>makeSkiaNativeBackendLayer</span>
-												<small class="nav-kind nav-kind-const">const</small>
+												<small class="nav-kind nav-kind-function">function</small>
 											</a>
 										
 											<a class="nav-entry" href="#native-makeskianativeboundarylayer">
 												<span>makeSkiaNativeBoundaryLayer</span>
-												<small class="nav-kind nav-kind-const">const</small>
+												<small class="nav-kind nav-kind-function">function</small>
 											</a>
 										
 										</div>
@@ -1097,12 +1437,12 @@
 											
 											<a class="nav-entry" href="#runtime-makeenginelayer">
 												<span>makeEngineLayer</span>
-												<small class="nav-kind nav-kind-const">const</small>
+												<small class="nav-kind nav-kind-function">function</small>
 											</a>
 										
 											<a class="nav-entry" href="#runtime-makeruntimelayer">
 												<span>makeRuntimeLayer</span>
-												<small class="nav-kind nav-kind-const">const</small>
+												<small class="nav-kind nav-kind-function">function</small>
 											</a>
 										
 											<a class="nav-entry" href="#runtime-engineprogram">
@@ -1112,7 +1452,7 @@
 										
 											<a class="nav-entry" href="#runtime-seededengineprogram">
 												<span>seededEngineProgram</span>
-												<small class="nav-kind nav-kind-const">const</small>
+												<small class="nav-kind nav-kind-function">function</small>
 											</a>
 										
 										</div>
@@ -1127,7 +1467,7 @@
 										
 											<a class="nav-entry" href="#runtime-withrandomseed">
 												<span>withRandomSeed</span>
-												<small class="nav-kind nav-kind-const">const</small>
+												<small class="nav-kind nav-kind-function">function</small>
 											</a>
 										
 										</div>
@@ -1279,6 +1619,11 @@
 						
 										<div class="nav-file nav-file-flat">
 											
+											<a class="nav-entry" href="#sequence-sequenceevent">
+												<span>SequenceEvent</span>
+												<small class="nav-kind nav-kind-type">type</small>
+											</a>
+										
 											<a class="nav-entry" href="#sequence-sequenceevents">
 												<span>SequenceEvents</span>
 												<small class="nav-kind nav-kind-class">class</small>
@@ -1500,7 +1845,7 @@ taking on a clear job:</p>
  main.ts # startup entrypoint
  README.md # notes for the game itself
 </code></pre>
-<h2 id="a-good-place-to-start">A good place to start</h2>
+<h2 id="quick-start">Quick Start</h2>
 <ol>
 <li>Start from <a href="#runtime-defaultengineconfig">defaultEngineConfig</a> and define your <code>gameId</code>,
 <code>startScene</code>, and tick rate.</li>
@@ -1522,6 +1867,344 @@ native desktop window.</li>
 						<h2 style="margin: 0; font-size: clamp(2.1rem, 4.4vw, 3.1rem); letter-spacing: -0.03em;">Modules</h2>
 						<div style="margin-top: 1.25rem;">
 							
+				<section class="content-section module-section" id="animation">
+					<div class="section-kicker">Module</div>
+					<h2>Animation</h2>
+					
+							<div class="file-group-entries file-group-entries-flat">
+								
+								<article
+									class="doc-entry"
+									id="animation-animationclip"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-interface">interface</span>
+										<a class="doc-source" href="#animation-animationclip">src/animation/Animation.ts:3</a>
+									</div>
+									<h4>AnimationClip</h4>
+									<div class="prose"><p>Author-time description of a named clip.</p>
+<p><code>Frame</code> is intentionally generic so the same helper can drive sprite-sheet
+frame indices, texture ids, or richer authored frame payloads.</p>
+<pre><code class="language-ts">const walk = defineAnimationClip({
+ id: &quot;walk&quot;,
+ frames: [0, 1, 2, 3],
+ framesPerSecond: 12,
+});
+</code></pre>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-animationplaybackmode"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-type">type</span>
+										<a class="doc-source" href="#animation-animationplaybackmode">src/animation/Animation.ts:25</a>
+									</div>
+									<h4>AnimationPlaybackMode</h4>
+									<div class="prose"><p>Playback behavior for the ends of a clip. <code>loop</code> wraps, <code>once</code> stops.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-animationdirection"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-type">type</span>
+										<a class="doc-source" href="#animation-animationdirection">src/animation/Animation.ts:28</a>
+									</div>
+									<h4>AnimationDirection</h4>
+									<div class="prose"><p>Direction the clip advances through its <code>frames</code> array.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-animationplaybackstate"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-interface">interface</span>
+										<a class="doc-source" href="#animation-animationplaybackstate">src/animation/Animation.ts:31</a>
+									</div>
+									<h4>AnimationPlaybackState</h4>
+									<div class="prose"><p>Runtime state for a playing clip.</p>
+<p>This is a pure data value, so gameplay code can keep it in its own state
+service and advance it each tick without depending on a runtime singleton.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-animationtransition"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-interface">interface</span>
+										<a class="doc-source" href="#animation-animationtransition">src/animation/Animation.ts:49</a>
+									</div>
+									<h4>AnimationTransition</h4>
+									<div class="prose"><p>Result of switching from one clip to another.</p>
+<p><code>preservePlayback</code> keeps direction, mode, speed, and elapsed playback when a
+state machine wants the next clip to inherit momentum from the previous one.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-scalartweenstate"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-interface">interface</span>
+										<a class="doc-source" href="#animation-scalartweenstate">src/animation/Animation.ts:70</a>
+									</div>
+									<h4>ScalarTweenState</h4>
+									<div class="prose"><p>Runtime state for a scalar tween created with <a href="#animation-startscalartween">startScalarTween</a>.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-vec2"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-interface">interface</span>
+										<a class="doc-source" href="#animation-vec2">src/animation/Animation.ts:80</a>
+									</div>
+									<h4>Vec2</h4>
+									<div class="prose"><p>Minimal 2D vector used by the tween helpers in this module.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-vec2tweenstate"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-interface">interface</span>
+										<a class="doc-source" href="#animation-vec2tweenstate">src/animation/Animation.ts:86</a>
+									</div>
+									<h4>Vec2TweenState</h4>
+									<div class="prose"><p>Runtime state for a 2D tween created with <a href="#animation-startvec2tween">startVec2Tween</a>.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-tweeneasing"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-type">type</span>
+										<a class="doc-source" href="#animation-tweeneasing">src/animation/Animation.ts:96</a>
+									</div>
+									<h4>TweenEasing</h4>
+									<div class="prose"><p>Supported tween easing names. <code>linear</code> is constant speed. <code>ease-in-out-quad</code> eases both ends.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-defineanimationclip"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#animation-defineanimationclip">src/animation/Animation.ts:128</a>
+									</div>
+									<h4>defineAnimationClip</h4>
+									<div class="prose"><p>Identity helper that preserves clip inference at the call site.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-startanimation"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#animation-startanimation">src/animation/Animation.ts:139</a>
+									</div>
+									<h4>startAnimation</h4>
+									<div class="prose"><p>Creates initial playback state for a clip.</p>
+<pre><code class="language-ts">const state = startAnimation(walk, { mode: &quot;loop&quot;, speed: 1 });
+</code></pre>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-getcurrentanimationframe"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#animation-getcurrentanimationframe">src/animation/Animation.ts:170</a>
+									</div>
+									<h4>getCurrentAnimationFrame</h4>
+									<div class="prose"><p>Reads the frame payload currently selected by the playback state.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-pauseanimation"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#animation-pauseanimation">src/animation/Animation.ts:177</a>
+									</div>
+									<h4>pauseAnimation</h4>
+									<div class="prose"><p>Returns a copy of the state with playback halted at the current frame.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-resumeanimation"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#animation-resumeanimation">src/animation/Animation.ts:187</a>
+									</div>
+									<h4>resumeAnimation</h4>
+									<div class="prose"><p>Returns a copy of the state with playback resumed.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-setanimationdirection"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#animation-setanimationdirection">src/animation/Animation.ts:197</a>
+									</div>
+									<h4>setAnimationDirection</h4>
+									<div class="prose"><p>Switches only the playback direction without resetting elapsed time.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-setanimationspeed"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#animation-setanimationspeed">src/animation/Animation.ts:208</a>
+									</div>
+									<h4>setAnimationSpeed</h4>
+									<div class="prose"><p>Clamps the speed to zero or above and keeps the rest of the state intact.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-advanceanimation"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#animation-advanceanimation">src/animation/Animation.ts:219</a>
+									</div>
+									<h4>advanceAnimation</h4>
+									<div class="prose"><p>Advances playback by a fixed amount of simulated time.</p>
+<p>Most games call this once per update tick with the same <code>deltaSeconds</code> value
+they use for their gameplay simulation.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-transitionanimation"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#animation-transitionanimation">src/animation/Animation.ts:278</a>
+									</div>
+									<h4>transitionAnimation</h4>
+									<div class="prose"><p>Builds the next clip state when an animation state machine changes clips.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-startscalartween"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#animation-startscalartween">src/animation/Animation.ts:311</a>
+									</div>
+									<h4>startScalarTween</h4>
+									<div class="prose"><p>Creates a tween that moves from one scalar value to another over time.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-getscalartweenvalue"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#animation-getscalartweenvalue">src/animation/Animation.ts:332</a>
+									</div>
+									<h4>getScalarTweenValue</h4>
+									<div class="prose"><p>Evaluates the current scalar tween value.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-advancescalartween"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#animation-advancescalartween">src/animation/Animation.ts:348</a>
+									</div>
+									<h4>advanceScalarTween</h4>
+									<div class="prose"><p>Advances a scalar tween by <code>deltaSeconds</code>.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-startvec2tween"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#animation-startvec2tween">src/animation/Animation.ts:369</a>
+									</div>
+									<h4>startVec2Tween</h4>
+									<div class="prose"><p>Creates a tween between two 2D points.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-getvec2tweenvalue"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#animation-getvec2tweenvalue">src/animation/Animation.ts:390</a>
+									</div>
+									<h4>getVec2TweenValue</h4>
+									<div class="prose"><p>Evaluates the current 2D tween value.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="animation-advancevec2tween"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#animation-advancevec2tween">src/animation/Animation.ts:409</a>
+									</div>
+									<h4>advanceVec2Tween</h4>
+									<div class="prose"><p>Advances a 2D tween by <code>deltaSeconds</code>.</p>
+</div>
+								</article>
+							
+							</div>
+						
+				</section>
+			
 				<section class="content-section module-section" id="audio">
 					<div class="section-kicker">Module</div>
 					<h2>Audio</h2>
@@ -1658,6 +2341,241 @@ backends.</p>
 						
 				</section>
 			
+				<section class="content-section module-section" id="collision">
+					<div class="section-kicker">Module</div>
+					<h2>Collision</h2>
+					
+							<section class="file-group" id="collision-collisionworld-ts">
+								<header class="file-group-header">
+									<p class="file-path">src/collision/CollisionWorld.ts</p>
+									<h3>CollisionWorld</h3>
+								</header>
+								<div class="file-group-entries">
+									
+								<article
+									class="doc-entry"
+									id="collision-aabb"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-interface">interface</span>
+										<a class="doc-source" href="#collision-aabb">src/collision/CollisionWorld.ts:3</a>
+									</div>
+									<h4>Aabb</h4>
+									<div class="prose"><p>Axis-aligned bounding box collision shape.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="collision-circle"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-interface">interface</span>
+										<a class="doc-source" href="#collision-circle">src/collision/CollisionWorld.ts:11</a>
+									</div>
+									<h4>Circle</h4>
+									<div class="prose"><p>Circle collision shape described by center position and radius.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="collision-collisiongroup"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-type">type</span>
+										<a class="doc-source" href="#collision-collisiongroup">src/collision/CollisionWorld.ts:18</a>
+									</div>
+									<h4>CollisionGroup</h4>
+									<div class="prose"><p>Free-form collision channel name such as <code>&quot;player&quot;</code>, <code>&quot;enemy&quot;</code>, or <code>&quot;wall&quot;</code>.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="collision-collisionmask"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-type">type</span>
+										<a class="doc-source" href="#collision-collisionmask">src/collision/CollisionWorld.ts:21</a>
+									</div>
+									<h4>CollisionMask</h4>
+									<div class="prose"><p>List of groups a query or body should interact with. An empty mask means &quot;match every group&quot;.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="collision-collisionshape"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-type">type</span>
+										<a class="doc-source" href="#collision-collisionshape">src/collision/CollisionWorld.ts:24</a>
+									</div>
+									<h4>CollisionShape</h4>
+									<div class="prose"><p>Supported collision shape variants.</p>
+<p>Available kinds:</p>
+<ul>
+<li><code>aabb</code></li>
+<li><code>circle</code></li>
+</ul>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="collision-collisionbody"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-interface">interface</span>
+										<a class="doc-source" href="#collision-collisionbody">src/collision/CollisionWorld.ts:43</a>
+									</div>
+									<h4>CollisionBody</h4>
+									<div class="prose"><p>Registered collision participant stored in the world.</p>
+<p><code>isTrigger</code> bodies are reported by overlap queries but are ignored by
+<code>collidesWithSolid</code>.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="collision-hitbox"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-interface">interface</span>
+										<a class="doc-source" href="#collision-hitbox">src/collision/CollisionWorld.ts:59</a>
+									</div>
+									<h4>Hitbox</h4>
+									<div class="prose"><p>Conventional damage-dealing body payload used by gameplay code on top of the core collision types.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="collision-hurtbox"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-interface">interface</span>
+										<a class="doc-source" href="#collision-hurtbox">src/collision/CollisionWorld.ts:65</a>
+									</div>
+									<h4>Hurtbox</h4>
+									<div class="prose"><p>Conventional recipient body payload used by gameplay code on top of the core collision types.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="collision-doesaabboverlap"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#collision-doesaabboverlap">src/collision/CollisionWorld.ts:78</a>
+									</div>
+									<h4>doesAabbOverlap</h4>
+									<div class="prose"><p>Pure overlap test for two axis-aligned rectangles.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="collision-doescircleoverlap"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#collision-doescircleoverlap">src/collision/CollisionWorld.ts:88</a>
+									</div>
+									<h4>doesCircleOverlap</h4>
+									<div class="prose"><p>Pure overlap test for two circles.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="collision-doesaabboverlapcircle"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#collision-doesaabboverlapcircle">src/collision/CollisionWorld.ts:97</a>
+									</div>
+									<h4>doesAabbOverlapCircle</h4>
+									<div class="prose"><p>Pure overlap test between an axis-aligned rectangle and a circle.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="collision-doesshapeoverlap"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#collision-doesshapeoverlap">src/collision/CollisionWorld.ts:107</a>
+									</div>
+									<h4>doesShapeOverlap</h4>
+									<div class="prose"><p>Pure overlap test that dispatches to the correct shape-specific algorithm.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="collision-gettileindex"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#collision-gettileindex">src/collision/CollisionWorld.ts:131</a>
+									</div>
+									<h4>getTileIndex</h4>
+									<div class="prose"><p>Converts a 2D tile coordinate into a flat row-major array index.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="collision-gettileat"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#collision-gettileat">src/collision/CollisionWorld.ts:136</a>
+									</div>
+									<h4>getTileAt</h4>
+									<div class="prose"><p>Reads one tile id from a flat row-major tile array.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="collision-issolidtileat"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#collision-issolidtileat">src/collision/CollisionWorld.ts:146</a>
+									</div>
+									<h4>isSolidTileAt</h4>
+									<div class="prose"><p>Returns whether the addressed tile exists and belongs to the provided solid tile set.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="collision-collisionworld"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-class">class</span>
+										<a class="doc-source" href="#collision-collisionworld">src/collision/CollisionWorld.ts:158</a>
+									</div>
+									<h4>CollisionWorld</h4>
+									<div class="prose"><p>Minimal in-memory collision registry and overlap query service.</p>
+<p>This service is intentionally small: it tracks authored bodies, answers
+overlap queries, and distinguishes trigger-only bodies from solid bodies.
+It is a good fit for room-scale gameplay where collisions are explicit and
+testable rather than delegated to a heavyweight physics engine.</p>
+</div>
+								</article>
+							
+								</div>
+							</section>
+						
+				</section>
+			
 				<section class="content-section module-section" id="cutscene">
 					<div class="section-kicker">Module</div>
 					<h2>Cutscene</h2>
@@ -1686,7 +2604,7 @@ backends.</p>
 										<a class="doc-source" href="#cutscene-dialoguescriptoptions">src/cutscene/Cutscene.ts:27</a>
 									</div>
 									<h4>DialogueScriptOptions</h4>
-									<div class="prose"><p>Options for paginating authored dialogue text.</p>
+									<div class="prose"><p>Options for paginating authored dialogue text into pages that fit a dialogue box.</p>
 </div>
 								</article>
 							
@@ -1701,6 +2619,9 @@ backends.</p>
 									<h4>Cutscene</h4>
 									<div class="prose"><p>A higher-level cinematic helper built on top of <a href="#sequence-sequence">Sequence</a> and
 <a href="#ui-ui">Ui</a>.</p>
+<p>Reach for <code>Cutscene</code> when you want a friendlier API around dialogue prep and
+scene-sequence operations, but still want to stay inside ordinary Effect
+programs.</p>
 </div>
 								</article>
 							
@@ -1728,7 +2649,7 @@ backends.</p>
 										<a class="doc-source" href="#graphics-cameravector">src/graphics/Camera.ts:3</a>
 									</div>
 									<h4>CameraVector</h4>
-									<div class="prose"><p>A 2D point or vector used by the camera API.</p>
+									<div class="prose"><p>A 2D point or vector used by the camera API. World and screen coordinates both use this shape.</p>
 </div>
 								</article>
 							
@@ -1742,6 +2663,8 @@ backends.</p>
 									</div>
 									<h4>CameraBounds</h4>
 									<div class="prose"><p>Bounds that clamp the camera's focal position.</p>
+<p>These bounds constrain the camera center, not the top-left corner of the
+viewport.</p>
 </div>
 								</article>
 							
@@ -1751,10 +2674,10 @@ backends.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#graphics-cameraviewport">src/graphics/Camera.ts:21</a>
+										<a class="doc-source" href="#graphics-cameraviewport">src/graphics/Camera.ts:24</a>
 									</div>
 									<h4>CameraViewport</h4>
-									<div class="prose"><p>The authored viewport the camera projects into.</p>
+									<div class="prose"><p>The authored viewport the camera projects into. This is usually your game's internal render resolution.</p>
 </div>
 								</article>
 							
@@ -1764,10 +2687,10 @@ backends.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#graphics-camerashakestate">src/graphics/Camera.ts:27</a>
+										<a class="doc-source" href="#graphics-camerashakestate">src/graphics/Camera.ts:30</a>
 									</div>
 									<h4>CameraShakeState</h4>
-									<div class="prose"><p>Transient screen-shake metadata.</p>
+									<div class="prose"><p>Transient screen-shake metadata managed by the pure shake helpers in this module.</p>
 </div>
 								</article>
 							
@@ -1777,10 +2700,11 @@ backends.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#graphics-camerastate">src/graphics/Camera.ts:34</a>
+										<a class="doc-source" href="#graphics-camerastate">src/graphics/Camera.ts:37</a>
 									</div>
 									<h4>CameraState</h4>
 									<div class="prose"><p>A complete snapshot of camera state.</p>
+<p><code>position</code> is the current camera center in world space.</p>
 </div>
 								</article>
 							
@@ -1789,11 +2713,159 @@ backends.</p>
 									id="graphics-makecamerastate"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#graphics-makecamerastate">src/graphics/Camera.ts:65</a>
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#graphics-makecamerastate">src/graphics/Camera.ts:71</a>
 									</div>
 									<h4>makeCameraState</h4>
 									<div class="prose"><p>Creates an initial camera state value.</p>
+<pre><code class="language-ts">const camera = makeCameraState({
+ viewport: { width: 320, height: 180 },
+ zoom: 2,
+});
+</code></pre>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-setcameraviewport"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#graphics-setcameraviewport">src/graphics/Camera.ts:105</a>
+									</div>
+									<h4>setCameraViewport</h4>
+									<div class="prose"><p>Replaces the camera viewport without changing position or zoom.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-setcamerabounds"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#graphics-setcamerabounds">src/graphics/Camera.ts:116</a>
+									</div>
+									<h4>setCameraBounds</h4>
+									<div class="prose"><p>Sets or clears camera clamping bounds and immediately reclamps the current position.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-setcameraposition"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#graphics-setcameraposition">src/graphics/Camera.ts:128</a>
+									</div>
+									<h4>setCameraPosition</h4>
+									<div class="prose"><p>Moves the camera to a world-space position, respecting bounds when present.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-setcamerazoom"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#graphics-setcamerazoom">src/graphics/Camera.ts:139</a>
+									</div>
+									<h4>setCameraZoom</h4>
+									<div class="prose"><p>Changes zoom while enforcing a tiny positive minimum to avoid invalid projection math.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-followcameratarget"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#graphics-followcameratarget">src/graphics/Camera.ts:147</a>
+									</div>
+									<h4>followCameraTarget</h4>
+									<div class="prose"><p>Starts or stops following a world-space target. When a target is set, position snaps to it immediately.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-updatecamerafollow"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#graphics-updatecamerafollow">src/graphics/Camera.ts:160</a>
+									</div>
+									<h4>updateCameraFollow</h4>
+									<div class="prose"><p>Applies the current follow target to the camera position for this tick.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-startcamerashake"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#graphics-startcamerashake">src/graphics/Camera.ts:170</a>
+									</div>
+									<h4>startCameraShake</h4>
+									<div class="prose"><p>Starts a simple decay-based shake effect.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-updatecamerashake"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#graphics-updatecamerashake">src/graphics/Camera.ts:186</a>
+									</div>
+									<h4>updateCameraShake</h4>
+									<div class="prose"><p>Advances shake timing and clears the shake once its duration expires.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-getcamerashakeoffset"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#graphics-getcamerashakeoffset">src/graphics/Camera.ts:212</a>
+									</div>
+									<h4>getCameraShakeOffset</h4>
+									<div class="prose"><p>Computes the current shake offset that will be applied during projection.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-getscreenpositionfromworld"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#graphics-getscreenpositionfromworld">src/graphics/Camera.ts:228</a>
+									</div>
+									<h4>getScreenPositionFromWorld</h4>
+									<div class="prose"><p>Projects a world-space point into screen space using the current position, zoom, and shake offset.</p>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="graphics-getworldpositionfromscreen"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#graphics-getworldpositionfromscreen">src/graphics/Camera.ts:244</a>
+									</div>
+									<h4>getWorldPositionFromScreen</h4>
+									<div class="prose"><p>Converts a screen-space point back into world space using the current camera state.</p>
 </div>
 								</article>
 							
@@ -1803,7 +2875,7 @@ backends.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-class">class</span>
-										<a class="doc-source" href="#graphics-scenecamera">src/graphics/Camera.ts:226</a>
+										<a class="doc-source" href="#graphics-scenecamera">src/graphics/Camera.ts:262</a>
 									</div>
 									<h4>SceneCamera</h4>
 									<div class="prose"><p>A scene-local camera service for authored gameplay and presentation logic.</p>
@@ -1866,7 +2938,7 @@ functions in this module. Game code typically uses it to:</p>
 										<a class="doc-source" href="#graphics-blendmode">src/graphics/Graphics.ts:30</a>
 									</div>
 									<h4>BlendMode</h4>
-									<div class="prose"><p>Supported compositing modes for subsequent draw commands.</p>
+									<div class="prose"><p>Supported compositing modes for subsequent draw commands: <code>alpha</code>, <code>add</code>, and <code>multiply</code>.</p>
 </div>
 								</article>
 							
@@ -1879,7 +2951,7 @@ functions in this module. Game code typically uses it to:</p>
 										<a class="doc-source" href="#graphics-rectangledrawmode">src/graphics/Graphics.ts:33</a>
 									</div>
 									<h4>RectangleDrawMode</h4>
-									<div class="prose"><p>Supported rectangle rendering modes.</p>
+									<div class="prose"><p>Rectangle draw styles. <code>fill</code> paints the interior, <code>stroke</code> draws only the outline.</p>
 </div>
 								</article>
 							
@@ -1892,7 +2964,7 @@ functions in this module. Game code typically uses it to:</p>
 										<a class="doc-source" href="#graphics-circledrawmode">src/graphics/Graphics.ts:36</a>
 									</div>
 									<h4>CircleDrawMode</h4>
-									<div class="prose"><p>Supported circle rendering modes.</p>
+									<div class="prose"><p>Circle draw styles. <code>fill</code> paints the interior, <code>stroke</code> draws only the outline.</p>
 </div>
 								</article>
 							
@@ -1906,6 +2978,8 @@ functions in this module. Game code typically uses it to:</p>
 									</div>
 									<h4>DrawTextOptions</h4>
 									<div class="prose"><p>Parameters for a text draw command.</p>
+<p><code>align</code> controls how the text is anchored at <code>position</code>. Supplying <code>fontId</code>
+lets the native backend pick an authored bitmap or custom font.</p>
 </div>
 								</article>
 							
@@ -1915,7 +2989,7 @@ functions in this module. Game code typically uses it to:</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-type">type</span>
-										<a class="doc-source" href="#graphics-drawcommand">src/graphics/Graphics.ts:51</a>
+										<a class="doc-source" href="#graphics-drawcommand">src/graphics/Graphics.ts:54</a>
 									</div>
 									<h4>DrawCommand</h4>
 									<div class="prose"><p>A serializable render command recorded by <a href="#graphics-graphics">Graphics</a>.</p>
@@ -1931,10 +3005,12 @@ constructing <code>DrawCommand</code> objects directly.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#graphics-framesnapshot">src/graphics/Graphics.ts:130</a>
+										<a class="doc-source" href="#graphics-framesnapshot">src/graphics/Graphics.ts:133</a>
 									</div>
 									<h4>FrameSnapshot</h4>
 									<div class="prose"><p>The graphics frame currently being recorded or most recently completed.</p>
+<p><code>transformDepth</code> is especially useful in tests because it tells you whether
+a presentation system forgot to balance <code>pushTransform</code> and <code>popTransform</code>.</p>
 </div>
 								</article>
 							
@@ -1944,7 +3020,7 @@ constructing <code>DrawCommand</code> objects directly.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-class">class</span>
-										<a class="doc-source" href="#graphics-graphicsframenotopenerror">src/graphics/Graphics.ts:164</a>
+										<a class="doc-source" href="#graphics-graphicsframenotopenerror">src/graphics/Graphics.ts:170</a>
 									</div>
 									<h4>GraphicsFrameNotOpenError</h4>
 									<div class="prose"><p>Indicates that game code attempted to record graphics commands without first
@@ -1958,7 +3034,7 @@ opening a frame.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-class">class</span>
-										<a class="doc-source" href="#graphics-graphicstransformstackunderflowerror">src/graphics/Graphics.ts:177</a>
+										<a class="doc-source" href="#graphics-graphicstransformstackunderflowerror">src/graphics/Graphics.ts:183</a>
 									</div>
 									<h4>GraphicsTransformStackUnderflowError</h4>
 									<div class="prose"><p>Indicates that more transforms were popped than pushed during a frame.</p>
@@ -1971,7 +3047,7 @@ opening a frame.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-class">class</span>
-										<a class="doc-source" href="#graphics-graphics">src/graphics/Graphics.ts:216</a>
+										<a class="doc-source" href="#graphics-graphics">src/graphics/Graphics.ts:222</a>
 									</div>
 									<h4>Graphics</h4>
 									<div class="prose"><p>Records immediate-mode rendering commands for the current frame.</p>
@@ -2021,7 +3097,7 @@ same deterministic recording model</li>
 										<a class="doc-source" href="#input-keycode">src/input/Input.ts:3</a>
 									</div>
 									<h4>KeyCode</h4>
-									<div class="prose"><p>Keyboard key identifiers as reported by the native backend.</p>
+									<div class="prose"><p>Keyboard key identifiers as reported by the active native backend.</p>
 </div>
 								</article>
 							
@@ -2061,6 +3137,14 @@ same deterministic recording model</li>
 									</div>
 									<h4>InputEvent</h4>
 									<div class="prose"><p>A raw native input event captured during the current frame.</p>
+<p>Available event variants:</p>
+<ul>
+<li><code>key-down</code> and <code>key-up</code></li>
+<li><code>mouse-down</code> and <code>mouse-up</code></li>
+<li><code>mouse-move</code></li>
+<li><code>wheel</code></li>
+<li><code>text-input</code></li>
+</ul>
 </div>
 								</article>
 							
@@ -2070,10 +3154,15 @@ same deterministic recording model</li>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-type">type</span>
-										<a class="doc-source" href="#input-inputtrigger">src/input/Input.ts:43</a>
+										<a class="doc-source" href="#input-inputtrigger">src/input/Input.ts:50</a>
 									</div>
 									<h4>InputTrigger</h4>
 									<div class="prose"><p>A declarative trigger that can activate a named gameplay action.</p>
+<p>Available trigger kinds:</p>
+<ul>
+<li><code>key</code></li>
+<li><code>mouse-button</code></li>
+</ul>
 </div>
 								</article>
 							
@@ -2083,10 +3172,17 @@ same deterministic recording model</li>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#input-actionbinding">src/input/Input.ts:58</a>
+										<a class="doc-source" href="#input-actionbinding">src/input/Input.ts:69</a>
 									</div>
 									<h4>ActionBinding</h4>
 									<div class="prose"><p>Maps a named gameplay action to one or more low-level triggers.</p>
+<p>This is the point where you translate native details into domain language
+like <code>&quot;jump&quot;</code>, <code>&quot;pause&quot;</code>, or <code>&quot;confirm&quot;</code>.</p>
+<pre><code class="language-ts">const jumpBinding: ActionBinding = {
+ action: &quot;jump&quot;,
+ triggers: [{ type: &quot;key&quot;, key: &quot;Space&quot; }],
+};
+</code></pre>
 </div>
 								</article>
 							
@@ -2096,10 +3192,12 @@ same deterministic recording model</li>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#input-actionstate">src/input/Input.ts:68</a>
+										<a class="doc-source" href="#input-actionstate">src/input/Input.ts:89</a>
 									</div>
 									<h4>ActionState</h4>
 									<div class="prose"><p>The derived state of a named gameplay action for the current frame.</p>
+<p><code>justPressed</code> and <code>justReleased</code> are edge-triggered for the current frame,
+while <code>isPressed</code> stays true until the trigger is released or consumed.</p>
 </div>
 								</article>
 							
@@ -2109,10 +3207,12 @@ same deterministic recording model</li>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#input-inputsnapshot">src/input/Input.ts:81</a>
+										<a class="doc-source" href="#input-inputsnapshot">src/input/Input.ts:105</a>
 									</div>
 									<h4>InputSnapshot</h4>
 									<div class="prose"><p>A frame-local snapshot of raw input state.</p>
+<p>This is most useful for pointer-heavy tools, text entry, or tests that need
+to inspect the exact events captured during a frame.</p>
 </div>
 								</article>
 							
@@ -2122,7 +3222,7 @@ same deterministic recording model</li>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-class">class</span>
-										<a class="doc-source" href="#input-input">src/input/Input.ts:289</a>
+										<a class="doc-source" href="#input-input">src/input/Input.ts:319</a>
 									</div>
 									<h4>Input</h4>
 									<div class="prose"><p>The engine's action-oriented input service.</p>
@@ -2164,7 +3264,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-roommetadata">src/maps/MapContent.ts:1</a>
 									</div>
 									<h4>RoomMetadata</h4>
-									<div class="prose"><p>Free-form metadata attached to a room or room object.</p>
+									<div class="prose"><p>Free-form metadata attached to a room or room object. Use this for authored data your own game understands.</p>
 </div>
 								</article>
 							
@@ -2177,7 +3277,7 @@ tests and native boundaries drive input deterministically.</p>
 										<a class="doc-source" href="#maps-tileplane">src/maps/MapContent.ts:4</a>
 									</div>
 									<h4>TilePlane</h4>
-									<div class="prose"><p>A dense tile plane authored for a room.</p>
+									<div class="prose"><p>A dense tile plane authored for a room. Tiles are stored in row-major order.</p>
 </div>
 								</article>
 							
@@ -2191,6 +3291,8 @@ tests and native boundaries drive input deterministically.</p>
 									</div>
 									<h4>RoomObject</h4>
 									<div class="prose"><p>A positioned authored room object.</p>
+<p><code>kind</code> is the extension point your game usually switches on when translating
+room content into gameplay entities.</p>
 </div>
 								</article>
 							
@@ -2200,10 +3302,10 @@ tests and native boundaries drive input deterministically.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#maps-objectplane">src/maps/MapContent.ts:23</a>
+										<a class="doc-source" href="#maps-objectplane">src/maps/MapContent.ts:30</a>
 									</div>
 									<h4>ObjectPlane</h4>
-									<div class="prose"><p>A named collection of room objects.</p>
+									<div class="prose"><p>A named collection of room objects, often used to separate gameplay objects from editor-only helpers or decorative markers.</p>
 </div>
 								</article>
 							
@@ -2213,10 +3315,12 @@ tests and native boundaries drive input deterministically.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#maps-roomcontent">src/maps/MapContent.ts:29</a>
+										<a class="doc-source" href="#maps-roomcontent">src/maps/MapContent.ts:36</a>
 									</div>
 									<h4>RoomContent</h4>
 									<div class="prose"><p>The canonical authored representation of a room.</p>
+<p>A room combines tile planes, object planes, and optional metadata into one
+value that can be validated, queried, serialized, and loaded into gameplay.</p>
 </div>
 								</article>
 							
@@ -2226,10 +3330,10 @@ tests and native boundaries drive input deterministically.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#maps-spawnpoint">src/maps/MapContent.ts:37</a>
+										<a class="doc-source" href="#maps-spawnpoint">src/maps/MapContent.ts:51</a>
 									</div>
 									<h4>SpawnPoint</h4>
-									<div class="prose"><p>A room object that identifies a spawn location.</p>
+									<div class="prose"><p>A room object that identifies a spawn location. The required metadata key is <code>spawnId</code>.</p>
 </div>
 								</article>
 							
@@ -2239,10 +3343,10 @@ tests and native boundaries drive input deterministically.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#maps-transitionzone">src/maps/MapContent.ts:46</a>
+										<a class="doc-source" href="#maps-transitionzone">src/maps/MapContent.ts:60</a>
 									</div>
 									<h4>TransitionZone</h4>
-									<div class="prose"><p>A room object that moves the player to another room.</p>
+									<div class="prose"><p>A room object that moves the player to another room. <code>targetSpawnId</code> lets the destination room choose which spawn point to use.</p>
 </div>
 								</article>
 							
@@ -2252,10 +3356,10 @@ tests and native boundaries drive input deterministically.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#maps-triggerzone">src/maps/MapContent.ts:56</a>
+										<a class="doc-source" href="#maps-triggerzone">src/maps/MapContent.ts:70</a>
 									</div>
 									<h4>TriggerZone</h4>
-									<div class="prose"><p>A generic authored trigger zone.</p>
+									<div class="prose"><p>A generic authored trigger zone for game-defined interactions that are not special-cased by the map helpers.</p>
 </div>
 								</article>
 							
@@ -2271,65 +3375,65 @@ tests and native boundaries drive input deterministically.</p>
 									
 								<article
 									class="doc-entry"
-									id="maps-roomobjects"
+									id="maps-getroomobjects"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#maps-roomobjects">src/maps/MapQueries.ts:8</a>
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#maps-getroomobjects">src/maps/MapQueries.ts:8</a>
 									</div>
-									<h4>roomObjects</h4>
-									<div class="prose"><p>Returns every authored object across all object planes in a room.</p>
+									<h4>getRoomObjects</h4>
+									<div class="prose"><p>Returns every authored object across all object planes in a room. Use this when plane boundaries do not matter to the query you are writing.</p>
 </div>
 								</article>
 							
 								<article
 									class="doc-entry"
-									id="maps-roomobjectbyid"
+									id="maps-getroomobjectbyid"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#maps-roomobjectbyid">src/maps/MapQueries.ts:12</a>
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#maps-getroomobjectbyid">src/maps/MapQueries.ts:13</a>
 									</div>
-									<h4>roomObjectById</h4>
+									<h4>getRoomObjectById</h4>
 									<div class="prose"><p>Finds one authored room object by id.</p>
 </div>
 								</article>
 							
 								<article
 									class="doc-entry"
-									id="maps-roomobjectsbykind"
+									id="maps-getroomobjectsbykind"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#maps-roomobjectsbykind">src/maps/MapQueries.ts:19</a>
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#maps-getroomobjectsbykind">src/maps/MapQueries.ts:21</a>
 									</div>
-									<h4>roomObjectsByKind</h4>
-									<div class="prose"><p>Filters room objects by authored kind.</p>
+									<h4>getRoomObjectsByKind</h4>
+									<div class="prose"><p>Filters room objects by authored <code>kind</code>, which is useful for game-specific object families in addition to the built-in helpers below.</p>
 </div>
 								</article>
 							
 								<article
 									class="doc-entry"
-									id="maps-roomspawnpoints"
+									id="maps-getroomspawnpoints"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#maps-roomspawnpoints">src/maps/MapQueries.ts:26</a>
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#maps-getroomspawnpoints">src/maps/MapQueries.ts:29</a>
 									</div>
-									<h4>roomSpawnPoints</h4>
+									<h4>getRoomSpawnPoints</h4>
 									<div class="prose"><p>Returns all authored spawn points in a room.</p>
 </div>
 								</article>
 							
 								<article
 									class="doc-entry"
-									id="maps-roomtransitionzones"
+									id="maps-getroomtransitionzones"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#maps-roomtransitionzones">src/maps/MapQueries.ts:30</a>
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#maps-getroomtransitionzones">src/maps/MapQueries.ts:36</a>
 									</div>
-									<h4>roomTransitionZones</h4>
+									<h4>getRoomTransitionZones</h4>
 									<div class="prose"><p>Returns all authored transition zones in a room.</p>
 </div>
 								</article>
@@ -2372,11 +3476,11 @@ tests and native boundaries drive input deterministically.</p>
 									id="maps-definetileplane"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-const">const</span>
+										<span class="doc-kind doc-kind-function">function</span>
 										<a class="doc-source" href="#maps-definetileplane">src/maps/RoomBuilder.ts:12</a>
 									</div>
 									<h4>defineTilePlane</h4>
-									<div class="prose"><p>Identity helper for authored tile planes.</p>
+									<div class="prose"><p>Identity helper for authored tile planes. Useful when you want inference and generated docs without introducing a builder DSL.</p>
 </div>
 								</article>
 							
@@ -2385,8 +3489,8 @@ tests and native boundaries drive input deterministically.</p>
 									id="maps-defineobjectplane"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#maps-defineobjectplane">src/maps/RoomBuilder.ts:15</a>
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#maps-defineobjectplane">src/maps/RoomBuilder.ts:17</a>
 									</div>
 									<h4>defineObjectPlane</h4>
 									<div class="prose"><p>Identity helper for authored object planes.</p>
@@ -2398,76 +3502,83 @@ tests and native boundaries drive input deterministically.</p>
 									id="maps-defineroom"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#maps-defineroom">src/maps/RoomBuilder.ts:18</a>
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#maps-defineroom">src/maps/RoomBuilder.ts:22</a>
 									</div>
 									<h4>defineRoom</h4>
 									<div class="prose"><p>Identity helper for authored rooms.</p>
+<pre><code class="language-ts">const room = defineRoom({
+ id: &quot;field&quot;,
+ metadata: {},
+ tilePlanes: [],
+ objectPlanes: [],
+});
+</code></pre>
 </div>
 								</article>
 							
 								<article
 									class="doc-entry"
-									id="maps-roomobject"
+									id="maps-defineroomobject"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#maps-roomobject">src/maps/RoomBuilder.ts:21</a>
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#maps-defineroomobject">src/maps/RoomBuilder.ts:40</a>
 									</div>
-									<h4>roomObject</h4>
-									<div class="prose"><p>Identity helper for generic room objects.</p>
+									<h4>defineRoomObject</h4>
+									<div class="prose"><p>Identity helper for generic room objects when you are using a custom <code>kind</code>.</p>
 </div>
 								</article>
 							
 								<article
 									class="doc-entry"
-									id="maps-spawnpoint"
+									id="maps-createspawnpoint"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#maps-spawnpoint">src/maps/RoomBuilder.ts:24</a>
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#maps-createspawnpoint">src/maps/RoomBuilder.ts:45</a>
 									</div>
-									<h4>spawnPoint</h4>
-									<div class="prose"><p>Builds a typed spawn-point object.</p>
+									<h4>createSpawnPoint</h4>
+									<div class="prose"><p>Builds a typed spawn-point object and inserts the fixed <code>kind: &quot;spawn-point&quot;</code> tag for you.</p>
 </div>
 								</article>
 							
 								<article
 									class="doc-entry"
-									id="maps-transitionzone"
+									id="maps-createtransitionzone"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#maps-transitionzone">src/maps/RoomBuilder.ts:30</a>
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#maps-createtransitionzone">src/maps/RoomBuilder.ts:53</a>
 									</div>
-									<h4>transitionZone</h4>
-									<div class="prose"><p>Builds a typed transition-zone object.</p>
+									<h4>createTransitionZone</h4>
+									<div class="prose"><p>Builds a typed transition-zone object and inserts the fixed <code>kind: &quot;transition-zone&quot;</code> tag for you.</p>
 </div>
 								</article>
 							
 								<article
 									class="doc-entry"
-									id="maps-triggerzone"
+									id="maps-createtriggerzone"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#maps-triggerzone">src/maps/RoomBuilder.ts:38</a>
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#maps-createtriggerzone">src/maps/RoomBuilder.ts:63</a>
 									</div>
-									<h4>triggerZone</h4>
-									<div class="prose"><p>Builds a typed trigger-zone object.</p>
+									<h4>createTriggerZone</h4>
+									<div class="prose"><p>Builds a typed trigger-zone object and inserts the fixed <code>kind: &quot;trigger-zone&quot;</code> tag for you.</p>
 </div>
 								</article>
 							
 								<article
 									class="doc-entry"
-									id="maps-roommetadata"
+									id="maps-defineroommetadata"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#maps-roommetadata">src/maps/RoomBuilder.ts:46</a>
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#maps-defineroommetadata">src/maps/RoomBuilder.ts:73</a>
 									</div>
-									<h4>roomMetadata</h4>
-									<div class="prose"><p>Identity helper for room metadata.</p>
+									<h4>defineRoomMetadata</h4>
+									<div class="prose"><p>Identity helper for room metadata when you want inline authored objects to stay strongly typed.</p>
 </div>
 								</article>
 							
@@ -2565,8 +3676,8 @@ directors into one step that returns a <a href="#graphics-framesnapshot">FrameSn
 									id="native-makeskianativebackendlayer"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#native-makeskianativebackendlayer">src/native/SkiaNativeBackend.ts:526</a>
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#native-makeskianativebackendlayer">src/native/SkiaNativeBackend.ts:535</a>
 									</div>
 									<h4>makeSkiaNativeBackendLayer</h4>
 									<div class="prose"><p>Builds the Skia implementation of <code>NativeBackend</code>.</p>
@@ -2578,8 +3689,8 @@ directors into one step that returns a <a href="#graphics-framesnapshot">FrameSn
 									id="native-makeskianativeboundarylayer"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#native-makeskianativeboundarylayer">src/native/SkiaNativeBackend.ts:1319</a>
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#native-makeskianativeboundarylayer">src/native/SkiaNativeBackend.ts:1331</a>
 									</div>
 									<h4>makeSkiaNativeBoundaryLayer</h4>
 									<div class="prose"><p>Builds a ready-to-use <a href="#native-nativeboundary">NativeBoundary</a> backed by a Skia window and
@@ -2650,6 +3761,11 @@ your own game-specific state services.</p>
 									<div class="prose"><p>Describes the minimal engine-level settings required to boot a game.</p>
 <p>In most projects you start from <a href="#runtime-defaultengineconfig">defaultEngineConfig</a> and override only
 the fields that are specific to your game.</p>
+<pre><code class="language-ts">const engineConfig: EngineConfig = {...defaultEngineConfig,
+ gameId: &quot;beacon-run&quot;,
+ startScene: &quot;title&quot;,
+};
+</code></pre>
 </div>
 								</article>
 							
@@ -2659,7 +3775,7 @@ the fields that are specific to your game.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#runtime-defaultengineconfig">src/runtime/EngineConfig.ts:20</a>
+										<a class="doc-source" href="#runtime-defaultengineconfig">src/runtime/EngineConfig.ts:28</a>
 									</div>
 									<h4>defaultEngineConfig</h4>
 									<div class="prose"><p>A conservative starting configuration for new games.</p>
@@ -2684,7 +3800,7 @@ preset.</p>
 									id="runtime-makeenginelayer"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-const">const</span>
+										<span class="doc-kind doc-kind-function">function</span>
 										<a class="doc-source" href="#runtime-makeenginelayer">src/runtime/Launch.ts:13</a>
 									</div>
 									<h4>makeEngineLayer</h4>
@@ -2692,6 +3808,8 @@ preset.</p>
 boundary.</p>
 <p>Use this when you already know which additional services you want to provide
 yourself and only need the validated <a href="#runtime-engine">Engine</a> service.</p>
+<p><code>makeRuntimeLayer</code> is the better default when you also want the standard
+random source and fixed-step runtime clock.</p>
 </div>
 								</article>
 							
@@ -2700,8 +3818,8 @@ yourself and only need the validated <a href="#runtime-engine">Engine</a> servic
 									id="runtime-makeruntimelayer"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#runtime-makeruntimelayer">src/runtime/Launch.ts:35</a>
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#runtime-makeruntimelayer">src/runtime/Launch.ts:39</a>
 									</div>
 									<h4>makeRuntimeLayer</h4>
 									<div class="prose"><p>Builds the standard runtime layer for most games.</p>
@@ -2709,6 +3827,10 @@ yourself and only need the validated <a href="#runtime-engine">Engine</a> servic
 validated <a href="#runtime-engine">Engine</a>, a deterministic <a href="#runtime-randomsource">RandomSource</a>, and a
 fixed-step <a href="#runtime-runtimeclock">RuntimeClock</a>. Most games merge this layer with their own
 state, scene, input, audio, graphics, and native frame services.</p>
+<pre><code class="language-ts">const runtimeLayer = makeRuntimeLayer(engineConfig, {
+ nativeBoundaryLayer,
+});
+</code></pre>
 </div>
 								</article>
 							
@@ -2718,7 +3840,7 @@ state, scene, input, audio, graphics, and native frame services.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#runtime-engineprogram">src/runtime/Launch.ts:66</a>
+										<a class="doc-source" href="#runtime-engineprogram">src/runtime/Launch.ts:76</a>
 									</div>
 									<h4>engineProgram</h4>
 									<div class="prose"><p>Launches the active <a href="#runtime-engine">Engine</a> from the environment.</p>
@@ -2732,8 +3854,8 @@ and provided an <code>Engine</code> service.</p>
 									id="runtime-seededengineprogram"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#runtime-seededengineprogram">src/runtime/Launch.ts:80</a>
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#runtime-seededengineprogram">src/runtime/Launch.ts:90</a>
 									</div>
 									<h4>seededEngineProgram</h4>
 									<div class="prose"><p>Launches the active engine while temporarily overriding randomness with the
@@ -2763,6 +3885,8 @@ deterministic debugging sessions.</p>
 									</div>
 									<h4>RandomSource</h4>
 									<div class="prose"><p>A thin deterministic randomness service for authored gameplay logic.</p>
+<p>Use this instead of calling <code>Math.random()</code> directly when you want gameplay
+tests and recordings to be reproducible from a seed.</p>
 </div>
 								</article>
 							
@@ -2771,11 +3895,13 @@ deterministic debugging sessions.</p>
 									id="runtime-withrandomseed"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#runtime-withrandomseed">src/runtime/RandomSource.ts:42</a>
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#runtime-withrandomseed">src/runtime/RandomSource.ts:45</a>
 									</div>
 									<h4>withRandomSeed</h4>
 									<div class="prose"><p>Runs an effect with a temporary deterministic random seed.</p>
+<p>This is useful for one-off reproducible operations without rebuilding the
+surrounding runtime layer.</p>
 </div>
 								</article>
 							
@@ -2837,10 +3963,13 @@ deterministic debugging sessions.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#save-savecoordinatoroptions">src/save/SaveCoordinator.ts:63</a>
+										<a class="doc-source" href="#save-savecoordinatoroptions">src/save/SaveCoordinator.ts:64</a>
 									</div>
 									<h4>SaveCoordinatorOptions</h4>
 									<div class="prose"><p>Configuration for building a <a href="#save-savecoordinator">SaveCoordinator</a>.</p>
+<p><code>participants</code> is the important part: one entry per state area you want to
+capture and restore. <code>migrations</code> is only needed after you start evolving
+persisted formats across released versions.</p>
 </div>
 								</article>
 							
@@ -2850,7 +3979,7 @@ deterministic debugging sessions.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-class">class</span>
-										<a class="doc-source" href="#save-savecoordinator">src/save/SaveCoordinator.ts:76</a>
+										<a class="doc-source" href="#save-savecoordinator">src/save/SaveCoordinator.ts:81</a>
 									</div>
 									<h4>SaveCoordinator</h4>
 									<div class="prose"><p>Coordinates save snapshots, restores, imports, and migrations.</p>
@@ -2863,6 +3992,11 @@ boring parts:</p>
 <li>importing old documents through migrations</li>
 <li>exposing typed failures when documents are missing or incompatible</li>
 </ul>
+<pre><code class="language-ts">const saveLayer = SaveCoordinator.layer({
+ version: 1,
+ participants: [playerSaveParticipant, worldSaveParticipant],
+});
+</code></pre>
 </div>
 								</article>
 							
@@ -2885,7 +4019,7 @@ boring parts:</p>
 										<a class="doc-source" href="#save-saveslotid">src/save/SaveDocument.ts:4</a>
 									</div>
 									<h4>SaveSlotId</h4>
-									<div class="prose"><p>A stable identifier for a saved slot.</p>
+									<div class="prose"><p>A stable identifier for a saved slot such as <code>&quot;autosave&quot;</code> or <code>&quot;slot-1&quot;</code>.</p>
 </div>
 								</article>
 							
@@ -2899,6 +4033,8 @@ boring parts:</p>
 									</div>
 									<h4>SaveSlotDocument</h4>
 									<div class="prose"><p>The persisted contents of a single save slot.</p>
+<p><code>participantStates</code> is keyed by each registered <a href="#save-saveparticipant">SaveParticipant</a>'s
+<code>key</code>.</p>
 </div>
 								</article>
 							
@@ -2908,10 +4044,10 @@ boring parts:</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#save-savedocument">src/save/SaveDocument.ts:16</a>
+										<a class="doc-source" href="#save-savedocument">src/save/SaveDocument.ts:23</a>
 									</div>
 									<h4>SaveDocument</h4>
-									<div class="prose"><p>The full persisted save document for a game.</p>
+									<div class="prose"><p>The full persisted save document for a game. <code>version</code> is the migration target used by <a href="#save-savecoordinator">SaveCoordinator</a>.</p>
 </div>
 								</article>
 							
@@ -2921,12 +4057,18 @@ boring parts:</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#save-saveparticipant">src/save/SaveDocument.ts:22</a>
+										<a class="doc-source" href="#save-saveparticipant">src/save/SaveDocument.ts:29</a>
 									</div>
 									<h4>SaveParticipant</h4>
 									<div class="prose"><p>Participates in save capture and restore.</p>
 <p>Each game-owned state service that wants to be saved can expose one
 <code>SaveParticipant</code>.</p>
+<pre><code class="language-ts">const playerSaveParticipant: SaveParticipant = {
+ key: &quot;player&quot;,
+ capture: PlayerState.snapshot,
+ restore: (state) =&gt; PlayerState.restore(state),
+};
+</code></pre>
 </div>
 								</article>
 							
@@ -2936,10 +4078,10 @@ boring parts:</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#save-savemigration">src/save/SaveDocument.ts:38</a>
+										<a class="doc-source" href="#save-savemigration">src/save/SaveDocument.ts:53</a>
 									</div>
 									<h4>SaveMigration</h4>
-									<div class="prose"><p>A typed migration between persisted save versions.</p>
+									<div class="prose"><p>A typed migration between persisted save versions. Each migration should move the document from exactly one version to the next expected version.</p>
 </div>
 								</article>
 							
@@ -2949,10 +4091,10 @@ boring parts:</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#save-saveslotdocumentschema">src/save/SaveDocument.ts:49</a>
+										<a class="doc-source" href="#save-saveslotdocumentschema">src/save/SaveDocument.ts:64</a>
 									</div>
 									<h4>SaveSlotDocumentSchema</h4>
-									<div class="prose"><p>Runtime schema for a single save slot document.</p>
+									<div class="prose"><p>Runtime schema for a single save slot document. Use this when you need Effect Schema decoding outside of <a href="#save-savecoordinator">SaveCoordinator</a>.</p>
 </div>
 								</article>
 							
@@ -2962,7 +4104,7 @@ boring parts:</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#save-savedocumentschema">src/save/SaveDocument.ts:56</a>
+										<a class="doc-source" href="#save-savedocumentschema">src/save/SaveDocument.ts:71</a>
 									</div>
 									<h4>SaveDocumentSchema</h4>
 									<div class="prose"><p>Runtime schema for the top-level save document.</p>
@@ -2995,6 +4137,8 @@ boring parts:</p>
 									</div>
 									<h4>SceneId</h4>
 									<div class="prose"><p>Identifies a scene inside a game.</p>
+<p>Scene ids are usually short authored names like <code>&quot;title&quot;</code>, <code>&quot;overworld&quot;</code>,
+or <code>&quot;pause&quot;</code>.</p>
 </div>
 								</article>
 							
@@ -3004,11 +4148,16 @@ boring parts:</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-type">type</span>
-										<a class="doc-source" href="#scene-scenestacklevel">src/scene/Scene.ts:10</a>
+										<a class="doc-source" href="#scene-scenestacklevel">src/scene/Scene.ts:13</a>
 									</div>
 									<h4>SceneStackLevel</h4>
 									<div class="prose"><p>Distinguishes the primary gameplay scene from temporary overlay scenes such
 as pause menus, inventory sheets, or modal dialogue stacks.</p>
+<p>Available levels:</p>
+<ul>
+<li><code>primary</code></li>
+<li><code>overlay</code></li>
+</ul>
 </div>
 								</article>
 							
@@ -3018,7 +4167,7 @@ as pause menus, inventory sheets, or modal dialogue stacks.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#scene-scenelifecycle">src/scene/Scene.ts:18</a>
+										<a class="doc-source" href="#scene-scenelifecycle">src/scene/Scene.ts:25</a>
 									</div>
 									<h4>SceneLifecycle</h4>
 									<div class="prose"><p>The lifecycle hooks a scene instance can contribute to the runtime.</p>
@@ -3035,12 +4184,22 @@ scene exits.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#scene-scenedefinition">src/scene/Scene.ts:36</a>
+										<a class="doc-source" href="#scene-scenedefinition">src/scene/Scene.ts:43</a>
 									</div>
 									<h4>SceneDefinition</h4>
 									<div class="prose"><p>Declares how a scene is identified and instantiated.</p>
 <p>In application code you usually author a <code>SceneDefinition</code> as a constant and
 register it with <code>SceneRegistry.layer</code>.</p>
+<pre><code class="language-ts">const titleScene: SceneDefinition = {
+ id: &quot;title&quot;,
+ instantiate: Effect.succeed({
+ enter: Effect.void,
+ update: Effect.void,
+ draw: Effect.void,
+ exit: Effect.void,
+ }),
+};
+</code></pre>
 </div>
 								</article>
 							
@@ -3050,10 +4209,11 @@ register it with <code>SceneRegistry.layer</code>.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#scene-sceneinstance">src/scene/Scene.ts:49</a>
+										<a class="doc-source" href="#scene-sceneinstance">src/scene/Scene.ts:68</a>
 									</div>
 									<h4>SceneInstance</h4>
 									<div class="prose"><p>Represents a live instantiated scene managed by the engine.</p>
+<p>This type is mostly useful in tests and scene-management internals.</p>
 </div>
 								</article>
 							
@@ -3063,10 +4223,11 @@ register it with <code>SceneRegistry.layer</code>.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#scene-scenestackentry">src/scene/Scene.ts:60</a>
+										<a class="doc-source" href="#scene-scenestackentry">src/scene/Scene.ts:81</a>
 									</div>
 									<h4>SceneStackEntry</h4>
 									<div class="prose"><p>A single entry in the runtime scene stack.</p>
+<p>Overlay entries sit above the active primary scene.</p>
 </div>
 								</article>
 							
@@ -3076,10 +4237,12 @@ register it with <code>SceneRegistry.layer</code>.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#scene-scenestacksnapshot">src/scene/Scene.ts:70</a>
+										<a class="doc-source" href="#scene-scenestacksnapshot">src/scene/Scene.ts:93</a>
 									</div>
 									<h4>SceneStackSnapshot</h4>
 									<div class="prose"><p>A serializable view of the current scene stack.</p>
+<p>This snapshot is useful for diagnostics and tests that want to assert stack
+transitions without depending on scene internals.</p>
 </div>
 								</article>
 							
@@ -3161,14 +4324,36 @@ diagnostics.</p>
 								
 								<article
 									class="doc-entry"
+									id="sequence-sequenceevent"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-type">type</span>
+										<a class="doc-source" href="#sequence-sequenceevent">src/sequence/Sequence.ts:50</a>
+									</div>
+									<h4>SequenceEvent</h4>
+									<div class="prose"><p>A small union of conventional authored events that cutscenes or gameplay
+scripts may publish.</p>
+<p>Available event kinds:</p>
+<ul>
+<li><code>player-damaged</code></li>
+<li><code>enemy-defeated</code></li>
+<li><code>pickup-collected</code></li>
+<li><code>scene-changed</code></li>
+<li><code>save-completed</code></li>
+</ul>
+</div>
+								</article>
+							
+								<article
+									class="doc-entry"
 									id="sequence-sequenceevents"
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-class">class</span>
-										<a class="doc-source" href="#sequence-sequenceevents">src/sequence/Sequence.ts:81</a>
+										<a class="doc-source" href="#sequence-sequenceevents">src/sequence/Sequence.ts:94</a>
 									</div>
 									<h4>SequenceEvents</h4>
-									<div class="prose"><p>A lightweight published-event journal for authored sequences.</p>
+									<div class="prose"><p>A lightweight published-event journal for authored sequences. This is handy when a game wants cutscene-like code to publish notable milestones without coupling directly to every downstream system.</p>
 </div>
 								</article>
 							
@@ -3178,10 +4363,13 @@ diagnostics.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-class">class</span>
-										<a class="doc-source" href="#sequence-sequence">src/sequence/Sequence.ts:130</a>
+										<a class="doc-source" href="#sequence-sequence">src/sequence/Sequence.ts:143</a>
 									</div>
 									<h4>Sequence</h4>
 									<div class="prose"><p>A convenience orchestration service for authored gameplay beats over time.</p>
+<p><code>Sequence</code> is the low-level timing and side-effect toolbox. When a script
+needs to wait fixed steps, switch scenes, play cues, or fork a timed effect,
+this is usually the service you compose with.</p>
 </div>
 								</article>
 							
@@ -3204,7 +4392,7 @@ diagnostics.</p>
 										<a class="doc-source" href="#ui-fontdefinition">src/ui/Ui.ts:10</a>
 									</div>
 									<h4>FontDefinition</h4>
-									<div class="prose"><p>A bitmap or authored font definition known to the UI service.</p>
+									<div class="prose"><p>A bitmap or authored font definition known to the UI service. Width and spacing fields let the service measure and wrap text without native font metrics.</p>
 </div>
 								</article>
 							
@@ -3230,7 +4418,7 @@ diagnostics.</p>
 										<a class="doc-source" href="#ui-textlayout">src/ui/Ui.ts:26</a>
 									</div>
 									<h4>TextLayout</h4>
-									<div class="prose"><p>The measured layout of a text block.</p>
+									<div class="prose"><p>The measured layout of a text block. This is useful both for drawing and for higher-level pagination logic.</p>
 </div>
 								</article>
 							
@@ -3256,7 +4444,7 @@ diagnostics.</p>
 										<a class="doc-source" href="#ui-dialoguepage">src/ui/Ui.ts:44</a>
 									</div>
 									<h4>DialoguePage</h4>
-									<div class="prose"><p>A single dialogue page produced by pagination.</p>
+									<div class="prose"><p>A single dialogue page produced by pagination. <code>hasNextPage</code> tells your dialogue state machine whether advancing should close the box or show another page.</p>
 </div>
 								</article>
 							
@@ -3269,7 +4457,7 @@ diagnostics.</p>
 										<a class="doc-source" href="#ui-drawdialogueboxoptions">src/ui/Ui.ts:52</a>
 									</div>
 									<h4>DrawDialogueBoxOptions</h4>
-									<div class="prose"><p>Options for drawing a dialogue box.</p>
+									<div class="prose"><p>Options for drawing a dialogue box. The box uses <code>page.layout</code> as already-measured content, so you usually pair this with <code>Ui.paginateDialogue</code>.</p>
 </div>
 								</article>
 							
@@ -3283,6 +4471,13 @@ diagnostics.</p>
 									</div>
 									<h4>MenuNavigationOptions</h4>
 									<div class="prose"><p>Options for resolving conventional menu navigation.</p>
+<p>Default action names are the common UI conventions:</p>
+<ul>
+<li><code>previousAction</code>: <code>&quot;menu-up&quot;</code></li>
+<li><code>nextAction</code>: <code>&quot;menu-down&quot;</code></li>
+<li><code>confirmAction</code>: <code>&quot;menu-confirm&quot;</code></li>
+<li><code>cancelAction</code>: <code>&quot;menu-cancel&quot;</code></li>
+</ul>
 </div>
 								</article>
 							
@@ -3292,10 +4487,10 @@ diagnostics.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#ui-menunavigationresult">src/ui/Ui.ts:73</a>
+										<a class="doc-source" href="#ui-menunavigationresult">src/ui/Ui.ts:83</a>
 									</div>
 									<h4>MenuNavigationResult</h4>
-									<div class="prose"><p>The result of a single menu navigation update.</p>
+									<div class="prose"><p>The result of a single menu navigation update. <code>moved</code>, <code>confirmed</code>, and <code>cancelled</code> are mutually independent so a caller can respond to whichever transition happened this frame.</p>
 </div>
 								</article>
 							
@@ -3305,10 +4500,13 @@ diagnostics.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-class">class</span>
-										<a class="doc-source" href="#ui-ui">src/ui/Ui.ts:271</a>
+										<a class="doc-source" href="#ui-ui">src/ui/Ui.ts:281</a>
 									</div>
 									<h4>Ui</h4>
 									<div class="prose"><p>High-level text, menu, and dialogue helpers built on top of <a href="#graphics-graphics">Graphics</a>.</p>
+<p><code>Ui</code> is intentionally small and opinionated. It handles the repetitive parts
+of dialogue boxes, framed panels, bitmap-font measurement, and menu
+navigation so your game code can stay focused on its own state machine.</p>
 </div>
 								</article>
 							
@@ -3325,9 +4523,13 @@ diagnostics.</p>
 						
 	<nav class="toc">
 		<a href="#top">Top</a>
-		<a href="#introduction">Introduction</a>
+		<a href="#introduction">Overview</a>
 		
+					<a href="#animation">Animation</a>
+				
 					<a href="#audio">Audio</a>
+				
+					<a href="#collision">Collision</a>
 				
 					<a href="#cutscene">Cutscene</a>
 				

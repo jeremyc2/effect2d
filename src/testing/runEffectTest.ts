@@ -1,10 +1,12 @@
 import { Effect, Layer } from "effect";
 
-export const runEffectTest = <Success, Failure>(
+export function runEffectTest<Success, Failure>(
 	effect: Effect.Effect<Success, Failure>,
-): Promise<Success> => Effect.runPromise(effect);
+): Promise<Success> {
+	return Effect.runPromise(effect);
+}
 
-export const runLayerEffect = async <
+export async function runLayerEffect<
 	Success,
 	EffectFailure,
 	LayerFailure,
@@ -12,7 +14,7 @@ export const runLayerEffect = async <
 >(
 	layer: Layer.Layer<Services, LayerFailure>,
 	effect: Effect.Effect<Success, EffectFailure, Services>,
-): Promise<Success> => {
+): Promise<Success> {
 	return Effect.runPromise(
 		Effect.scoped(
 			Effect.gen(function* () {
@@ -21,4 +23,4 @@ export const runLayerEffect = async <
 			}),
 		),
 	);
-};
+}

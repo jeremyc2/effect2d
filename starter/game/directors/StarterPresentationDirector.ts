@@ -2,15 +2,15 @@ import { Effect, Layer, ServiceMap } from "effect";
 import { defineAnimationClip } from "../../../src/animation/Animation.ts";
 import {
 	advanceAnimation,
-	currentAnimationFrame,
 	DebugOverlay,
 	type FrameSnapshot,
 	Graphics,
 	type GraphicsFrameNotOpenError,
 	type GraphicsTransformStackUnderflowError,
+	getCurrentAnimationFrame,
+	getRoomObjectById,
 	type InvalidLogMessageError,
 	RuntimeClock,
-	roomObjectById,
 	SceneDirector,
 	type SceneStackEmptyError,
 	startAnimation,
@@ -67,16 +67,16 @@ const lanternClip = defineAnimationClip({
 	id: "lantern",
 });
 
-const animatedFrame = (
+function getAnimatedFrame(
 	_framesPerSecond: number,
 	tickCount: number,
 	clip: typeof lanternClip,
-): string => {
+): string {
 	const seconds = tickCount / 60;
-	return currentAnimationFrame(
+	return getCurrentAnimationFrame(
 		advanceAnimation(startAnimation(clip, { mode: "loop" }), seconds),
 	);
-};
+}
 
 type StarterPresentationDirectorFailure =
 	| GraphicsFrameNotOpenError
@@ -86,7 +86,7 @@ type StarterPresentationDirectorFailure =
 	| SceneStackEmptyError
 	| UnknownFontError;
 
-const tileColor = (tileId: number) => {
+function getTileColor(tileId: number) {
 	switch (tileId) {
 		case 0:
 			return {
@@ -124,7 +124,7 @@ const tileColor = (tileId: number) => {
 				red: 0.32,
 			};
 	}
-};
+}
 
 export class StarterPresentationDirector extends ServiceMap.Service<
 	StarterPresentationDirector,
@@ -197,7 +197,7 @@ export class StarterPresentationDirector extends ServiceMap.Service<
 					const worldSnapshot = yield* worldState.snapshot;
 					const room = yield* roomState.snapshot;
 					const terrainPlane = room.tilePlanes[0];
-					const lanternPickup = roomObjectById(room, "lantern-pickup");
+					const lanternPickup = getRoomObjectById(room, "lantern-pickup");
 					const backgroundImageId =
 						typeof room.metadata["backgroundImageId"] === "string"
 							? room.metadata["backgroundImageId"]
@@ -229,13 +229,13 @@ export class StarterPresentationDirector extends ServiceMap.Service<
 									{ x: x * 16, y: y * 16 },
 									{ height: 16, width: 16 },
 									"fill",
-									tileColor(tile),
+									getTileColor(tile),
 								);
 							}
 						}
 					}
 
-					const playerImageId = currentAnimationFrame(
+					const playerImageId = getCurrentAnimationFrame(
 						advanceAnimation(
 							startAnimation(playerClips[playerSnapshot.facing], {
 								mode: "loop",
@@ -255,7 +255,7 @@ export class StarterPresentationDirector extends ServiceMap.Service<
 						lanternPickup !== undefined
 					) {
 						yield* graphics.drawImage(
-							animatedFrame(4, timing.tickCount, lanternClip),
+							getAnimatedFrame(4, timing.tickCount, lanternClip),
 							{ x: lanternPickup.x, y: lanternPickup.y },
 							{ height: lanternPickup.height, width: lanternPickup.width },
 						);

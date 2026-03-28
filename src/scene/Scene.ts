@@ -4,6 +4,9 @@ import type { Effect, Scope } from "effect";
  * Identifies a scene inside a game.
  *
  * @public
+ *
+ * Scene ids are usually short authored names like `"title"`, `"overworld"`,
+ * or `"pause"`.
  */
 export type SceneId = string;
 
@@ -12,6 +15,10 @@ export type SceneId = string;
  * as pause menus, inventory sheets, or modal dialogue stacks.
  *
  * @public
+ *
+ * Available levels:
+ * - `primary`
+ * - `overlay`
  */
 export type SceneStackLevel = "overlay" | "primary";
 
@@ -40,6 +47,18 @@ export interface SceneLifecycle {
  *
  * In application code you usually author a `SceneDefinition` as a constant and
  * register it with {@link SceneRegistry.layer}.
+ *
+ * ```ts
+ * const titleScene: SceneDefinition = {
+ *   id: "title",
+ *   instantiate: Effect.succeed({
+ *     enter: Effect.void,
+ *     update: Effect.void,
+ *     draw: Effect.void,
+ *     exit: Effect.void,
+ *   }),
+ * };
+ * ```
  */
 export interface SceneDefinition {
 	readonly id: SceneId;
@@ -50,6 +69,8 @@ export interface SceneDefinition {
  * Represents a live instantiated scene managed by the engine.
  *
  * @public
+ *
+ * This type is mostly useful in tests and scene-management internals.
  */
 export interface SceneInstance {
 	readonly definition: SceneDefinition;
@@ -61,6 +82,8 @@ export interface SceneInstance {
  * A single entry in the runtime scene stack.
  *
  * @public
+ *
+ * Overlay entries sit above the active primary scene.
  */
 export interface SceneStackEntry {
 	readonly instance: SceneInstance;
@@ -71,6 +94,9 @@ export interface SceneStackEntry {
  * A serializable view of the current scene stack.
  *
  * @public
+ *
+ * This snapshot is useful for diagnostics and tests that want to assert stack
+ * transitions without depending on scene internals.
  */
 export interface SceneStackSnapshot {
 	readonly activeSceneId: SceneId;

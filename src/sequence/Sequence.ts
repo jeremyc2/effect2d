@@ -47,6 +47,19 @@ export class InvalidSequenceWaitError extends Schema.TaggedErrorClass<InvalidSeq
 	},
 ) {}
 
+/**
+ * A small union of conventional authored events that cutscenes or gameplay
+ * scripts may publish.
+ *
+ * @public
+ *
+ * Available event kinds:
+ * - `player-damaged`
+ * - `enemy-defeated`
+ * - `pickup-collected`
+ * - `scene-changed`
+ * - `save-completed`
+ */
 export type SequenceEvent =
 	| {
 			readonly amount: number;
@@ -78,7 +91,7 @@ const initialSequenceEventJournalState: SequenceEventJournalState = {
 	events: [],
 };
 
-/** A lightweight published-event journal for authored sequences. @public */
+/** A lightweight published-event journal for authored sequences. This is handy when a game wants cutscene-like code to publish notable milestones without coupling directly to every downstream system. @public */
 export class SequenceEvents extends ServiceMap.Service<
 	SequenceEvents,
 	{
@@ -131,6 +144,10 @@ export class SequenceEvents extends ServiceMap.Service<
  * A convenience orchestration service for authored gameplay beats over time.
  *
  * @public
+ *
+ * `Sequence` is the low-level timing and side-effect toolbox. When a script
+ * needs to wait fixed steps, switch scenes, play cues, or fork a timed effect,
+ * this is usually the service you compose with.
  */
 export class Sequence extends ServiceMap.Service<
 	Sequence,

@@ -1,10 +1,10 @@
 import { Effect, Layer, Ref, ServiceMap } from "effect";
 import {
+	getRoomObjectById as getRoomObjectByIdInContent,
 	MapRepository,
 	type MapValidationError,
 	type RoomContent,
 	type RoomObject,
-	roomObjectById as roomObjectByIdInContent,
 } from "../../../src/index.ts";
 import { WorldState } from "./WorldState.ts";
 
@@ -21,7 +21,7 @@ export class RoomState extends ServiceMap.Service<
 		readonly loadRoom: (
 			roomId: string,
 		) => Effect.Effect<void, MapValidationError>;
-		readonly roomObjectById: (
+		readonly getRoomObjectById: (
 			roomId: string,
 			objectId: string,
 		) => Effect.Effect<RoomObject, MapValidationError>;
@@ -49,20 +49,19 @@ export class RoomState extends ServiceMap.Service<
 				Effect.flatMap(loadRoom),
 			);
 
-			const roomObjectById = Effect.fn("RoomState.roomObjectById")(function* (
-				roomId: string,
-				objectId: string,
-			) {
-				return yield* mapRepository.roomObjectById(roomId, objectId);
-			});
+			const getRoomObjectById = Effect.fn("RoomState.getRoomObjectById")(
+				function* (roomId: string, objectId: string) {
+					return yield* mapRepository.getRoomObjectById(roomId, objectId);
+				},
+			);
 
 			const currentObjectById = Effect.fn("RoomState.currentObjectById")(
 				function* (objectId: string) {
 					const room = yield* Ref.get(roomRef);
-					const objectEntry = roomObjectByIdInContent(room, objectId);
+					const objectEntry = getRoomObjectByIdInContent(room, objectId);
 
 					if (objectEntry === undefined) {
-						return yield* mapRepository.roomObjectById(room.id, objectId);
+						return yield* mapRepository.getRoomObjectById(room.id, objectId);
 					}
 
 					return objectEntry;
@@ -81,7 +80,7 @@ export class RoomState extends ServiceMap.Service<
 				enterRoom,
 				loadCurrentRoom,
 				loadRoom,
-				roomObjectById,
+				getRoomObjectById,
 				snapshot: Ref.get(roomRef),
 			});
 		}),

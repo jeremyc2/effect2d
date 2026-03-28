@@ -1,10 +1,10 @@
 import { Effect, Layer, Ref, ServiceMap } from "effect";
 import {
+	getRoomObjectById as getRoomObjectByIdInContent,
 	MapRepository,
 	type MapValidationError,
 	type RoomContent,
 	type RoomObject,
-	roomObjectById as roomObjectByIdInContent,
 } from "../../../../src/index.ts";
 import { ExpeditionState } from "./ExpeditionState.ts";
 
@@ -17,7 +17,7 @@ export class BeaconRunRoomState extends ServiceMap.Service<
 		readonly enterRoom: (
 			roomId: string,
 		) => Effect.Effect<void, MapValidationError>;
-		readonly roomObjectById: (
+		readonly getRoomObjectById: (
 			roomId: string,
 			objectId: string,
 		) => Effect.Effect<RoomObject, MapValidationError>;
@@ -47,20 +47,20 @@ export class BeaconRunRoomState extends ServiceMap.Service<
 				yield* loadRoom(roomId);
 			});
 
-			const roomObjectById = Effect.fn("BeaconRunRoomState.roomObjectById")(
-				function* (roomId: string, objectId: string) {
-					return yield* mapRepository.roomObjectById(roomId, objectId);
-				},
-			);
+			const getRoomObjectById = Effect.fn(
+				"BeaconRunRoomState.getRoomObjectById",
+			)(function* (roomId: string, objectId: string) {
+				return yield* mapRepository.getRoomObjectById(roomId, objectId);
+			});
 
 			const currentObjectById = Effect.fn(
 				"BeaconRunRoomState.currentObjectById",
 			)(function* (objectId: string) {
 				const room = yield* Ref.get(roomRef);
-				const objectEntry = roomObjectByIdInContent(room, objectId);
+				const objectEntry = getRoomObjectByIdInContent(room, objectId);
 
 				if (objectEntry === undefined) {
-					return yield* mapRepository.roomObjectById(room.id, objectId);
+					return yield* mapRepository.getRoomObjectById(room.id, objectId);
 				}
 
 				return objectEntry;
@@ -69,7 +69,7 @@ export class BeaconRunRoomState extends ServiceMap.Service<
 			return BeaconRunRoomState.of({
 				currentObjectById,
 				enterRoom,
-				roomObjectById,
+				getRoomObjectById,
 				snapshot: Ref.get(roomRef),
 			});
 		}),

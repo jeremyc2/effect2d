@@ -2,7 +2,9 @@ import { Effect } from "effect";
 import type { RoomContent, RoomObject, TilePlane } from "./MapContent.ts";
 import { MapValidationError } from "./MapError.ts";
 
-const duplicateIds = (values: ReadonlyArray<string>): ReadonlyArray<string> => {
+function findDuplicateIds(
+	values: ReadonlyArray<string>,
+): ReadonlyArray<string> {
 	const seen = new Set<string>();
 	const duplicates = new Set<string>();
 
@@ -16,7 +18,7 @@ const duplicateIds = (values: ReadonlyArray<string>): ReadonlyArray<string> => {
 	}
 
 	return Array.from(duplicates);
-};
+}
 
 const validateTilePlane = (
 	roomId: string,
@@ -111,7 +113,7 @@ export const validateRoom = Effect.fn("MapValidation.validateRoom")(function* (
 		});
 	}
 
-	const duplicateTilePlaneIds = duplicateIds(
+	const duplicateTilePlaneIds = findDuplicateIds(
 		room.tilePlanes.map((plane) => plane.id),
 	);
 	if (duplicateTilePlaneIds.length > 0) {
@@ -121,7 +123,7 @@ export const validateRoom = Effect.fn("MapValidation.validateRoom")(function* (
 		});
 	}
 
-	const duplicateObjectPlaneIds = duplicateIds(
+	const duplicateObjectPlaneIds = findDuplicateIds(
 		room.objectPlanes.map((plane) => plane.id),
 	);
 	if (duplicateObjectPlaneIds.length > 0) {
@@ -136,7 +138,7 @@ export const validateRoom = Effect.fn("MapValidation.validateRoom")(function* (
 	}
 
 	const objectEntries = room.objectPlanes.flatMap((plane) => plane.entries);
-	const duplicateObjectIds = duplicateIds(
+	const duplicateObjectIds = findDuplicateIds(
 		objectEntries.map((entry) => entry.id),
 	);
 	if (duplicateObjectIds.length > 0) {

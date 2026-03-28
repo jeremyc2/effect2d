@@ -1,6 +1,6 @@
 import { Effect, Layer, Ref, Schema, ServiceMap } from "effect";
 
-/** Keyboard key identifiers as reported by the native backend. @public */
+/** Keyboard key identifiers as reported by the active native backend. @public */
 export type KeyCode = string;
 
 /** Mouse button identifiers as reported by the native backend. @public */
@@ -16,6 +16,13 @@ export interface PointerPosition {
  * A raw native input event captured during the current frame.
  *
  * @public
+ *
+ * Available event variants:
+ * - `key-down` and `key-up`
+ * - `mouse-down` and `mouse-up`
+ * - `mouse-move`
+ * - `wheel`
+ * - `text-input`
  */
 export type InputEvent =
 	| {
@@ -44,6 +51,10 @@ export type InputEvent =
  * A declarative trigger that can activate a named gameplay action.
  *
  * @public
+ *
+ * Available trigger kinds:
+ * - `key`
+ * - `mouse-button`
  */
 export type InputTrigger =
 	| {
@@ -59,6 +70,16 @@ export type InputTrigger =
  * Maps a named gameplay action to one or more low-level triggers.
  *
  * @public
+ *
+ * This is the point where you translate native details into domain language
+ * like `"jump"`, `"pause"`, or `"confirm"`.
+ *
+ * ```ts
+ * const jumpBinding: ActionBinding = {
+ *   action: "jump",
+ *   triggers: [{ type: "key", key: "Space" }],
+ * };
+ * ```
  */
 export interface ActionBinding {
 	readonly action: string;
@@ -69,6 +90,9 @@ export interface ActionBinding {
  * The derived state of a named gameplay action for the current frame.
  *
  * @public
+ *
+ * `justPressed` and `justReleased` are edge-triggered for the current frame,
+ * while `isPressed` stays true until the trigger is released or consumed.
  */
 export interface ActionState {
 	readonly action: string;
@@ -82,6 +106,9 @@ export interface ActionState {
  * A frame-local snapshot of raw input state.
  *
  * @public
+ *
+ * This is most useful for pointer-heavy tools, text entry, or tests that need
+ * to inspect the exact events captured during a frame.
  */
 export interface InputSnapshot {
 	readonly events: ReadonlyArray<InputEvent>;
@@ -123,8 +150,11 @@ const initialState: InputState = {
 	},
 };
 
-const triggerKey = (trigger: InputTrigger): string =>
-	trigger.type === "key" ? `key:${trigger.key}` : `mouse:${trigger.button}`;
+function getTriggerKey(trigger: InputTrigger): string {
+	return trigger.type === "key"
+		? `key:${trigger.key}`
+		: `mouse:${trigger.button}`;
+}
 
 const includesTrigger = (
 	pressedKeys: ReadonlySet<KeyCode>,
@@ -272,7 +302,7 @@ const validateBinding = Effect.fn("Input.validateBinding")(function* (
 
 	const seenTriggers = new Set<string>();
 	for (const trigger of binding.triggers) {
-		const key = triggerKey(trigger);
+		const key = getTriggerKey(trigger);
 		if (seenTriggers.has(key)) {
 			return yield* new InputBindingConflictError({
 				action: binding.action,

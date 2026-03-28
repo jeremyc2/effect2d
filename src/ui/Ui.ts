@@ -7,7 +7,7 @@ import {
 } from "../graphics/Graphics.ts";
 import { Input } from "../input/Input.ts";
 
-/** A bitmap or authored font definition known to the UI service. @public */
+/** A bitmap or authored font definition known to the UI service. Width and spacing fields let the service measure and wrap text without native font metrics. @public */
 export interface FontDefinition {
 	readonly fontId: string;
 	readonly glyphWidth: number;
@@ -23,7 +23,7 @@ export interface TextLine {
 	readonly width: number;
 }
 
-/** The measured layout of a text block. @public */
+/** The measured layout of a text block. This is useful both for drawing and for higher-level pagination logic. @public */
 export interface TextLayout {
 	readonly fontId: string;
 	readonly height: number;
@@ -41,7 +41,7 @@ export interface UiBounds {
 	};
 }
 
-/** A single dialogue page produced by pagination. @public */
+/** A single dialogue page produced by pagination. `hasNextPage` tells your dialogue state machine whether advancing should close the box or show another page. @public */
 export interface DialoguePage {
 	readonly hasNextPage: boolean;
 	readonly layout: TextLayout;
@@ -49,7 +49,7 @@ export interface DialoguePage {
 	readonly pageIndex: number;
 }
 
-/** Options for drawing a dialogue box. @public */
+/** Options for drawing a dialogue box. The box uses `page.layout` as already-measured content, so you usually pair this with {@link Ui.paginateDialogue}. @public */
 export interface DrawDialogueBoxOptions {
 	readonly bounds: UiBounds;
 	readonly fontId: string;
@@ -59,7 +59,17 @@ export interface DrawDialogueBoxOptions {
 	readonly textColor?: Color;
 }
 
-/** Options for resolving conventional menu navigation. @public */
+/**
+ * Options for resolving conventional menu navigation.
+ *
+ * @public
+ *
+ * Default action names are the common UI conventions:
+ * - `previousAction`: `"menu-up"`
+ * - `nextAction`: `"menu-down"`
+ * - `confirmAction`: `"menu-confirm"`
+ * - `cancelAction`: `"menu-cancel"`
+ */
 export interface MenuNavigationOptions {
 	readonly cancelAction?: string;
 	readonly confirmAction?: string;
@@ -70,7 +80,7 @@ export interface MenuNavigationOptions {
 	readonly wrap?: boolean;
 }
 
-/** The result of a single menu navigation update. @public */
+/** The result of a single menu navigation update. `moved`, `confirmed`, and `cancelled` are mutually independent so a caller can respond to whichever transition happened this frame. @public */
 export interface MenuNavigationResult {
 	readonly cancelled: boolean;
 	readonly confirmed: boolean;
@@ -122,7 +132,7 @@ export class UnknownFontError extends Schema.TaggedErrorClass<UnknownFontError>(
 	},
 ) {}
 
-const measureLineWidth = (font: FontDefinition, text: string): number => {
+function getLineWidth(font: FontDefinition, text: string): number {
 	const letterSpacing = font.letterSpacing ?? 0;
 	const spaceWidth = font.spaceWidth ?? font.glyphWidth;
 	let width = 0;
@@ -140,9 +150,9 @@ const measureLineWidth = (font: FontDefinition, text: string): number => {
 	}
 
 	return width;
-};
+}
 
-const splitParagraphWords = (paragraph: string): Array<string> => {
+function getParagraphWords(paragraph: string): Array<string> {
 	const words: Array<string> = [];
 	let current = "";
 
@@ -163,9 +173,9 @@ const splitParagraphWords = (paragraph: string): Array<string> => {
 	}
 
 	return words;
-};
+}
 
-const splitParagraphs = (text: string): Array<string> => {
+function getParagraphs(text: string): Array<string> {
 	const paragraphs: Array<string> = [];
 	let current = "";
 
@@ -181,7 +191,7 @@ const splitParagraphs = (text: string): Array<string> => {
 
 	paragraphs.push(current);
 	return paragraphs;
-};
+}
 
 const wrapTextLines = (
 	font: FontDefinition,
@@ -189,7 +199,7 @@ const wrapTextLines = (
 	maxWidth: number,
 ): Array<TextLine> => {
 	const lines: Array<TextLine> = [];
-	const paragraphs = splitParagraphs(text);
+	const paragraphs = getParagraphs(text);
 
 	for (const paragraph of paragraphs) {
 		if (paragraph.length === 0) {
@@ -200,17 +210,17 @@ const wrapTextLines = (
 			continue;
 		}
 
-		const words = splitParagraphWords(paragraph);
+		const words = getParagraphWords(paragraph);
 		let currentLine = "";
 
 		for (const word of words) {
 			const nextLine =
 				currentLine.length === 0 ? word : `${currentLine} ${word}`;
-			const nextWidth = measureLineWidth(font, nextLine);
+			const nextWidth = getLineWidth(font, nextLine);
 			if (currentLine.length > 0 && nextWidth > maxWidth) {
 				lines.push({
 					text: currentLine,
-					width: measureLineWidth(font, currentLine),
+					width: getLineWidth(font, currentLine),
 				});
 				currentLine = word;
 				continue;
@@ -221,7 +231,7 @@ const wrapTextLines = (
 
 		lines.push({
 			text: currentLine,
-			width: measureLineWidth(font, currentLine),
+			width: getLineWidth(font, currentLine),
 		});
 	}
 
@@ -244,14 +254,14 @@ const clampIndex = (
 	return value;
 };
 
-const wrapIndex = (value: number, count: number): number => {
+function getWrappedIndex(value: number, count: number): number {
 	if (count <= 0) {
 		return 0;
 	}
 
 	const remainder = value % count;
 	return remainder < 0 ? remainder + count : remainder;
-};
+}
 
 const layoutFromLines = (
 	fontId: string,
@@ -272,6 +282,10 @@ const layoutFromLines = (
  * High-level text, menu, and dialogue helpers built on top of {@link Graphics}.
  *
  * @public
+ *
+ * `Ui` is intentionally small and opinionated. It handles the repetitive parts
+ * of dialogue boxes, framed panels, bitmap-font measurement, and menu
+ * navigation so your game code can stay focused on its own state machine.
  */
 export class Ui extends ServiceMap.Service<
 	Ui,
@@ -438,7 +452,7 @@ export class Ui extends ServiceMap.Service<
 				return layoutFromLines(fontId, font.lineHeight, [
 					{
 						text,
-						width: measureLineWidth(font, text),
+						width: getLineWidth(font, text),
 					},
 				]);
 			});
@@ -657,13 +671,13 @@ export class Ui extends ServiceMap.Service<
 						currentIndex =
 							options.wrap === false
 								? clampIndex(currentIndex - 1, 0, options.itemCount - 1)
-								: wrapIndex(currentIndex - 1, options.itemCount);
+								: getWrappedIndex(currentIndex - 1, options.itemCount);
 						moved = currentIndex !== options.currentIndex;
 					} else if (nextPressed && !previousPressed) {
 						currentIndex =
 							options.wrap === false
 								? clampIndex(currentIndex + 1, 0, options.itemCount - 1)
-								: wrapIndex(currentIndex + 1, options.itemCount);
+								: getWrappedIndex(currentIndex + 1, options.itemCount);
 						moved = currentIndex !== options.currentIndex;
 					}
 				}

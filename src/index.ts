@@ -133,7 +133,7 @@
  *   README.md     # notes for the game itself
  * ```
  *
- * ## A good place to start
+ * ## Quick Start
  *
  * 1. Start from {@link defaultEngineConfig} and define your `gameId`,
  *    `startScene`, and tick rate.
