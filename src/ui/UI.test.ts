@@ -3,29 +3,29 @@ import { Effect, Layer, Schema } from "effect";
 import { Graphics } from "../graphics/Graphics.ts";
 import { Input } from "../input/Input.ts";
 import { runLayerEffect } from "../testing/runEffectTest.ts";
-import { Ui } from "./Ui.ts";
+import { UI } from "./UI.ts";
 
-class UiTestAssertionError extends Schema.TaggedErrorClass<UiTestAssertionError>()(
-	"UiTestAssertionError",
+class UITestAssertionError extends Schema.TaggedErrorClass<UITestAssertionError>()(
+	"UITestAssertionError",
 	{
 		reason: Schema.String,
 	},
 ) {}
 
-const makeUiLayer = () => {
+const makeUILayer = () => {
 	const dependencies = Layer.mergeAll(Graphics.layer, Input.layer);
 	return Layer.mergeAll(
 		dependencies,
-		Ui.layer.pipe(Layer.provide(dependencies)),
+		UI.layer.pipe(Layer.provide(dependencies)),
 	);
 };
 
-describe("Ui", () => {
+describe("UI", () => {
 	test("loads fonts and measures wrapped text", async () => {
 		await runLayerEffect(
-			makeUiLayer(),
+			makeUILayer(),
 			Effect.gen(function* () {
-				const ui = yield* Ui;
+				const ui = yield* UI;
 
 				yield* ui.loadFont({
 					fontId: "body",
@@ -53,10 +53,10 @@ describe("Ui", () => {
 
 	test("draws dialogue boxes and text blocks through the graphics command model", async () => {
 		await runLayerEffect(
-			makeUiLayer(),
+			makeUILayer(),
 			Effect.gen(function* () {
 				const graphics = yield* Graphics;
-				const ui = yield* Ui;
+				const ui = yield* UI;
 
 				yield* ui.loadFont({
 					fontId: "dialogue",
@@ -73,7 +73,7 @@ describe("Ui", () => {
 				});
 				const firstPage = pages[0];
 				if (firstPage === undefined) {
-					return yield* new UiTestAssertionError({
+					return yield* new UITestAssertionError({
 						reason:
 							"Expected dialogue pagination to produce at least one page.",
 					});
@@ -115,10 +115,10 @@ describe("Ui", () => {
 
 	test("resolves menu navigation from input actions", async () => {
 		await runLayerEffect(
-			makeUiLayer(),
+			makeUILayer(),
 			Effect.gen(function* () {
 				const input = yield* Input;
-				const ui = yield* Ui;
+				const ui = yield* UI;
 
 				yield* input.setBindings([
 					{

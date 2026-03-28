@@ -14,7 +14,7 @@ import {
 	SceneDirector,
 	type SceneStackEmptyError,
 	startAnimation,
-	Ui,
+	UI,
 	type UnknownFontError,
 } from "../../../src/index.ts";
 import type { MapValidationError } from "../../../src/maps/MapError.ts";
@@ -146,7 +146,7 @@ export class StarterPresentationDirector extends ServiceMap.Service<
 			const roomState = yield* RoomState;
 			const runtimeClock = yield* RuntimeClock;
 			const sceneDirector = yield* SceneDirector;
-			const ui = yield* Ui;
+			const ui = yield* UI;
 			const worldState = yield* WorldState;
 
 			const renderMenu = Effect.fn("StarterPresentationDirector.renderMenu")(

@@ -17,7 +17,7 @@ import {
 	SceneRegistry,
 	Sequence,
 	SequenceEvents,
-	Ui,
+	UI,
 } from "../../../src/index.ts";
 import { beaconRunRooms } from "./content/BeaconRunRooms.ts";
 import { BeaconRunCoordinator } from "./directors/BeaconRunCoordinator.ts";
@@ -100,7 +100,7 @@ const beaconRunCapabilityLayer = Layer.mergeAll(
 	beaconRunStateLayer,
 );
 
-const beaconRunUiLayer = Ui.layer.pipe(Layer.provide(beaconRunCapabilityLayer));
+const beaconRunUILayer = UI.layer.pipe(Layer.provide(beaconRunCapabilityLayer));
 
 const beaconRunMapRepositoryLayer = MapRepository.layer(beaconRunRooms);
 
@@ -161,7 +161,7 @@ const beaconRunPresentationDirectorLayer =
 				beaconRunCapabilityLayer,
 				beaconRunRoomStateLayer,
 				beaconRunSceneDirectorLayer,
-				beaconRunUiLayer,
+				beaconRunUILayer,
 			),
 		),
 	);
@@ -217,7 +217,7 @@ export const BeaconRunLive = Layer.mergeAll(
 	beaconRunSceneDirectorLayer,
 	beaconRunSceneRegistryLayer,
 	beaconRunSequenceLayer,
-	beaconRunUiLayer,
+	beaconRunUILayer,
 	SequenceEvents.layer,
 	beaconRunSaveParticipantsLayer,
 );
@@ -233,7 +233,7 @@ export const beaconRunBootstrap = Effect.gen(function* () {
 	const beaconRunSaveParticipants = yield* BeaconRunSaveParticipants;
 	const engineLogger = yield* EngineLogger;
 	const input = yield* Input;
-	const ui = yield* Ui;
+	const ui = yield* UI;
 
 	yield* beaconRunCoordinator.beginExpedition;
 	yield* input.setBindings(beaconRunBindings);

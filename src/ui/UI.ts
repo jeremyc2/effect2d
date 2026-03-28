@@ -33,7 +33,7 @@ export interface TextLayout {
 }
 
 /** Rectangular bounds used by UI drawing helpers. @public */
-export interface UiBounds {
+export interface UIBounds {
 	readonly position: CameraVector;
 	readonly size: {
 		readonly height: number;
@@ -49,9 +49,9 @@ export interface DialoguePage {
 	readonly pageIndex: number;
 }
 
-/** Options for drawing a dialogue box. The box uses `page.layout` as already-measured content, so you usually pair this with {@link Ui.paginateDialogue}. @public */
+/** Options for drawing a dialogue box. The box uses `page.layout` as already-measured content, so you usually pair this with {@link UI.paginateDialogue}. @public */
 export interface DrawDialogueBoxOptions {
-	readonly bounds: UiBounds;
+	readonly bounds: UIBounds;
 	readonly fontId: string;
 	readonly page: DialoguePage;
 	readonly panelColor?: Color;
@@ -88,11 +88,11 @@ export interface MenuNavigationResult {
 	readonly moved: boolean;
 }
 
-interface UiState {
+interface UIState {
 	readonly fonts: ReadonlyMap<string, FontDefinition>;
 }
 
-const initialState: UiState = {
+const initialState: UIState = {
 	fonts: new Map<string, FontDefinition>(),
 };
 
@@ -283,30 +283,30 @@ const layoutFromLines = (
  *
  * @public
  *
- * `Ui` is intentionally small and opinionated. It handles the repetitive parts
+ * `UI` is intentionally small and opinionated. It handles the repetitive parts
  * of dialogue boxes, framed panels, bitmap-font measurement, and menu
  * navigation so your game code can stay focused on its own state machine.
  */
-export class Ui extends ServiceMap.Service<
-	Ui,
+export class UI extends ServiceMap.Service<
+	UI,
 	{
 		readonly drawCursor: (
-			bounds: UiBounds,
+			bounds: UIBounds,
 			color?: Color,
 		) => Effect.Effect<void, GraphicsFrameNotOpenError>;
 		readonly drawDialogueBox: (
 			options: DrawDialogueBoxOptions,
 		) => Effect.Effect<void, GraphicsFrameNotOpenError | UnknownFontError>;
 		readonly drawFrame: (
-			bounds: UiBounds,
+			bounds: UIBounds,
 			color?: Color,
 		) => Effect.Effect<void, GraphicsFrameNotOpenError>;
 		readonly drawHighlight: (
-			bounds: UiBounds,
+			bounds: UIBounds,
 			color?: Color,
 		) => Effect.Effect<void, GraphicsFrameNotOpenError>;
 		readonly drawPanel: (
-			bounds: UiBounds,
+			bounds: UIBounds,
 			fillColor?: Color,
 			borderColor?: Color,
 		) => Effect.Effect<void, GraphicsFrameNotOpenError>;
@@ -339,15 +339,15 @@ export class Ui extends ServiceMap.Service<
 			maxWidth: number,
 		) => Effect.Effect<TextLayout, UnknownFontError>;
 	}
->()("effect2d/ui/Ui") {
+>()("effect2d/ui/UI") {
 	static readonly layer = Layer.effect(
-		Ui,
+		UI,
 		Effect.gen(function* () {
 			const stateRef = yield* Ref.make(initialState);
 			const graphics = yield* Graphics;
 			const input = yield* Input;
 
-			const drawTextLines = Effect.fn("Ui.drawTextLines")(function* (
+			const drawTextLines = Effect.fn("UI.drawTextLines")(function* (
 				fontId: string,
 				lines: ReadonlyArray<TextLine>,
 				position: CameraVector,
@@ -381,7 +381,7 @@ export class Ui extends ServiceMap.Service<
 			});
 
 			const readOptionalActionJustPressed = Effect.fn(
-				"Ui.readOptionalActionJustPressed",
+				"UI.readOptionalActionJustPressed",
 			)(function* (action: string | undefined) {
 				if (action === undefined) {
 					return false;
@@ -395,7 +395,7 @@ export class Ui extends ServiceMap.Service<
 				);
 			});
 
-			const getFont = Effect.fn("Ui.getFont")(function* (fontId: string) {
+			const getFont = Effect.fn("UI.getFont")(function* (fontId: string) {
 				const state = yield* Ref.get(stateRef);
 				const font = state.fonts.get(fontId);
 				if (font === undefined) {
@@ -407,7 +407,7 @@ export class Ui extends ServiceMap.Service<
 				return font;
 			});
 
-			const loadFont = Effect.fn("Ui.loadFont")(function* (
+			const loadFont = Effect.fn("UI.loadFont")(function* (
 				definition: FontDefinition,
 			) {
 				if (definition.fontId.length === 0) {
@@ -444,7 +444,7 @@ export class Ui extends ServiceMap.Service<
 				}));
 			});
 
-			const measureText = Effect.fn("Ui.measureText")(function* (
+			const measureText = Effect.fn("UI.measureText")(function* (
 				fontId: string,
 				text: string,
 			) {
@@ -457,7 +457,7 @@ export class Ui extends ServiceMap.Service<
 				]);
 			});
 
-			const wrapText = Effect.fn("Ui.wrapText")(function* (
+			const wrapText = Effect.fn("UI.wrapText")(function* (
 				fontId: string,
 				text: string,
 				maxWidth: number,
@@ -470,8 +470,8 @@ export class Ui extends ServiceMap.Service<
 				);
 			});
 
-			const drawPanel = Effect.fn("Ui.drawPanel")(function* (
-				bounds: UiBounds,
+			const drawPanel = Effect.fn("UI.drawPanel")(function* (
+				bounds: UIBounds,
 				fillColor: Color = black,
 				borderColor: Color = white,
 			) {
@@ -489,8 +489,8 @@ export class Ui extends ServiceMap.Service<
 				);
 			});
 
-			const drawFrame = Effect.fn("Ui.drawFrame")(function* (
-				bounds: UiBounds,
+			const drawFrame = Effect.fn("UI.drawFrame")(function* (
+				bounds: UIBounds,
 				color: Color = white,
 			) {
 				yield* graphics.drawRectangle(
@@ -501,8 +501,8 @@ export class Ui extends ServiceMap.Service<
 				);
 			});
 
-			const drawHighlight = Effect.fn("Ui.drawHighlight")(function* (
-				bounds: UiBounds,
+			const drawHighlight = Effect.fn("UI.drawHighlight")(function* (
+				bounds: UIBounds,
 				color: Color = {
 					alpha: 0.35,
 					blue: 0.25,
@@ -518,8 +518,8 @@ export class Ui extends ServiceMap.Service<
 				);
 			});
 
-			const drawCursor = Effect.fn("Ui.drawCursor")(function* (
-				bounds: UiBounds,
+			const drawCursor = Effect.fn("UI.drawCursor")(function* (
+				bounds: UIBounds,
 				color: Color = white,
 			) {
 				yield* graphics.drawRectangle(
@@ -530,7 +530,7 @@ export class Ui extends ServiceMap.Service<
 				);
 			});
 
-			const drawTextBlock = Effect.fn("Ui.drawTextBlock")(function* (options: {
+			const drawTextBlock = Effect.fn("UI.drawTextBlock")(function* (options: {
 				readonly align?: "center" | "left" | "right";
 				readonly fontId: string;
 				readonly maxWidth?: number;
@@ -552,7 +552,7 @@ export class Ui extends ServiceMap.Service<
 				);
 			});
 
-			const paginateDialogue = Effect.fn("Ui.paginateDialogue")(
+			const paginateDialogue = Effect.fn("UI.paginateDialogue")(
 				function* (options: {
 					readonly fontId: string;
 					readonly maxLines: number;
@@ -596,7 +596,7 @@ export class Ui extends ServiceMap.Service<
 				},
 			);
 
-			const drawDialogueBox = Effect.fn("Ui.drawDialogueBox")(function* (
+			const drawDialogueBox = Effect.fn("UI.drawDialogueBox")(function* (
 				options: DrawDialogueBoxOptions,
 			) {
 				yield* drawPanel(
@@ -647,7 +647,7 @@ export class Ui extends ServiceMap.Service<
 				}
 			});
 
-			const resolveMenuInput = Effect.fn("Ui.resolveMenuInput")(function* (
+			const resolveMenuInput = Effect.fn("UI.resolveMenuInput")(function* (
 				options: MenuNavigationOptions,
 			) {
 				const previousPressed = yield* readOptionalActionJustPressed(
@@ -690,7 +690,7 @@ export class Ui extends ServiceMap.Service<
 				} satisfies MenuNavigationResult;
 			});
 
-			return Ui.of({
+			return UI.of({
 				drawCursor,
 				drawDialogueBox,
 				drawFrame,

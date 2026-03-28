@@ -10,7 +10,7 @@ import { SceneDirector } from "../scene/SceneDirector.ts";
 import { SceneRegistry } from "../scene/SceneRegistry.ts";
 import { Sequence } from "../sequence/Sequence.ts";
 import { runLayerEffect } from "../testing/runEffectTest.ts";
-import { Ui } from "../ui/Ui.ts";
+import { UI } from "../ui/UI.ts";
 import { Cutscene, DialoguePageOutOfRangeError } from "./Cutscene.ts";
 
 const makeScene = (id: SceneId): SceneDefinition => ({
@@ -41,7 +41,7 @@ const makeCutsceneLayer = () => {
 		TestClock.layer(),
 		sceneDirectorLayer,
 	);
-	const uiLayer = Ui.layer.pipe(Layer.provide(uiDependencies));
+	const uiLayer = UI.layer.pipe(Layer.provide(uiDependencies));
 	const sequenceLayer = Sequence.layer.pipe(Layer.provide(dependencies));
 
 	return Layer.mergeAll(
@@ -58,7 +58,7 @@ describe("Cutscene", () => {
 			makeCutsceneLayer(),
 			Effect.gen(function* () {
 				const cutscene = yield* Cutscene;
-				const ui = yield* Ui;
+				const ui = yield* UI;
 
 				yield* ui.loadFont({
 					fontId: "dialogue",
@@ -87,7 +87,7 @@ describe("Cutscene", () => {
 			makeCutsceneLayer(),
 			Effect.gen(function* () {
 				const cutscene = yield* Cutscene;
-				const ui = yield* Ui;
+				const ui = yield* UI;
 
 				yield* ui.loadFont({
 					fontId: "dialogue",

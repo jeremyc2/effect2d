@@ -14,7 +14,7 @@ import {
 	type InvalidSequenceWaitError,
 	Sequence,
 } from "../sequence/Sequence.ts";
-import { type DialoguePage, Ui, type UnknownFontError } from "../ui/Ui.ts";
+import { type DialoguePage, UI, type UnknownFontError } from "../ui/UI.ts";
 
 /** The current state of a prepared cutscene dialogue sequence. @public */
 export interface DialogueProgress {
@@ -57,7 +57,7 @@ const nthDialoguePage = Effect.fn("Cutscene.nthDialoguePage")(function* (
 
 /**
  * A higher-level cinematic helper built on top of {@link Sequence} and
- * {@link Ui}.
+ * {@link UI}.
  *
  * @public
  *
@@ -114,7 +114,7 @@ export class Cutscene extends ServiceMap.Service<
 		Cutscene,
 		Effect.gen(function* () {
 			const sequence = yield* Sequence;
-			const ui = yield* Ui;
+			const ui = yield* UI;
 
 			const prepareDialogue = Effect.fn("Cutscene.prepareDialogue")(function* (
 				options: DialogueScriptOptions,

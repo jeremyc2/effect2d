@@ -1,5 +1,5 @@
 import { Effect, Layer, Ref, ServiceMap } from "effect";
-import type { DialoguePage } from "../../../src/ui/Ui.ts";
+import type { DialoguePage } from "../../../src/ui/UI.ts";
 
 export interface ActiveDialogueSnapshot {
 	readonly dialogueId: string;

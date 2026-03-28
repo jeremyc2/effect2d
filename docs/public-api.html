@@ -281,12 +281,20 @@
 				color: #9fd8ff;
 			}
 
+			.nav-entry .nav-kind-error {
+				color: #ff8a8a;
+			}
+
 			.nav-entry .nav-kind-function {
 				color: #ffb3d6;
 			}
 
 			.nav-entry .nav-kind-interface {
 				color: #c7ff9e;
+			}
+
+			.nav-entry .nav-kind-service {
+				color: #ffd08f;
 			}
 
 			.nav-entry .nav-kind-type {
@@ -492,6 +500,12 @@
 				color: #9fd8ff;
 			}
 
+			.doc-kind-error {
+				border-color: rgba(255, 138, 138, 0.34);
+				background: rgba(255, 138, 138, 0.08);
+				color: #ffb1b1;
+			}
+
 			.doc-kind-function {
 				border-color: rgba(255, 154, 201, 0.3);
 				background: rgba(255, 154, 201, 0.08);
@@ -504,10 +518,22 @@
 				color: #c7ff9e;
 			}
 
+			.doc-kind-service {
+				border-color: rgba(248, 191, 114, 0.32);
+				background: rgba(248, 191, 114, 0.08);
+				color: #ffd08f;
+			}
+
 			.doc-kind-type {
 				border-color: rgba(196, 167, 255, 0.3);
 				background: rgba(196, 167, 255, 0.08);
 				color: #d7c2ff;
+			}
+
+			.doc-kind-method {
+				border-color: rgba(248, 191, 114, 0.32);
+				background: rgba(248, 191, 114, 0.08);
+				color: #ffd08f;
 			}
 
 			.doc-source {
@@ -524,6 +550,50 @@
 				color: rgba(243, 239, 228, 0.88);
 				line-height: 1.72;
 				font-size: 1rem;
+			}
+
+			.service-members {
+				margin-top: 1rem;
+				padding-top: 1rem;
+				border-top: 1px solid rgba(255, 255, 255, 0.08);
+			}
+
+			.service-members h5 {
+				margin: 0 0 0.8rem;
+				font-size: 0.94rem;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--muted);
+			}
+
+			.service-member-list {
+				display: grid;
+				gap: 0.7rem;
+			}
+
+			.service-member {
+				padding: 0.9rem 0.95rem;
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				background: rgba(255, 255, 255, 0.025);
+			}
+
+			.service-member-meta {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				gap: 0.65rem;
+				margin-bottom: 0.55rem;
+			}
+
+			.service-member code {
+				display: block;
+				padding: 0.75rem 0.8rem;
+				overflow-x: auto;
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				background: rgba(7, 14, 10, 0.72);
+				color: #f7f4ea;
+				font-size: 0.86rem;
+				line-height: 1.55;
 			}
 
 			.prose h1,
@@ -889,7 +959,7 @@
 										
 											<a class="nav-entry" href="#audio-audio">
 												<span>Audio</span>
-												<small class="nav-kind nav-kind-class">class</small>
+												<small class="nav-kind nav-kind-service">service</small>
 											</a>
 										
 										</div>
@@ -979,7 +1049,7 @@
 										
 											<a class="nav-entry" href="#collision-collisionworld">
 												<span>CollisionWorld</span>
-												<small class="nav-kind nav-kind-class">class</small>
+												<small class="nav-kind nav-kind-service">service</small>
 											</a>
 										
 										</div>
@@ -1003,7 +1073,7 @@
 										
 											<a class="nav-entry" href="#cutscene-cutscene">
 												<span>Cutscene</span>
-												<small class="nav-kind nav-kind-class">class</small>
+												<small class="nav-kind nav-kind-service">service</small>
 											</a>
 										
 										</div>
@@ -1103,7 +1173,7 @@
 										
 											<a class="nav-entry" href="#graphics-scenecamera">
 												<span>SceneCamera</span>
-												<small class="nav-kind nav-kind-class">class</small>
+												<small class="nav-kind nav-kind-service">service</small>
 											</a>
 										
 										</div>
@@ -1153,17 +1223,17 @@
 										
 											<a class="nav-entry" href="#graphics-graphicsframenotopenerror">
 												<span>GraphicsFrameNotOpenError</span>
-												<small class="nav-kind nav-kind-class">class</small>
+												<small class="nav-kind nav-kind-error">error</small>
 											</a>
 										
 											<a class="nav-entry" href="#graphics-graphicstransformstackunderflowerror">
 												<span>GraphicsTransformStackUnderflowError</span>
-												<small class="nav-kind nav-kind-class">class</small>
+												<small class="nav-kind nav-kind-error">error</small>
 											</a>
 										
 											<a class="nav-entry" href="#graphics-graphics">
 												<span>Graphics</span>
-												<small class="nav-kind nav-kind-class">class</small>
+												<small class="nav-kind nav-kind-service">service</small>
 											</a>
 										
 										</div>
@@ -1217,7 +1287,7 @@
 										
 											<a class="nav-entry" href="#input-input">
 												<span>Input</span>
-												<small class="nav-kind nav-kind-class">class</small>
+												<small class="nav-kind nav-kind-service">service</small>
 											</a>
 										
 										</div>
@@ -1307,7 +1377,7 @@
 											
 											<a class="nav-entry" href="#maps-maprepository">
 												<span>MapRepository</span>
-												<small class="nav-kind nav-kind-class">class</small>
+												<small class="nav-kind nav-kind-service">service</small>
 											</a>
 										
 										</div>
@@ -1367,7 +1437,7 @@
 											
 											<a class="nav-entry" href="#native-nativeboundary">
 												<span>NativeBoundary</span>
-												<small class="nav-kind nav-kind-class">class</small>
+												<small class="nav-kind nav-kind-service">service</small>
 											</a>
 										
 										</div>
@@ -1377,7 +1447,7 @@
 											
 											<a class="nav-entry" href="#native-nativeframesource">
 												<span>NativeFrameSource</span>
-												<small class="nav-kind nav-kind-class">class</small>
+												<small class="nav-kind nav-kind-service">service</small>
 											</a>
 										
 										</div>
@@ -1412,7 +1482,7 @@
 											
 											<a class="nav-entry" href="#runtime-engine">
 												<span>Engine</span>
-												<small class="nav-kind nav-kind-class">class</small>
+												<small class="nav-kind nav-kind-service">service</small>
 											</a>
 										
 										</div>
@@ -1462,7 +1532,7 @@
 											
 											<a class="nav-entry" href="#runtime-randomsource">
 												<span>RandomSource</span>
-												<small class="nav-kind nav-kind-class">class</small>
+												<small class="nav-kind nav-kind-service">service</small>
 											</a>
 										
 											<a class="nav-entry" href="#runtime-withrandomseed">
@@ -1482,7 +1552,7 @@
 										
 											<a class="nav-entry" href="#runtime-runtimeclock">
 												<span>RuntimeClock</span>
-												<small class="nav-kind nav-kind-class">class</small>
+												<small class="nav-kind nav-kind-service">service</small>
 											</a>
 										
 										</div>
@@ -1502,7 +1572,7 @@
 										
 											<a class="nav-entry" href="#save-savecoordinator">
 												<span>SaveCoordinator</span>
-												<small class="nav-kind nav-kind-class">class</small>
+												<small class="nav-kind nav-kind-service">service</small>
 											</a>
 										
 										</div>
@@ -1597,7 +1667,7 @@
 											
 											<a class="nav-entry" href="#scene-scenedirector">
 												<span>SceneDirector</span>
-												<small class="nav-kind nav-kind-class">class</small>
+												<small class="nav-kind nav-kind-service">service</small>
 											</a>
 										
 										</div>
@@ -1607,7 +1677,7 @@
 											
 											<a class="nav-entry" href="#scene-sceneregistry">
 												<span>SceneRegistry</span>
-												<small class="nav-kind nav-kind-class">class</small>
+												<small class="nav-kind nav-kind-service">service</small>
 											</a>
 										
 										</div>
@@ -1626,12 +1696,12 @@
 										
 											<a class="nav-entry" href="#sequence-sequenceevents">
 												<span>SequenceEvents</span>
-												<small class="nav-kind nav-kind-class">class</small>
+												<small class="nav-kind nav-kind-service">service</small>
 											</a>
 										
 											<a class="nav-entry" href="#sequence-sequence">
 												<span>Sequence</span>
-												<small class="nav-kind nav-kind-class">class</small>
+												<small class="nav-kind nav-kind-service">service</small>
 											</a>
 										
 										</div>
@@ -1659,7 +1729,7 @@
 											</a>
 										
 											<a class="nav-entry" href="#ui-uibounds">
-												<span>UiBounds</span>
+												<span>UIBounds</span>
 												<small class="nav-kind nav-kind-interface">interface</small>
 											</a>
 										
@@ -1684,8 +1754,8 @@
 											</a>
 										
 											<a class="nav-entry" href="#ui-ui">
-												<span>Ui</span>
-												<small class="nav-kind nav-kind-class">class</small>
+												<span>UI</span>
+												<small class="nav-kind nav-kind-service">service</small>
 											</a>
 										
 										</div>
@@ -1746,7 +1816,7 @@ easier to keep growing.</p>
 <li>Scene composition primitives such as <a href="#scene-scenedefinition">SceneDefinition</a>,
 <a href="#scene-scenedirector">SceneDirector</a>, and <a href="#scene-sceneregistry">SceneRegistry</a></li>
 <li>Core gameplay services including <a href="#graphics-graphics">Graphics</a>, <a href="#input-input">Input</a>,
-<a href="#audio-audio">Audio</a>, <a href="#sequence-sequence">Sequence</a>, <a href="#cutscene-cutscene">Cutscene</a>, <a href="#ui-ui">Ui</a>, and
+<a href="#audio-audio">Audio</a>, <a href="#sequence-sequence">Sequence</a>, <a href="#cutscene-cutscene">Cutscene</a>, <a href="#ui-ui">UI</a>, and
 <a href="#save-savecoordinator">SaveCoordinator</a></li>
 <li>Supporting data models such as room content, save documents, camera state,
 input bindings, and audio cue definitions</li>
@@ -1766,8 +1836,8 @@ long-lived services:</p>
 <li><code>Sequence</code> coordinates timed gameplay beats such as waits, scene switches,
 fades, flashes, and audio cues</li>
 <li><code>Cutscene</code> builds higher-level cinematic helpers on top of <code>Sequence</code> and
-<code>Ui</code></li>
-<li><code>Ui</code> helps with common text, menu, and dialogue presentation patterns</li>
+<code>UI</code></li>
+<li><code>UI</code> helps with common text, menu, and dialogue presentation patterns</li>
 <li><code>SaveCoordinator</code> snapshots and restores participant state across save slots</li>
 </ul>
 <p>Your game code contributes domain-specific services on top of these:</p>
@@ -1892,6 +1962,7 @@ frame indices, texture ids, or richer authored frame payloads.</p>
 });
 </code></pre>
 </div>
+									
 								</article>
 							
 								<article
@@ -1905,6 +1976,7 @@ frame indices, texture ids, or richer authored frame payloads.</p>
 									<h4>AnimationPlaybackMode</h4>
 									<div class="prose"><p>Playback behavior for the ends of a clip. <code>loop</code> wraps, <code>once</code> stops.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -1918,6 +1990,7 @@ frame indices, texture ids, or richer authored frame payloads.</p>
 									<h4>AnimationDirection</h4>
 									<div class="prose"><p>Direction the clip advances through its <code>frames</code> array.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -1933,6 +2006,7 @@ frame indices, texture ids, or richer authored frame payloads.</p>
 <p>This is a pure data value, so gameplay code can keep it in its own state
 service and advance it each tick without depending on a runtime singleton.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -1948,6 +2022,7 @@ service and advance it each tick without depending on a runtime singleton.</p>
 <p><code>preservePlayback</code> keeps direction, mode, speed, and elapsed playback when a
 state machine wants the next clip to inherit momentum from the previous one.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -1961,6 +2036,7 @@ state machine wants the next clip to inherit momentum from the previous one.</p>
 									<h4>ScalarTweenState</h4>
 									<div class="prose"><p>Runtime state for a scalar tween created with <a href="#animation-startscalartween">startScalarTween</a>.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -1974,6 +2050,7 @@ state machine wants the next clip to inherit momentum from the previous one.</p>
 									<h4>Vec2</h4>
 									<div class="prose"><p>Minimal 2D vector used by the tween helpers in this module.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -1987,6 +2064,7 @@ state machine wants the next clip to inherit momentum from the previous one.</p>
 									<h4>Vec2TweenState</h4>
 									<div class="prose"><p>Runtime state for a 2D tween created with <a href="#animation-startvec2tween">startVec2Tween</a>.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2000,6 +2078,7 @@ state machine wants the next clip to inherit momentum from the previous one.</p>
 									<h4>TweenEasing</h4>
 									<div class="prose"><p>Supported tween easing names. <code>linear</code> is constant speed. <code>ease-in-out-quad</code> eases both ends.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2013,6 +2092,7 @@ state machine wants the next clip to inherit momentum from the previous one.</p>
 									<h4>defineAnimationClip</h4>
 									<div class="prose"><p>Identity helper that preserves clip inference at the call site.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2028,6 +2108,7 @@ state machine wants the next clip to inherit momentum from the previous one.</p>
 <pre><code class="language-ts">const state = startAnimation(walk, { mode: &quot;loop&quot;, speed: 1 });
 </code></pre>
 </div>
+									
 								</article>
 							
 								<article
@@ -2041,6 +2122,7 @@ state machine wants the next clip to inherit momentum from the previous one.</p>
 									<h4>getCurrentAnimationFrame</h4>
 									<div class="prose"><p>Reads the frame payload currently selected by the playback state.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2054,6 +2136,7 @@ state machine wants the next clip to inherit momentum from the previous one.</p>
 									<h4>pauseAnimation</h4>
 									<div class="prose"><p>Returns a copy of the state with playback halted at the current frame.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2067,6 +2150,7 @@ state machine wants the next clip to inherit momentum from the previous one.</p>
 									<h4>resumeAnimation</h4>
 									<div class="prose"><p>Returns a copy of the state with playback resumed.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2080,6 +2164,7 @@ state machine wants the next clip to inherit momentum from the previous one.</p>
 									<h4>setAnimationDirection</h4>
 									<div class="prose"><p>Switches only the playback direction without resetting elapsed time.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2093,6 +2178,7 @@ state machine wants the next clip to inherit momentum from the previous one.</p>
 									<h4>setAnimationSpeed</h4>
 									<div class="prose"><p>Clamps the speed to zero or above and keeps the rest of the state intact.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2108,6 +2194,7 @@ state machine wants the next clip to inherit momentum from the previous one.</p>
 <p>Most games call this once per update tick with the same <code>deltaSeconds</code> value
 they use for their gameplay simulation.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2121,6 +2208,7 @@ they use for their gameplay simulation.</p>
 									<h4>transitionAnimation</h4>
 									<div class="prose"><p>Builds the next clip state when an animation state machine changes clips.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2134,6 +2222,7 @@ they use for their gameplay simulation.</p>
 									<h4>startScalarTween</h4>
 									<div class="prose"><p>Creates a tween that moves from one scalar value to another over time.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2147,6 +2236,7 @@ they use for their gameplay simulation.</p>
 									<h4>getScalarTweenValue</h4>
 									<div class="prose"><p>Evaluates the current scalar tween value.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2160,6 +2250,7 @@ they use for their gameplay simulation.</p>
 									<h4>advanceScalarTween</h4>
 									<div class="prose"><p>Advances a scalar tween by <code>deltaSeconds</code>.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2173,6 +2264,7 @@ they use for their gameplay simulation.</p>
 									<h4>startVec2Tween</h4>
 									<div class="prose"><p>Creates a tween between two 2D points.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2186,6 +2278,7 @@ they use for their gameplay simulation.</p>
 									<h4>getVec2TweenValue</h4>
 									<div class="prose"><p>Evaluates the current 2D tween value.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2199,6 +2292,7 @@ they use for their gameplay simulation.</p>
 									<h4>advanceVec2Tween</h4>
 									<div class="prose"><p>Advances a 2D tween by <code>deltaSeconds</code>.</p>
 </div>
+									
 								</article>
 							
 							</div>
@@ -2222,6 +2316,7 @@ they use for their gameplay simulation.</p>
 									<h4>AudioBus</h4>
 									<div class="prose"><p>Logical buses supported by the mixer.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2240,6 +2335,7 @@ they use for their gameplay simulation.</p>
 <li>&quot;sfx&quot; cues are intended to play once and then stop.</li>
 </ul>
 </div>
+									
 								</article>
 							
 								<article
@@ -2253,6 +2349,7 @@ they use for their gameplay simulation.</p>
 									<h4>AudioCueDefinition</h4>
 									<div class="prose"><p>Declares a reusable authored audio cue.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2266,6 +2363,7 @@ they use for their gameplay simulation.</p>
 									<h4>LoadedAudioCue</h4>
 									<div class="prose"><p>A loaded cue paired with its resolved kind.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2279,6 +2377,7 @@ they use for their gameplay simulation.</p>
 									<h4>AudioPlaybackOptions</h4>
 									<div class="prose"><p>Optional playback overrides for an individual cue trigger.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2292,6 +2391,7 @@ they use for their gameplay simulation.</p>
 									<h4>MusicPlayback</h4>
 									<div class="prose"><p>The current music channel state.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2305,6 +2405,7 @@ they use for their gameplay simulation.</p>
 									<h4>SoundPlayback</h4>
 									<div class="prose"><p>A single overlapping sound-effect playback instance.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2318,6 +2419,7 @@ they use for their gameplay simulation.</p>
 									<h4>AudioSnapshot</h4>
 									<div class="prose"><p>A complete snapshot of authored mixer state.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2325,7 +2427,7 @@ they use for their gameplay simulation.</p>
 									id="audio-audio"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-class">class</span>
+										<span class="doc-kind doc-kind-service">service</span>
 										<a class="doc-source" href="#audio-audio">src/audio/Audio.ts:196</a>
 									</div>
 									<h4>Audio</h4>
@@ -2335,6 +2437,134 @@ during play, instead of scattering file paths throughout gameplay logic. This
 keeps audio orchestration testable, deterministic, and portable across native
 backends.</p>
 </div>
+									
+			<section class="service-members">
+				<h5>Methods</h5>
+				<div class="service-member-list">
+					
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>completeSound</strong>
+									</div>
+									<code>completeSound: (playbackId: string) =&gt; Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>loadMusic</strong>
+									</div>
+									<code>loadMusic: ( definition: AudioCueDefinition, ) =&gt; Effect.Effect&lt;void, DuplicateAudioCueError | InvalidAudioCueError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>loadSound</strong>
+									</div>
+									<code>loadSound: ( definition: AudioCueDefinition, ) =&gt; Effect.Effect&lt;void, DuplicateAudioCueError | InvalidAudioCueError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>loadedCues</strong>
+									</div>
+									<code>loadedCues: Effect.Effect&lt;ReadonlyArray&lt;LoadedAudioCue&gt;&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>music</strong>
+									</div>
+									<code>music: Effect.Effect&lt;MusicPlayback | null&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>pauseMusic</strong>
+									</div>
+									<code>pauseMusic: Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>playMusic</strong>
+									</div>
+									<code>playMusic: ( cueId: string, options?: AudioPlaybackOptions, ) =&gt; Effect.Effect&lt;void, UnknownAudioCueError | WrongAudioCueKindError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>playSfx</strong>
+									</div>
+									<code>playSfx: ( cueId: string, options?: AudioPlaybackOptions, ) =&gt; Effect.Effect&lt;string, UnknownAudioCueError | WrongAudioCueKindError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>resumeMusic</strong>
+									</div>
+									<code>resumeMusic: Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>setBusVolume</strong>
+									</div>
+									<code>setBusVolume: ( bus: AudioBus, volume: number, ) =&gt; Effect.Effect&lt;void, InvalidAudioBusVolumeError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>snapshot</strong>
+									</div>
+									<code>snapshot: Effect.Effect&lt;AudioSnapshot&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>sounds</strong>
+									</div>
+									<code>sounds: Effect.Effect&lt;ReadonlyArray&lt;SoundPlayback&gt;&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>stopAll</strong>
+									</div>
+									<code>stopAll: Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>stopMusic</strong>
+									</div>
+									<code>stopMusic: Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>stopSound</strong>
+									</div>
+									<code>stopSound: ( playbackId: string, ) =&gt; Effect.Effect&lt;void, UnknownSoundPlaybackError&gt;</code>
+								</div>
+							
+				</div>
+			</section>
+		
 								</article>
 							
 							</div>
@@ -2363,6 +2593,7 @@ backends.</p>
 									<h4>Aabb</h4>
 									<div class="prose"><p>Axis-aligned bounding box collision shape.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2376,6 +2607,7 @@ backends.</p>
 									<h4>Circle</h4>
 									<div class="prose"><p>Circle collision shape described by center position and radius.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2389,6 +2621,7 @@ backends.</p>
 									<h4>CollisionGroup</h4>
 									<div class="prose"><p>Free-form collision channel name such as <code>&quot;player&quot;</code>, <code>&quot;enemy&quot;</code>, or <code>&quot;wall&quot;</code>.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2402,6 +2635,7 @@ backends.</p>
 									<h4>CollisionMask</h4>
 									<div class="prose"><p>List of groups a query or body should interact with. An empty mask means &quot;match every group&quot;.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2420,6 +2654,7 @@ backends.</p>
 <li><code>circle</code></li>
 </ul>
 </div>
+									
 								</article>
 							
 								<article
@@ -2435,6 +2670,7 @@ backends.</p>
 <p><code>isTrigger</code> bodies are reported by overlap queries but are ignored by
 <code>collidesWithSolid</code>.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2448,6 +2684,7 @@ backends.</p>
 									<h4>Hitbox</h4>
 									<div class="prose"><p>Conventional damage-dealing body payload used by gameplay code on top of the core collision types.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2461,6 +2698,7 @@ backends.</p>
 									<h4>Hurtbox</h4>
 									<div class="prose"><p>Conventional recipient body payload used by gameplay code on top of the core collision types.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2474,6 +2712,7 @@ backends.</p>
 									<h4>doesAabbOverlap</h4>
 									<div class="prose"><p>Pure overlap test for two axis-aligned rectangles.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2487,6 +2726,7 @@ backends.</p>
 									<h4>doesCircleOverlap</h4>
 									<div class="prose"><p>Pure overlap test for two circles.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2500,6 +2740,7 @@ backends.</p>
 									<h4>doesAabbOverlapCircle</h4>
 									<div class="prose"><p>Pure overlap test between an axis-aligned rectangle and a circle.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2513,6 +2754,7 @@ backends.</p>
 									<h4>doesShapeOverlap</h4>
 									<div class="prose"><p>Pure overlap test that dispatches to the correct shape-specific algorithm.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2526,6 +2768,7 @@ backends.</p>
 									<h4>getTileIndex</h4>
 									<div class="prose"><p>Converts a 2D tile coordinate into a flat row-major array index.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2539,6 +2782,7 @@ backends.</p>
 									<h4>getTileAt</h4>
 									<div class="prose"><p>Reads one tile id from a flat row-major tile array.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2552,6 +2796,7 @@ backends.</p>
 									<h4>isSolidTileAt</h4>
 									<div class="prose"><p>Returns whether the addressed tile exists and belongs to the provided solid tile set.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2559,7 +2804,7 @@ backends.</p>
 									id="collision-collisionworld"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-class">class</span>
+										<span class="doc-kind doc-kind-service">service</span>
 										<a class="doc-source" href="#collision-collisionworld">src/collision/CollisionWorld.ts:158</a>
 									</div>
 									<h4>CollisionWorld</h4>
@@ -2569,6 +2814,70 @@ overlap queries, and distinguishes trigger-only bodies from solid bodies.
 It is a good fit for room-scale gameplay where collisions are explicit and
 testable rather than delegated to a heavyweight physics engine.</p>
 </div>
+									
+			<section class="service-members">
+				<h5>Methods</h5>
+				<div class="service-member-list">
+					
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>registerBody</strong>
+									</div>
+									<code>registerBody: (body: CollisionBody) =&gt; Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>removeBody</strong>
+									</div>
+									<code>removeBody: (bodyId: string) =&gt; Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>overlapsAabb</strong>
+									</div>
+									<code>overlapsAabb: (left: Aabb, right: Aabb) =&gt; Effect.Effect&lt;boolean&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>overlapsCircle</strong>
+									</div>
+									<code>overlapsCircle: ( left: Circle, right: Circle, ) =&gt; Effect.Effect&lt;boolean&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>queryOverlaps</strong>
+									</div>
+									<code>queryOverlaps: ( shape: CollisionShape, mask?: CollisionMask, ) =&gt; Effect.Effect&lt;ReadonlyArray&lt;CollisionBody&gt;&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>collidesWithSolid</strong>
+									</div>
+									<code>collidesWithSolid: ( shape: CollisionShape, mask?: CollisionMask, ) =&gt; Effect.Effect&lt;boolean&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>queryTriggers</strong>
+									</div>
+									<code>queryTriggers: ( shape: CollisionShape, mask?: CollisionMask, ) =&gt; Effect.Effect&lt;ReadonlyArray&lt;CollisionBody&gt;&gt;</code>
+								</div>
+							
+				</div>
+			</section>
+		
 								</article>
 							
 								</div>
@@ -2593,6 +2902,7 @@ testable rather than delegated to a heavyweight physics engine.</p>
 									<h4>DialogueProgress</h4>
 									<div class="prose"><p>The current state of a prepared cutscene dialogue sequence.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2606,6 +2916,7 @@ testable rather than delegated to a heavyweight physics engine.</p>
 									<h4>DialogueScriptOptions</h4>
 									<div class="prose"><p>Options for paginating authored dialogue text into pages that fit a dialogue box.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2613,16 +2924,120 @@ testable rather than delegated to a heavyweight physics engine.</p>
 									id="cutscene-cutscene"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-class">class</span>
+										<span class="doc-kind doc-kind-service">service</span>
 										<a class="doc-source" href="#cutscene-cutscene">src/cutscene/Cutscene.ts:58</a>
 									</div>
 									<h4>Cutscene</h4>
 									<div class="prose"><p>A higher-level cinematic helper built on top of <a href="#sequence-sequence">Sequence</a> and
-<a href="#ui-ui">Ui</a>.</p>
+<a href="#ui-ui">UI</a>.</p>
 <p>Reach for <code>Cutscene</code> when you want a friendlier API around dialogue prep and
 scene-sequence operations, but still want to stay inside ordinary Effect
 programs.</p>
 </div>
+									
+			<section class="service-members">
+				<h5>Methods</h5>
+				<div class="service-member-list">
+					
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>advanceDialogue</strong>
+									</div>
+									<code>advanceDialogue: ( pages: ReadonlyArray&lt;DialoguePage&gt;, pageIndex: number, ) =&gt; Effect.Effect&lt;DialogueProgress, DialoguePageOutOfRangeError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>fade</strong>
+									</div>
+									<code>fade: ( opacity: number, color?: Color, ) =&gt; Effect.Effect&lt;void, GraphicsFrameNotOpenError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>flash</strong>
+									</div>
+									<code>flash: ( intensity: number, color?: Color, ) =&gt; Effect.Effect&lt;void, GraphicsFrameNotOpenError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>play</strong>
+									</div>
+									<code>play: &lt;Success, Failure, Requirements&gt;( effect: Effect.Effect&lt;Success, Failure, Requirements&gt;, ) =&gt; Effect.Effect&lt;Success, Failure, Requirements&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>playMusicCue</strong>
+									</div>
+									<code>playMusicCue: ( cueId: string, ) =&gt; Effect.Effect&lt;void, UnknownAudioCueError | WrongAudioCueKindError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>playSoundCue</strong>
+									</div>
+									<code>playSoundCue: ( cueId: string, ) =&gt; Effect.Effect&lt;string, UnknownAudioCueError | WrongAudioCueKindError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>popOverlayScene</strong>
+									</div>
+									<code>popOverlayScene: () =&gt; Effect.Effect&lt; void, OverlayStackUnderflowError | SceneStackEmptyError &gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>prepareDialogue</strong>
+									</div>
+									<code>prepareDialogue: ( options: DialogueScriptOptions, ) =&gt; Effect.Effect&lt;ReadonlyArray&lt;DialoguePage&gt;, UnknownFontError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>pushOverlayScene</strong>
+									</div>
+									<code>pushOverlayScene: ( sceneId: SceneId, ) =&gt; Effect.Effect&lt;void, SceneNotFoundError | SceneStackEmptyError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>run</strong>
+									</div>
+									<code>run: ( effects: ReadonlyArray&lt;Effect.Effect&lt;void&gt;&gt;, ) =&gt; Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>switchScene</strong>
+									</div>
+									<code>switchScene: ( sceneId: SceneId, ) =&gt; Effect.Effect&lt;void, SceneNotFoundError | SceneStackEmptyError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>waitSteps</strong>
+									</div>
+									<code>waitSteps: ( steps: number, ) =&gt; Effect.Effect&lt;void, InvalidSequenceWaitError&gt;</code>
+								</div>
+							
+				</div>
+			</section>
+		
 								</article>
 							
 							</div>
@@ -2651,6 +3066,7 @@ programs.</p>
 									<h4>CameraVector</h4>
 									<div class="prose"><p>A 2D point or vector used by the camera API. World and screen coordinates both use this shape.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2666,6 +3082,7 @@ programs.</p>
 <p>These bounds constrain the camera center, not the top-left corner of the
 viewport.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2679,6 +3096,7 @@ viewport.</p>
 									<h4>CameraViewport</h4>
 									<div class="prose"><p>The authored viewport the camera projects into. This is usually your game's internal render resolution.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2692,6 +3110,7 @@ viewport.</p>
 									<h4>CameraShakeState</h4>
 									<div class="prose"><p>Transient screen-shake metadata managed by the pure shake helpers in this module.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2706,6 +3125,7 @@ viewport.</p>
 									<div class="prose"><p>A complete snapshot of camera state.</p>
 <p><code>position</code> is the current camera center in world space.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2724,6 +3144,7 @@ viewport.</p>
 });
 </code></pre>
 </div>
+									
 								</article>
 							
 								<article
@@ -2737,6 +3158,7 @@ viewport.</p>
 									<h4>setCameraViewport</h4>
 									<div class="prose"><p>Replaces the camera viewport without changing position or zoom.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2750,6 +3172,7 @@ viewport.</p>
 									<h4>setCameraBounds</h4>
 									<div class="prose"><p>Sets or clears camera clamping bounds and immediately reclamps the current position.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2763,6 +3186,7 @@ viewport.</p>
 									<h4>setCameraPosition</h4>
 									<div class="prose"><p>Moves the camera to a world-space position, respecting bounds when present.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2776,6 +3200,7 @@ viewport.</p>
 									<h4>setCameraZoom</h4>
 									<div class="prose"><p>Changes zoom while enforcing a tiny positive minimum to avoid invalid projection math.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2789,6 +3214,7 @@ viewport.</p>
 									<h4>followCameraTarget</h4>
 									<div class="prose"><p>Starts or stops following a world-space target. When a target is set, position snaps to it immediately.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2802,6 +3228,7 @@ viewport.</p>
 									<h4>updateCameraFollow</h4>
 									<div class="prose"><p>Applies the current follow target to the camera position for this tick.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2815,6 +3242,7 @@ viewport.</p>
 									<h4>startCameraShake</h4>
 									<div class="prose"><p>Starts a simple decay-based shake effect.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2828,6 +3256,7 @@ viewport.</p>
 									<h4>updateCameraShake</h4>
 									<div class="prose"><p>Advances shake timing and clears the shake once its duration expires.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2841,6 +3270,7 @@ viewport.</p>
 									<h4>getCameraShakeOffset</h4>
 									<div class="prose"><p>Computes the current shake offset that will be applied during projection.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2854,6 +3284,7 @@ viewport.</p>
 									<h4>getScreenPositionFromWorld</h4>
 									<div class="prose"><p>Projects a world-space point into screen space using the current position, zoom, and shake offset.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2867,6 +3298,7 @@ viewport.</p>
 									<h4>getWorldPositionFromScreen</h4>
 									<div class="prose"><p>Converts a screen-space point back into world space using the current camera state.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2874,7 +3306,7 @@ viewport.</p>
 									id="graphics-scenecamera"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-class">class</span>
+										<span class="doc-kind doc-kind-service">service</span>
 										<a class="doc-source" href="#graphics-scenecamera">src/graphics/Camera.ts:262</a>
 									</div>
 									<h4>SceneCamera</h4>
@@ -2890,6 +3322,94 @@ functions in this module. Game code typically uses it to:</p>
 </ul>
 <p>If your scene needs a camera at all, this is usually the service you inject.</p>
 </div>
+									
+			<section class="service-members">
+				<h5>Methods</h5>
+				<div class="service-member-list">
+					
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>follow</strong>
+									</div>
+									<code>follow: (target: CameraVector | null) =&gt; Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>screenToWorld</strong>
+									</div>
+									<code>screenToWorld: ( screenPoint: CameraVector, ) =&gt; Effect.Effect&lt;CameraVector&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>setBounds</strong>
+									</div>
+									<code>setBounds: (bounds: CameraBounds | null) =&gt; Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>setPosition</strong>
+									</div>
+									<code>setPosition: (position: CameraVector) =&gt; Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>setViewport</strong>
+									</div>
+									<code>setViewport: (viewport: CameraViewport) =&gt; Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>setZoom</strong>
+									</div>
+									<code>setZoom: (zoom: number) =&gt; Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>shake</strong>
+									</div>
+									<code>shake: ( intensity: number, durationSeconds: number, ) =&gt; Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>snapshot</strong>
+									</div>
+									<code>snapshot: Effect.Effect&lt;CameraState&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>step</strong>
+									</div>
+									<code>step: (deltaSeconds: number) =&gt; Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>worldToScreen</strong>
+									</div>
+									<code>worldToScreen: ( worldPoint: CameraVector, ) =&gt; Effect.Effect&lt;CameraVector&gt;</code>
+								</div>
+							
+				</div>
+			</section>
+		
 								</article>
 							
 								</div>
@@ -2914,6 +3434,7 @@ functions in this module. Game code typically uses it to:</p>
 									<div class="prose"><p>A normalized RGBA color used throughout the graphics API.</p>
 <p>All channels are expected to be in the inclusive range <code>0..1</code>.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2927,6 +3448,7 @@ functions in this module. Game code typically uses it to:</p>
 									<h4>Transform2D</h4>
 									<div class="prose"><p>A 2D transform recorded onto the graphics command stream.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2940,6 +3462,7 @@ functions in this module. Game code typically uses it to:</p>
 									<h4>BlendMode</h4>
 									<div class="prose"><p>Supported compositing modes for subsequent draw commands: <code>alpha</code>, <code>add</code>, and <code>multiply</code>.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2953,6 +3476,7 @@ functions in this module. Game code typically uses it to:</p>
 									<h4>RectangleDrawMode</h4>
 									<div class="prose"><p>Rectangle draw styles. <code>fill</code> paints the interior, <code>stroke</code> draws only the outline.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2966,6 +3490,7 @@ functions in this module. Game code typically uses it to:</p>
 									<h4>CircleDrawMode</h4>
 									<div class="prose"><p>Circle draw styles. <code>fill</code> paints the interior, <code>stroke</code> draws only the outline.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2981,6 +3506,7 @@ functions in this module. Game code typically uses it to:</p>
 <p><code>align</code> controls how the text is anchored at <code>position</code>. Supplying <code>fontId</code>
 lets the native backend pick an authored bitmap or custom font.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -2997,6 +3523,7 @@ lets the native backend pick an authored bitmap or custom font.</p>
 code usually records commands through the <code>Graphics</code> service rather than
 constructing <code>DrawCommand</code> objects directly.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3012,6 +3539,7 @@ constructing <code>DrawCommand</code> objects directly.</p>
 <p><code>transformDepth</code> is especially useful in tests because it tells you whether
 a presentation system forgot to balance <code>pushTransform</code> and <code>popTransform</code>.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3019,13 +3547,14 @@ a presentation system forgot to balance <code>pushTransform</code> and <code>pop
 									id="graphics-graphicsframenotopenerror"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-class">class</span>
+										<span class="doc-kind doc-kind-error">error</span>
 										<a class="doc-source" href="#graphics-graphicsframenotopenerror">src/graphics/Graphics.ts:170</a>
 									</div>
 									<h4>GraphicsFrameNotOpenError</h4>
 									<div class="prose"><p>Indicates that game code attempted to record graphics commands without first
 opening a frame.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3033,12 +3562,13 @@ opening a frame.</p>
 									id="graphics-graphicstransformstackunderflowerror"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-class">class</span>
+										<span class="doc-kind doc-kind-error">error</span>
 										<a class="doc-source" href="#graphics-graphicstransformstackunderflowerror">src/graphics/Graphics.ts:183</a>
 									</div>
 									<h4>GraphicsTransformStackUnderflowError</h4>
 									<div class="prose"><p>Indicates that more transforms were popped than pushed during a frame.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3046,7 +3576,7 @@ opening a frame.</p>
 									id="graphics-graphics"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-class">class</span>
+										<span class="doc-kind doc-kind-service">service</span>
 										<a class="doc-source" href="#graphics-graphics">src/graphics/Graphics.ts:222</a>
 									</div>
 									<h4>Graphics</h4>
@@ -3075,6 +3605,158 @@ resulting command stream</li>
 same deterministic recording model</li>
 </ul>
 </div>
+									
+			<section class="service-members">
+				<h5>Methods</h5>
+				<div class="service-member-list">
+					
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>beginFrame</strong>
+									</div>
+									<code>beginFrame: Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>clear</strong>
+									</div>
+									<code>clear: ( color: Color, ) =&gt; Effect.Effect&lt;void, GraphicsFrameNotOpenError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>drawCircle</strong>
+									</div>
+									<code>drawCircle: ( center: CameraVector, radius: number, mode?: CircleDrawMode, color?: Color, ) =&gt; Effect.Effect&lt;void, GraphicsFrameNotOpenError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>drawFade</strong>
+									</div>
+									<code>drawFade: ( opacity: number, color?: Color, ) =&gt; Effect.Effect&lt;void, GraphicsFrameNotOpenError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>drawFlash</strong>
+									</div>
+									<code>drawFlash: ( intensity: number, color?: Color, ) =&gt; Effect.Effect&lt;void, GraphicsFrameNotOpenError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>drawImage</strong>
+									</div>
+									<code>drawImage: ( imageId: string, position: CameraVector, size?: { readonly height: number</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>width</strong>
+									</div>
+									<code>width: number</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>drawLine</strong>
+									</div>
+									<code>drawLine: ( start: CameraVector, end: CameraVector, color?: Color, ) =&gt; Effect.Effect&lt;void, GraphicsFrameNotOpenError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>drawRectangle</strong>
+									</div>
+									<code>drawRectangle: ( position: CameraVector, size: { readonly height: number</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>width</strong>
+									</div>
+									<code>width: number</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>drawText</strong>
+									</div>
+									<code>drawText: ( options: DrawTextOptions, ) =&gt; Effect.Effect&lt;void, GraphicsFrameNotOpenError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>endFrame</strong>
+									</div>
+									<code>endFrame: Effect.Effect&lt; FrameSnapshot, GraphicsFrameNotOpenError | GraphicsTransformStackUnderflowError &gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>lastCompletedFrame</strong>
+									</div>
+									<code>lastCompletedFrame: Effect.Effect&lt;FrameSnapshot | null&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>popTransform</strong>
+									</div>
+									<code>popTransform: Effect.Effect&lt; void, GraphicsFrameNotOpenError | GraphicsTransformStackUnderflowError &gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>pushTransform</strong>
+									</div>
+									<code>pushTransform: ( transform: Transform2D, ) =&gt; Effect.Effect&lt;void, GraphicsFrameNotOpenError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>setBlendMode</strong>
+									</div>
+									<code>setBlendMode: ( blendMode: BlendMode, ) =&gt; Effect.Effect&lt;void, GraphicsFrameNotOpenError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>setTint</strong>
+									</div>
+									<code>setTint: ( color: Color, ) =&gt; Effect.Effect&lt;void, GraphicsFrameNotOpenError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>snapshot</strong>
+									</div>
+									<code>snapshot: Effect.Effect&lt;FrameSnapshot&gt;</code>
+								</div>
+							
+				</div>
+			</section>
+		
 								</article>
 							
 								</div>
@@ -3099,6 +3781,7 @@ same deterministic recording model</li>
 									<h4>KeyCode</h4>
 									<div class="prose"><p>Keyboard key identifiers as reported by the active native backend.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3112,6 +3795,7 @@ same deterministic recording model</li>
 									<h4>MouseButton</h4>
 									<div class="prose"><p>Mouse button identifiers as reported by the native backend.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3125,6 +3809,7 @@ same deterministic recording model</li>
 									<h4>PointerPosition</h4>
 									<div class="prose"><p>The latest known mouse or pointer position.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3146,6 +3831,7 @@ same deterministic recording model</li>
 <li><code>text-input</code></li>
 </ul>
 </div>
+									
 								</article>
 							
 								<article
@@ -3164,6 +3850,7 @@ same deterministic recording model</li>
 <li><code>mouse-button</code></li>
 </ul>
 </div>
+									
 								</article>
 							
 								<article
@@ -3184,6 +3871,7 @@ like <code>&quot;jump&quot;</code>, <code>&quot;pause&quot;</code>, or <code>&qu
 };
 </code></pre>
 </div>
+									
 								</article>
 							
 								<article
@@ -3199,6 +3887,7 @@ like <code>&quot;jump&quot;</code>, <code>&quot;pause&quot;</code>, or <code>&qu
 <p><code>justPressed</code> and <code>justReleased</code> are edge-triggered for the current frame,
 while <code>isPressed</code> stays true until the trigger is released or consumed.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3214,6 +3903,7 @@ while <code>isPressed</code> stays true until the trigger is released or consume
 <p>This is most useful for pointer-heavy tools, text entry, or tests that need
 to inspect the exact events captured during a frame.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3221,7 +3911,7 @@ to inspect the exact events captured during a frame.</p>
 									id="input-input"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-class">class</span>
+										<span class="doc-kind doc-kind-service">service</span>
 										<a class="doc-source" href="#input-input">src/input/Input.ts:319</a>
 									</div>
 									<h4>Input</h4>
@@ -3238,6 +3928,118 @@ control</li>
 <p>The service keeps frame transitions explicit through <code>beginFrame</code>, which lets
 tests and native boundaries drive input deterministically.</p>
 </div>
+									
+			<section class="service-members">
+				<h5>Methods</h5>
+				<div class="service-member-list">
+					
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>actionState</strong>
+									</div>
+									<code>actionState: ( action: string, ) =&gt; Effect.Effect&lt;ActionState, UnknownInputActionError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>applyEvent</strong>
+									</div>
+									<code>applyEvent: (event: InputEvent) =&gt; Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>beginFrame</strong>
+									</div>
+									<code>beginFrame: Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>bindAction</strong>
+									</div>
+									<code>bindAction: ( binding: ActionBinding, ) =&gt; Effect.Effect&lt; void, InputBindingConflictError | InvalidInputBindingError &gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>bindings</strong>
+									</div>
+									<code>bindings: Effect.Effect&lt;ReadonlyArray&lt;ActionBinding&gt;&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>consumeAction</strong>
+									</div>
+									<code>consumeAction: ( action: string, ) =&gt; Effect.Effect&lt;void, UnknownInputActionError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>events</strong>
+									</div>
+									<code>events: Effect.Effect&lt;ReadonlyArray&lt;InputEvent&gt;&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>isActionPressed</strong>
+									</div>
+									<code>isActionPressed: ( action: string, ) =&gt; Effect.Effect&lt;boolean, UnknownInputActionError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>isKeyPressed</strong>
+									</div>
+									<code>isKeyPressed: (key: KeyCode) =&gt; Effect.Effect&lt;boolean&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>isMouseButtonPressed</strong>
+									</div>
+									<code>isMouseButtonPressed: ( button: MouseButton, ) =&gt; Effect.Effect&lt;boolean&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>pointerPosition</strong>
+									</div>
+									<code>pointerPosition: Effect.Effect&lt;PointerPosition&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>setBindings</strong>
+									</div>
+									<code>setBindings: ( bindings: ReadonlyArray&lt;ActionBinding&gt;, ) =&gt; Effect.Effect&lt; void, InputBindingConflictError | InvalidInputBindingError &gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>snapshot</strong>
+									</div>
+									<code>snapshot: Effect.Effect&lt;InputSnapshot&gt;</code>
+								</div>
+							
+				</div>
+			</section>
+		
 								</article>
 							
 							</div>
@@ -3266,6 +4068,7 @@ tests and native boundaries drive input deterministically.</p>
 									<h4>RoomMetadata</h4>
 									<div class="prose"><p>Free-form metadata attached to a room or room object. Use this for authored data your own game understands.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3279,6 +4082,7 @@ tests and native boundaries drive input deterministically.</p>
 									<h4>TilePlane</h4>
 									<div class="prose"><p>A dense tile plane authored for a room. Tiles are stored in row-major order.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3294,6 +4098,7 @@ tests and native boundaries drive input deterministically.</p>
 <p><code>kind</code> is the extension point your game usually switches on when translating
 room content into gameplay entities.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3307,6 +4112,7 @@ room content into gameplay entities.</p>
 									<h4>ObjectPlane</h4>
 									<div class="prose"><p>A named collection of room objects, often used to separate gameplay objects from editor-only helpers or decorative markers.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3322,6 +4128,7 @@ room content into gameplay entities.</p>
 <p>A room combines tile planes, object planes, and optional metadata into one
 value that can be validated, queried, serialized, and loaded into gameplay.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3335,6 +4142,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 									<h4>SpawnPoint</h4>
 									<div class="prose"><p>A room object that identifies a spawn location. The required metadata key is <code>spawnId</code>.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3348,6 +4156,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 									<h4>TransitionZone</h4>
 									<div class="prose"><p>A room object that moves the player to another room. <code>targetSpawnId</code> lets the destination room choose which spawn point to use.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3361,6 +4170,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 									<h4>TriggerZone</h4>
 									<div class="prose"><p>A generic authored trigger zone for game-defined interactions that are not special-cased by the map helpers.</p>
 </div>
+									
 								</article>
 							
 								</div>
@@ -3384,6 +4194,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 									<h4>getRoomObjects</h4>
 									<div class="prose"><p>Returns every authored object across all object planes in a room. Use this when plane boundaries do not matter to the query you are writing.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3397,6 +4208,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 									<h4>getRoomObjectById</h4>
 									<div class="prose"><p>Finds one authored room object by id.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3410,6 +4222,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 									<h4>getRoomObjectsByKind</h4>
 									<div class="prose"><p>Filters room objects by authored <code>kind</code>, which is useful for game-specific object families in addition to the built-in helpers below.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3423,6 +4236,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 									<h4>getRoomSpawnPoints</h4>
 									<div class="prose"><p>Returns all authored spawn points in a room.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3436,6 +4250,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 									<h4>getRoomTransitionZones</h4>
 									<div class="prose"><p>Returns all authored transition zones in a room.</p>
 </div>
+									
 								</article>
 							
 								</div>
@@ -3453,12 +4268,36 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 									id="maps-maprepository"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-class">class</span>
+										<span class="doc-kind doc-kind-service">service</span>
 										<a class="doc-source" href="#maps-maprepository">src/maps/MapRepository.ts:7</a>
 									</div>
 									<h4>MapRepository</h4>
 									<div class="prose"><p>A validated in-memory repository of authored rooms.</p>
 </div>
+									
+			<section class="service-members">
+				<h5>Methods</h5>
+				<div class="service-member-list">
+					
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>loadRoom</strong>
+									</div>
+									<code>loadRoom: ( roomId: string, ) =&gt; Effect.Effect&lt;RoomContent, MapValidationError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>getRoomObjectById</strong>
+									</div>
+									<code>getRoomObjectById: ( roomId: string, objectId: string, ) =&gt; Effect.Effect&lt; RoomContent[&quot;objectPlanes&quot;][number][&quot;entries&quot;][number], MapValidationError &gt;</code>
+								</div>
+							
+				</div>
+			</section>
+		
 								</article>
 							
 								</div>
@@ -3482,6 +4321,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 									<h4>defineTilePlane</h4>
 									<div class="prose"><p>Identity helper for authored tile planes. Useful when you want inference and generated docs without introducing a builder DSL.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3495,6 +4335,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 									<h4>defineObjectPlane</h4>
 									<div class="prose"><p>Identity helper for authored object planes.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3515,6 +4356,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 });
 </code></pre>
 </div>
+									
 								</article>
 							
 								<article
@@ -3528,6 +4370,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 									<h4>defineRoomObject</h4>
 									<div class="prose"><p>Identity helper for generic room objects when you are using a custom <code>kind</code>.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3541,6 +4384,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 									<h4>createSpawnPoint</h4>
 									<div class="prose"><p>Builds a typed spawn-point object and inserts the fixed <code>kind: &quot;spawn-point&quot;</code> tag for you.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3554,6 +4398,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 									<h4>createTransitionZone</h4>
 									<div class="prose"><p>Builds a typed transition-zone object and inserts the fixed <code>kind: &quot;transition-zone&quot;</code> tag for you.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3567,6 +4412,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 									<h4>createTriggerZone</h4>
 									<div class="prose"><p>Builds a typed trigger-zone object and inserts the fixed <code>kind: &quot;trigger-zone&quot;</code> tag for you.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3580,6 +4426,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 									<h4>defineRoomMetadata</h4>
 									<div class="prose"><p>Identity helper for room metadata when you want inline authored objects to stay strongly typed.</p>
 </div>
+									
 								</article>
 							
 								</div>
@@ -3603,7 +4450,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 									id="native-nativeboundary"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-class">class</span>
+										<span class="doc-kind doc-kind-service">service</span>
 										<a class="doc-source" href="#native-nativeboundary">src/native/NativeBoundary.ts:12</a>
 									</div>
 									<h4>NativeBoundary</h4>
@@ -3621,6 +4468,38 @@ responsible for:</p>
 <p>Most application code does not implement this service directly. Instead it
 uses helpers such as <a href="#native-makeskianativeboundarylayer">makeSkiaNativeBoundaryLayer</a>.</p>
 </div>
+									
+			<section class="service-members">
+				<h5>Methods</h5>
+				<div class="service-member-list">
+					
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>diagnostics</strong>
+									</div>
+									<code>diagnostics: Effect.Effect&lt;NativeBackendDiagnostics&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>initialize</strong>
+									</div>
+									<code>initialize: ( gameId: string, ) =&gt; Effect.Effect&lt;void, EngineLaunchError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>shutdown</strong>
+									</div>
+									<code>shutdown: Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+				</div>
+			</section>
+		
 								</article>
 							
 								</div>
@@ -3638,7 +4517,7 @@ uses helpers such as <a href="#native-makeskianativeboundarylayer">makeSkiaNativ
 									id="native-nativeframesource"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-class">class</span>
+										<span class="doc-kind doc-kind-service">service</span>
 										<a class="doc-source" href="#native-nativeframesource">src/native/NativeFrameSource.ts:6</a>
 									</div>
 									<h4>NativeFrameSource</h4>
@@ -3646,6 +4525,22 @@ uses helpers such as <a href="#native-makeskianativeboundarylayer">makeSkiaNativ
 <p>Games usually provide this service by composing gameplay and presentation
 directors into one step that returns a <a href="#graphics-framesnapshot">FrameSnapshot</a>.</p>
 </div>
+									
+			<section class="service-members">
+				<h5>Methods</h5>
+				<div class="service-member-list">
+					
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>nextFrame</strong>
+									</div>
+									<code>nextFrame: Effect.Effect&lt;FrameSnapshot, EngineLaunchError&gt;</code>
+								</div>
+							
+				</div>
+			</section>
+		
 								</article>
 							
 								</div>
@@ -3669,6 +4564,7 @@ directors into one step that returns a <a href="#graphics-framesnapshot">FrameSn
 									<h4>SkiaNativeBackendOptions</h4>
 									<div class="prose"><p>Configuration for the Skia native backend.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3682,6 +4578,7 @@ directors into one step that returns a <a href="#graphics-framesnapshot">FrameSn
 									<h4>makeSkiaNativeBackendLayer</h4>
 									<div class="prose"><p>Builds the Skia implementation of <code>NativeBackend</code>.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3696,6 +4593,7 @@ directors into one step that returns a <a href="#graphics-framesnapshot">FrameSn
 									<div class="prose"><p>Builds a ready-to-use <a href="#native-nativeboundary">NativeBoundary</a> backed by a Skia window and
 renderer.</p>
 </div>
+									
 								</article>
 							
 								</div>
@@ -3719,7 +4617,7 @@ renderer.</p>
 									id="runtime-engine"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-class">class</span>
+										<span class="doc-kind doc-kind-service">service</span>
 										<a class="doc-source" href="#runtime-engine">src/runtime/Engine.ts:10</a>
 									</div>
 									<h4>Engine</h4>
@@ -3737,6 +4635,30 @@ then call <code>engine.launch()</code> or use <a href="#runtime-engineprogram">e
 <a href="#graphics-graphics">Graphics</a>, <a href="#input-input">Input</a>, <a href="#audio-audio">Audio</a>, <a href="#scene-scenedirector">SceneDirector</a>, and
 your own game-specific state services.</p>
 </div>
+									
+			<section class="service-members">
+				<h5>Methods</h5>
+				<div class="service-member-list">
+					
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>config</strong>
+									</div>
+									<code>config: EngineConfig</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>launch</strong>
+									</div>
+									<code>launch: () =&gt; Effect.Effect&lt;void, EngineLaunchError&gt;</code>
+								</div>
+							
+				</div>
+			</section>
+		
 								</article>
 							
 								</div>
@@ -3767,6 +4689,7 @@ the fields that are specific to your game.</p>
 };
 </code></pre>
 </div>
+									
 								</article>
 							
 								<article
@@ -3783,6 +4706,7 @@ the fields that are specific to your game.</p>
 object to spread into a game-specific config rather than a one-size-fits-all
 preset.</p>
 </div>
+									
 								</article>
 							
 								</div>
@@ -3811,6 +4735,7 @@ yourself and only need the validated <a href="#runtime-engine">Engine</a> servic
 <p><code>makeRuntimeLayer</code> is the better default when you also want the standard
 random source and fixed-step runtime clock.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3832,6 +4757,7 @@ state, scene, input, audio, graphics, and native frame services.</p>
 });
 </code></pre>
 </div>
+									
 								</article>
 							
 								<article
@@ -3847,6 +4773,7 @@ state, scene, input, audio, graphics, and native frame services.</p>
 <p>This program is useful when your surrounding application has already built
 and provided an <code>Engine</code> service.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3863,6 +4790,7 @@ provided config seed.</p>
 <p>This is primarily useful for reproducible demos, tests, recordings, and
 deterministic debugging sessions.</p>
 </div>
+									
 								</article>
 							
 								</div>
@@ -3880,7 +4808,7 @@ deterministic debugging sessions.</p>
 									id="runtime-randomsource"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-class">class</span>
+										<span class="doc-kind doc-kind-service">service</span>
 										<a class="doc-source" href="#runtime-randomsource">src/runtime/RandomSource.ts:3</a>
 									</div>
 									<h4>RandomSource</h4>
@@ -3888,6 +4816,62 @@ deterministic debugging sessions.</p>
 <p>Use this instead of calling <code>Math.random()</code> directly when you want gameplay
 tests and recordings to be reproducible from a seed.</p>
 </div>
+									
+			<section class="service-members">
+				<h5>Methods</h5>
+				<div class="service-member-list">
+					
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>seed</strong>
+									</div>
+									<code>seed: number | string | undefined</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>next</strong>
+									</div>
+									<code>next: Effect.Effect&lt;number&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>nextBoolean</strong>
+									</div>
+									<code>nextBoolean: Effect.Effect&lt;boolean&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>nextInt</strong>
+									</div>
+									<code>nextInt: Effect.Effect&lt;number&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>nextIntBetween</strong>
+									</div>
+									<code>nextIntBetween: ( minimum: number, maximum: number, ) =&gt; Effect.Effect&lt;number&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>shuffle</strong>
+									</div>
+									<code>shuffle: &lt;Value&gt;( values: ReadonlyArray&lt;Value&gt;, ) =&gt; Effect.Effect&lt;Array&lt;Value&gt;&gt;</code>
+								</div>
+							
+				</div>
+			</section>
+		
 								</article>
 							
 								<article
@@ -3903,6 +4887,7 @@ tests and recordings to be reproducible from a seed.</p>
 <p>This is useful for one-off reproducible operations without rebuilding the
 surrounding runtime layer.</p>
 </div>
+									
 								</article>
 							
 								</div>
@@ -3926,6 +4911,7 @@ surrounding runtime layer.</p>
 									<h4>RuntimeTimingSnapshot</h4>
 									<div class="prose"><p>Snapshot data exposed by the runtime clock.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3933,12 +4919,68 @@ surrounding runtime layer.</p>
 									id="runtime-runtimeclock"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-class">class</span>
+										<span class="doc-kind doc-kind-service">service</span>
 										<a class="doc-source" href="#runtime-runtimeclock">src/runtime/RuntimeClock.ts:26</a>
 									</div>
 									<h4>RuntimeClock</h4>
 									<div class="prose"><p>Tracks frame timing and fixed-step sleep for a running game.</p>
 </div>
+									
+			<section class="service-members">
+				<h5>Methods</h5>
+				<div class="service-member-list">
+					
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>currentTimeMillis</strong>
+									</div>
+									<code>currentTimeMillis: Effect.Effect&lt;number&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>beginFrame</strong>
+									</div>
+									<code>beginFrame: () =&gt; Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>advanceTick</strong>
+									</div>
+									<code>advanceTick: () =&gt; Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>reset</strong>
+									</div>
+									<code>reset: () =&gt; Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>sleepFixedStep</strong>
+									</div>
+									<code>sleepFixedStep: Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>snapshot</strong>
+									</div>
+									<code>snapshot: () =&gt; Effect.Effect&lt;RuntimeTimingSnapshot&gt;</code>
+								</div>
+							
+				</div>
+			</section>
+		
 								</article>
 							
 								</div>
@@ -3971,6 +5013,7 @@ surrounding runtime layer.</p>
 capture and restore. <code>migrations</code> is only needed after you start evolving
 persisted formats across released versions.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -3978,7 +5021,7 @@ persisted formats across released versions.</p>
 									id="save-savecoordinator"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-class">class</span>
+										<span class="doc-kind doc-kind-service">service</span>
 										<a class="doc-source" href="#save-savecoordinator">src/save/SaveCoordinator.ts:81</a>
 									</div>
 									<h4>SaveCoordinator</h4>
@@ -3998,6 +5041,54 @@ boring parts:</p>
 });
 </code></pre>
 </div>
+									
+			<section class="service-members">
+				<h5>Methods</h5>
+				<div class="service-member-list">
+					
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>restoreSlot</strong>
+									</div>
+									<code>restoreSlot: ( slotId: SaveSlotId, ) =&gt; Effect.Effect&lt;void, SaveSlotNotFoundError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>exportDocument</strong>
+									</div>
+									<code>exportDocument: Effect.Effect&lt;SaveDocument&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>importDocument</strong>
+									</div>
+									<code>importDocument: ( document: unknown, ) =&gt; Effect.Effect&lt; void, | SaveDocumentDecodeError | SaveMigrationFailedError | SaveMigrationMissingError | SaveMigrationVersionMismatchError &gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>snapshotSlot</strong>
+									</div>
+									<code>snapshotSlot: ( slotId: SaveSlotId, ) =&gt; Effect.Effect&lt;SaveSlotDocument&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>writeSlot</strong>
+									</div>
+									<code>writeSlot: (slotId: SaveSlotId) =&gt; Effect.Effect&lt;SaveDocument&gt;</code>
+								</div>
+							
+				</div>
+			</section>
+		
 								</article>
 							
 								</div>
@@ -4021,6 +5112,7 @@ boring parts:</p>
 									<h4>SaveSlotId</h4>
 									<div class="prose"><p>A stable identifier for a saved slot such as <code>&quot;autosave&quot;</code> or <code>&quot;slot-1&quot;</code>.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -4036,6 +5128,7 @@ boring parts:</p>
 <p><code>participantStates</code> is keyed by each registered <a href="#save-saveparticipant">SaveParticipant</a>'s
 <code>key</code>.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -4049,6 +5142,7 @@ boring parts:</p>
 									<h4>SaveDocument</h4>
 									<div class="prose"><p>The full persisted save document for a game. <code>version</code> is the migration target used by <a href="#save-savecoordinator">SaveCoordinator</a>.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -4070,6 +5164,7 @@ boring parts:</p>
 };
 </code></pre>
 </div>
+									
 								</article>
 							
 								<article
@@ -4083,6 +5178,7 @@ boring parts:</p>
 									<h4>SaveMigration</h4>
 									<div class="prose"><p>A typed migration between persisted save versions. Each migration should move the document from exactly one version to the next expected version.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -4096,6 +5192,7 @@ boring parts:</p>
 									<h4>SaveSlotDocumentSchema</h4>
 									<div class="prose"><p>Runtime schema for a single save slot document. Use this when you need Effect Schema decoding outside of <a href="#save-savecoordinator">SaveCoordinator</a>.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -4109,6 +5206,7 @@ boring parts:</p>
 									<h4>SaveDocumentSchema</h4>
 									<div class="prose"><p>Runtime schema for the top-level save document.</p>
 </div>
+									
 								</article>
 							
 								</div>
@@ -4140,6 +5238,7 @@ boring parts:</p>
 <p>Scene ids are usually short authored names like <code>&quot;title&quot;</code>, <code>&quot;overworld&quot;</code>,
 or <code>&quot;pause&quot;</code>.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -4159,6 +5258,7 @@ as pause menus, inventory sheets, or modal dialogue stacks.</p>
 <li><code>overlay</code></li>
 </ul>
 </div>
+									
 								</article>
 							
 								<article
@@ -4176,6 +5276,7 @@ handling, and teardown. Each hook runs in a scene-local <code>Scope</code>, whic
 it natural to start background effects that should be cleaned up when the
 scene exits.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -4201,6 +5302,7 @@ register it with <code>SceneRegistry.layer</code>.</p>
 };
 </code></pre>
 </div>
+									
 								</article>
 							
 								<article
@@ -4215,6 +5317,7 @@ register it with <code>SceneRegistry.layer</code>.</p>
 									<div class="prose"><p>Represents a live instantiated scene managed by the engine.</p>
 <p>This type is mostly useful in tests and scene-management internals.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -4229,6 +5332,7 @@ register it with <code>SceneRegistry.layer</code>.</p>
 									<div class="prose"><p>A single entry in the runtime scene stack.</p>
 <p>Overlay entries sit above the active primary scene.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -4244,6 +5348,7 @@ register it with <code>SceneRegistry.layer</code>.</p>
 <p>This snapshot is useful for diagnostics and tests that want to assert stack
 transitions without depending on scene internals.</p>
 </div>
+									
 								</article>
 							
 								</div>
@@ -4261,7 +5366,7 @@ transitions without depending on scene internals.</p>
 									id="scene-scenedirector"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-class">class</span>
+										<span class="doc-kind doc-kind-service">service</span>
 										<a class="doc-source" href="#scene-scenedirector">src/scene/SceneDirector.ts:70</a>
 									</div>
 									<h4>SceneDirector</h4>
@@ -4283,6 +5388,78 @@ responsible for:</p>
 <li>let a native frame source call the active scene's update and draw work</li>
 </ul>
 </div>
+									
+			<section class="service-members">
+				<h5>Methods</h5>
+				<div class="service-member-list">
+					
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>currentScene</strong>
+									</div>
+									<code>currentScene: Effect.Effect&lt;SceneDefinition, SceneStackEmptyError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>snapshot</strong>
+									</div>
+									<code>snapshot: Effect.Effect&lt;SceneStackSnapshot, SceneStackEmptyError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>switchTo</strong>
+									</div>
+									<code>switchTo: ( sceneId: SceneId, ) =&gt; Effect.Effect&lt;void, SceneNotFoundError | SceneStackEmptyError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>pushOverlay</strong>
+									</div>
+									<code>pushOverlay: ( sceneId: SceneId, ) =&gt; Effect.Effect&lt;void, SceneNotFoundError | SceneStackEmptyError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>popOverlay</strong>
+									</div>
+									<code>popOverlay: () =&gt; Effect.Effect&lt; void, OverlayStackUnderflowError | SceneStackEmptyError &gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>updateCurrent</strong>
+									</div>
+									<code>updateCurrent: Effect.Effect&lt;void, SceneStackEmptyError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>drawStack</strong>
+									</div>
+									<code>drawStack: Effect.Effect&lt;void, SceneStackEmptyError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>handleInput</strong>
+									</div>
+									<code>handleInput: Effect.Effect&lt;void, SceneStackEmptyError&gt;</code>
+								</div>
+							
+				</div>
+			</section>
+		
 								</article>
 							
 								</div>
@@ -4300,7 +5477,7 @@ responsible for:</p>
 									id="scene-sceneregistry"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-class">class</span>
+										<span class="doc-kind doc-kind-service">service</span>
 										<a class="doc-source" href="#scene-sceneregistry">src/scene/SceneRegistry.ts:5</a>
 									</div>
 									<h4>SceneRegistry</h4>
@@ -4309,6 +5486,30 @@ responsible for:</p>
 corresponds to this id?&quot; and exposes the complete authored set for tooling or
 diagnostics.</p>
 </div>
+									
+			<section class="service-members">
+				<h5>Methods</h5>
+				<div class="service-member-list">
+					
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>all</strong>
+									</div>
+									<code>all: Effect.Effect&lt;ReadonlyArray&lt;SceneDefinition&gt;&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>get</strong>
+									</div>
+									<code>get: ( sceneId: SceneId, ) =&gt; Effect.Effect&lt;SceneDefinition, SceneNotFoundError&gt;</code>
+								</div>
+							
+				</div>
+			</section>
+		
 								</article>
 							
 								</div>
@@ -4342,6 +5543,7 @@ scripts may publish.</p>
 <li><code>save-completed</code></li>
 </ul>
 </div>
+									
 								</article>
 							
 								<article
@@ -4349,12 +5551,52 @@ scripts may publish.</p>
 									id="sequence-sequenceevents"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-class">class</span>
+										<span class="doc-kind doc-kind-service">service</span>
 										<a class="doc-source" href="#sequence-sequenceevents">src/sequence/Sequence.ts:94</a>
 									</div>
 									<h4>SequenceEvents</h4>
 									<div class="prose"><p>A lightweight published-event journal for authored sequences. This is handy when a game wants cutscene-like code to publish notable milestones without coupling directly to every downstream system.</p>
 </div>
+									
+			<section class="service-members">
+				<h5>Methods</h5>
+				<div class="service-member-list">
+					
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>clear</strong>
+									</div>
+									<code>clear: Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>drain</strong>
+									</div>
+									<code>drain: Effect.Effect&lt;ReadonlyArray&lt;SequenceEvent&gt;&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>publish</strong>
+									</div>
+									<code>publish: (event: SequenceEvent) =&gt; Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>snapshot</strong>
+									</div>
+									<code>snapshot: Effect.Effect&lt;ReadonlyArray&lt;SequenceEvent&gt;&gt;</code>
+								</div>
+							
+				</div>
+			</section>
+		
 								</article>
 							
 								<article
@@ -4362,7 +5604,7 @@ scripts may publish.</p>
 									id="sequence-sequence"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-class">class</span>
+										<span class="doc-kind doc-kind-service">service</span>
 										<a class="doc-source" href="#sequence-sequence">src/sequence/Sequence.ts:143</a>
 									</div>
 									<h4>Sequence</h4>
@@ -4371,6 +5613,94 @@ scripts may publish.</p>
 needs to wait fixed steps, switch scenes, play cues, or fork a timed effect,
 this is usually the service you compose with.</p>
 </div>
+									
+			<section class="service-members">
+				<h5>Methods</h5>
+				<div class="service-member-list">
+					
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>fade</strong>
+									</div>
+									<code>fade: ( opacity: number, color?: Color, ) =&gt; Effect.Effect&lt;void, GraphicsFrameNotOpenError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>flash</strong>
+									</div>
+									<code>flash: ( intensity: number, color?: Color, ) =&gt; Effect.Effect&lt;void, GraphicsFrameNotOpenError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>fork</strong>
+									</div>
+									<code>fork: &lt;Success, Failure, Requirements&gt;( effect: Effect.Effect&lt;Success, Failure, Requirements&gt;, ) =&gt; Effect.Effect&lt; Fiber.Fiber&lt;Success, Failure&gt;, never, Requirements | Scope.Scope &gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>playMusicCue</strong>
+									</div>
+									<code>playMusicCue: ( cueId: string, ) =&gt; Effect.Effect&lt;void, UnknownAudioCueError | WrongAudioCueKindError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>playSoundCue</strong>
+									</div>
+									<code>playSoundCue: ( cueId: string, ) =&gt; Effect.Effect&lt;string, UnknownAudioCueError | WrongAudioCueKindError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>popOverlayScene</strong>
+									</div>
+									<code>popOverlayScene: () =&gt; Effect.Effect&lt; void, OverlayStackUnderflowError | SceneStackEmptyError &gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>pushOverlayScene</strong>
+									</div>
+									<code>pushOverlayScene: ( sceneId: SceneId, ) =&gt; Effect.Effect&lt;void, SceneNotFoundError | SceneStackEmptyError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>run</strong>
+									</div>
+									<code>run: ( effects: ReadonlyArray&lt;Effect.Effect&lt;void&gt;&gt;, ) =&gt; Effect.Effect&lt;void&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>switchScene</strong>
+									</div>
+									<code>switchScene: ( sceneId: SceneId, ) =&gt; Effect.Effect&lt;void, SceneNotFoundError | SceneStackEmptyError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>waitSteps</strong>
+									</div>
+									<code>waitSteps: ( steps: number, ) =&gt; Effect.Effect&lt;void, InvalidSequenceWaitError&gt;</code>
+								</div>
+							
+				</div>
+			</section>
+		
 								</article>
 							
 							</div>
@@ -4389,11 +5719,12 @@ this is usually the service you compose with.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#ui-fontdefinition">src/ui/Ui.ts:10</a>
+										<a class="doc-source" href="#ui-fontdefinition">src/ui/UI.ts:10</a>
 									</div>
 									<h4>FontDefinition</h4>
 									<div class="prose"><p>A bitmap or authored font definition known to the UI service. Width and spacing fields let the service measure and wrap text without native font metrics.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -4402,11 +5733,12 @@ this is usually the service you compose with.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#ui-textline">src/ui/Ui.ts:20</a>
+										<a class="doc-source" href="#ui-textline">src/ui/UI.ts:20</a>
 									</div>
 									<h4>TextLine</h4>
 									<div class="prose"><p>A single wrapped line of measured text.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -4415,11 +5747,12 @@ this is usually the service you compose with.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#ui-textlayout">src/ui/Ui.ts:26</a>
+										<a class="doc-source" href="#ui-textlayout">src/ui/UI.ts:26</a>
 									</div>
 									<h4>TextLayout</h4>
 									<div class="prose"><p>The measured layout of a text block. This is useful both for drawing and for higher-level pagination logic.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -4428,11 +5761,12 @@ this is usually the service you compose with.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#ui-uibounds">src/ui/Ui.ts:35</a>
+										<a class="doc-source" href="#ui-uibounds">src/ui/UI.ts:35</a>
 									</div>
-									<h4>UiBounds</h4>
+									<h4>UIBounds</h4>
 									<div class="prose"><p>Rectangular bounds used by UI drawing helpers.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -4441,11 +5775,12 @@ this is usually the service you compose with.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#ui-dialoguepage">src/ui/Ui.ts:44</a>
+										<a class="doc-source" href="#ui-dialoguepage">src/ui/UI.ts:44</a>
 									</div>
 									<h4>DialoguePage</h4>
 									<div class="prose"><p>A single dialogue page produced by pagination. <code>hasNextPage</code> tells your dialogue state machine whether advancing should close the box or show another page.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -4454,11 +5789,12 @@ this is usually the service you compose with.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#ui-drawdialogueboxoptions">src/ui/Ui.ts:52</a>
+										<a class="doc-source" href="#ui-drawdialogueboxoptions">src/ui/UI.ts:52</a>
 									</div>
 									<h4>DrawDialogueBoxOptions</h4>
-									<div class="prose"><p>Options for drawing a dialogue box. The box uses <code>page.layout</code> as already-measured content, so you usually pair this with <code>Ui.paginateDialogue</code>.</p>
+									<div class="prose"><p>Options for drawing a dialogue box. The box uses <code>page.layout</code> as already-measured content, so you usually pair this with <code>UI.paginateDialogue</code>.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -4467,7 +5803,7 @@ this is usually the service you compose with.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#ui-menunavigationoptions">src/ui/Ui.ts:62</a>
+										<a class="doc-source" href="#ui-menunavigationoptions">src/ui/UI.ts:62</a>
 									</div>
 									<h4>MenuNavigationOptions</h4>
 									<div class="prose"><p>Options for resolving conventional menu navigation.</p>
@@ -4479,6 +5815,7 @@ this is usually the service you compose with.</p>
 <li><code>cancelAction</code>: <code>&quot;menu-cancel&quot;</code></li>
 </ul>
 </div>
+									
 								</article>
 							
 								<article
@@ -4487,11 +5824,12 @@ this is usually the service you compose with.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#ui-menunavigationresult">src/ui/Ui.ts:83</a>
+										<a class="doc-source" href="#ui-menunavigationresult">src/ui/UI.ts:83</a>
 									</div>
 									<h4>MenuNavigationResult</h4>
 									<div class="prose"><p>The result of a single menu navigation update. <code>moved</code>, <code>confirmed</code>, and <code>cancelled</code> are mutually independent so a caller can respond to whichever transition happened this frame.</p>
 </div>
+									
 								</article>
 							
 								<article
@@ -4499,15 +5837,159 @@ this is usually the service you compose with.</p>
 									id="ui-ui"
 								>
 									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-class">class</span>
-										<a class="doc-source" href="#ui-ui">src/ui/Ui.ts:281</a>
+										<span class="doc-kind doc-kind-service">service</span>
+										<a class="doc-source" href="#ui-ui">src/ui/UI.ts:281</a>
 									</div>
-									<h4>Ui</h4>
+									<h4>UI</h4>
 									<div class="prose"><p>High-level text, menu, and dialogue helpers built on top of <a href="#graphics-graphics">Graphics</a>.</p>
-<p><code>Ui</code> is intentionally small and opinionated. It handles the repetitive parts
+<p><code>UI</code> is intentionally small and opinionated. It handles the repetitive parts
 of dialogue boxes, framed panels, bitmap-font measurement, and menu
 navigation so your game code can stay focused on its own state machine.</p>
 </div>
+									
+			<section class="service-members">
+				<h5>Methods</h5>
+				<div class="service-member-list">
+					
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>drawCursor</strong>
+									</div>
+									<code>drawCursor: ( bounds: UIBounds, color?: Color, ) =&gt; Effect.Effect&lt;void, GraphicsFrameNotOpenError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>drawDialogueBox</strong>
+									</div>
+									<code>drawDialogueBox: ( options: DrawDialogueBoxOptions, ) =&gt; Effect.Effect&lt;void, GraphicsFrameNotOpenError | UnknownFontError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>drawFrame</strong>
+									</div>
+									<code>drawFrame: ( bounds: UIBounds, color?: Color, ) =&gt; Effect.Effect&lt;void, GraphicsFrameNotOpenError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>drawHighlight</strong>
+									</div>
+									<code>drawHighlight: ( bounds: UIBounds, color?: Color, ) =&gt; Effect.Effect&lt;void, GraphicsFrameNotOpenError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>drawPanel</strong>
+									</div>
+									<code>drawPanel: ( bounds: UIBounds, fillColor?: Color, borderColor?: Color, ) =&gt; Effect.Effect&lt;void, GraphicsFrameNotOpenError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>drawTextBlock</strong>
+									</div>
+									<code>drawTextBlock: (options: { readonly align?: &quot;center&quot; | &quot;left&quot; | &quot;right&quot;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>fontId</strong>
+									</div>
+									<code>fontId: string</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>position</strong>
+									</div>
+									<code>position: CameraVector</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>text</strong>
+									</div>
+									<code>text: string</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>loadFont</strong>
+									</div>
+									<code>loadFont: ( definition: FontDefinition, ) =&gt; Effect.Effect&lt;void, DuplicateFontError | InvalidFontDefinitionError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>measureText</strong>
+									</div>
+									<code>measureText: ( fontId: string, text: string, ) =&gt; Effect.Effect&lt;TextLayout, UnknownFontError&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>paginateDialogue</strong>
+									</div>
+									<code>paginateDialogue: (options: { readonly fontId: string</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>maxLines</strong>
+									</div>
+									<code>maxLines: number</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>maxWidth</strong>
+									</div>
+									<code>maxWidth: number</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>text</strong>
+									</div>
+									<code>text: string</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>resolveMenuInput</strong>
+									</div>
+									<code>resolveMenuInput: ( options: MenuNavigationOptions, ) =&gt; Effect.Effect&lt;MenuNavigationResult, never&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>wrapText</strong>
+									</div>
+									<code>wrapText: ( fontId: string, text: string, maxWidth: number, ) =&gt; Effect.Effect&lt;TextLayout, UnknownFontError&gt;</code>
+								</div>
+							
+				</div>
+			</section>
+		
 								</article>
 							
 							</div>

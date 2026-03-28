@@ -17,7 +17,7 @@ import {
 	SceneRegistry,
 	Sequence,
 	SequenceEvents,
-	Ui,
+	UI,
 } from "../../src/index.ts";
 import { starterRooms } from "./content/StarterRooms.ts";
 import { StarterCoordinator } from "./directors/StarterCoordinator.ts";
@@ -105,7 +105,7 @@ const starterCapabilityLayer = Layer.mergeAll(
 	starterStateLayer,
 );
 
-const starterUiLayer = Ui.layer.pipe(Layer.provide(starterCapabilityLayer));
+const starterUILayer = UI.layer.pipe(Layer.provide(starterCapabilityLayer));
 
 const starterMapRepositoryLayer = MapRepository.layer(starterRooms);
 
@@ -136,7 +136,7 @@ const starterSequenceLayer = Sequence.layer.pipe(
 );
 
 const starterCutsceneLayer = Cutscene.layer.pipe(
-	Layer.provide(Layer.mergeAll(starterSequenceLayer, starterUiLayer)),
+	Layer.provide(Layer.mergeAll(starterSequenceLayer, starterUILayer)),
 );
 
 const starterSaveParticipantsLayer = StarterSaveParticipants.layer.pipe(
@@ -164,7 +164,7 @@ const starterGameplayDirectorLayer = StarterGameplayDirector.layer.pipe(
 			starterSequenceLayer,
 			starterSceneDirectorLayer,
 			starterRoomStateLayer,
-			starterUiLayer,
+			starterUILayer,
 			starterDebugOverlayLayer,
 		),
 	),
@@ -177,7 +177,7 @@ const starterPresentationDirectorLayer = StarterPresentationDirector.layer.pipe(
 			starterDebugOverlayLayer,
 			starterSceneDirectorLayer,
 			starterRoomStateLayer,
-			starterUiLayer,
+			starterUILayer,
 		),
 	),
 );
@@ -194,7 +194,7 @@ export const StarterGameLive = Layer.mergeAll(
 	starterSceneRegistryLayer,
 	starterSequenceLayer,
 	starterCutsceneLayer,
-	starterUiLayer,
+	starterUILayer,
 	SequenceEvents.layer,
 	starterSaveParticipantsLayer,
 );
@@ -207,7 +207,7 @@ export const starterBootstrap = Effect.gen(function* () {
 	const input = yield* Input;
 	const starterCoordinator = yield* StarterCoordinator;
 	const starterSaveParticipants = yield* StarterSaveParticipants;
-	const ui = yield* Ui;
+	const ui = yield* UI;
 
 	yield* starterCoordinator.beginNewGame;
 	yield* input.setBindings(starterBindings);

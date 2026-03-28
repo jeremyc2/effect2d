@@ -3,10 +3,21 @@ import { Console, Effect, Schema } from "effect";
 
 type PublicDocEntry = {
 	readonly filePath: string;
-	readonly kind: "class" | "const" | "function" | "interface" | "type";
+	readonly kind:
+		| "class"
+		| "const"
+		| "error"
+		| "function"
+		| "interface"
+		| "service"
+		| "type";
 	readonly line: number;
 	readonly markdown: string;
 	readonly name: string;
+	readonly serviceMembers: ReadonlyArray<{
+		readonly name: string;
+		readonly signature: string;
+	}>;
 	readonly slug: string;
 };
 
@@ -250,25 +261,130 @@ const extractPublicEntries = (
 			continue;
 		}
 
-		const kind = declarationMatch[1] as PublicDocEntry["kind"];
+		const declarationKind = declarationMatch[1] as
+			| "class"
+			| "const"
+			| "function"
+			| "interface"
+			| "type";
 		const name = declarationMatch[2];
 		if (name === undefined) {
 			continue;
 		}
 
 		const line = source.slice(0, blockStart).split("\n").length;
+		const kind = getDocumentedKind(source, name, declarationKind);
 		entries.push({
 			filePath,
 			kind,
 			line,
 			markdown: cleanJsDocMarkdown(block),
 			name,
+			serviceMembers:
+				kind === "service" ? extractServiceMembers(source, name) : [],
 			slug: `${moduleSlug}-${slugify(name)}`,
 		});
 	}
 
 	return entries;
 };
+
+function getDocumentedKind(
+	source: string,
+	name: string,
+	declarationKind: "class" | "const" | "function" | "interface" | "type",
+): PublicDocEntry["kind"] {
+	if (declarationKind !== "class") {
+		return declarationKind;
+	}
+
+	if (source.includes(`export class ${name} extends ServiceMap.Service<`)) {
+		return "service";
+	}
+
+	if (
+		source.includes(
+			`export class ${name} extends Schema.TaggedErrorClass<${name}>()(`,
+		)
+	) {
+		return "error";
+	}
+
+	return "class";
+}
+
+function extractServiceMembers(
+	source: string,
+	className: string,
+): ReadonlyArray<{
+	readonly name: string;
+	readonly signature: string;
+}> {
+	const classSignature = `export class ${className} extends ServiceMap.Service<`;
+	const classStart = source.indexOf(classSignature);
+	if (classStart === -1) {
+		return [];
+	}
+
+	const classSlice = source.slice(classStart);
+	const serviceEnd = classSlice.indexOf('>()("');
+	if (serviceEnd === -1) {
+		return [];
+	}
+
+	const serviceSignature = classSlice.slice(0, serviceEnd);
+	const members: Array<{
+		readonly name: string;
+		readonly signature: string;
+	}> = [];
+
+	for (const match of serviceSignature.matchAll(
+		/readonly\s+([A-Za-z_$][A-Za-z0-9_$]*)\s*:\s*([\s\S]*?);/g,
+	)) {
+		const name = match[1];
+		const rawSignature = match[2];
+		if (name === undefined || rawSignature === undefined) {
+			continue;
+		}
+
+		members.push({
+			name,
+			signature: `${name}: ${rawSignature.replace(/\s+/g, " ").trim()}`,
+		});
+	}
+
+	return members;
+}
+
+function renderServiceMembers(
+	serviceMembers: ReadonlyArray<{
+		readonly name: string;
+		readonly signature: string;
+	}>,
+): string {
+	return serviceMembers.length === 0
+		? ""
+		: `
+			<section class="service-members">
+				<h5>Methods</h5>
+				<div class="service-member-list">
+					${serviceMembers
+						.map(
+							(member) => `
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>${escapeHtml(member.name)}</strong>
+									</div>
+									<code>${escapeHtml(member.signature)}</code>
+								</div>
+							`,
+						)
+						.join("")}
+				</div>
+			</section>
+		`;
+}
 
 // Adds safe new-tab behavior to absolute http(s) links emitted by the markdown
 // renderer while leaving internal hash links untouched.
@@ -359,6 +475,7 @@ const renderModules = (
 									</div>
 									<h4>${escapeHtml(entry.name)}</h4>
 									<div class="prose">${renderMarkdown(resolvedMarkdown)}</div>
+									${renderServiceMembers(entry.serviceMembers)}
 								</article>
 							`;
 						})
@@ -742,12 +859,20 @@ const renderHtmlDocument = ({
 				color: #9fd8ff;
 			}
 
+			.nav-entry .nav-kind-error {
+				color: #ff8a8a;
+			}
+
 			.nav-entry .nav-kind-function {
 				color: #ffb3d6;
 			}
 
 			.nav-entry .nav-kind-interface {
 				color: #c7ff9e;
+			}
+
+			.nav-entry .nav-kind-service {
+				color: #ffd08f;
 			}
 
 			.nav-entry .nav-kind-type {
@@ -953,6 +1078,12 @@ const renderHtmlDocument = ({
 				color: #9fd8ff;
 			}
 
+			.doc-kind-error {
+				border-color: rgba(255, 138, 138, 0.34);
+				background: rgba(255, 138, 138, 0.08);
+				color: #ffb1b1;
+			}
+
 			.doc-kind-function {
 				border-color: rgba(255, 154, 201, 0.3);
 				background: rgba(255, 154, 201, 0.08);
@@ -965,10 +1096,22 @@ const renderHtmlDocument = ({
 				color: #c7ff9e;
 			}
 
+			.doc-kind-service {
+				border-color: rgba(248, 191, 114, 0.32);
+				background: rgba(248, 191, 114, 0.08);
+				color: #ffd08f;
+			}
+
 			.doc-kind-type {
 				border-color: rgba(196, 167, 255, 0.3);
 				background: rgba(196, 167, 255, 0.08);
 				color: #d7c2ff;
+			}
+
+			.doc-kind-method {
+				border-color: rgba(248, 191, 114, 0.32);
+				background: rgba(248, 191, 114, 0.08);
+				color: #ffd08f;
 			}
 
 			.doc-source {
@@ -985,6 +1128,50 @@ const renderHtmlDocument = ({
 				color: rgba(243, 239, 228, 0.88);
 				line-height: 1.72;
 				font-size: 1rem;
+			}
+
+			.service-members {
+				margin-top: 1rem;
+				padding-top: 1rem;
+				border-top: 1px solid rgba(255, 255, 255, 0.08);
+			}
+
+			.service-members h5 {
+				margin: 0 0 0.8rem;
+				font-size: 0.94rem;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--muted);
+			}
+
+			.service-member-list {
+				display: grid;
+				gap: 0.7rem;
+			}
+
+			.service-member {
+				padding: 0.9rem 0.95rem;
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				background: rgba(255, 255, 255, 0.025);
+			}
+
+			.service-member-meta {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				gap: 0.65rem;
+				margin-bottom: 0.55rem;
+			}
+
+			.service-member code {
+				display: block;
+				padding: 0.75rem 0.8rem;
+				overflow-x: auto;
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				background: rgba(7, 14, 10, 0.72);
+				color: #f7f4ea;
+				font-size: 0.86rem;
+				line-height: 1.55;
 			}
 
 			.prose h1,

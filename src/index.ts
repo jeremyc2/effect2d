@@ -26,7 +26,7 @@
  * - Scene composition primitives such as {@link SceneDefinition},
  *   {@link SceneDirector}, and {@link SceneRegistry}
  * - Core gameplay services including {@link Graphics}, {@link Input},
- *   {@link Audio}, {@link Sequence}, {@link Cutscene}, {@link Ui}, and
+ *   {@link Audio}, {@link Sequence}, {@link Cutscene}, {@link UI}, and
  *   {@link SaveCoordinator}
  * - Supporting data models such as room content, save documents, camera state,
  *   input bindings, and audio cue definitions
@@ -48,8 +48,8 @@
  * - `Sequence` coordinates timed gameplay beats such as waits, scene switches,
  *   fades, flashes, and audio cues
  * - `Cutscene` builds higher-level cinematic helpers on top of `Sequence` and
- *   `Ui`
- * - `Ui` helps with common text, menu, and dialogue presentation patterns
+ *   `UI`
+ * - `UI` helps with common text, menu, and dialogue presentation patterns
  * - `SaveCoordinator` snapshots and restores participant state across save slots
  *
  * Your game code contributes domain-specific services on top of these:

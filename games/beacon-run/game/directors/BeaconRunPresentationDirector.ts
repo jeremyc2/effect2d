@@ -8,7 +8,7 @@ import {
 	RuntimeClock,
 	SceneDirector,
 	type SceneStackEmptyError,
-	Ui,
+	UI,
 	type UnknownFontError,
 } from "../../../../src/index.ts";
 import type { MapValidationError } from "../../../../src/maps/MapError.ts";
@@ -92,7 +92,7 @@ export class BeaconRunPresentationDirector extends ServiceMap.Service<
 			const runtimeClock = yield* RuntimeClock;
 			const sceneDirector = yield* SceneDirector;
 			const scoutState = yield* ScoutState;
-			const ui = yield* Ui;
+			const ui = yield* UI;
 
 			const tileBackground = Effect.fn(
 				"BeaconRunPresentationDirector.tileBackground",
