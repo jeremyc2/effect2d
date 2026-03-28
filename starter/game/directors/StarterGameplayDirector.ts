@@ -82,7 +82,7 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 			StarterGameplayDirectorFailure
 		>;
 	}
->()("Effect2d/starter/game/directors/StarterGameplayDirector") {
+>()("effect2d/starter/game/directors/StarterGameplayDirector") {
 	static readonly layer = Layer.effect(
 		StarterGameplayDirector,
 		Effect.gen(function* () {

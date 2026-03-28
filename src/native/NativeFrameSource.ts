@@ -16,4 +16,4 @@ export class NativeFrameSource extends ServiceMap.Service<
 	{
 		readonly nextFrame: Effect.Effect<FrameSnapshot, EngineLaunchError>;
 	}
->()("Effect2d/native/NativeFrameSource") {}
+>()("effect2d/native/NativeFrameSource") {}

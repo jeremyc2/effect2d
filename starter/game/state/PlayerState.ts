@@ -27,7 +27,7 @@ export class PlayerState extends ServiceMap.Service<
 		readonly setFacing: (facing: FacingDirection) => Effect.Effect<void>;
 		readonly snapshot: Effect.Effect<PlayerSnapshot>;
 	}
->()("Effect2d/starter/game/state/PlayerState") {
+>()("effect2d/starter/game/state/PlayerState") {
 	static readonly layer = Layer.effect(
 		PlayerState,
 		Effect.gen(function* () {

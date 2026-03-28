@@ -11,7 +11,7 @@ export class StarterSaveParticipants extends ServiceMap.Service<
 	{
 		readonly all: Effect.Effect<ReadonlyArray<SaveParticipant>>;
 	}
->()("Effect2d/starter/game/save/StarterSaveParticipants") {
+>()("effect2d/starter/game/save/StarterSaveParticipants") {
 	static readonly layer = Layer.effect(
 		StarterSaveParticipants,
 		Effect.gen(function* () {

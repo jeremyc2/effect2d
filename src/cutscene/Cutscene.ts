@@ -110,7 +110,7 @@ export class Cutscene extends ServiceMap.Service<
 			steps: number,
 		) => Effect.Effect<void, InvalidSequenceWaitError>;
 	}
->()("Effect2d/cutscene/Cutscene") {
+>()("effect2d/cutscene/Cutscene") {
 	static readonly layer = Layer.effect(
 		Cutscene,
 		Effect.gen(function* () {

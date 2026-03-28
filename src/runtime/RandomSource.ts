@@ -23,7 +23,7 @@ export class RandomSource extends ServiceMap.Service<
 			values: ReadonlyArray<Value>,
 		) => Effect.Effect<Array<Value>>;
 	}
->()("Effect2d/runtime/RandomSource") {
+>()("effect2d/runtime/RandomSource") {
 	static readonly layer = (seed?: number | string) =>
 		Layer.effect(
 			RandomSource,

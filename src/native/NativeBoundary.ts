@@ -36,7 +36,7 @@ export class NativeBoundary extends ServiceMap.Service<
 		) => Effect.Effect<void, EngineLaunchError>;
 		readonly shutdown: Effect.Effect<void>;
 	}
->()("Effect2d/native/NativeBoundary") {
+>()("effect2d/native/NativeBoundary") {
 	static readonly layer = Layer.effect(
 		NativeBoundary,
 		Effect.gen(function* () {

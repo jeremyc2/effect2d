@@ -120,7 +120,7 @@ export class SaveCoordinator extends ServiceMap.Service<
 		) => Effect.Effect<SaveSlotDocument>;
 		readonly writeSlot: (slotId: SaveSlotId) => Effect.Effect<SaveDocument>;
 	}
->()("Effect2d/save/SaveCoordinator") {
+>()("effect2d/save/SaveCoordinator") {
 	static readonly layer = ({
 		initialDocument,
 		migrations = [],

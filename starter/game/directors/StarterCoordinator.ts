@@ -31,7 +31,7 @@ export class StarterCoordinator extends ServiceMap.Service<
 		readonly recordSaveCompleted: (slotId: string) => Effect.Effect<void>;
 		readonly recordSceneChange: (sceneId: string) => Effect.Effect<void>;
 	}
->()("Effect2d/starter/game/directors/StarterCoordinator") {
+>()("effect2d/starter/game/directors/StarterCoordinator") {
 	static readonly layer = Layer.effect(
 		StarterCoordinator,
 		Effect.gen(function* () {

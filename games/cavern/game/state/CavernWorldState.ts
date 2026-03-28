@@ -20,7 +20,7 @@ export class CavernWorldState extends ServiceMap.Service<
 		readonly setCurrentRoom: (roomId: CavernRoomId) => Effect.Effect<void>;
 		readonly snapshot: Effect.Effect<CavernWorldSnapshot>;
 	}
->()("Effect2d/games/cavern/game/state/CavernWorldState") {
+>()("effect2d/games/cavern/game/state/CavernWorldState") {
 	static readonly layer = Layer.effect(
 		CavernWorldState,
 		Effect.gen(function* () {

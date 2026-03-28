@@ -18,7 +18,7 @@ export class BeaconRunCoordinator extends ServiceMap.Service<
 		readonly processEvents: Effect.Effect<void, InvalidLogMessageError>;
 		readonly recordSceneChange: (sceneId: string) => Effect.Effect<void>;
 	}
->()("Effect2d/games/beacon-run/game/directors/BeaconRunCoordinator") {
+>()("effect2d/games/beacon-run/game/directors/BeaconRunCoordinator") {
 	static readonly layer = Layer.effect(
 		BeaconRunCoordinator,
 		Effect.gen(function* () {

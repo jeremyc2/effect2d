@@ -134,7 +134,7 @@ export class StarterPresentationDirector extends ServiceMap.Service<
 			StarterPresentationDirectorFailure
 		>;
 	}
->()("Effect2d/starter/game/directors/StarterPresentationDirector") {
+>()("effect2d/starter/game/directors/StarterPresentationDirector") {
 	static readonly layer = Layer.effect(
 		StarterPresentationDirector,
 		Effect.gen(function* () {

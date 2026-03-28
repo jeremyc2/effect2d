@@ -466,7 +466,7 @@ export class AnimationLibrary extends ServiceMap.Service<
 			AnimationClipNotFoundError
 		>;
 	}
->()("Effect2d/animation/Animation/AnimationLibrary") {
+>()("effect2d/animation/Animation/AnimationLibrary") {
 	static readonly layer = (
 		clips: ReadonlyArray<AnimationClip>,
 	): Layer.Layer<AnimationLibrary> =>

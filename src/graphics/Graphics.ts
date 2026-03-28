@@ -315,7 +315,7 @@ export class Graphics extends ServiceMap.Service<
 		) => Effect.Effect<void, GraphicsFrameNotOpenError>;
 		readonly snapshot: Effect.Effect<FrameSnapshot>;
 	}
->()("Effect2d/graphics/Graphics") {
+>()("effect2d/graphics/Graphics") {
 	static readonly layer = Layer.effect(
 		Graphics,
 		Effect.gen(function* () {

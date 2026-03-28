@@ -47,7 +47,7 @@ export class GameplayState extends ServiceMap.Service<
 		readonly restore: (snapshot: GameplaySnapshot) => Effect.Effect<void>;
 		readonly snapshot: Effect.Effect<GameplaySnapshot>;
 	}
->()("Effect2d/starter/game/state/GameplayState") {
+>()("effect2d/starter/game/state/GameplayState") {
 	static readonly layer = Layer.effect(
 		GameplayState,
 		Effect.gen(function* () {

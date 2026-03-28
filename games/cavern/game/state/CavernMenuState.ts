@@ -22,7 +22,7 @@ export class CavernMenuState extends ServiceMap.Service<
 		readonly snapshot: Effect.Effect<CavernMenuSnapshot>;
 		readonly toggleSound: Effect.Effect<void>;
 	}
->()("Effect2d/games/cavern/game/state/CavernMenuState") {
+>()("effect2d/games/cavern/game/state/CavernMenuState") {
 	static readonly layer = Layer.effect(
 		CavernMenuState,
 		Effect.gen(function* () {

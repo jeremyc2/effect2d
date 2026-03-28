@@ -68,7 +68,7 @@ export class ResourceTracker extends ServiceMap.Service<
 			details?: string,
 		) => Effect.Effect<void, UnknownTrackedResourceError>;
 	}
->()("Effect2d/debug/ResourceTracker") {
+>()("effect2d/debug/ResourceTracker") {
 	static readonly layer = Layer.effect(
 		ResourceTracker,
 		Effect.gen(function* () {
