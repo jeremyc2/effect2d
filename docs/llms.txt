@@ -8,7 +8,7 @@ Use it for progressive disclosure: start with the overview or a module file, the
 ## Core Docs
 
 - [Overview](./llms/overview.md): Package overview, goals, quick-start guidance, and engine fit.
-- [Full Context](./llms-full.txt): One-file Markdown expansion of the full public API for direct ingestion.
+- [Full Context](./llms-full.txt): One-file Markdown expansion of the full public API for direct ingestion (60 KB).
 
 ## Modules
 

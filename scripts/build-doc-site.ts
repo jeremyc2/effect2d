@@ -706,6 +706,7 @@ function renderLlmsModuleDocument(
 function renderLlmsText(
 	modules: ReadonlyArray<ModuleDocGroup>,
 	packageDocs: PackageDocumentation,
+	llmsFullSizeBytes: number,
 ): string {
 	const moduleSections = modules
 		.map((moduleGroup) => {
@@ -729,7 +730,7 @@ function renderLlmsText(
 		"## Core Docs",
 		"",
 		`- [Overview](${getLlmsOverviewPath()}): Package overview, goals, quick-start guidance, and engine fit.`,
-		`- [Full Context](./llms-full.txt): One-file Markdown expansion of the full public API for direct ingestion.`,
+		`- [Full Context](./llms-full.txt): One-file Markdown expansion of the full public API for direct ingestion (${Math.round(llmsFullSizeBytes / 1024)} KB).`,
 		"",
 		"## Modules",
 		"",
@@ -1698,12 +1699,16 @@ const main = Effect.gen(function* () {
 		slugBySymbol,
 	});
 	const llmsLinkBySymbol = getLlmsLinkBySymbol(modules);
-	const llmsText = renderLlmsText(modules, packageDocs);
 	const llmsOverview = renderLlmsOverview(packageDocs, llmsLinkBySymbol);
 	const llmsFullText = renderLlmsFullText(
 		packageDocs,
 		modules,
 		llmsLinkBySymbol,
+	);
+	const llmsText = renderLlmsText(
+		modules,
+		packageDocs,
+		Buffer.byteLength(llmsFullText, "utf8"),
 	);
 
 	yield* writeText(docsOutputPath, html);
