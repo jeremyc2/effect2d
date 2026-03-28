@@ -243,7 +243,7 @@ export class Audio extends ServiceMap.Service<
 			playbackId: string,
 		) => Effect.Effect<void, UnknownSoundPlaybackError>;
 	}
->()("effect2d/audio/Audio") {
+>()("Effect2d/audio/Audio") {
 	static readonly layer = Layer.effect(Audio)(
 		Effect.gen(function* () {
 			const stateRef = yield* Ref.make(initialAudioState);

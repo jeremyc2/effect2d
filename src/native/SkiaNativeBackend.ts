@@ -538,7 +538,7 @@ const aspectFitRect = (
  * @public
  */
 export function makeSkiaNativeBackendLayer({
-	defaultFontFamily = "effect2d-native",
+	defaultFontFamily = "Effect2d-native",
 	defaultFontPath,
 	defaultFontSizePx = 8,
 	fontAssetDefinitions = {},

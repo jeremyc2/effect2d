@@ -1,6 +1,6 @@
 # Ubiquitous Language
 
-This glossary defines the shared game-engine language for `effect2d`.
+This glossary defines the shared game-engine language for `Effect2d`.
 
 The "Aliases to Avoid" column is intentionally strict. We use it to prevent multiple names for the same concept from creeping into docs, APIs, variable names, and conversations.
 
@@ -8,7 +8,7 @@ The "Aliases to Avoid" column is intentionally strict. We use it to prevent mult
 
 | Term | Definition | Aliases to Avoid |
 | --- | --- | --- |
-| Engine | The reusable runtime and subsystem foundation provided by `effect2d`. | app, framework, platform |
+| Engine | The reusable runtime and subsystem foundation provided by `Effect2d`. | app, framework, platform |
 | Game | A userland project built on top of the engine. | app, product |
 | Runtime | The live executing game process, including the engine and userland services. | process manager, host app |
 | Native Boundary | The thin layer that talks to platform capabilities like windowing, rendering, audio devices, and raw input. | backend app, core engine, platform layer |

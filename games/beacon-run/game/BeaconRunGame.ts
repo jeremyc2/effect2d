@@ -35,7 +35,7 @@ import { ScoutState } from "./state/ScoutState.ts";
 
 export const beaconRunConfig = {
 	...defaultEngineConfig,
-	gameId: "effect2d/beacon-run",
+	gameId: "Effect2d/beacon-run",
 	randomSeed: "beacon-run-seed",
 	startScene: "title",
 	targetTicksPerSecond: 60,
@@ -192,7 +192,7 @@ export const beaconRunPlayableNativeBoundaryLayer = makeSkiaNativeBoundaryLayer(
 		logicalHeight: 192,
 		logicalWidth: 256,
 		resizable: true,
-		title: "effect2d: Beacon Run",
+		title: "Effect2d: Beacon Run",
 		windowHeight: 768,
 		windowWidth: 1024,
 	},

@@ -429,7 +429,7 @@ const renderHero = (): string => `
 				<span></span>
 			</div>
 			<div>
-				<h1>effect2d</h1>
+				<h1>Effect2d</h1>
 			</div>
 		</div>
 		<p class="hero-copy">
@@ -598,7 +598,7 @@ const renderHtmlDocument = ({
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>effect2d Public API</title>
+		<title>Effect2d User Guide</title>
 		<meta name="description" content="${escapeHtml(packageDocs.summary)}" />
 		<style>
 			:root {
@@ -1364,7 +1364,7 @@ const renderHtmlDocument = ({
 						<span></span>
 						<span></span>
 					</div>
-					<span>effect2d Docs</span>
+					<span>Effect2d Docs</span>
 				</a>
 				<nav class="topbar-links" aria-label="Primary">
 					<a class="topbar-link" href="#where-this-engine-shines">Ideas</a>

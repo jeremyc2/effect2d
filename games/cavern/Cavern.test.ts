@@ -37,7 +37,7 @@ describe("cavern", () => {
 			),
 		);
 
-		expect(result.gameId).toBe("effect2d/cavern");
+		expect(result.gameId).toBe("Effect2d/cavern");
 		expect(result.startScene).toBe("main-menu");
 	});
 });

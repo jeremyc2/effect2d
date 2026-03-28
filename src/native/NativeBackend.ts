@@ -66,4 +66,4 @@ export class NativeBackend extends ServiceMap.Service<
 		) => Effect.Effect<ReadonlyArray<string>, EngineLaunchError>;
 		readonly waitForNextFrame: Effect.Effect<void, EngineLaunchError>;
 	}
->()("effect2d/native/NativeBackend") {}
+>()("Effect2d/native/NativeBackend") {}

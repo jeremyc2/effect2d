@@ -20,7 +20,7 @@ export class ExpeditionState extends ServiceMap.Service<
 		readonly restore: (snapshot: ExpeditionSnapshot) => Effect.Effect<void>;
 		readonly snapshot: Effect.Effect<ExpeditionSnapshot>;
 	}
->()("effect2d/games/beacon-run/game/state/ExpeditionState") {
+>()("Effect2d/games/beacon-run/game/state/ExpeditionState") {
 	static readonly layer = Layer.effect(
 		ExpeditionState,
 		Effect.gen(function* () {

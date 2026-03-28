@@ -8,7 +8,7 @@ export class BeaconRunSaveParticipants extends ServiceMap.Service<
 	{
 		readonly all: Effect.Effect<ReadonlyArray<SaveParticipant>>;
 	}
->()("effect2d/games/beacon-run/game/save/BeaconRunSaveParticipants") {
+>()("Effect2d/games/beacon-run/game/save/BeaconRunSaveParticipants") {
 	static readonly layer = Layer.effect(
 		BeaconRunSaveParticipants,
 		Effect.gen(function* () {

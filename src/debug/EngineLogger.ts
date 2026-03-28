@@ -57,7 +57,7 @@ export class EngineLogger extends ServiceMap.Service<
 			context?: Readonly<Record<string, string | number | boolean>>,
 		) => Effect.Effect<void, InvalidLogMessageError>;
 	}
->()("effect2d/debug/EngineLogger") {
+>()("Effect2d/debug/EngineLogger") {
 	static readonly layer = Layer.effect(
 		EngineLogger,
 		Effect.gen(function* () {

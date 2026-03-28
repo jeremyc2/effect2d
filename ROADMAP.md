@@ -203,7 +203,7 @@
 
 ## Milestone 18: First Real Game Pressure Test
 
-- [x] Start a small real game on top of `effect2d`.
+- [x] Start a small real game on top of `Effect2d`.
 - [x] Reuse the canonical engine architecture instead of inventing a separate one.
 - [x] Let real game needs reveal the next engine gaps.
 - [x] Refine maps and room content APIs under real usage.

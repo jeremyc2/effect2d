@@ -27,7 +27,7 @@ export class RoomState extends ServiceMap.Service<
 		) => Effect.Effect<RoomObject, MapValidationError>;
 		readonly snapshot: Effect.Effect<RoomContent>;
 	}
->()("effect2d/starter/game/state/RoomState") {
+>()("Effect2d/starter/game/state/RoomState") {
 	static readonly layer = Layer.effect(
 		RoomState,
 		Effect.gen(function* () {

@@ -15,7 +15,7 @@ export class DebugSettingsState extends ServiceMap.Service<
 		readonly snapshot: Effect.Effect<DebugSettingsSnapshot>;
 		readonly toggleDebugOverlay: Effect.Effect<void>;
 	}
->()("effect2d/starter/game/state/DebugSettingsState") {
+>()("Effect2d/starter/game/state/DebugSettingsState") {
 	static readonly layer = Layer.effect(
 		DebugSettingsState,
 		Effect.gen(function* () {

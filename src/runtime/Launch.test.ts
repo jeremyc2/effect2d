@@ -53,7 +53,7 @@ describe("Launch", () => {
 			makeRuntimeLayer(
 				{
 					...defaultEngineConfig,
-					gameId: "effect2d/test-game",
+					gameId: "Effect2d/test-game",
 					randomSeed: 12345,
 					startScene: "boot",
 					targetTicksPerSecond: 60,
@@ -70,7 +70,7 @@ describe("Launch", () => {
 				yield* engine.launch();
 				yield* clock.beginFrame();
 
-				expect(engine.config.gameId).toBe("effect2d/test-game");
+				expect(engine.config.gameId).toBe("Effect2d/test-game");
 				expect(random.seed).toBe(12345);
 				expect((yield* clock.snapshot()).frameCount).toBe(1);
 			}),

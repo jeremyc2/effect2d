@@ -371,7 +371,7 @@ export class Input extends ServiceMap.Service<
 		>;
 		readonly snapshot: Effect.Effect<InputSnapshot>;
 	}
->()("effect2d/input/Input") {
+>()("Effect2d/input/Input") {
 	static readonly layer = Layer.effect(
 		Input,
 		Effect.gen(function* () {

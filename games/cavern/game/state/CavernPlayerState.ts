@@ -19,7 +19,7 @@ export class CavernPlayerState extends ServiceMap.Service<
 		readonly moveTo: (position: CameraVector) => Effect.Effect<void>;
 		readonly snapshot: Effect.Effect<CavernPlayerSnapshot>;
 	}
->()("effect2d/games/cavern/game/state/CavernPlayerState") {
+>()("Effect2d/games/cavern/game/state/CavernPlayerState") {
 	static readonly layer = Layer.effect(
 		CavernPlayerState,
 		Effect.gen(function* () {

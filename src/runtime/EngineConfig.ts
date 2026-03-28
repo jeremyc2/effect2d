@@ -35,8 +35,8 @@ export interface EngineConfig {
  * preset.
  */
 export const defaultEngineConfig = {
-	gameId: "effect2d/game",
-	randomSeed: "effect2d",
+	gameId: "Effect2d/game",
+	randomSeed: "Effect2d",
 	startScene: "boot",
 	targetTicksPerSecond: 60,
 } satisfies EngineConfig;

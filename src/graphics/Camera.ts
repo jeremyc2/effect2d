@@ -296,7 +296,7 @@ export class SceneCamera extends ServiceMap.Service<
 			worldPoint: CameraVector,
 		) => Effect.Effect<CameraVector>;
 	}
->()("effect2d/graphics/Camera/SceneCamera") {
+>()("Effect2d/graphics/Camera/SceneCamera") {
 	static readonly layer = (initialState?: Partial<CameraState>) =>
 		Layer.effect(
 			SceneCamera,

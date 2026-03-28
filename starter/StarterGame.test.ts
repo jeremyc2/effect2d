@@ -159,7 +159,7 @@ describe("starter", () => {
 				expect(
 					menuFrame.commands.some(
 						(command) =>
-							command.type === "draw-text" && command.text.includes("effect2d"),
+							command.type === "draw-text" && command.text.includes("Effect2d"),
 					),
 				).toBe(true);
 

@@ -4,7 +4,7 @@
  * @packageDocumentation
  * @public
  *
- * `effect2d` came out of wanting to learn game development in the same spirit
+ * `Effect2d` came out of wanting to learn game development in the same spirit
  * that made projects like [Challacade](https://github.com/challacade)'s work
  * feel so approachable: build a real game, keep going long enough to
  * understand the hard parts, and talk about the craft in plain language. Lua
@@ -38,7 +38,7 @@
  * If you already think in terms of `Effect`, `Layer`, services, scopes, and
  * typed domain errors, you already know most of the architecture here.
  *
- * A game built with `effect2d` is organized around a small set of
+ * A game built with `Effect2d` is organized around a small set of
  * long-lived services:
  *
  * - `SceneDirector` decides which scene is active and manages scene lifecycle
@@ -75,7 +75,7 @@
  *
  * ## Where this engine shines
  *
- * `effect2d` is best understood as a 2D authored-game engine for TypeScript
+ * `Effect2d` is best understood as a 2D authored-game engine for TypeScript
  * and Effect developers. It is especially well suited to small-to-medium indie
  * games where the game is built from explicit state, scenes, rooms, maps, UI,
  * dialogue, and deterministic gameplay rules.

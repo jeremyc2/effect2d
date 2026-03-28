@@ -101,7 +101,7 @@ export class SequenceEvents extends ServiceMap.Service<
 		readonly publish: (event: SequenceEvent) => Effect.Effect<void>;
 		readonly snapshot: Effect.Effect<ReadonlyArray<SequenceEvent>>;
 	}
->()("effect2d/sequence/Sequence/SequenceEvents") {
+>()("Effect2d/sequence/Sequence/SequenceEvents") {
 	static readonly layer = Layer.effect(
 		SequenceEvents,
 		Effect.gen(function* () {
@@ -191,7 +191,7 @@ export class Sequence extends ServiceMap.Service<
 			steps: number,
 		) => Effect.Effect<void, InvalidSequenceWaitError>;
 	}
->()("effect2d/sequence/Sequence") {
+>()("Effect2d/sequence/Sequence") {
 	static readonly layer = Layer.effect(
 		Sequence,
 		Effect.gen(function* () {

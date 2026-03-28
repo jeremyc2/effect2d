@@ -21,7 +21,7 @@ export class WorldState extends ServiceMap.Service<
 		readonly restore: (snapshot: WorldSnapshot) => Effect.Effect<void>;
 		readonly snapshot: Effect.Effect<WorldSnapshot>;
 	}
->()("effect2d/starter/game/state/WorldState") {
+>()("Effect2d/starter/game/state/WorldState") {
 	static readonly layer = Layer.effect(
 		WorldState,
 		Effect.gen(function* () {

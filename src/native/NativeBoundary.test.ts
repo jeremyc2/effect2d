@@ -105,7 +105,7 @@ describe("NativeBoundary", () => {
 					sourcePath: "games/beacon-run/assets/audio/confirm.wav",
 				});
 				yield* audio.playSfx("confirm");
-				yield* nativeBoundary.initialize("effect2d/test-native");
+				yield* nativeBoundary.initialize("Effect2d/test-native");
 
 				expect(yield* input.isKeyPressed("Enter")).toBe(true);
 				expect((yield* nativeBoundary.diagnostics).initialized).toBe(false);

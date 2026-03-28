@@ -37,7 +37,7 @@ import { WorldState } from "./state/WorldState.ts";
 
 export const starterConfig = {
 	...defaultEngineConfig,
-	gameId: "effect2d/starter",
+	gameId: "Effect2d/starter",
 	randomSeed: "starter-seed",
 	startScene: "main-menu",
 	targetTicksPerSecond: 60,

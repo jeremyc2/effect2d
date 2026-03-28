@@ -1,6 +1,6 @@
-# effect2d
+# Effect2d
 
-`effect2d` is a Bun-native, Effect-native 2D game engine inspired by LÖVE.
+`Effect2d` is a Bun-native, Effect-native 2D game engine inspired by LÖVE.
 
 It is not a Lua compatibility layer. It is not a browser engine. It is not a React-style UI framework. It is a TypeScript and Effect-first engine for building small 2D games with a strong runtime model, explicit services, and code-defined content.
 
@@ -12,7 +12,7 @@ It is not a Lua compatibility layer. It is not a browser engine. It is not a Rea
 
 ## Core Direction
 
-- `effect2d` is macOS-first in its earliest phase.
+- `Effect2d` is macOS-first in its earliest phase.
 - Bun is the real runtime, not just a build tool.
 - The engine is Effect-native all the way down.
 - Games are assembled with real Effect services and Layers.
@@ -35,7 +35,7 @@ The engine should be honest about Effect rather than hiding it behind a faux-sim
 
 ## Early Engine Shape
 
-The first phase of `effect2d` centers on:
+The first phase of `Effect2d` centers on:
 
 - a Bun-native desktop runtime
 - one practical rendering backend
@@ -55,7 +55,7 @@ The first phase of `effect2d` centers on:
 
 ### Effect Native
 
-`effect2d` should use Effect heavily in both the engine and userland:
+`Effect2d` should use Effect heavily in both the engine and userland:
 
 - services instead of hidden globals
 - Layers instead of ad hoc wiring
@@ -116,7 +116,7 @@ That slice should validate:
 
 ## Non-Goals
 
-Early `effect2d` is explicitly not trying to be:
+Early `Effect2d` is explicitly not trying to be:
 
 - a browser game engine
 - a React-like framework
@@ -174,4 +174,4 @@ The package root export is intended for engine/runtime APIs. Repo-local testing 
 
 The first real small game pressure-test lives in [games/beacon-run/README.md](./games/beacon-run/README.md).
 
-It exists to prove that `effect2d` can support a separate game-specific domain and composition root without sliding back into starter-specific assumptions.
+It exists to prove that `Effect2d` can support a separate game-specific domain and composition root without sliding back into starter-specific assumptions.

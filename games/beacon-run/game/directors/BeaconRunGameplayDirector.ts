@@ -104,7 +104,7 @@ export class BeaconRunGameplayDirector extends ServiceMap.Service<
 			BeaconRunGameplayDirectorFailure
 		>;
 	}
->()("effect2d/games/beacon-run/game/directors/BeaconRunGameplayDirector") {
+>()("Effect2d/games/beacon-run/game/directors/BeaconRunGameplayDirector") {
 	static readonly layer = Layer.effect(
 		BeaconRunGameplayDirector,
 		Effect.gen(function* () {

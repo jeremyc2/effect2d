@@ -32,7 +32,7 @@ export class Engine extends ServiceMap.Service<
 		readonly config: EngineConfig;
 		readonly launch: () => Effect.Effect<void, EngineLaunchError>;
 	}
->()("effect2d/runtime/Engine") {
+>()("Effect2d/runtime/Engine") {
 	static readonly layer = (config: EngineConfig) =>
 		Layer.effect(
 			Engine,

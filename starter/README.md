@@ -1,6 +1,6 @@
 # Starter
 
-This folder is the canonical small starter for `effect2d`.
+This folder is the canonical small starter for `Effect2d`.
 
 It demonstrates:
 

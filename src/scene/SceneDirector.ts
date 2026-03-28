@@ -107,7 +107,7 @@ export class SceneDirector extends ServiceMap.Service<
 		readonly drawStack: Effect.Effect<void, SceneStackEmptyError>;
 		readonly handleInput: Effect.Effect<void, SceneStackEmptyError>;
 	}
->()("effect2d/scene/SceneDirector") {
+>()("Effect2d/scene/SceneDirector") {
 	static readonly layer = (startSceneId: SceneId) =>
 		Layer.effect(
 			SceneDirector,

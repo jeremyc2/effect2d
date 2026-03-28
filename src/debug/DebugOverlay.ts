@@ -119,7 +119,7 @@ export class DebugOverlay extends ServiceMap.Service<
 		) => Effect.Effect<void>;
 		readonly toggle: Effect.Effect<void>;
 	}
->()("effect2d/debug/DebugOverlay") {
+>()("Effect2d/debug/DebugOverlay") {
 	static readonly layer = Layer.effect(
 		DebugOverlay,
 		Effect.gen(function* () {

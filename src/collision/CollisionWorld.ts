@@ -188,7 +188,7 @@ export class CollisionWorld extends ServiceMap.Service<
 			mask?: CollisionMask,
 		) => Effect.Effect<ReadonlyArray<CollisionBody>>;
 	}
->()("effect2d/collision/CollisionWorld") {
+>()("Effect2d/collision/CollisionWorld") {
 	static readonly layer = Layer.effect(
 		CollisionWorld,
 		Effect.gen(function* () {

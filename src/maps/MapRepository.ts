@@ -23,7 +23,7 @@ export class MapRepository extends ServiceMap.Service<
 			MapValidationError
 		>;
 	}
->()("effect2d/maps/MapRepository") {
+>()("Effect2d/maps/MapRepository") {
 	static readonly layer = (rooms: ReadonlyArray<RoomContent>) =>
 		Layer.effect(
 			MapRepository,

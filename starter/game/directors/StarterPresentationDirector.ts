@@ -134,7 +134,7 @@ export class StarterPresentationDirector extends ServiceMap.Service<
 			StarterPresentationDirectorFailure
 		>;
 	}
->()("effect2d/starter/game/directors/StarterPresentationDirector") {
+>()("Effect2d/starter/game/directors/StarterPresentationDirector") {
 	static readonly layer = Layer.effect(
 		StarterPresentationDirector,
 		Effect.gen(function* () {
@@ -176,7 +176,7 @@ export class StarterPresentationDirector extends ServiceMap.Service<
 						fontId: "ui-body",
 						maxWidth: 88,
 						position: { x: 20, y: 28 },
-						text: "effect2d starter",
+						text: "Effect2d starter",
 					});
 					yield* ui.drawTextBlock({
 						align: "center",

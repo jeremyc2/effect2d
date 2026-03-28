@@ -25,7 +25,7 @@ export class ScoutState extends ServiceMap.Service<
 		readonly setFacing: (facing: ScoutFacing) => Effect.Effect<void>;
 		readonly snapshot: Effect.Effect<ScoutSnapshot>;
 	}
->()("effect2d/games/beacon-run/game/state/ScoutState") {
+>()("Effect2d/games/beacon-run/game/state/ScoutState") {
 	static readonly layer = Layer.effect(
 		ScoutState,
 		Effect.gen(function* () {

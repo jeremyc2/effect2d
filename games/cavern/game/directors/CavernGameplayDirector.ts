@@ -63,7 +63,7 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 			CavernGameplayDirectorFailure
 		>;
 	}
->()("effect2d/games/cavern/game/directors/CavernGameplayDirector") {
+>()("Effect2d/games/cavern/game/directors/CavernGameplayDirector") {
 	static readonly layer = Layer.effect(
 		CavernGameplayDirector,
 		Effect.gen(function* () {

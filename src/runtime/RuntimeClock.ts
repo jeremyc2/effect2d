@@ -38,7 +38,7 @@ export class RuntimeClock extends ServiceMap.Service<
 		readonly sleepFixedStep: Effect.Effect<void>;
 		readonly snapshot: () => Effect.Effect<RuntimeTimingSnapshot>;
 	}
->()("effect2d/runtime/RuntimeClock") {
+>()("Effect2d/runtime/RuntimeClock") {
 	static readonly layer = (targetTicksPerSecond: number) =>
 		Layer.effect(
 			RuntimeClock,

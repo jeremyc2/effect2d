@@ -4,7 +4,7 @@ This document captures the current engine shape before subsystem implementation 
 
 ## Primary Boundaries
 
-`effect2d` starts with one package and strong internal boundaries.
+`Effect2d` starts with one package and strong internal boundaries.
 
 The current subsystem layout is:
 

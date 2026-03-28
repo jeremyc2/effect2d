@@ -26,7 +26,7 @@ import { CavernWorldState } from "./state/CavernWorldState.ts";
 
 export const cavernConfig = {
 	...defaultEngineConfig,
-	gameId: "effect2d/cavern",
+	gameId: "Effect2d/cavern",
 	randomSeed: "cavern-seed",
 	startScene: "main-menu",
 	targetTicksPerSecond: 60,

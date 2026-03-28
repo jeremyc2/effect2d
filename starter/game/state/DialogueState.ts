@@ -50,7 +50,7 @@ export class DialogueState extends ServiceMap.Service<
 		readonly restore: (snapshot: DialogueStateSnapshot) => Effect.Effect<void>;
 		readonly snapshot: Effect.Effect<DialogueStateSnapshot>;
 	}
->()("effect2d/starter/game/state/DialogueState") {
+>()("Effect2d/starter/game/state/DialogueState") {
 	static readonly layer = Layer.effect(
 		DialogueState,
 		Effect.gen(function* () {

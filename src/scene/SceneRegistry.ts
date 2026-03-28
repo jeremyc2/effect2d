@@ -19,7 +19,7 @@ export class SceneRegistry extends ServiceMap.Service<
 			sceneId: SceneId,
 		) => Effect.Effect<SceneDefinition, SceneNotFoundError>;
 	}
->()("effect2d/scene/SceneRegistry") {
+>()("Effect2d/scene/SceneRegistry") {
 	static readonly layer = (scenes: ReadonlyArray<SceneDefinition>) =>
 		Layer.effect(
 			SceneRegistry,

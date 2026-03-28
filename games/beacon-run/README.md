@@ -1,6 +1,6 @@
 # Beacon Run
 
-`Beacon Run` is the first real small game pressure-test for `effect2d`.
+`Beacon Run` is the first real small game pressure-test for `Effect2d`.
 
 It is intentionally separate from the starter. The goal is to prove that the
 engine can support a new game-specific domain without collapsing back into
