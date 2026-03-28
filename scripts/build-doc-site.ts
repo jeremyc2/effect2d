@@ -68,6 +68,9 @@ class DocSiteScanError extends Schema.TaggedErrorClass<DocSiteScanError>()(
 ) {}
 
 const docsOutputPath = "docs/public-api.html";
+const llmsOutputPath = "docs/llms.txt";
+const llmsDirectoryPath = "docs/llms";
+const llmsFullOutputPath = "docs/llms-full.txt";
 const rootEntrypointPath = "src/index.ts";
 
 const moduleLabelOverrides: Record<string, string> = {
@@ -584,6 +587,182 @@ const renderOnThisPage = (modules: ReadonlyArray<ModuleDocGroup>): string => `
 			.join("")}
 	</nav>
 `;
+
+function makeLlmsInlineLinks(
+	markdown: string,
+	linkBySymbol: ReadonlyMap<string, string>,
+): string {
+	return (
+		markdown
+			// Turn inline code mentions of LÖVE/LÖVE 2D into one canonical external link.
+			.replace(/`(LÖVE(?: 2D)?)`/g, (_match, label: string) => {
+				return `[${label}](${loveWebsiteUrl})`;
+			})
+			.replace(tsDocLinkRegex, (_match, target: string, label?: string) => {
+				const resolvedLabel = (label ?? target).trim();
+				const href = linkBySymbol.get(target);
+				return href === undefined
+					? `\`${resolvedLabel}\``
+					: `[${resolvedLabel}](${href})`;
+			})
+	);
+}
+
+function getLlmsOverviewPath(): string {
+	return "./llms/overview.md";
+}
+
+function getLlmsModulePath(moduleGroup: ModuleDocGroup): string {
+	return `./llms/${moduleGroup.slug}.md`;
+}
+
+function getLlmsLinkBySymbol(
+	modules: ReadonlyArray<ModuleDocGroup>,
+): ReadonlyMap<string, string> {
+	const linkBySymbol = new Map<string, string>();
+
+	for (const moduleGroup of modules) {
+		const modulePath = getLlmsModulePath(moduleGroup);
+		for (const fileGroup of moduleGroup.fileGroups) {
+			for (const entry of fileGroup.entries) {
+				if (!linkBySymbol.has(entry.name)) {
+					linkBySymbol.set(entry.name, `${modulePath}#${entry.slug}`);
+				}
+			}
+		}
+	}
+
+	return linkBySymbol;
+}
+
+function renderLlmsOverview(
+	packageDocs: PackageDocumentation,
+	linkBySymbol: ReadonlyMap<string, string>,
+): string {
+	return [
+		"# Effect2d Overview",
+		"",
+		`> ${packageDocs.summary}`,
+		"",
+		makeLlmsInlineLinks(packageDocs.markdown, linkBySymbol),
+		"",
+	]
+		.join("\n")
+		.trimEnd();
+}
+
+function renderLlmsModuleDocument(
+	moduleGroup: ModuleDocGroup,
+	linkBySymbol: ReadonlyMap<string, string>,
+): string {
+	const sections = moduleGroup.fileGroups
+		.map((fileGroup) => {
+			const entries = fileGroup.entries
+				.map((entry) => {
+					const body = makeLlmsInlineLinks(entry.markdown, linkBySymbol);
+					const methods =
+						entry.serviceMembers.length === 0
+							? ""
+							: [
+									"",
+									"#### Methods",
+									"",
+									...entry.serviceMembers.map(
+										(method) => `- \`${method.signature}\``,
+									),
+								].join("\n");
+
+					return [
+						`### ${entry.name}`,
+						"",
+						`- Kind: ${entry.kind}`,
+						`- Source: \`${entry.filePath}:${entry.line}\``,
+						"",
+						body,
+						methods,
+						"",
+					]
+						.join("\n")
+						.trimEnd();
+				})
+				.join("\n\n");
+
+			return [`## ${fileGroup.fileLabel}`, "", entries].join("\n").trimEnd();
+		})
+		.join("\n\n");
+
+	return [
+		`# ${moduleGroup.label}`,
+		"",
+		`> Public ${moduleGroup.label} API.`,
+		"",
+		sections,
+		"",
+	]
+		.join("\n")
+		.trimEnd();
+}
+
+function renderLlmsText(
+	modules: ReadonlyArray<ModuleDocGroup>,
+	packageDocs: PackageDocumentation,
+): string {
+	const moduleSections = modules
+		.map((moduleGroup) => {
+			const entryCount = moduleGroup.fileGroups.reduce(
+				(total, fileGroup) => total + fileGroup.entries.length,
+				0,
+			);
+			const path = getLlmsModulePath(moduleGroup);
+			return `- [${moduleGroup.label}](${path}): ${entryCount} public entries covering ${moduleGroup.label.toLowerCase()} services, functions, types, interfaces, and errors.`;
+		})
+		.join("\n");
+
+	return [
+		"# Effect2d",
+		"",
+		`> ${packageDocs.summary}`,
+		"",
+		"This file is a Markdown index for LLM-friendly engine docs generated from the same public JSDoc comments as the HTML API reference.",
+		"Use it for progressive disclosure: start with the overview or a module file, then open `llms-full.txt` when you need the whole public surface in one context.",
+		"",
+		"## Core Docs",
+		"",
+		`- [Overview](${getLlmsOverviewPath()}): Package overview, goals, quick-start guidance, and engine fit.`,
+		`- [Full Context](./llms-full.txt): One-file Markdown expansion of the full public API for direct ingestion.`,
+		"",
+		"## Modules",
+		"",
+		moduleSections,
+	]
+		.join("\n")
+		.trimEnd();
+}
+
+function renderLlmsFullText(
+	packageDocs: PackageDocumentation,
+	modules: ReadonlyArray<ModuleDocGroup>,
+	linkBySymbol: ReadonlyMap<string, string>,
+): string {
+	const moduleDocuments = modules
+		.map((moduleGroup) => renderLlmsModuleDocument(moduleGroup, linkBySymbol))
+		.join("\n\n");
+
+	return [
+		"# Effect2d Full Context",
+		"",
+		`> ${packageDocs.summary}`,
+		"",
+		"This file expands the package overview and every generated module markdown file into one Markdown context.",
+		"",
+		renderLlmsOverview(packageDocs, linkBySymbol),
+		"",
+		moduleDocuments,
+		"",
+	]
+		.join("\n")
+		.trimEnd();
+}
 
 const renderHtmlDocument = ({
 	modules,
@@ -1518,8 +1697,25 @@ const main = Effect.gen(function* () {
 		packageDocs,
 		slugBySymbol,
 	});
+	const llmsLinkBySymbol = getLlmsLinkBySymbol(modules);
+	const llmsText = renderLlmsText(modules, packageDocs);
+	const llmsOverview = renderLlmsOverview(packageDocs, llmsLinkBySymbol);
+	const llmsFullText = renderLlmsFullText(
+		packageDocs,
+		modules,
+		llmsLinkBySymbol,
+	);
 
 	yield* writeText(docsOutputPath, html);
+	yield* writeText(`${llmsDirectoryPath}/overview.md`, llmsOverview);
+	yield* writeText(llmsOutputPath, llmsText);
+	yield* writeText(llmsFullOutputPath, llmsFullText);
+	for (const moduleGroup of modules) {
+		yield* writeText(
+			`${llmsDirectoryPath}/${moduleGroup.slug}.md`,
+			renderLlmsModuleDocument(moduleGroup, llmsLinkBySymbol),
+		);
+	}
 	yield* Console.log(
 		`Built public docs site with ${modules.reduce(
 			(total, moduleGroup) =>
@@ -1529,7 +1725,7 @@ const main = Effect.gen(function* () {
 					0,
 				),
 			0,
-		)} entries at ${docsOutputPath}`,
+		)} entries at ${docsOutputPath}, ${llmsOutputPath}, and ${llmsFullOutputPath}`,
 	);
 });
 
