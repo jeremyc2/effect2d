@@ -115,6 +115,74 @@ yield* logger.info("Loaded room", { roomId: "cavern-entrance" });
 - `info: ( message: string, context?: Readonly<Record<string, string | number | boolean>>, ) => Effect.Effect<void, InvalidLogMessageError>`
 - `warn: ( message: string, context?: Readonly<Record<string, string | number | boolean>>, ) => Effect.Effect<void, InvalidLogMessageError>`
 
+## GameplayTelemetry
+
+### GameplayTelemetrySessionDescriptor
+
+- Kind: interface
+- Source: `src/debug/GameplayTelemetry.ts:59`
+
+File locations and session metadata for one gameplay telemetry capture.
+
+### GameplayTelemetryLayerOptions
+
+- Kind: interface
+- Source: `src/debug/GameplayTelemetry.ts:78`
+
+Configuration for the engine gameplay telemetry session layer.
+
+### GameplayCommentaryEntry
+
+- Kind: interface
+- Source: `src/debug/GameplayTelemetry.ts:93`
+
+A single timestamped gameplay commentary entry written alongside telemetry data.
+
+### GameplayTelemetrySession
+
+- Kind: service
+- Source: `src/debug/GameplayTelemetry.ts:130`
+
+Local OTEL-backed telemetry services for playable sessions and sample games.
+
+#### Methods
+
+- `descriptor: GameplayTelemetrySessionDescriptor`
+- `metricsStartTimeUnixNano: string`
+- `resource: ReturnType<typeof OtlpResource.make>`
+- `scope: { readonly name: string`
+- `writeLogs: (data: LogsData) => void`
+- `writeMetrics: (data: MetricsData) => void`
+- `writeTraces: (data: TraceData) => void`
+
+### createGameplayTelemetrySessionDescriptor
+
+- Kind: function
+- Source: `src/debug/GameplayTelemetry.ts:267`
+
+Creates or reuses a gameplay telemetry session directory and manifest.
+
+### resolveGameplayTelemetrySessionDescriptorFromDirectory
+
+- Kind: function
+- Source: `src/debug/GameplayTelemetry.ts:329`
+
+Reads one telemetry session manifest from a known session directory.
+
+### resolveLatestGameplayTelemetrySessionDescriptor
+
+- Kind: function
+- Source: `src/debug/GameplayTelemetry.ts:358`
+
+Resolves the most recent telemetry session for the provided game id.
+
+### appendGameplayCommentaryEntry
+
+- Kind: function
+- Source: `src/debug/GameplayTelemetry.ts:405`
+
+Appends one timestamped gameplay commentary entry to the active session.
+
 ## ResourceTracker
 
 ### ResourceKind

@@ -1179,6 +1179,51 @@
 										</div>
 									
 										<div class="nav-file">
+											<a class="nav-file-title" href="#debug-gameplaytelemetry-ts">GameplayTelemetry</a>
+											
+											<a class="nav-entry" href="#debug-gameplaytelemetrysessiondescriptor">
+												<span>GameplayTelemetrySessionDescriptor</span>
+												<small class="nav-kind nav-kind-interface">interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#debug-gameplaytelemetrylayeroptions">
+												<span>GameplayTelemetryLayerOptions</span>
+												<small class="nav-kind nav-kind-interface">interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#debug-gameplaycommentaryentry">
+												<span>GameplayCommentaryEntry</span>
+												<small class="nav-kind nav-kind-interface">interface</small>
+											</a>
+										
+											<a class="nav-entry" href="#debug-gameplaytelemetrysession">
+												<span>GameplayTelemetrySession</span>
+												<small class="nav-kind nav-kind-service">service</small>
+											</a>
+										
+											<a class="nav-entry" href="#debug-creategameplaytelemetrysessiondescriptor">
+												<span>createGameplayTelemetrySessionDescriptor</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#debug-resolvegameplaytelemetrysessiondescriptorfromdirectory">
+												<span>resolveGameplayTelemetrySessionDescriptorFromDirectory</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#debug-resolvelatestgameplaytelemetrysessiondescriptor">
+												<span>resolveLatestGameplayTelemetrySessionDescriptor</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+											<a class="nav-entry" href="#debug-appendgameplaycommentaryentry">
+												<span>appendGameplayCommentaryEntry</span>
+												<small class="nav-kind nav-kind-function">function</small>
+											</a>
+										
+										</div>
+									
+										<div class="nav-file">
 											<a class="nav-file-title" href="#debug-resourcetracker-ts">ResourceTracker</a>
 											
 											<a class="nav-entry" href="#debug-resourcekind">
@@ -3673,6 +3718,191 @@ yield* logger.info(&quot;Loaded room&quot;, { roomId: &quot;cavern-entrance&quot
 				</div>
 			</section>
 		
+								</article>
+							
+								</div>
+							</section>
+						
+							<section class="file-group" id="debug-gameplaytelemetry-ts">
+								<header class="file-group-header">
+									<p class="file-path">src/debug/GameplayTelemetry.ts</p>
+									<h3>GameplayTelemetry</h3>
+								</header>
+								<div class="file-group-entries">
+									
+								<article
+									class="doc-entry"
+									id="debug-gameplaytelemetrysessiondescriptor"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-interface">interface</span>
+										<a class="doc-source" href="#debug-gameplaytelemetrysessiondescriptor">src/debug/GameplayTelemetry.ts:59</a>
+									</div>
+									<h4>GameplayTelemetrySessionDescriptor</h4>
+									<div class="prose"><p>File locations and session metadata for one gameplay telemetry capture.</p>
+</div>
+									
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="debug-gameplaytelemetrylayeroptions"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-interface">interface</span>
+										<a class="doc-source" href="#debug-gameplaytelemetrylayeroptions">src/debug/GameplayTelemetry.ts:78</a>
+									</div>
+									<h4>GameplayTelemetryLayerOptions</h4>
+									<div class="prose"><p>Configuration for the engine gameplay telemetry session layer.</p>
+</div>
+									
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="debug-gameplaycommentaryentry"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-interface">interface</span>
+										<a class="doc-source" href="#debug-gameplaycommentaryentry">src/debug/GameplayTelemetry.ts:93</a>
+									</div>
+									<h4>GameplayCommentaryEntry</h4>
+									<div class="prose"><p>A single timestamped gameplay commentary entry written alongside telemetry data.</p>
+</div>
+									
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="debug-gameplaytelemetrysession"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-service">service</span>
+										<a class="doc-source" href="#debug-gameplaytelemetrysession">src/debug/GameplayTelemetry.ts:130</a>
+									</div>
+									<h4>GameplayTelemetrySession</h4>
+									<div class="prose"><p>Local OTEL-backed telemetry services for playable sessions and sample games.</p>
+</div>
+									
+			<section class="service-members">
+				<h5>Methods</h5>
+				<div class="service-member-list">
+					
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>descriptor</strong>
+									</div>
+									<code>descriptor: GameplayTelemetrySessionDescriptor</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>metricsStartTimeUnixNano</strong>
+									</div>
+									<code>metricsStartTimeUnixNano: string</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>resource</strong>
+									</div>
+									<code>resource: ReturnType&lt;typeof OtlpResource.make&gt;</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>scope</strong>
+									</div>
+									<code>scope: { readonly name: string</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>writeLogs</strong>
+									</div>
+									<code>writeLogs: (data: LogsData) =&gt; void</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>writeMetrics</strong>
+									</div>
+									<code>writeMetrics: (data: MetricsData) =&gt; void</code>
+								</div>
+							
+								<div class="service-member">
+									<div class="service-member-meta">
+										<span class="doc-kind doc-kind-method">method</span>
+										<strong>writeTraces</strong>
+									</div>
+									<code>writeTraces: (data: TraceData) =&gt; void</code>
+								</div>
+							
+				</div>
+			</section>
+		
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="debug-creategameplaytelemetrysessiondescriptor"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#debug-creategameplaytelemetrysessiondescriptor">src/debug/GameplayTelemetry.ts:267</a>
+									</div>
+									<h4>createGameplayTelemetrySessionDescriptor</h4>
+									<div class="prose"><p>Creates or reuses a gameplay telemetry session directory and manifest.</p>
+</div>
+									
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="debug-resolvegameplaytelemetrysessiondescriptorfromdirectory"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#debug-resolvegameplaytelemetrysessiondescriptorfromdirectory">src/debug/GameplayTelemetry.ts:329</a>
+									</div>
+									<h4>resolveGameplayTelemetrySessionDescriptorFromDirectory</h4>
+									<div class="prose"><p>Reads one telemetry session manifest from a known session directory.</p>
+</div>
+									
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="debug-resolvelatestgameplaytelemetrysessiondescriptor"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#debug-resolvelatestgameplaytelemetrysessiondescriptor">src/debug/GameplayTelemetry.ts:358</a>
+									</div>
+									<h4>resolveLatestGameplayTelemetrySessionDescriptor</h4>
+									<div class="prose"><p>Resolves the most recent telemetry session for the provided game id.</p>
+</div>
+									
+								</article>
+							
+								<article
+									class="doc-entry"
+									id="debug-appendgameplaycommentaryentry"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-function">function</span>
+										<a class="doc-source" href="#debug-appendgameplaycommentaryentry">src/debug/GameplayTelemetry.ts:405</a>
+									</div>
+									<h4>appendGameplayCommentaryEntry</h4>
+									<div class="prose"><p>Appends one timestamped gameplay commentary entry to the active session.</p>
+</div>
+									
 								</article>
 							
 								</div>

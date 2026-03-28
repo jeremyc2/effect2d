@@ -18,31 +18,29 @@ import {
 	resolveLatestGameplayTelemetrySessionDescriptor,
 } from "./GameplayTelemetry.ts";
 
-function readNdjson(
+const readNdjson: (
 	path: string,
-): Effect.Effect<
+) => Effect.Effect<
 	Array<unknown>,
 	PlatformError.PlatformError | Schema.SchemaError,
 	FileSystem.FileSystem
-> {
-	return Effect.gen(function* () {
-		const fs = yield* FileSystem.FileSystem;
-		const contents = yield* fs.readFileString(path);
-		const lines = contents
-			.trim()
-			.split("\n")
-			.filter((line) => line.length > 0);
-		const entries: Array<unknown> = [];
+> = Effect.fnUntraced(function* (path: string) {
+	const fs = yield* FileSystem.FileSystem;
+	const contents = yield* fs.readFileString(path);
+	const lines = contents
+		.trim()
+		.split("\n")
+		.filter((line) => line.length > 0);
+	const entries: Array<unknown> = [];
 
-		for (const line of lines) {
-			entries.push(
-				yield* Schema.decodeUnknownEffect(Schema.UnknownFromJsonString)(line),
-			);
-		}
+	for (const line of lines) {
+		entries.push(
+			yield* Schema.decodeUnknownEffect(Schema.UnknownFromJsonString)(line),
+		);
+	}
 
-		return entries;
-	});
-}
+	return entries;
+});
 
 function expectDefined<T>(value: T | null | undefined): T {
 	expect(value).toBeDefined();

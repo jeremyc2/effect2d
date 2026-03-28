@@ -312,6 +312,10 @@ function getDocumentedKind(
 	name: string,
 	declarationKind: "class" | "const" | "function" | "interface" | "type",
 ): PublicDocEntry["kind"] {
+	if (declarationKind === "const" && isEffectFunctionConst(source, name)) {
+		return "function";
+	}
+
 	if (declarationKind !== "class") {
 		return declarationKind;
 	}
@@ -329,6 +333,17 @@ function getDocumentedKind(
 	}
 
 	return "class";
+}
+
+function isEffectFunctionConst(source: string, name: string): boolean {
+	const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+	// Match exported top-level const helpers declared via Effect.fn(...) or
+	// Effect.fnUntraced(...), allowing an optional function-type annotation
+	// between the symbol name and the assignment.
+	const effectFunctionConstPattern = new RegExp(
+		String.raw`export const ${escapedName}(?:\s*:\s*[\s\S]*?)?\s*=\s*Effect\.(?:fn|fnUntraced)\b`,
+	);
+	return effectFunctionConstPattern.test(source);
 }
 
 function extractServiceMembers(
@@ -1734,4 +1749,4 @@ const main = Effect.gen(function* () {
 	);
 });
 
-void Effect.runPromise(main);
+Effect.runPromise(main);
