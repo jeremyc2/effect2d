@@ -78,6 +78,18 @@ interface DynamicBodyState {
 	readonly velocityCap: number;
 }
 
+interface BodyMovementBounds {
+	readonly maxX: number;
+	readonly maxY: number;
+	readonly minX: number;
+	readonly minY: number;
+}
+
+interface AccessibleAreaRoom {
+	readonly bounds: CavernRectangle;
+	readonly transitions: ReadonlyArray<CavernRectangle>;
+}
+
 function clampValue(value: number, minimum: number, maximum: number): number {
 	return Math.max(minimum, Math.min(maximum, value));
 }
@@ -170,23 +182,101 @@ function makeRectangle(
 	};
 }
 
+function overlapsOnAxis(
+	startA: number,
+	lengthA: number,
+	startB: number,
+	lengthB: number,
+): boolean {
+	return startA < startB + lengthB && startA + lengthA > startB;
+}
+
+function getBodyMovementBounds(
+	body: {
+		readonly position: {
+			readonly x: number;
+			readonly y: number;
+		};
+		readonly size: {
+			readonly height: number;
+			readonly width: number;
+		};
+	},
+	room: AccessibleAreaRoom,
+): BodyMovementBounds {
+	let minX = room.bounds.x;
+	let maxX = room.bounds.x + room.bounds.width - body.size.width;
+	let minY = room.bounds.y;
+	let maxY = room.bounds.y + room.bounds.height - body.size.height;
+	const roomMaxX = room.bounds.x + room.bounds.width;
+	const roomMaxY = room.bounds.y + room.bounds.height;
+
+	for (const transition of room.transitions) {
+		const overlapsTransitionVertically = overlapsOnAxis(
+			body.position.y,
+			body.size.height,
+			transition.y,
+			transition.height,
+		);
+		const overlapsTransitionHorizontally = overlapsOnAxis(
+			body.position.x,
+			body.size.width,
+			transition.x,
+			transition.width,
+		);
+
+		if (overlapsTransitionVertically && transition.x <= room.bounds.x) {
+			minX = Math.min(minX, transition.x);
+		}
+		if (
+			overlapsTransitionVertically &&
+			transition.x + transition.width >= roomMaxX
+		) {
+			maxX = Math.max(maxX, transition.x + transition.width - body.size.width);
+		}
+		if (overlapsTransitionHorizontally && transition.y <= room.bounds.y) {
+			minY = Math.min(minY, transition.y);
+		}
+		if (
+			overlapsTransitionHorizontally &&
+			transition.y + transition.height >= roomMaxY
+		) {
+			maxY = Math.max(
+				maxY,
+				transition.y + transition.height - body.size.height,
+			);
+		}
+	}
+
+	return {
+		maxX,
+		maxY,
+		minX,
+		minY,
+	};
+}
+
 function clampBodyToRoom(
 	body: DynamicBodyState,
 	room: {
 		readonly bounds: CavernRectangle;
 	},
 ): DynamicBodyState {
+	return clampBodyToMovementBounds(body, {
+		maxX: room.bounds.x + room.bounds.width - body.size.width,
+		maxY: room.bounds.y + room.bounds.height - body.size.height,
+		minX: room.bounds.x,
+		minY: room.bounds.y,
+	});
+}
+
+function clampBodyToMovementBounds(
+	body: DynamicBodyState,
+	movementBounds: BodyMovementBounds,
+): DynamicBodyState {
 	const position = {
-		x: clampValue(
-			body.position.x,
-			room.bounds.x,
-			room.bounds.x + room.bounds.width - body.size.width,
-		),
-		y: clampValue(
-			body.position.y,
-			room.bounds.y,
-			room.bounds.y + room.bounds.height - body.size.height,
-		),
+		x: clampValue(body.position.x, movementBounds.minX, movementBounds.maxX),
+		y: clampValue(body.position.y, movementBounds.minY, movementBounds.maxY),
 	};
 
 	return {
@@ -194,6 +284,13 @@ function clampBodyToRoom(
 		position,
 		velocity: clampVectorMagnitude(body.velocity, body.velocityCap),
 	};
+}
+
+function clampBodyToAccessibleArea(
+	body: DynamicBodyState,
+	room: AccessibleAreaRoom,
+): DynamicBodyState {
+	return clampBodyToMovementBounds(body, getBodyMovementBounds(body, room));
 }
 
 function getOverlapDepths(
@@ -482,58 +579,34 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 					);
 				}
 
-				const movementMinX = Math.min(
-					currentRoom.bounds.x,
-					...currentRoom.transitions.map((transition) => transition.x),
-				);
-				const movementMaxX = Math.max(
-					currentRoom.bounds.x + currentRoom.bounds.width - playerSize.width,
-					...currentRoom.transitions.map(
-						(transition) => transition.x + transition.width - playerSize.width,
-					),
-				);
-				const movementMinY = Math.min(
-					currentRoom.bounds.y,
-					...currentRoom.transitions.map((transition) => transition.y),
-				);
-				const movementMaxY = Math.max(
-					currentRoom.bounds.y + currentRoom.bounds.height - playerSize.height,
-					...currentRoom.transitions.map(
-						(transition) =>
-							transition.y + transition.height - playerSize.height,
-					),
-				);
+				const nextPlayerPosition = {
+					x: playerSnapshot.position.x + nextPlayerVelocity.x,
+					y: playerSnapshot.position.y + nextPlayerVelocity.y,
+				};
 
-				let playerBody: DynamicBodyState = {
+				const unclampedPlayerBody: DynamicBodyState = {
 					id: "player",
-					position: {
-						x: clampValue(
-							playerSnapshot.position.x + nextPlayerVelocity.x,
-							movementMinX,
-							movementMaxX,
-						),
-						y: clampValue(
-							playerSnapshot.position.y + nextPlayerVelocity.y,
-							movementMinY,
-							movementMaxY,
-						),
-					},
+					position: nextPlayerPosition,
 					size: playerSize,
+					velocity: nextPlayerVelocity,
+					velocityCap: maximumSpeedPerFrame,
+				};
+				const clampedPlayerBody = clampBodyToAccessibleArea(
+					unclampedPlayerBody,
+					currentRoom,
+				);
+				let playerBody: DynamicBodyState = {
+					...clampedPlayerBody,
 					velocity: {
 						x:
-							playerSnapshot.position.x + nextPlayerVelocity.x <=
-								movementMinX ||
-							playerSnapshot.position.x + nextPlayerVelocity.x >= movementMaxX
-								? 0
-								: nextPlayerVelocity.x,
+							clampedPlayerBody.position.x === nextPlayerPosition.x
+								? nextPlayerVelocity.x
+								: 0,
 						y:
-							playerSnapshot.position.y + nextPlayerVelocity.y <=
-								movementMinY ||
-							playerSnapshot.position.y + nextPlayerVelocity.y >= movementMaxY
-								? 0
-								: nextPlayerVelocity.y,
+							clampedPlayerBody.position.y === nextPlayerPosition.y
+								? nextPlayerVelocity.y
+								: 0,
 					},
-					velocityCap: maximumSpeedPerFrame,
 				};
 
 				let enemyBodies: ReadonlyArray<DynamicBodyState> =
@@ -591,7 +664,10 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 							continue;
 						}
 						const resolved = resolveBodyCollision(playerBody, enemyBody);
-						playerBody = clampBodyToRoom(resolved.leftBody, currentRoom);
+						playerBody = clampBodyToAccessibleArea(
+							resolved.leftBody,
+							currentRoom,
+						);
 						enemyBodies = replaceEnemyBody(
 							enemyBodies,
 							enemyIndex,

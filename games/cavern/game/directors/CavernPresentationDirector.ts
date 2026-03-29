@@ -74,6 +74,20 @@ const exitStroke = {
 	red: 0.92,
 };
 
+const exitGlowOuter = {
+	alpha: 0.08,
+	blue: 0.72,
+	green: 0.96,
+	red: 0.92,
+};
+
+const exitGlowInner = {
+	alpha: 0.16,
+	blue: 0.6,
+	green: 0.88,
+	red: 0.84,
+};
+
 const overlayFill = {
 	alpha: 0.72,
 	blue: 0.07,
@@ -214,6 +228,71 @@ function normalizeVector(vector: { readonly x: number; readonly y: number }): {
 	return {
 		x: vector.x / magnitude,
 		y: vector.y / magnitude,
+	};
+}
+
+function getTransitionGlowPadding(
+	transition: CavernRectangle,
+	room: {
+		readonly bounds: CavernRectangle;
+	},
+): {
+	readonly x: number;
+	readonly y: number;
+} {
+	const touchesHorizontalWall =
+		transition.x <= room.bounds.x ||
+		transition.x + transition.width >= room.bounds.x + room.bounds.width;
+
+	return touchesHorizontalWall
+		? {
+				x: 144,
+				y: 56,
+			}
+		: {
+				x: 56,
+				y: 144,
+			};
+}
+
+function getVisibleTransitionRectangle(
+	transition: CavernRectangle,
+	room: {
+		readonly bounds: CavernRectangle;
+	},
+): CavernRectangle {
+	if (transition.x <= room.bounds.x) {
+		return {
+			height: transition.height,
+			width: tileSize,
+			x: room.bounds.x,
+			y: transition.y,
+		};
+	}
+
+	if (transition.x + transition.width >= room.bounds.x + room.bounds.width) {
+		return {
+			height: transition.height,
+			width: tileSize,
+			x: room.bounds.x + room.bounds.width - tileSize,
+			y: transition.y,
+		};
+	}
+
+	if (transition.y <= room.bounds.y) {
+		return {
+			height: tileSize,
+			width: transition.width,
+			x: transition.x,
+			y: room.bounds.y,
+		};
+	}
+
+	return {
+		height: tileSize,
+		width: transition.width,
+		x: transition.x,
+		y: room.bounds.y + room.bounds.height - tileSize,
 	};
 }
 
@@ -500,18 +579,22 @@ export class CavernPresentationDirector extends ServiceMap.Service<
 					);
 				}
 
-				const leftEdgeTransitions = room.transitions.filter(
+				const visibleTransitions = room.transitions.map((transition) =>
+					getVisibleTransitionRectangle(transition, room),
+				);
+
+				const leftEdgeTransitions = visibleTransitions.filter(
 					(transition) => transition.x <= room.bounds.x,
 				);
-				const rightEdgeTransitions = room.transitions.filter(
+				const rightEdgeTransitions = visibleTransitions.filter(
 					(transition) =>
 						transition.x + transition.width >=
 						room.bounds.x + room.bounds.width,
 				);
-				const topEdgeTransitions = room.transitions.filter(
+				const topEdgeTransitions = visibleTransitions.filter(
 					(transition) => transition.y <= room.bounds.y,
 				);
-				const bottomEdgeTransitions = room.transitions.filter(
+				const bottomEdgeTransitions = visibleTransitions.filter(
 					(transition) =>
 						transition.y + transition.height >=
 						room.bounds.y + room.bounds.height,
@@ -546,16 +629,76 @@ export class CavernPresentationDirector extends ServiceMap.Service<
 					rightEdgeTransitions,
 				);
 
-				for (const transition of room.transitions) {
+				for (const visibleTransition of visibleTransitions) {
+					const outerGlowPadding = getTransitionGlowPadding(
+						visibleTransition,
+						room,
+					);
+					const innerGlowPadding = {
+						x: Math.round(outerGlowPadding.x * 0.5),
+						y: Math.round(outerGlowPadding.y * 0.5),
+					};
+					const coreGlowPadding = {
+						x: Math.round(outerGlowPadding.x * 0.25),
+						y: Math.round(outerGlowPadding.y * 0.25),
+					};
+
 					yield* graphics.drawRectangle(
-						{ x: transition.x, y: transition.y },
-						{ height: transition.height, width: transition.width },
+						{
+							x: visibleTransition.x - outerGlowPadding.x,
+							y: visibleTransition.y - outerGlowPadding.y,
+						},
+						{
+							height: visibleTransition.height + outerGlowPadding.y * 2,
+							width: visibleTransition.width + outerGlowPadding.x * 2,
+						},
+						"fill",
+						exitGlowOuter,
+					);
+					yield* graphics.drawRectangle(
+						{
+							x: visibleTransition.x - innerGlowPadding.x,
+							y: visibleTransition.y - innerGlowPadding.y,
+						},
+						{
+							height: visibleTransition.height + innerGlowPadding.y * 2,
+							width: visibleTransition.width + innerGlowPadding.x * 2,
+						},
+						"fill",
+						exitGlowInner,
+					);
+					yield* graphics.drawRectangle(
+						{
+							x: visibleTransition.x - coreGlowPadding.x,
+							y: visibleTransition.y - coreGlowPadding.y,
+						},
+						{
+							height: visibleTransition.height + coreGlowPadding.y * 2,
+							width: visibleTransition.width + coreGlowPadding.x * 2,
+						},
+						"fill",
+						{
+							alpha: 0.22,
+							blue: 0.54,
+							green: 0.84,
+							red: 0.8,
+						},
+					);
+					yield* graphics.drawRectangle(
+						{ x: visibleTransition.x, y: visibleTransition.y },
+						{
+							height: visibleTransition.height,
+							width: visibleTransition.width,
+						},
 						"fill",
 						exitFill,
 					);
 					yield* graphics.drawRectangle(
-						{ x: transition.x, y: transition.y },
-						{ height: transition.height, width: transition.width },
+						{ x: visibleTransition.x, y: visibleTransition.y },
+						{
+							height: visibleTransition.height,
+							width: visibleTransition.width,
+						},
 						"stroke",
 						exitStroke,
 					);
@@ -563,8 +706,8 @@ export class CavernPresentationDirector extends ServiceMap.Service<
 						align: "center",
 						fontId: "intro-font",
 						position: {
-							x: transition.x + transition.width / 2,
-							y: transition.y + transition.height / 2 - 20,
+							x: visibleTransition.x + visibleTransition.width / 2,
+							y: visibleTransition.y + visibleTransition.height / 2 - 20,
 						},
 						text: "EXIT",
 					});
