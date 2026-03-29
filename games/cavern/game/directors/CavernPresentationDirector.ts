@@ -18,6 +18,7 @@ import {
 	cavernViewport,
 	getCavernRoom,
 } from "../content/CavernWorld.ts";
+import { CavernEnemyState } from "../state/CavernEnemyState.ts";
 import { CavernMenuState } from "../state/CavernMenuState.ts";
 import { CavernPlayerState } from "../state/CavernPlayerState.ts";
 import { CavernWorldState } from "../state/CavernWorldState.ts";
@@ -108,6 +109,22 @@ const playerRenderSize = {
 	height: 192,
 	width: 80,
 } as const;
+const flyerRenderSize = {
+	height: 92,
+	width: 92,
+} as const;
+const flyerWingFrameOneSize = {
+	height: 34,
+	width: 140,
+} as const;
+const flyerWingFrameTwoSize = {
+	height: 28,
+	width: 151,
+} as const;
+const flyerEyeSize = {
+	height: 48,
+	width: 48,
+} as const;
 
 type CavernPresentationDirectorFailure =
 	| GraphicsFrameNotOpenError
@@ -175,6 +192,31 @@ function getInstructionOverlayOpacity(
 	);
 }
 
+function getFlyerAngle(
+	from: { readonly x: number; readonly y: number },
+	to: { readonly x: number; readonly y: number },
+): number {
+	return Math.atan2(to.y - from.y, to.x - from.x);
+}
+
+function normalizeVector(vector: { readonly x: number; readonly y: number }): {
+	readonly x: number;
+	readonly y: number;
+} {
+	const magnitude = Math.hypot(vector.x, vector.y);
+	if (magnitude === 0) {
+		return {
+			x: 1,
+			y: 0,
+		};
+	}
+
+	return {
+		x: vector.x / magnitude,
+		y: vector.y / magnitude,
+	};
+}
+
 export class CavernPresentationDirector extends ServiceMap.Service<
 	CavernPresentationDirector,
 	{
@@ -187,6 +229,7 @@ export class CavernPresentationDirector extends ServiceMap.Service<
 	static readonly layer = Layer.effect(
 		CavernPresentationDirector,
 		Effect.gen(function* () {
+			const cavernEnemyState = yield* CavernEnemyState;
 			const cavernMenuState = yield* CavernMenuState;
 			const cavernPlayerState = yield* CavernPlayerState;
 			const cavernWorldState = yield* CavernWorldState;
@@ -383,6 +426,7 @@ export class CavernPresentationDirector extends ServiceMap.Service<
 			const drawOverworld = Effect.fn(
 				"CavernPresentationDirector.drawOverworld",
 			)(function* () {
+				const enemySnapshot = yield* cavernEnemyState.snapshot;
 				const playerSnapshot = yield* cavernPlayerState.snapshot;
 				const worldSnapshot = yield* cavernWorldState.snapshot;
 				const room = getCavernRoom(worldSnapshot.currentRoomId);
@@ -524,6 +568,76 @@ export class CavernPresentationDirector extends ServiceMap.Service<
 						},
 						text: "EXIT",
 					});
+				}
+
+				for (const enemy of enemySnapshot) {
+					const wingFrameOne = Math.floor(nowMillis / 120) % 2 === 0;
+					const wingImageId = wingFrameOne
+						? "enemy-flyer-wing-1"
+						: "enemy-flyer-wing-2";
+					const wingSize = wingFrameOne
+						? flyerWingFrameOneSize
+						: flyerWingFrameTwoSize;
+					const enemyCenter = {
+						x: enemy.position.x + flyerRenderSize.width / 2,
+						y: enemy.position.y + flyerRenderSize.height / 2,
+					};
+					const playerCenter = {
+						x: playerSnapshot.position.x + playerRenderSize.width / 2,
+						y: playerSnapshot.position.y + playerRenderSize.height / 2,
+					};
+					const lookDirection = normalizeVector({
+						x: playerCenter.x - enemyCenter.x,
+						y: playerCenter.y - enemyCenter.y,
+					});
+					const eyeOffset = {
+						x: lookDirection.x * 14,
+						y: lookDirection.y * 14,
+					};
+
+					yield* graphics.setTint({
+						alpha: 0.314,
+						blue: 1,
+						green: 1,
+						red: 1,
+					});
+					yield* graphics.drawImage(
+						wingImageId,
+						{
+							x: enemyCenter.x - wingSize.width / 2,
+							y: enemyCenter.y - wingSize.height / 2 - (wingFrameOne ? 24 : 19),
+						},
+						wingSize,
+					);
+					yield* graphics.setTint({
+						alpha: 1,
+						blue: 1,
+						green: 1,
+						red: 1,
+					});
+					yield* graphics.pushTransform({
+						rotationRadians: getFlyerAngle(enemyCenter, playerCenter),
+						scaleX: 1,
+						scaleY: 1,
+						translation: enemyCenter,
+					});
+					yield* graphics.drawImage(
+						"enemy-flyer-body",
+						{
+							x: -flyerRenderSize.width / 2,
+							y: -flyerRenderSize.height / 2,
+						},
+						flyerRenderSize,
+					);
+					yield* graphics.popTransform;
+					yield* graphics.drawImage(
+						"enemy-flyer-eye",
+						{
+							x: enemyCenter.x - flyerEyeSize.width / 2 + eyeOffset.x,
+							y: enemyCenter.y - flyerEyeSize.height / 2 + eyeOffset.y,
+						},
+						flyerEyeSize,
+					);
 				}
 
 				yield* graphics.pushTransform({

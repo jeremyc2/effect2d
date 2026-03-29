@@ -3,6 +3,7 @@ import type {
 	CameraVector,
 	CameraViewport,
 } from "../../../../src/index.ts";
+import type { CavernEnemyDefinition } from "./CavernEnemy.ts";
 
 export interface CavernRectangle {
 	readonly height: number;
@@ -31,6 +32,7 @@ export interface CavernDecorationDefinition {
 export interface CavernRoomDefinition {
 	readonly bounds: CavernRectangle;
 	readonly decorations: ReadonlyArray<CavernDecorationDefinition>;
+	readonly enemies: ReadonlyArray<CavernEnemyDefinition>;
 	readonly id: CavernRoomId;
 	readonly name: string;
 	readonly playerSpawn: CameraVector;
@@ -97,6 +99,22 @@ export const cavernRooms = {
 					width: 512,
 					x: 3328,
 					y: 512,
+				},
+			},
+		],
+		enemies: [
+			{
+				id: "rm1-flyer-west",
+				position: {
+					x: 1504,
+					y: 576,
+				},
+			},
+			{
+				id: "rm1-flyer-east",
+				position: {
+					x: 2912,
+					y: 928,
 				},
 			},
 		],
@@ -170,6 +188,29 @@ export const cavernRooms = {
 				},
 			},
 		],
+		enemies: [
+			{
+				id: "rm2-flyer-entry",
+				position: {
+					x: 1664,
+					y: 512,
+				},
+			},
+			{
+				id: "rm2-flyer-mid",
+				position: {
+					x: 3840,
+					y: 1088,
+				},
+			},
+			{
+				id: "rm2-flyer-exit",
+				position: {
+					x: 6016,
+					y: 640,
+				},
+			},
+		],
 		id: "rm2",
 		name: "Flooded Hall",
 		playerSpawn: {
@@ -233,6 +274,22 @@ export const cavernRooms = {
 					width: 1280,
 					x: 2432,
 					y: 1664,
+				},
+			},
+		],
+		enemies: [
+			{
+				id: "rm3-flyer-upper",
+				position: {
+					x: 1728,
+					y: 640,
+				},
+			},
+			{
+				id: "rm3-flyer-lower",
+				position: {
+					x: 3264,
+					y: 1984,
 				},
 			},
 		],

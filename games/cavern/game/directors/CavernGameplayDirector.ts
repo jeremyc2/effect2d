@@ -15,6 +15,7 @@ import {
 } from "../../../../src/index.ts";
 import { cavernMenuButtons } from "../content/CavernMenu.ts";
 import {
+	type CavernRectangle,
 	cavernCameraZoom,
 	cavernViewport,
 	doesRectangleIntersect,
@@ -23,6 +24,7 @@ import {
 	getRoomCameraBounds,
 	getTransitionSpawnPosition,
 } from "../content/CavernWorld.ts";
+import { CavernEnemyState } from "../state/CavernEnemyState.ts";
 import { CavernMenuState } from "../state/CavernMenuState.ts";
 import { CavernPlayerState } from "../state/CavernPlayerState.ts";
 import { CavernWorldState } from "../state/CavernWorldState.ts";
@@ -31,16 +33,50 @@ const playerSize = {
 	height: 192,
 	width: 80,
 } as const;
+
+const flyerSize = {
+	height: 92,
+	width: 92,
+} as const;
+
 // Increase this to accelerate faster when holding a direction, or lower it to make movement feel heavier.
 const accelerationPerFrame = 2.2;
 // Increase this to raise the player's top speed, or lower it to cap movement sooner.
 const maximumSpeedPerFrame = 40;
+// Increase this to make flyers home in faster, or lower it to give the player more breathing room.
+const flyerAccelerationPerFrame = 1.2;
+// Increase this to make flyers more relentless, or lower it to keep pursuit gentler.
+const flyerMaximumSpeedPerFrame = 11;
 // Increase this to keep more momentum while coasting, or lower it to make the player slow down faster when idle.
 const idleDragFactor = 0.92;
 // Increase this to preserve more speed while changing direction, or lower it to make turns and braking feel sharper.
 const brakingDragFactor = 0.99;
 // Increase this to stop tiny leftover motion sooner, or lower it to allow longer low-speed drift.
 const minimumVelocityMagnitude = 0.1;
+
+// Increase this to run more overlap-resolution passes per frame, or lower it to trade collision stability for cheaper updates.
+const collisionIterations = 2;
+// Increase this to leave more space between bodies after a collision, or lower it to let them settle closer together.
+const collisionSeparationPadding = 8;
+// Increase this to make all collisions feel punchier, or lower it to make momentum transfer more subdued.
+const baseKnockbackVelocityPerFrame = 10;
+
+interface DynamicBodyState {
+	readonly id: string;
+	readonly position: {
+		readonly x: number;
+		readonly y: number;
+	};
+	readonly size: {
+		readonly height: number;
+		readonly width: number;
+	};
+	readonly velocity: {
+		readonly x: number;
+		readonly y: number;
+	};
+	readonly velocityCap: number;
+}
 
 function clampValue(value: number, minimum: number, maximum: number): number {
 	return Math.max(minimum, Math.min(maximum, value));
@@ -72,6 +108,24 @@ function clampVectorMagnitude(
 	};
 }
 
+function normalizeVector(
+	vector: { readonly x: number; readonly y: number },
+	fallback: { readonly x: number; readonly y: number } = { x: 1, y: 0 },
+): {
+	readonly x: number;
+	readonly y: number;
+} {
+	const magnitude = getVectorMagnitude(vector);
+	if (magnitude === 0) {
+		return fallback;
+	}
+
+	return {
+		x: vector.x / magnitude,
+		y: vector.y / magnitude,
+	};
+}
+
 function applyDrag(
 	vector: { readonly x: number; readonly y: number },
 	dragFactor: number,
@@ -86,6 +140,164 @@ function applyDrag(
 	return getVectorMagnitude(slowed) < minimumVelocityMagnitude
 		? { x: 0, y: 0 }
 		: slowed;
+}
+
+function getRectangleCenter(rectangle: CavernRectangle): {
+	readonly x: number;
+	readonly y: number;
+} {
+	return {
+		x: rectangle.x + rectangle.width / 2,
+		y: rectangle.y + rectangle.height / 2,
+	};
+}
+
+function makeRectangle(
+	position: {
+		readonly x: number;
+		readonly y: number;
+	},
+	size: {
+		readonly height: number;
+		readonly width: number;
+	},
+): CavernRectangle {
+	return {
+		height: size.height,
+		width: size.width,
+		x: position.x,
+		y: position.y,
+	};
+}
+
+function clampBodyToRoom(
+	body: DynamicBodyState,
+	room: {
+		readonly bounds: CavernRectangle;
+	},
+): DynamicBodyState {
+	const position = {
+		x: clampValue(
+			body.position.x,
+			room.bounds.x,
+			room.bounds.x + room.bounds.width - body.size.width,
+		),
+		y: clampValue(
+			body.position.y,
+			room.bounds.y,
+			room.bounds.y + room.bounds.height - body.size.height,
+		),
+	};
+
+	return {
+		...body,
+		position,
+		velocity: clampVectorMagnitude(body.velocity, body.velocityCap),
+	};
+}
+
+function getOverlapDepths(
+	left: CavernRectangle,
+	right: CavernRectangle,
+): {
+	readonly x: number;
+	readonly y: number;
+} {
+	return {
+		x: Math.min(left.x + left.width - right.x, right.x + right.width - left.x),
+		y: Math.min(
+			left.y + left.height - right.y,
+			right.y + right.height - left.y,
+		),
+	};
+}
+
+function resolveBodyCollision(
+	leftBody: DynamicBodyState,
+	rightBody: DynamicBodyState,
+): {
+	readonly leftBody: DynamicBodyState;
+	readonly rightBody: DynamicBodyState;
+} {
+	const leftRectangle = makeRectangle(leftBody.position, leftBody.size);
+	const rightRectangle = makeRectangle(rightBody.position, rightBody.size);
+	if (!doesRectangleIntersect(leftRectangle, rightRectangle)) {
+		return {
+			leftBody,
+			rightBody,
+		};
+	}
+
+	const leftCenter = getRectangleCenter(leftRectangle);
+	const rightCenter = getRectangleCenter(rightRectangle);
+	const awayFromRight = normalizeVector({
+		x: leftCenter.x - rightCenter.x,
+		y: leftCenter.y - rightCenter.y,
+	});
+	const overlaps = getOverlapDepths(leftRectangle, rightRectangle);
+	const leftSpeed = getVectorMagnitude(leftBody.velocity);
+	const rightSpeed = getVectorMagnitude(rightBody.velocity);
+	const leftInfluence = 1 + leftSpeed;
+	const rightInfluence = 1 + rightSpeed;
+	const totalInfluence = leftInfluence + rightInfluence;
+	const leftShare = rightInfluence / totalInfluence;
+	const rightShare = leftInfluence / totalInfluence;
+	const separationDistance =
+		(Math.abs(leftCenter.x - rightCenter.x) >=
+		Math.abs(leftCenter.y - rightCenter.y)
+			? overlaps.x
+			: overlaps.y) + collisionSeparationPadding;
+	const separationVector = {
+		x: awayFromRight.x * separationDistance,
+		y: awayFromRight.y * separationDistance,
+	};
+	const impactVelocity =
+		baseKnockbackVelocityPerFrame + Math.abs(leftSpeed - rightSpeed) * 0.5;
+
+	return {
+		leftBody: {
+			...leftBody,
+			position: {
+				x: leftBody.position.x + separationVector.x * leftShare,
+				y: leftBody.position.y + separationVector.y * leftShare,
+			},
+			velocity: clampVectorMagnitude(
+				{
+					x: leftBody.velocity.x + awayFromRight.x * impactVelocity * leftShare,
+					y: leftBody.velocity.y + awayFromRight.y * impactVelocity * leftShare,
+				},
+				leftBody.velocityCap,
+			),
+		},
+		rightBody: {
+			...rightBody,
+			position: {
+				x: rightBody.position.x - separationVector.x * rightShare,
+				y: rightBody.position.y - separationVector.y * rightShare,
+			},
+			velocity: clampVectorMagnitude(
+				{
+					x:
+						rightBody.velocity.x -
+						awayFromRight.x * impactVelocity * rightShare,
+					y:
+						rightBody.velocity.y -
+						awayFromRight.y * impactVelocity * rightShare,
+				},
+				rightBody.velocityCap,
+			),
+		},
+	};
+}
+
+function replaceEnemyBody(
+	enemyBodies: ReadonlyArray<DynamicBodyState>,
+	index: number,
+	body: DynamicBodyState,
+): ReadonlyArray<DynamicBodyState> {
+	return enemyBodies.map((enemyBody, enemyIndex) =>
+		enemyIndex === index ? body : enemyBody,
+	);
 }
 
 const isPointInsideButton = (
@@ -119,6 +331,7 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 		CavernGameplayDirector,
 		Effect.gen(function* () {
 			const audio = yield* Audio;
+			const cavernEnemyState = yield* CavernEnemyState;
 			const cavernMenuState = yield* CavernMenuState;
 			const cavernPlayerState = yield* CavernPlayerState;
 			const cavernWorldState = yield* CavernWorldState;
@@ -146,7 +359,9 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 					case "new-game":
 					case "continue":
 						yield* cavernWorldState.reset;
+						yield* cavernEnemyState.reset;
 						yield* cavernPlayerState.moveTo(getCavernRoom("rm1").playerSpawn);
+						yield* cavernPlayerState.setVelocity({ x: 0, y: 0 });
 						yield* sceneDirector.switchTo("overworld");
 						yield* engineLogger.info("Cavern menu advanced to overworld.", {
 							action: button.id,
@@ -257,7 +472,7 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 					acceleratedVelocity,
 					maximumSpeedPerFrame,
 				);
-				const nextVelocity = isTryingToMove
+				const nextPlayerVelocity = isTryingToMove
 					? applyDrag(velocityAfterAcceleration, brakingDragFactor)
 					: applyDrag(playerSnapshot.velocity, idleDragFactor);
 
@@ -289,38 +504,148 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 					),
 				);
 
-				const candidatePosition = {
-					x: clampValue(
-						playerSnapshot.position.x + nextVelocity.x,
-						movementMinX,
-						movementMaxX,
-					),
-					y: clampValue(
-						playerSnapshot.position.y + nextVelocity.y,
-						movementMinY,
-						movementMaxY,
-					),
+				let playerBody: DynamicBodyState = {
+					id: "player",
+					position: {
+						x: clampValue(
+							playerSnapshot.position.x + nextPlayerVelocity.x,
+							movementMinX,
+							movementMaxX,
+						),
+						y: clampValue(
+							playerSnapshot.position.y + nextPlayerVelocity.y,
+							movementMinY,
+							movementMaxY,
+						),
+					},
+					size: playerSize,
+					velocity: {
+						x:
+							playerSnapshot.position.x + nextPlayerVelocity.x <=
+								movementMinX ||
+							playerSnapshot.position.x + nextPlayerVelocity.x >= movementMaxX
+								? 0
+								: nextPlayerVelocity.x,
+						y:
+							playerSnapshot.position.y + nextPlayerVelocity.y <=
+								movementMinY ||
+							playerSnapshot.position.y + nextPlayerVelocity.y >= movementMaxY
+								? 0
+								: nextPlayerVelocity.y,
+					},
+					velocityCap: maximumSpeedPerFrame,
 				};
-				yield* cavernPlayerState.moveTo(candidatePosition);
-				yield* cavernPlayerState.setVelocity({
-					x:
-						candidatePosition.x === movementMinX ||
-						candidatePosition.x === movementMaxX
-							? 0
-							: nextVelocity.x,
-					y:
-						candidatePosition.y === movementMinY ||
-						candidatePosition.y === movementMaxY
-							? 0
-							: nextVelocity.y,
-				});
 
-				const playerRectangle = {
-					height: playerSize.height,
-					width: playerSize.width,
-					x: candidatePosition.x,
-					y: candidatePosition.y,
-				};
+				let enemyBodies: ReadonlyArray<DynamicBodyState> =
+					(yield* cavernEnemyState.snapshot).map((enemy) => {
+						const playerCenter = getPlayerVisualCenter(
+							playerBody.position,
+							playerSize,
+						);
+						const enemyCenter = getRectangleCenter(
+							makeRectangle(enemy.position, flyerSize),
+						);
+						const attractionDirection = normalizeVector({
+							x: playerCenter.x - enemyCenter.x,
+							y: playerCenter.y - enemyCenter.y,
+						});
+						const velocity = clampVectorMagnitude(
+							{
+								x:
+									enemy.velocity.x +
+									attractionDirection.x * flyerAccelerationPerFrame,
+								y:
+									enemy.velocity.y +
+									attractionDirection.y * flyerAccelerationPerFrame,
+							},
+							flyerMaximumSpeedPerFrame,
+						);
+
+						return clampBodyToRoom(
+							{
+								id: enemy.id,
+								position: {
+									x: enemy.position.x + velocity.x,
+									y: enemy.position.y + velocity.y,
+								},
+								size: flyerSize,
+								velocity,
+								velocityCap: flyerMaximumSpeedPerFrame,
+							},
+							currentRoom,
+						);
+					});
+
+				for (
+					let iteration = 0;
+					iteration < collisionIterations;
+					iteration += 1
+				) {
+					for (
+						let enemyIndex = 0;
+						enemyIndex < enemyBodies.length;
+						enemyIndex += 1
+					) {
+						const enemyBody = enemyBodies[enemyIndex];
+						if (enemyBody === undefined) {
+							continue;
+						}
+						const resolved = resolveBodyCollision(playerBody, enemyBody);
+						playerBody = clampBodyToRoom(resolved.leftBody, currentRoom);
+						enemyBodies = replaceEnemyBody(
+							enemyBodies,
+							enemyIndex,
+							clampBodyToRoom(resolved.rightBody, currentRoom),
+						);
+					}
+
+					for (
+						let leftEnemyIndex = 0;
+						leftEnemyIndex < enemyBodies.length;
+						leftEnemyIndex += 1
+					) {
+						for (
+							let rightEnemyIndex = leftEnemyIndex + 1;
+							rightEnemyIndex < enemyBodies.length;
+							rightEnemyIndex += 1
+						) {
+							const leftEnemyBody = enemyBodies[leftEnemyIndex];
+							const rightEnemyBody = enemyBodies[rightEnemyIndex];
+							if (leftEnemyBody === undefined || rightEnemyBody === undefined) {
+								continue;
+							}
+							const resolved = resolveBodyCollision(
+								leftEnemyBody,
+								rightEnemyBody,
+							);
+							enemyBodies = replaceEnemyBody(
+								enemyBodies,
+								leftEnemyIndex,
+								clampBodyToRoom(resolved.leftBody, currentRoom),
+							);
+							enemyBodies = replaceEnemyBody(
+								enemyBodies,
+								rightEnemyIndex,
+								clampBodyToRoom(resolved.rightBody, currentRoom),
+							);
+						}
+					}
+				}
+
+				yield* cavernEnemyState.setEnemies(
+					enemyBodies.map((enemyBody) => ({
+						id: enemyBody.id,
+						position: enemyBody.position,
+						velocity: enemyBody.velocity,
+					})),
+				);
+				yield* cavernPlayerState.moveTo(playerBody.position);
+				yield* cavernPlayerState.setVelocity(playerBody.velocity);
+
+				const playerRectangle = makeRectangle(
+					playerBody.position,
+					playerBody.size,
+				);
 				const activeTransition = currentRoom.transitions.find((transition) =>
 					doesRectangleIntersect(playerRectangle, transition),
 				);
@@ -332,11 +657,12 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 					});
 					const targetRoom = getCavernRoom(activeTransition.targetRoomId);
 					yield* cavernWorldState.setCurrentRoom(targetRoom.id);
+					yield* cavernEnemyState.enterRoom(targetRoom.id);
 					yield* cavernPlayerState.moveTo(
 						getTransitionSpawnPosition(
 							activeTransition,
 							targetRoom,
-							candidatePosition,
+							playerBody.position,
 							playerSize,
 						),
 					);

@@ -22,6 +22,7 @@ import { cavernBindings } from "./input/CavernBindings.ts";
 import { CavernNativeFrameSourceLive } from "./native/CavernNativeFrameSource.ts";
 import { CavernMainMenuScene } from "./scenes/CavernMainMenuScene.ts";
 import { CavernOverworldScene } from "./scenes/CavernOverworldScene.ts";
+import { CavernEnemyState } from "./state/CavernEnemyState.ts";
 import { CavernMenuState } from "./state/CavernMenuState.ts";
 import { CavernPlayerState } from "./state/CavernPlayerState.ts";
 import { CavernWorldState } from "./state/CavernWorldState.ts";
@@ -37,6 +38,7 @@ export const cavernConfig = {
 export const cavernNativeBoundaryLayer = makeHeadlessNativeBoundaryLayer();
 
 const cavernStateLayer = Layer.mergeAll(
+	CavernEnemyState.layer,
 	CavernMenuState.layer,
 	CavernPlayerState.layer,
 	CavernWorldState.layer,
@@ -123,6 +125,10 @@ export const cavernPlayableNativeBoundaryLayer = makeSkiaNativeBoundaryLayer({
 	imageAssetPaths: {
 		"environment-bg": "games/cavern/assets/images/environment/bg.png",
 		"environment-wall": "games/cavern/assets/images/environment/wall.png",
+		"enemy-flyer-body": "games/cavern/assets/images/enemies/flyerBody.png",
+		"enemy-flyer-eye": "games/cavern/assets/images/enemies/flyerEye.png",
+		"enemy-flyer-wing-1": "games/cavern/assets/images/enemies/flyerWing1.png",
+		"enemy-flyer-wing-2": "games/cavern/assets/images/enemies/flyerWing2.png",
 		"icon-github": "games/cavern/assets/images/ui/github.png",
 		"icon-sound": "games/cavern/assets/images/ui/sound.png",
 		"player-new": "games/cavern/assets/images/player/newPlayer.png",
