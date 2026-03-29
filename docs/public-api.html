@@ -3991,9 +3991,9 @@ tooling, such as an asset path or a failure reason.</p>
 									<div class="prose"><p>Tracks high-level resource lifecycle state for diagnostics and debug UI.</p>
 <p>Reach for <code>ResourceTracker</code> when your game loads authored assets or other
 long-lived resources and you want a lightweight way to report whether each
-resource is pending, loaded, faulted, or released. The starter and sample
-games use it so the debug overlay can show asset health without coupling the
-overlay directly to every loader.</p>
+resource is pending, loaded, faulted, or released. Cavern uses it so the
+debug overlay can show asset health without coupling the overlay directly to
+every loader.</p>
 <p>Common usage flow:</p>
 <ol>
 <li><code>register</code> or <code>registerScoped</code> when a resource begins loading</li>
@@ -5890,8 +5890,8 @@ your own game-specific state services.</p>
 <p>In most projects you start from <a href="#runtime-defaultengineconfig">defaultEngineConfig</a> and override only
 the fields that are specific to your game.</p>
 <pre><code class="language-ts">const engineConfig: EngineConfig = {...defaultEngineConfig,
- gameId: &quot;beacon-run&quot;,
- startScene: &quot;title&quot;,
+ gameId: &quot;Effect2d/cavern&quot;,
+ startScene: &quot;main-menu&quot;,
 };
 </code></pre>
 </div>

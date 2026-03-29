@@ -113,7 +113,7 @@ const readLiveCommentaryLine: (
 
 const gameFlag = Flag.string("game").pipe(
 	Flag.withAlias("g"),
-	Flag.withDescription("Game identifier, for example Effect2d/beacon-run."),
+	Flag.withDescription("Game identifier, for example Effect2d/cavern."),
 );
 
 const sessionDirectoryFlag = Flag.directory("session-dir").pipe(

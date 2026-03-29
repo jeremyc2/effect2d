@@ -155,11 +155,11 @@ The milestone checklist lives in [ROADMAP.md](./ROADMAP.md).
 
 It is the working plan for the engine. When implementation pressure forces a pivot, the roadmap should be updated along with the architecture docs so the written plan stays honest.
 
-## Starter
+## Cavern
 
-The canonical starter lives in [games/starter/README.md](./games/starter/README.md).
+The canonical playable example lives in [games/cavern/README.md](./games/cavern/README.md).
 
-It shows the intended small-game architecture in code:
+It now carries the intended small-game architecture in code:
 
 - Layer-composed runtime assembly
 - domain state services
@@ -172,16 +172,14 @@ The package root export is intended for engine/runtime APIs. Repo-local testing 
 
 ## Pressure Test
 
-The first real small game pressure-test lives in [games/beacon-run/README.md](./games/beacon-run/README.md).
+Cavern is also the current vertical-slice pressure test for `Effect2d`.
 
-It exists to prove that `Effect2d` can support a separate game-specific domain and composition root without sliding back into starter-specific assumptions.
+It proves that `Effect2d` can support a game-specific domain, composition root, scene flow, rendering, input, and telemetry without relying on one-off example scaffolding.
 
 ## Debugging With OTEL + Commentary
 
 Playable games write local OpenTelemetry data when you launch them through the repo run scripts:
 
-- `bun run:starter`
-- `bun run:beacon-run`
 - `bun run:cavern`
 
 By default sessions land under `.effect2d/otel/<game-id>/...`. Each session directory contains:
@@ -197,19 +195,19 @@ By default sessions land under `.effect2d/otel/<game-id>/...`. Each session dire
 Run the game in one terminal:
 
 ```bash
-bun run:beacon-run
+bun run:cavern
 ```
 
 Store commentary in another terminal. `live` creates the session immediately, prints the file paths, then keeps recording each line you enter:
 
 ```bash
-bun commentary live --game Effect2d/beacon-run
+bun commentary live --game Effect2d/cavern
 ```
 
 Or append one note at a time:
 
 ```bash
-bun commentary append --game Effect2d/beacon-run "Room transition felt late after lighting the beacon."
+bun commentary append --game Effect2d/cavern "Room transition felt awkward near the doorway."
 ```
 
 If you want to force a specific session directory, either pass `--session-dir <path>` or set `EFFECT2D_OTEL_SESSION_DIR=<path>` before launching the game.

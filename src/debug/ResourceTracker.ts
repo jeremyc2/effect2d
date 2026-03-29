@@ -66,9 +66,9 @@ export class UnknownTrackedResourceError extends Schema.TaggedErrorClass<Unknown
  *
  * Reach for `ResourceTracker` when your game loads authored assets or other
  * long-lived resources and you want a lightweight way to report whether each
- * resource is pending, loaded, faulted, or released. The starter and sample
- * games use it so the debug overlay can show asset health without coupling the
- * overlay directly to every loader.
+ * resource is pending, loaded, faulted, or released. Cavern uses it so the
+ * debug overlay can show asset health without coupling the overlay directly to
+ * every loader.
  *
  * Common usage flow:
  * 1. `register` or `registerScoped` when a resource begins loading

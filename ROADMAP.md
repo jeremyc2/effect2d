@@ -164,20 +164,20 @@
 - [x] Add animation and tween tests.
 - [x] Add service composition tests for common engine launch paths.
 
-## Milestone 15: Starter And Sample Game Structure
+## Milestone 15: Canonical Cavern Game Structure
 
-- [x] Create one canonical small starter for new games.
-- [x] Show a Layer-composed game runtime in the starter.
-- [x] Show scene services and scoped scene instances in the starter.
-- [x] Show multiple domain state services in the starter.
-- [x] Show save participants in the starter.
-- [x] Show action mapping in the starter.
-- [x] Show debug toggles in the starter.
-- [x] Keep the starter intentionally small and opinionated.
+- [x] Establish Cavern as the canonical small playable example for new games.
+- [x] Show a Layer-composed game runtime in Cavern.
+- [x] Show scene services and scoped scene instances in Cavern.
+- [x] Show multiple domain state services in Cavern.
+- [x] Show save participants in Cavern.
+- [x] Show action mapping in Cavern.
+- [x] Show debug toggles in Cavern.
+- [x] Keep Cavern intentionally small and opinionated.
 
 ## Milestone 16: Vertical Slice Demo
 
-- [x] Build a tiny top-down action-adventure demo on the engine.
+- [x] Build Cavern as a tiny top-down exploration demo on the engine.
 - [x] Implement a title or menu scene.
 - [x] Implement one primary gameplay scene.
 - [x] Implement at least one overlay scene such as pause or dialogue.

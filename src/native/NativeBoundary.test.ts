@@ -102,7 +102,7 @@ describe("NativeBoundary", () => {
 					defaultLoop: false,
 					defaultPitch: 1,
 					defaultVolume: 1,
-					sourcePath: "games/beacon-run/assets/audio/confirm.wav",
+					sourcePath: "games/cavern/assets/audio/sfx/ui/click.wav",
 				});
 				yield* audio.playSfx("confirm");
 				yield* nativeBoundary.initialize("effect2d/test-native");

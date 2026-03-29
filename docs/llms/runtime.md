@@ -48,8 +48,8 @@ the fields that are specific to your game.
 
 ```ts
 const engineConfig: EngineConfig = {...defaultEngineConfig,
- gameId: "beacon-run",
- startScene: "title",
+ gameId: "Effect2d/cavern",
+ startScene: "main-menu",
 };
 ```
 
