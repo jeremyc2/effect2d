@@ -67,10 +67,10 @@ class DocSiteScanError extends Schema.TaggedErrorClass<DocSiteScanError>()(
 	},
 ) {}
 
-const docsOutputPath = "docs/public-api.html";
-const llmsOutputPath = "docs/llms.txt";
-const llmsDirectoryPath = "docs/llms";
-const llmsFullOutputPath = "docs/llms-full.txt";
+const docsOutputPath = "docs/public/using-effect2d.html";
+const llmsOutputPath = "docs/public/llms.txt";
+const llmsDirectoryPath = "docs/public/llms";
+const llmsFullOutputPath = "docs/public/llms-full.txt";
 const rootEntrypointPath = "src/index.ts";
 
 const moduleLabelOverrides: Record<string, string> = {
