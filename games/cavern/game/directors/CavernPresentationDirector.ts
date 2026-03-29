@@ -430,8 +430,9 @@ export class CavernPresentationDirector extends ServiceMap.Service<
 				horizontal: boolean,
 				skipZones: ReadonlyArray<CavernRectangle>,
 			) {
+				const rangeStart = horizontal ? startX : startY;
 				for (
-					let coordinate = startX;
+					let coordinate = rangeStart;
 					coordinate < endExclusive;
 					coordinate += tileSize
 				) {

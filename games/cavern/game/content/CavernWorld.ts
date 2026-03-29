@@ -387,24 +387,31 @@ export function getTransitionSpawnPosition(
 		readonly width: number;
 	},
 ): CameraVector {
-	return {
-		x:
-			transition.spawnX === 0
-				? playerPosition.x
-				: transition.spawnX > 0
-					? transition.spawnX
-					: targetRoom.bounds.x +
-						targetRoom.bounds.width +
-						transition.spawnX -
-						playerSize.width,
-		y:
-			transition.spawnY === 0
-				? playerPosition.y
-				: transition.spawnY > 0
-					? transition.spawnY
-					: targetRoom.bounds.y +
-						targetRoom.bounds.height +
-						transition.spawnY -
-						playerSize.height,
-	};
+	let x: number;
+	if (transition.spawnX === 0) {
+		x = playerPosition.x;
+	} else if (transition.spawnX > 0) {
+		x = transition.spawnX;
+	} else {
+		x =
+			targetRoom.bounds.x +
+			targetRoom.bounds.width +
+			transition.spawnX -
+			playerSize.width;
+	}
+
+	let y: number;
+	if (transition.spawnY === 0) {
+		y = playerPosition.y;
+	} else if (transition.spawnY > 0) {
+		y = transition.spawnY;
+	} else {
+		y =
+			targetRoom.bounds.y +
+			targetRoom.bounds.height +
+			transition.spawnY -
+			playerSize.height;
+	}
+
+	return { x, y };
 }

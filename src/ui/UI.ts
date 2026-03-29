@@ -364,12 +364,14 @@ export class UI extends ServiceMap.Service<
 						continue;
 					}
 
-					const x =
-						align === "center"
-							? position.x + Math.floor(blockWidth / 2)
-							: align === "right"
-								? position.x + blockWidth
-								: position.x;
+					let x: number;
+					if (align === "center") {
+						x = position.x + Math.floor(blockWidth / 2);
+					} else if (align === "right") {
+						x = position.x + blockWidth;
+					} else {
+						x = position.x;
+					}
 
 					yield* graphics.drawText({
 						align,
