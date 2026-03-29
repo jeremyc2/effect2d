@@ -4,10 +4,13 @@ import {
 	Graphics,
 	type GraphicsFrameNotOpenError,
 	type GraphicsTransformStackUnderflowError,
+	Input,
 	RuntimeClock,
 	SceneCamera,
 	SceneDirector,
 	type SceneStackEmptyError,
+	UI,
+	type UnknownFontError,
 } from "../../../../src/index.ts";
 import { cavernMenuButtons } from "../content/CavernMenu.ts";
 import {
@@ -70,10 +73,47 @@ const exitStroke = {
 	red: 0.92,
 };
 
+const overlayFill = {
+	alpha: 0.72,
+	blue: 0.07,
+	green: 0.11,
+	red: 0.09,
+};
+
+const overlayStroke = {
+	alpha: 0.9,
+	blue: 0.36,
+	green: 0.62,
+	red: 0.56,
+};
+
+const roomLabelFill = {
+	alpha: 0.82,
+	blue: 0.08,
+	green: 0.1,
+	red: 0.09,
+};
+
+const roomLabelStroke = {
+	alpha: 0.95,
+	blue: 0.3,
+	green: 0.38,
+	red: 0.35,
+};
+
+const instructionHoldDurationMillis = 2_000;
+const instructionFadeDurationMillis = 1_200;
+
+const playerRenderSize = {
+	height: 192,
+	width: 80,
+} as const;
+
 type CavernPresentationDirectorFailure =
 	| GraphicsFrameNotOpenError
 	| GraphicsTransformStackUnderflowError
-	| SceneStackEmptyError;
+	| SceneStackEmptyError
+	| UnknownFontError;
 
 const tileSize = 128;
 
@@ -96,6 +136,45 @@ function getBackgroundOffset(position: number, tileExtent: number): number {
 	return modulo < 0 ? modulo + tileExtent : modulo;
 }
 
+function screenPointToWorldX(
+	screenX: number,
+	camera: {
+		readonly position: {
+			readonly x: number;
+		};
+		readonly zoom: number;
+	},
+): number {
+	return (screenX - cavernViewport.width / 2) / camera.zoom + camera.position.x;
+}
+
+function getInstructionOverlayOpacity(
+	nowMillis: number,
+	fadeStartedAtMillis: number | null,
+): number {
+	if (fadeStartedAtMillis === null) {
+		return 1;
+	}
+
+	const elapsedMillis = nowMillis - fadeStartedAtMillis;
+	if (elapsedMillis <= instructionHoldDurationMillis) {
+		return 1;
+	}
+
+	if (
+		elapsedMillis >=
+		instructionHoldDurationMillis + instructionFadeDurationMillis
+	) {
+		return 0;
+	}
+
+	return (
+		1 -
+		(elapsedMillis - instructionHoldDurationMillis) /
+			instructionFadeDurationMillis
+	);
+}
+
 export class CavernPresentationDirector extends ServiceMap.Service<
 	CavernPresentationDirector,
 	{
@@ -112,9 +191,11 @@ export class CavernPresentationDirector extends ServiceMap.Service<
 			const cavernPlayerState = yield* CavernPlayerState;
 			const cavernWorldState = yield* CavernWorldState;
 			const graphics = yield* Graphics;
+			const input = yield* Input;
 			const runtimeClock = yield* RuntimeClock;
 			const sceneCamera = yield* SceneCamera;
 			const sceneDirector = yield* SceneDirector;
+			const ui = yield* UI;
 
 			const drawTiledBackground = Effect.fn(
 				"CavernPresentationDirector.drawTiledBackground",
@@ -306,6 +387,18 @@ export class CavernPresentationDirector extends ServiceMap.Service<
 				const worldSnapshot = yield* cavernWorldState.snapshot;
 				const room = getCavernRoom(worldSnapshot.currentRoomId);
 				const camera = yield* sceneCamera.snapshot;
+				const pointer = yield* input.pointerPosition;
+				const nowMillis = yield* runtimeClock.currentTimeMillis;
+				const instructionOverlayOpacity = getInstructionOverlayOpacity(
+					nowMillis,
+					worldSnapshot.roomInstructionsFadeStartedAtMillis,
+				);
+				const pointerHasMoved = pointer.x !== 0 || pointer.y !== 0;
+				const playerCenterX =
+					playerSnapshot.position.x + playerRenderSize.width / 2;
+				const playerFacesLeft =
+					pointerHasMoved &&
+					screenPointToWorldX(pointer.x, camera) < playerCenterX;
 				yield* graphics.clear(menuBackground);
 				yield* drawCameraParallax();
 				yield* graphics.pushTransform({
@@ -433,18 +526,129 @@ export class CavernPresentationDirector extends ServiceMap.Service<
 					});
 				}
 
-				yield* graphics.drawImage("player-new", playerSnapshot.position);
+				yield* graphics.pushTransform({
+					rotationRadians: 0,
+					scaleX: playerFacesLeft ? -1 : 1,
+					scaleY: 1,
+					translation: {
+						x:
+							playerSnapshot.position.x +
+							(playerFacesLeft ? playerRenderSize.width : 0),
+						y: playerSnapshot.position.y,
+					},
+				});
+				yield* graphics.drawImage("player-new", { x: 0, y: 0 });
 				yield* graphics.popTransform;
+				yield* graphics.popTransform;
+				yield* graphics.drawRectangle(
+					{
+						x: cavernViewport.width / 2 - 260,
+						y: 18,
+					},
+					{
+						height: 44,
+						width: 520,
+					},
+					"fill",
+					roomLabelFill,
+				);
+				yield* graphics.drawRectangle(
+					{
+						x: cavernViewport.width / 2 - 260,
+						y: 18,
+					},
+					{
+						height: 44,
+						width: 520,
+					},
+					"stroke",
+					roomLabelStroke,
+				);
 				yield* graphics.drawText({
+					align: "center",
 					fontId: "menu-message",
-					position: { x: 40, y: 32 },
-					text: `Room: ${room.name}`,
+					position: {
+						x: cavernViewport.width / 2,
+						y: 24,
+					},
+					text: room.name,
 				});
-				yield* graphics.drawText({
-					fontId: "intro-font",
-					position: { x: 40, y: 68 },
-					text: "Arrow keys move. Follow the EXIT markers. Esc returns to menu.",
-				});
+				if (instructionOverlayOpacity > 0) {
+					const instructionPanelWidth = 840;
+					const instructionPanelTextWidth = 760;
+					const instructionPanelX =
+						cavernViewport.width / 2 - instructionPanelWidth / 2;
+					const instructionPanelY = 72;
+					const instructionTitleY = 84;
+					const instructionBodyY = 114;
+					const instructionBodyText =
+						"Head toward the glowing EXIT doors. Esc returns to menu.";
+					const instructionBodyLayout = yield* ui.wrapText(
+						"intro-font",
+						instructionBodyText,
+						instructionPanelTextWidth,
+					);
+					const instructionPanelHeight =
+						instructionBodyY -
+						instructionPanelY +
+						instructionBodyLayout.height +
+						10;
+					yield* graphics.setTint({
+						alpha: instructionOverlayOpacity,
+						blue: 1,
+						green: 1,
+						red: 1,
+					});
+					yield* graphics.drawRectangle(
+						{
+							x: instructionPanelX,
+							y: instructionPanelY,
+						},
+						{
+							height: instructionPanelHeight,
+							width: instructionPanelWidth,
+						},
+						"fill",
+						overlayFill,
+					);
+					yield* graphics.drawRectangle(
+						{
+							x: instructionPanelX,
+							y: instructionPanelY,
+						},
+						{
+							height: instructionPanelHeight,
+							width: instructionPanelWidth,
+						},
+						"stroke",
+						overlayStroke,
+					);
+					yield* graphics.drawText({
+						align: "center",
+						fontId: "intro-font",
+						position: {
+							x: cavernViewport.width / 2,
+							y: instructionTitleY,
+						},
+						text: "Arrows / WASD move",
+					});
+					yield* ui.drawTextBlock({
+						align: "center",
+						fontId: "intro-font",
+						maxWidth: instructionPanelTextWidth,
+						position: {
+							x: cavernViewport.width / 2 - instructionPanelTextWidth / 2,
+							y: instructionBodyY,
+						},
+						text: instructionBodyText,
+					});
+					yield* graphics.setTint({
+						alpha: 1,
+						blue: 1,
+						green: 1,
+						red: 1,
+					});
+				}
 			});
 
 			const renderFrame = Effect.fn("CavernPresentationDirector.renderFrame")(

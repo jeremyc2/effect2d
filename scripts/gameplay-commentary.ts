@@ -1,5 +1,6 @@
 import { BunRuntime, BunServices } from "@effect/platform-bun";
 import { Effect, Layer, Option, Queue, type Scope, Terminal } from "effect";
+import type { Done } from "effect/Cause";
 import { Argument, Command, Flag } from "effect/unstable/cli";
 import packageJson from "../package.json" with { type: "json" };
 import {
@@ -9,30 +10,68 @@ import {
 } from "../src/debug/GameplayTelemetry.ts";
 
 const liveCommentaryPrompt = "> ";
-const clearTerminalLineAnsi = "\r\u001b[2K";
+const ansiEscape = "\u001b[";
+
+function countRenderedRows(text: string, columns: number): number {
+	if (columns <= 0) {
+		return 1;
+	}
+
+	return Math.max(1, 1 + Math.floor(Math.max(text.length - 1, 0) / columns));
+}
+
+function eraseTerminalRows(rows: number): string {
+	let output = "";
+	for (let rowIndex = 0; rowIndex < rows; rowIndex += 1) {
+		output += `${ansiEscape}2K`;
+		if (rowIndex < rows - 1) {
+			output += `${ansiEscape}1A`;
+		}
+	}
+	return `${output}${ansiEscape}G`;
+}
 
 const displayLine = Effect.fnUntraced(function* (text: string) {
 	const terminal = yield* Terminal.Terminal;
 	yield* terminal.display(`${text}\n`).pipe(Effect.orDie);
 });
 
-const redrawLiveCommentaryInput = Effect.fnUntraced(function* (text: string) {
+const redrawLiveCommentaryInput = Effect.fnUntraced(function* (
+	text: string,
+	previousPromptText: string,
+) {
 	const terminal = yield* Terminal.Terminal;
-	yield* terminal
-		.display(`${clearTerminalLineAnsi}${liveCommentaryPrompt}${text}`)
-		.pipe(Effect.orDie);
+	if (previousPromptText.length > 0) {
+		const columns = yield* terminal.columns;
+		yield* terminal
+			.display(
+				eraseTerminalRows(countRenderedRows(previousPromptText, columns)),
+			)
+			.pipe(Effect.orDie);
+	}
+
+	const promptText = `${liveCommentaryPrompt}${text}`;
+	yield* terminal.display(promptText).pipe(Effect.orDie);
+	return promptText;
 });
 
-const readLiveCommentaryLine: () => Effect.Effect<
+const readLiveCommentaryLine: (
+	inputQueue: Queue.Dequeue<Terminal.UserInput, Done>,
+) => Effect.Effect<
 	string,
 	Terminal.QuitError,
 	Terminal.Terminal | Scope.Scope
-> = Effect.fnUntraced(function* () {
+> = Effect.fnUntraced(function* (
+	inputQueue: Queue.Dequeue<Terminal.UserInput, Done>,
+) {
 	const terminal = yield* Terminal.Terminal;
-	const inputQueue = yield* terminal.readInput;
 	let currentLine = "";
+	let renderedPromptText = "";
 
-	yield* redrawLiveCommentaryInput(currentLine);
+	renderedPromptText = yield* redrawLiveCommentaryInput(
+		currentLine,
+		renderedPromptText,
+	);
 
 	while (true) {
 		const userInput = yield* Queue.take(inputQueue).pipe(
@@ -54,7 +93,10 @@ const readLiveCommentaryLine: () => Effect.Effect<
 		if (userInput.key.name === "backspace" || userInput.key.name === "delete") {
 			currentLine =
 				currentLine.length === 0 ? currentLine : currentLine.slice(0, -1);
-			yield* redrawLiveCommentaryInput(currentLine);
+			renderedPromptText = yield* redrawLiveCommentaryInput(
+				currentLine,
+				renderedPromptText,
+			);
 			continue;
 		}
 
@@ -62,7 +104,10 @@ const readLiveCommentaryLine: () => Effect.Effect<
 			onNone: () => currentLine,
 			onSome: (input) => `${currentLine}${input}`,
 		});
-		yield* redrawLiveCommentaryInput(currentLine);
+		renderedPromptText = yield* redrawLiveCommentaryInput(
+			currentLine,
+			renderedPromptText,
+		);
 	}
 });
 
@@ -131,6 +176,7 @@ const liveCommand = Command.make(
 		sessionDir: sessionDirectoryFlag,
 	},
 	Effect.fnUntraced(function* (config) {
+		const terminal = yield* Terminal.Terminal;
 		const requestedSessionDirectory = sessionDirectoryValue(config.sessionDir);
 		const descriptor =
 			requestedSessionDirectory === undefined
@@ -149,10 +195,11 @@ const liveCommand = Command.make(
 			"Type commentary and press Enter. Press Ctrl+C to stop.",
 		);
 
+		const inputQueue = yield* terminal.readInput;
 		const sessionDirectory = descriptor.sessionDirectory;
 
 		yield* Effect.forever(
-			readLiveCommentaryLine().pipe(
+			readLiveCommentaryLine(inputQueue).pipe(
 				Effect.map((line) => line.trim()),
 				Effect.flatMap((text) =>
 					text.length === 0
@@ -161,11 +208,7 @@ const liveCommand = Command.make(
 								gameId: config.game,
 								sessionDirectory,
 								text,
-							}).pipe(
-								Effect.flatMap((entry) =>
-									displayLine(`[${entry.recordedAtIso}] ${entry.text}`),
-								),
-							),
+							}).pipe(Effect.asVoid),
 				),
 			),
 		).pipe(

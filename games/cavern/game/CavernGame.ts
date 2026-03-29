@@ -13,6 +13,7 @@ import {
 	SceneCamera,
 	SceneDirector,
 	SceneRegistry,
+	UI,
 } from "../../../src/index.ts";
 import { makeHeadlessNativeBoundaryLayer } from "../../../src/testing/index.ts";
 import { CavernGameplayDirector } from "./directors/CavernGameplayDirector.ts";
@@ -57,6 +58,8 @@ const cavernCapabilityLayer = Layer.mergeAll(
 	cavernStateLayer,
 );
 
+const cavernUILayer = UI.layer.pipe(Layer.provide(cavernCapabilityLayer));
+
 const cavernSceneRegistryLayer = SceneRegistry.layer([
 	CavernMainMenuScene,
 	CavernOverworldScene,
@@ -74,7 +77,11 @@ const cavernGameplayDirectorLayer = CavernGameplayDirector.layer.pipe(
 
 const cavernPresentationDirectorLayer = CavernPresentationDirector.layer.pipe(
 	Layer.provide(
-		Layer.mergeAll(cavernCapabilityLayer, cavernSceneDirectorLayer),
+		Layer.mergeAll(
+			cavernCapabilityLayer,
+			cavernSceneDirectorLayer,
+			cavernUILayer,
+		),
 	),
 );
 
@@ -147,6 +154,7 @@ const cavernSharedGameLayer = Layer.mergeAll(
 	cavernPresentationDirectorLayer,
 	cavernSceneDirectorLayer,
 	cavernSceneRegistryLayer,
+	cavernUILayer,
 );
 
 export const CavernLive = Layer.mergeAll(
@@ -163,6 +171,7 @@ export const CavernPlayableLive = Layer.mergeAll(
 export const cavernBootstrap = Effect.gen(function* () {
 	const audio = yield* Audio;
 	const input = yield* Input;
+	const ui = yield* UI;
 
 	yield* input.setBindings(cavernBindings);
 	yield* audio.loadMusic({
@@ -178,6 +187,18 @@ export const cavernBootstrap = Effect.gen(function* () {
 		defaultPitch: 1,
 		defaultVolume: 0.8,
 		sourcePath: "games/cavern/assets/audio/sfx/ui/click.wav",
+	});
+	yield* ui.loadFont({
+		fontId: "intro-font",
+		glyphWidth: 20,
+		lineHeight: 34,
+		sourcePath: "games/cavern/assets/fonts/VT323-Regular.ttf",
+	});
+	yield* ui.loadFont({
+		fontId: "menu-message",
+		glyphWidth: 18,
+		lineHeight: 28,
+		sourcePath: "games/cavern/assets/fonts/RussoOne-Regular.ttf",
 	});
 	yield* audio.playMusic("cavern-menu", { loop: true });
 });

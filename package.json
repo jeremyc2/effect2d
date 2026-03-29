@@ -12,6 +12,9 @@
 		"run:cavern": "bun games/cavern/main.ts",
 		"run:starter": "bun games/starter/main.ts",
 		"commentary": "bun scripts/gameplay-commentary.ts",
+		"commentary:beacon-run": "bun commentary live --game Effect2d/beacon-run",
+		"commentary:cavern": "bun commentary live --game Effect2d/cavern",
+		"commentary:starter": "bun commentary live --game Effect2d/starter",
 		"check:staged": "bun --bun biome check --write --staged",
 		"check": "bun --bun biome check --write",
 		"prepare": "effect-tsgo patch"

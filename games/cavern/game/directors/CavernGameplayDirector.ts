@@ -27,14 +27,65 @@ import { CavernMenuState } from "../state/CavernMenuState.ts";
 import { CavernPlayerState } from "../state/CavernPlayerState.ts";
 import { CavernWorldState } from "../state/CavernWorldState.ts";
 
-const movementStep = 10;
 const playerSize = {
 	height: 192,
 	width: 80,
 } as const;
+// Increase this to accelerate faster when holding a direction, or lower it to make movement feel heavier.
+const accelerationPerFrame = 2.2;
+// Increase this to raise the player's top speed, or lower it to cap movement sooner.
+const maximumSpeedPerFrame = 40;
+// Increase this to keep more momentum while coasting, or lower it to make the player slow down faster when idle.
+const idleDragFactor = 0.92;
+// Increase this to preserve more speed while changing direction, or lower it to make turns and braking feel sharper.
+const brakingDragFactor = 0.99;
+// Increase this to stop tiny leftover motion sooner, or lower it to allow longer low-speed drift.
+const minimumVelocityMagnitude = 0.1;
 
 function clampValue(value: number, minimum: number, maximum: number): number {
 	return Math.max(minimum, Math.min(maximum, value));
+}
+
+function getVectorMagnitude(vector: {
+	readonly x: number;
+	readonly y: number;
+}): number {
+	return Math.hypot(vector.x, vector.y);
+}
+
+function clampVectorMagnitude(
+	vector: { readonly x: number; readonly y: number },
+	maximumMagnitude: number,
+): {
+	readonly x: number;
+	readonly y: number;
+} {
+	const magnitude = getVectorMagnitude(vector);
+	if (magnitude <= maximumMagnitude || magnitude === 0) {
+		return vector;
+	}
+
+	const scale = maximumMagnitude / magnitude;
+	return {
+		x: vector.x * scale,
+		y: vector.y * scale,
+	};
+}
+
+function applyDrag(
+	vector: { readonly x: number; readonly y: number },
+	dragFactor: number,
+): {
+	readonly x: number;
+	readonly y: number;
+} {
+	const slowed = {
+		x: vector.x * dragFactor,
+		y: vector.y * dragFactor,
+	};
+	return getVectorMagnitude(slowed) < minimumVelocityMagnitude
+		? { x: 0, y: 0 }
+		: slowed;
 }
 
 const isPointInsideButton = (
@@ -177,20 +228,43 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 					"effect2d.game.room_id": currentRoom.id,
 				});
 				const playerSnapshot = yield* cavernPlayerState.snapshot;
-				let nextX = playerSnapshot.position.x;
-				let nextY = playerSnapshot.position.y;
+				const moveLeftPressed = (yield* input.actionState("move-left"))
+					.isPressed;
+				const moveRightPressed = (yield* input.actionState("move-right"))
+					.isPressed;
+				const moveUpPressed = (yield* input.actionState("move-up")).isPressed;
+				const moveDownPressed = (yield* input.actionState("move-down"))
+					.isPressed;
+				const isTryingToMove =
+					moveLeftPressed ||
+					moveRightPressed ||
+					moveUpPressed ||
+					moveDownPressed;
+				const inputVector = {
+					x: (moveRightPressed ? 1 : 0) - (moveLeftPressed ? 1 : 0),
+					y: (moveDownPressed ? 1 : 0) - (moveUpPressed ? 1 : 0),
+				};
+				const normalizedInputVector = clampVectorMagnitude(inputVector, 1);
+				const acceleratedVelocity = {
+					x:
+						playerSnapshot.velocity.x +
+						normalizedInputVector.x * accelerationPerFrame,
+					y:
+						playerSnapshot.velocity.y +
+						normalizedInputVector.y * accelerationPerFrame,
+				};
+				const velocityAfterAcceleration = clampVectorMagnitude(
+					acceleratedVelocity,
+					maximumSpeedPerFrame,
+				);
+				const nextVelocity = isTryingToMove
+					? applyDrag(velocityAfterAcceleration, brakingDragFactor)
+					: applyDrag(playerSnapshot.velocity, idleDragFactor);
 
-				if ((yield* input.actionState("move-left")).isPressed) {
-					nextX -= movementStep;
-				}
-				if ((yield* input.actionState("move-right")).isPressed) {
-					nextX += movementStep;
-				}
-				if ((yield* input.actionState("move-up")).isPressed) {
-					nextY -= movementStep;
-				}
-				if ((yield* input.actionState("move-down")).isPressed) {
-					nextY += movementStep;
+				if (isTryingToMove) {
+					yield* cavernWorldState.beginRoomInstructionsFade(
+						yield* runtimeClock.currentTimeMillis,
+					);
 				}
 
 				const movementMinX = Math.min(
@@ -216,10 +290,30 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 				);
 
 				const candidatePosition = {
-					x: clampValue(nextX, movementMinX, movementMaxX),
-					y: clampValue(nextY, movementMinY, movementMaxY),
+					x: clampValue(
+						playerSnapshot.position.x + nextVelocity.x,
+						movementMinX,
+						movementMaxX,
+					),
+					y: clampValue(
+						playerSnapshot.position.y + nextVelocity.y,
+						movementMinY,
+						movementMaxY,
+					),
 				};
 				yield* cavernPlayerState.moveTo(candidatePosition);
+				yield* cavernPlayerState.setVelocity({
+					x:
+						candidatePosition.x === movementMinX ||
+						candidatePosition.x === movementMaxX
+							? 0
+							: nextVelocity.x,
+					y:
+						candidatePosition.y === movementMinY ||
+						candidatePosition.y === movementMaxY
+							? 0
+							: nextVelocity.y,
+				});
 
 				const playerRectangle = {
 					height: playerSize.height,
@@ -246,6 +340,7 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 							playerSize,
 						),
 					);
+					yield* cavernPlayerState.setVelocity({ x: 0, y: 0 });
 				}
 
 				const updatedPlayerSnapshot = yield* cavernPlayerState.snapshot;
