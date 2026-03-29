@@ -4,6 +4,10 @@
 	"version": "0.0.1",
 	"type": "module",
 	"private": true,
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/jeremyc2/effect2d.git"
+	},
 	"scripts": {
 		"typecheck": "tsgo",
 		"all": "bun typecheck && bun check && bun test && bun build:docs",
@@ -13,6 +17,7 @@
 		"commentary:cavern": "bun --bun commentary live --game Effect2d/cavern",
 		"check:staged": "bun --bun biome check --write --staged && bun --bun oxlint -c .oxlintrc.jsonc",
 		"check": "bun --bun biome check --write && bun --bun oxlint -c .oxlintrc.jsonc",
+		"deploy:vercel": "vercel --prod",
 		"prepare": "effect-tsgo patch"
 	},
 	"dependencies": {
@@ -28,7 +33,8 @@
 		"@oxlint/plugins": "^1.57.0",
 		"@types/bun": "latest",
 		"@typescript/native-preview": "^7.0.0-dev.20260329.1",
-		"oxlint": "^1.57.0"
+		"oxlint": "^1.57.0",
+		"vercel": "^50.37.3"
 	},
 	"trustedDependencies": [
 		"msgpackr-extract",

@@ -1,5 +1,6 @@
 import { Glob } from "bun";
 import { Console, Effect, Schema } from "effect";
+import { repository, version } from "../package.json" with { type: "json" };
 
 type PublicDocEntry = {
 	readonly filePath: string;
@@ -67,11 +68,36 @@ class DocSiteScanError extends Schema.TaggedErrorClass<DocSiteScanError>()(
 	},
 ) {}
 
-const docsOutputPath = "docs/public/using-effect2d.html";
+const docsOutputPath = "docs/public/index.html";
 const llmsOutputPath = "docs/public/llms.txt";
 const llmsDirectoryPath = "docs/public/llms";
 const llmsFullOutputPath = "docs/public/llms-full.txt";
 const rootEntrypointPath = "src/index.ts";
+
+/** GitHub mark path (24×24 viewBox) for the header link icon. */
+const githubMarkPath =
+	"M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12";
+
+function normalizeRepositoryString(raw: string): string {
+	const trimmed = raw.trim();
+	if (trimmed.startsWith("github:")) {
+		return `https://github.com/${trimmed.slice("github:".length)}`;
+	}
+	if (trimmed.startsWith("git@github.com:")) {
+		const pathPart = trimmed
+			.slice("git@github.com:".length)
+			.replace(/\.git$/i, "");
+		return `https://github.com/${pathPart}`;
+	}
+	let url = trimmed.replace(/^git\+/, "");
+	url = url.replace(/\.git$/i, "");
+	if (url.startsWith("ssh://git@github.com/")) {
+		return `https://github.com/${url.slice("ssh://git@github.com/".length)}`;
+	}
+	return url;
+}
+
+const repositoryUrl = normalizeRepositoryString(repository.url);
 
 const moduleLabelOverrides: Record<string, string> = {
 	ui: "UI",
@@ -676,6 +702,10 @@ function renderLlmsOverview(
 	return [
 		"# Effect2d Overview",
 		"",
+		`**Version:** ${version}`,
+		"",
+		`**Repository:** [${repositoryUrl}](${repositoryUrl})`,
+		"",
 		`> ${packageDocs.summary}`,
 		"",
 		makeLlmsInlineLinks(packageDocs.markdown, linkBySymbol),
@@ -728,6 +758,8 @@ function renderLlmsModuleDocument(
 	return [
 		`# ${moduleGroup.label}`,
 		"",
+		`**Version:** ${version} · **Repository:** [${repositoryUrl}](${repositoryUrl})`,
+		"",
 		`> Public ${moduleGroup.label} API.`,
 		"",
 		sections,
@@ -755,6 +787,10 @@ function renderLlmsText(
 
 	return [
 		"# Effect2d",
+		"",
+		`**Version:** ${version}`,
+		"",
+		`**Repository:** [${repositoryUrl}](${repositoryUrl})`,
 		"",
 		`> ${packageDocs.summary}`,
 		"",
@@ -786,6 +822,10 @@ function renderLlmsFullText(
 	return [
 		"# Effect2d Full Context",
 		"",
+		`**Version:** ${version}`,
+		"",
+		`**Repository:** [${repositoryUrl}](${repositoryUrl})`,
+		"",
 		`> ${packageDocs.summary}`,
 		"",
 		"This file expands the package overview and every generated module markdown file into one Markdown context.",
@@ -812,8 +852,10 @@ const renderHtmlDocument = ({
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>Effect2d User Guide</title>
+		<title>Effect2d User Guide · v${escapeHtml(version)}</title>
 		<meta name="description" content="${escapeHtml(packageDocs.summary)}" />
+		<meta name="effect2d:version" content="${escapeHtml(version)}" />
+		<meta name="effect2d:repository" content="${escapeHtml(repositoryUrl)}" />
 		<style>
 			:root {
 				--bg: #0a0b10;
@@ -904,6 +946,30 @@ const renderHtmlDocument = ({
 				backdrop-filter: blur(22px);
 			}
 
+			.topbar-leading {
+				display: flex;
+				align-items: center;
+				gap: 1rem;
+				flex-wrap: wrap;
+				min-width: 0;
+			}
+
+			.topbar-version {
+				margin: 0;
+				padding: 0.35rem 0.65rem;
+				border: 1px solid rgba(255, 255, 255, 0.08);
+				border-radius: 999px;
+				background: rgba(255, 255, 255, 0.03);
+				color: var(--muted);
+				font-family:
+					"Berkeley Mono", "SFMono-Regular", Consolas, "Liberation Mono",
+					Menlo, monospace;
+				font-size: 0.72rem;
+				font-weight: 600;
+				letter-spacing: 0.06em;
+				white-space: nowrap;
+			}
+
 			.brand {
 				display: inline-flex;
 				align-items: center;
@@ -962,6 +1028,21 @@ const renderHtmlDocument = ({
 				box-shadow:
 					inset 0 1px 0 rgba(255, 255, 255, 0.12),
 					0 18px 30px rgba(0, 0, 0, 0.28);
+			}
+
+			.topbar-link-github {
+				gap: 0.45rem;
+				padding-left: 0.72rem;
+				padding-right: 0.95rem;
+			}
+
+			.topbar-github-icon {
+				display: block;
+				flex-shrink: 0;
+			}
+
+			.topbar-github-label {
+				letter-spacing: 0.12em;
 			}
 
 			.brand-mark,
@@ -1572,17 +1653,40 @@ const renderHtmlDocument = ({
 	<body>
 		<div class="app-shell" id="top">
 			<header class="topbar">
-				<a class="brand" href="#top">
-					<div class="brand-mark" aria-hidden="true">
-						<span></span>
-						<span></span>
-						<span></span>
-					</div>
-					<span>Effect2d Docs</span>
-				</a>
+				<div class="topbar-leading">
+					<a class="brand" href="#top">
+						<div class="brand-mark" aria-hidden="true">
+							<span></span>
+							<span></span>
+							<span></span>
+						</div>
+						<span>Effect2d Docs</span>
+					</a>
+					<p class="topbar-version" title="Package version">v${escapeHtml(version)}</p>
+				</div>
 				<nav class="topbar-links" aria-label="Primary">
 					<a class="topbar-link" href="#where-this-engine-shines">Ideas</a>
 					<a class="topbar-link" href="#quick-start">Quick Start</a>
+					<a
+						class="topbar-link topbar-link-github"
+						href="${escapeHtml(repositoryUrl)}"
+						target="_blank"
+						rel="noopener noreferrer"
+						aria-label="View Effect2d source on GitHub"
+					>
+						<svg
+							class="topbar-github-icon"
+							width="18"
+							height="18"
+							viewBox="0 0 24 24"
+							aria-hidden="true"
+							focusable="false"
+						>
+							<title>GitHub</title>
+							<path fill="currentColor" d="${githubMarkPath}" />
+						</svg>
+						<span class="topbar-github-label">GitHub</span>
+					</a>
 				</nav>
 			</header>
 			<div class="layout">

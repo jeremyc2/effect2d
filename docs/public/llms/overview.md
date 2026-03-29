@@ -1,5 +1,9 @@
 # Effect2d Overview
 
+**Version:** 0.0.1
+
+**Repository:** [https://github.com/jeremyc2/effect2d](https://github.com/jeremyc2/effect2d)
+
 > Build games with clear systems and room to grow.
 
 Build games with clear systems and room to grow.

@@ -1,5 +1,7 @@
 # Collision
 
+**Version:** 0.0.1 · **Repository:** [https://github.com/jeremyc2/effect2d](https://github.com/jeremyc2/effect2d)
+
 > Public Collision API.
 
 ## CollisionWorld

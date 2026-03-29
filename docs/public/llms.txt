@@ -1,5 +1,9 @@
 # Effect2d
 
+**Version:** 0.0.1
+
+**Repository:** [https://github.com/jeremyc2/effect2d](https://github.com/jeremyc2/effect2d)
+
 > Build games with clear systems and room to grow.
 
 This file is a Markdown index for LLM-friendly engine docs generated from the same public JSDoc comments as the HTML API reference.
@@ -8,7 +12,7 @@ Use it for progressive disclosure: start with the overview or a module file, the
 ## Core Docs
 
 - [Overview](./llms/overview.md): Package overview, goals, quick-start guidance, and engine fit.
-- [Full Context](./llms-full.txt): One-file Markdown expansion of the full public API for direct ingestion (68 KB).
+- [Full Context](./llms-full.txt): One-file Markdown expansion of the full public API for direct ingestion (69 KB).
 
 ## Modules
 

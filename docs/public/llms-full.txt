@@ -1,10 +1,18 @@
 # Effect2d Full Context
 
+**Version:** 0.0.1
+
+**Repository:** [https://github.com/jeremyc2/effect2d](https://github.com/jeremyc2/effect2d)
+
 > Build games with clear systems and room to grow.
 
 This file expands the package overview and every generated module markdown file into one Markdown context.
 
 # Effect2d Overview
+
+**Version:** 0.0.1
+
+**Repository:** [https://github.com/jeremyc2/effect2d](https://github.com/jeremyc2/effect2d)
 
 > Build games with clear systems and room to grow.
 
@@ -157,6 +165,8 @@ games/my-game/
  native desktop window.
 
 # Animation
+
+**Version:** 0.0.1 · **Repository:** [https://github.com/jeremyc2/effect2d](https://github.com/jeremyc2/effect2d)
 
 > Public Animation API.
 
@@ -373,6 +383,8 @@ Advances a 2D tween by `deltaSeconds`.
 
 # Audio
 
+**Version:** 0.0.1 · **Repository:** [https://github.com/jeremyc2/effect2d](https://github.com/jeremyc2/effect2d)
+
 > Public Audio API.
 
 ## Audio
@@ -513,6 +525,8 @@ backends.
 - `stopSound: ( playbackId: string, ) => Effect.Effect<void, UnknownSoundPlaybackError>`
 
 # Collision
+
+**Version:** 0.0.1 · **Repository:** [https://github.com/jeremyc2/effect2d](https://github.com/jeremyc2/effect2d)
 
 > Public Collision API.
 
@@ -660,6 +674,8 @@ testable rather than delegated to a heavyweight physics engine.
 
 # Cutscene
 
+**Version:** 0.0.1 · **Repository:** [https://github.com/jeremyc2/effect2d](https://github.com/jeremyc2/effect2d)
+
 > Public Cutscene API.
 
 ## Cutscene
@@ -715,6 +731,8 @@ programs.
 - `waitSteps: ( steps: number, ) => Effect.Effect<void, InvalidSequenceWaitError>`
 
 # Debug
+
+**Version:** 0.0.1 · **Repository:** [https://github.com/jeremyc2/effect2d](https://github.com/jeremyc2/effect2d)
 
 > Public Debug API.
 
@@ -984,6 +1002,8 @@ yield* tracker.setLoaded("title-screen");
 - `setLoaded: ( id: string, details?: string, ) => Effect.Effect<void, UnknownTrackedResourceError>`
 
 # Graphics
+
+**Version:** 0.0.1 · **Repository:** [https://github.com/jeremyc2/effect2d](https://github.com/jeremyc2/effect2d)
 
 > Public Graphics API.
 
@@ -1309,6 +1329,8 @@ testable log of rendering intent:
 
 # Input
 
+**Version:** 0.0.1 · **Repository:** [https://github.com/jeremyc2/effect2d](https://github.com/jeremyc2/effect2d)
+
 > Public Input API.
 
 ## Input
@@ -1465,6 +1487,8 @@ tests and native boundaries drive input deterministically.
 - `snapshot: Effect.Effect<InputSnapshot>`
 
 # Maps
+
+**Version:** 0.0.1 · **Repository:** [https://github.com/jeremyc2/effect2d](https://github.com/jeremyc2/effect2d)
 
 > Public Maps API.
 
@@ -1674,6 +1698,8 @@ Identity helper for room metadata when you want inline authored objects to stay 
 
 # Native
 
+**Version:** 0.0.1 · **Repository:** [https://github.com/jeremyc2/effect2d](https://github.com/jeremyc2/effect2d)
+
 > Public Native API.
 
 ## NativeBackend
@@ -1792,6 +1818,8 @@ Builds a ready-to-use native playable boundary backed by a Skia window and
 renderer.
 
 # Runtime
+
+**Version:** 0.0.1 · **Repository:** [https://github.com/jeremyc2/effect2d](https://github.com/jeremyc2/effect2d)
 
 > Public Runtime API.
 
@@ -2018,6 +2046,8 @@ giving tools a simple place to read current timing state.
 
 # Save
 
+**Version:** 0.0.1 · **Repository:** [https://github.com/jeremyc2/effect2d](https://github.com/jeremyc2/effect2d)
+
 > Public Save API.
 
 ## SaveCoordinator
@@ -2189,6 +2219,8 @@ Indicates that a migration failed while moving a document between versions.
 Indicates that a migration produced a document version other than the expected target.
 
 # Scene
+
+**Version:** 0.0.1 · **Repository:** [https://github.com/jeremyc2/effect2d](https://github.com/jeremyc2/effect2d)
 
 > Public Scene API.
 
@@ -2375,6 +2407,8 @@ diagnostics.
 
 # Sequence
 
+**Version:** 0.0.1 · **Repository:** [https://github.com/jeremyc2/effect2d](https://github.com/jeremyc2/effect2d)
+
 > Public Sequence API.
 
 ## Sequence
@@ -2444,6 +2478,8 @@ this is usually the service you compose with.
 - `waitSteps: ( steps: number, ) => Effect.Effect<void, InvalidSequenceWaitError>`
 
 # UI
+
+**Version:** 0.0.1 · **Repository:** [https://github.com/jeremyc2/effect2d](https://github.com/jeremyc2/effect2d)
 
 > Public UI API.
 
