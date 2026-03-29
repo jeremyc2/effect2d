@@ -197,19 +197,19 @@ By default sessions land under `.effect2d/otel/<game-id>/...`. Each session dire
 Run the game in one terminal:
 
 ```bash
-bun run run:beacon-run
+bun run:beacon-run
 ```
 
 Store commentary in another terminal. `live` creates the session immediately, prints the file paths, then keeps recording each line you enter:
 
 ```bash
-bun run commentary live --game Effect2d/beacon-run
+bun commentary live --game Effect2d/beacon-run
 ```
 
 Or append one note at a time:
 
 ```bash
-bun run commentary append --game Effect2d/beacon-run "Room transition felt late after lighting the beacon."
+bun commentary append --game Effect2d/beacon-run "Room transition felt late after lighting the beacon."
 ```
 
 If you want to force a specific session directory, either pass `--session-dir <path>` or set `EFFECT2D_OTEL_SESSION_DIR=<path>` before launching the game.
