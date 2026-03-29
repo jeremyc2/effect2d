@@ -1678,16 +1678,6 @@
 										</div>
 									
 										<div class="nav-file">
-											<a class="nav-file-title" href="#native-nativeboundary-ts">NativeBoundary</a>
-											
-											<a class="nav-entry" href="#native-nativeboundary">
-												<span>NativeBoundary</span>
-												<small class="nav-kind nav-kind-service">service</small>
-											</a>
-										
-										</div>
-									
-										<div class="nav-file">
 											<a class="nav-file-title" href="#native-nativeframesource-ts">NativeFrameSource</a>
 											
 											<a class="nav-entry" href="#native-nativeframesource">
@@ -2160,8 +2150,8 @@ easier to keep growing.</p>
 <a href="#save-savecoordinator">SaveCoordinator</a></li>
 <li>Supporting data models such as room content, save documents, camera state,
 input bindings, and audio cue definitions</li>
-<li>Native integration points such as <a href="#native-nativeboundary">NativeBoundary</a> and
-<a href="#native-makeskianativeboundarylayer">makeSkiaNativeBoundaryLayer</a> for playable desktop builds</li>
+<li>Native integration points such as <a href="#native-makeskianativeboundarylayer">makeSkiaNativeBoundaryLayer</a> for
+playable desktop builds</li>
 </ul>
 <h2 id="if-you-know-effect-you-already-know-a-lot">If you know Effect, you already know a lot</h2>
 <p>If you already think in terms of <code>Effect</code>, <code>Layer</code>, services, scopes, and
@@ -3855,7 +3845,7 @@ yield* logger.info(&quot;Loaded room&quot;, { roomId: &quot;cavern-entrance&quot
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-function">function</span>
-										<a class="doc-source" href="#debug-creategameplaytelemetrysessiondescriptor">src/debug/GameplayTelemetry.ts:285</a>
+										<a class="doc-source" href="#debug-creategameplaytelemetrysessiondescriptor">src/debug/GameplayTelemetry.ts:292</a>
 									</div>
 									<h4>createGameplayTelemetrySessionDescriptor</h4>
 									<div class="prose"><p>Creates or reuses a gameplay telemetry session directory and manifest.</p>
@@ -3869,7 +3859,7 @@ yield* logger.info(&quot;Loaded room&quot;, { roomId: &quot;cavern-entrance&quot
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-function">function</span>
-										<a class="doc-source" href="#debug-resolvegameplaytelemetrysessiondescriptorfromdirectory">src/debug/GameplayTelemetry.ts:347</a>
+										<a class="doc-source" href="#debug-resolvegameplaytelemetrysessiondescriptorfromdirectory">src/debug/GameplayTelemetry.ts:354</a>
 									</div>
 									<h4>resolveGameplayTelemetrySessionDescriptorFromDirectory</h4>
 									<div class="prose"><p>Reads one telemetry session manifest from a known session directory.</p>
@@ -3883,7 +3873,7 @@ yield* logger.info(&quot;Loaded room&quot;, { roomId: &quot;cavern-entrance&quot
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-function">function</span>
-										<a class="doc-source" href="#debug-resolvelatestgameplaytelemetrysessiondescriptor">src/debug/GameplayTelemetry.ts:376</a>
+										<a class="doc-source" href="#debug-resolvelatestgameplaytelemetrysessiondescriptor">src/debug/GameplayTelemetry.ts:383</a>
 									</div>
 									<h4>resolveLatestGameplayTelemetrySessionDescriptor</h4>
 									<div class="prose"><p>Resolves the most recent telemetry session for the provided game id.</p>
@@ -3897,7 +3887,7 @@ yield* logger.info(&quot;Loaded room&quot;, { roomId: &quot;cavern-entrance&quot
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-function">function</span>
-										<a class="doc-source" href="#debug-appendgameplaycommentaryentry">src/debug/GameplayTelemetry.ts:423</a>
+										<a class="doc-source" href="#debug-appendgameplaycommentaryentry">src/debug/GameplayTelemetry.ts:430</a>
 									</div>
 									<h4>appendGameplayCommentaryEntry</h4>
 									<div class="prose"><p>Appends one timestamped gameplay commentary entry to the active session.</p>
@@ -5642,10 +5632,10 @@ that need to inspect renderer, audio, timing, and window state together.</p>
 										<a class="doc-source" href="#native-nativebackend">src/native/NativeBackend.ts:63</a>
 									</div>
 									<h4>NativeBackend</h4>
-									<div class="prose"><p>Low-level native runtime adapter used by <a href="#native-nativeboundary">NativeBoundary</a>.</p>
+									<div class="prose"><p>Low-level native runtime adapter used by the internal native boundary.</p>
 <p>Most games do not implement or consume <code>NativeBackend</code> directly. Instead
 they use a helper such as <a href="#native-makeskianativeboundarylayer">makeSkiaNativeBoundaryLayer</a>, which wires a
-concrete backend into <a href="#native-nativeboundary">NativeBoundary</a>. This service exists so the
+concrete backend into the internal native boundary. This service exists so the
 engine can separate authored frame production from platform-specific window,
 input, rendering, and audio work.</p>
 </div>
@@ -5708,73 +5698,6 @@ input, rendering, and audio work.</p>
 										<strong>waitForNextFrame</strong>
 									</div>
 									<code>waitForNextFrame: Effect.Effect&lt;void, EngineLaunchError&gt;</code>
-								</div>
-							
-				</div>
-			</section>
-		
-								</article>
-							
-								</div>
-							</section>
-						
-							<section class="file-group" id="native-nativeboundary-ts">
-								<header class="file-group-header">
-									<p class="file-path">src/native/NativeBoundary.ts</p>
-									<h3>NativeBoundary</h3>
-								</header>
-								<div class="file-group-entries">
-									
-								<article
-									class="doc-entry"
-									id="native-nativeboundary"
-								>
-									<div class="doc-entry-meta">
-										<span class="doc-kind doc-kind-service">service</span>
-										<a class="doc-source" href="#native-nativeboundary">src/native/NativeBoundary.ts:12</a>
-									</div>
-									<h4>NativeBoundary</h4>
-									<div class="prose"><p>The playable bridge between authored game services and a concrete native
-runtime.</p>
-<p><code>NativeBoundary</code> owns the real-time launch loop for a native build. It is
-responsible for:</p>
-<ul>
-<li>opening the native backend</li>
-<li>collecting native input events and applying them to <a href="#input-input">Input</a></li>
-<li>asking the active <a href="#native-nativeframesource">NativeFrameSource</a> for the next frame</li>
-<li>synchronizing authored audio state with the backend</li>
-<li>presenting frames and waiting for the next step</li>
-</ul>
-<p>Most application code does not implement this service directly. Instead it
-uses helpers such as <a href="#native-makeskianativeboundarylayer">makeSkiaNativeBoundaryLayer</a>.</p>
-</div>
-									
-			<section class="service-members">
-				<h5>Methods</h5>
-				<div class="service-member-list">
-					
-								<div class="service-member">
-									<div class="service-member-meta">
-										<span class="doc-kind doc-kind-method">method</span>
-										<strong>diagnostics</strong>
-									</div>
-									<code>diagnostics: Effect.Effect&lt;NativeBackendDiagnostics&gt;</code>
-								</div>
-							
-								<div class="service-member">
-									<div class="service-member-meta">
-										<span class="doc-kind doc-kind-method">method</span>
-										<strong>initialize</strong>
-									</div>
-									<code>initialize: ( gameId: string, ) =&gt; Effect.Effect&lt;void, EngineLaunchError&gt;</code>
-								</div>
-							
-								<div class="service-member">
-									<div class="service-member-meta">
-										<span class="doc-kind doc-kind-method">method</span>
-										<strong>shutdown</strong>
-									</div>
-									<code>shutdown: Effect.Effect&lt;void&gt;</code>
 								</div>
 							
 				</div>
@@ -5870,10 +5793,10 @@ authored image and font asset paths here.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-function">function</span>
-										<a class="doc-source" href="#native-makeskianativeboundarylayer">src/native/SkiaNativeBackend.ts:1360</a>
+										<a class="doc-source" href="#native-makeskianativeboundarylayer">src/native/SkiaNativeBackend.ts:1369</a>
 									</div>
 									<h4>makeSkiaNativeBoundaryLayer</h4>
-									<div class="prose"><p>Builds a ready-to-use <a href="#native-nativeboundary">NativeBoundary</a> backed by a Skia window and
+									<div class="prose"><p>Builds a ready-to-use native playable boundary backed by a Skia window and
 renderer.</p>
 </div>
 									
@@ -5912,7 +5835,7 @@ then call <code>engine.launch()</code> or use <a href="#runtime-engineprogram">e
 <p>This service intentionally stays narrow:</p>
 <ul>
 <li><code>config</code> exposes the validated engine configuration</li>
-<li><code>launch()</code> delegates to the active <a href="#native-nativeboundary">NativeBoundary</a></li>
+<li><code>launch()</code> delegates to the active native runtime boundary</li>
 </ul>
 <p>Everything else that feels &quot;game-like&quot; lives in sibling services such as
 <a href="#graphics-graphics">Graphics</a>, <a href="#input-input">Input</a>, <a href="#audio-audio">Audio</a>, <a href="#scene-scenedirector">SceneDirector</a>, and

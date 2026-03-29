@@ -169,7 +169,14 @@ export class GameplayTelemetrySession extends ServiceMap.Service<
 		Layer.effect(
 			GameplayTelemetrySession,
 			Effect.acquireRelease(
-				createGameplayTelemetrySessionRuntime(options).pipe(Effect.orDie),
+				createGameplayTelemetrySessionRuntime(options).pipe(
+					Effect.tap((runtime) =>
+						Effect.sync(() => {
+							emitGameplayTelemetrySessionStarted(runtime);
+						}),
+					),
+					Effect.orDie,
+				),
 				(runtime) =>
 					Effect.gen(function* () {
 						yield* shutdownGameplayTelemetryWriter(runtime.logsWriter).pipe(
@@ -746,6 +753,8 @@ function makeGameplayTelemetryLogger(session: {
 }
 
 const otelCumulativeAggregationTemporality = 2;
+const telemetrySessionDurationMetricName =
+	"effect2d.telemetry_session_duration_ms";
 
 function flushGameplayTelemetryMetrics(
 	session: {
@@ -763,10 +772,6 @@ function flushGameplayTelemetryMetrics(
 	const snapshots = Metric.snapshotUnsafe(services).filter((snapshot) =>
 		isGameplayMetricId(snapshot.id),
 	);
-	if (snapshots.length === 0) {
-		return;
-	}
-
 	const exportedAt = DateTime.nowUnsafe();
 	const exportedAtIso = DateTime.formatIso(exportedAt);
 	const timeUnixNano = String(
@@ -877,9 +882,15 @@ function flushGameplayTelemetryMetrics(
 		metricsByName.set(snapshot.id, existingMetric);
 	}
 
-	if (metricsByName.size === 0) {
-		return;
-	}
+	metricsByName.set(
+		telemetrySessionDurationMetricName,
+		makeTelemetrySessionDurationMetric({
+			exportedAt,
+			exportedAtIso,
+			session,
+			timeUnixNano,
+		}),
+	);
 
 	const metricsData: MetricsData = {
 		resourceMetrics: [
@@ -895,6 +906,131 @@ function flushGameplayTelemetryMetrics(
 		],
 	};
 	session.writeMetrics(metricsData);
+}
+
+function emitGameplayTelemetrySessionStarted(session: {
+	readonly descriptor: GameplayTelemetrySessionDescriptor;
+	readonly resource: ReturnType<typeof OtlpResource.make>;
+	readonly scope: {
+		readonly name: string;
+		readonly version?: string;
+	};
+	readonly writeLogs: (data: LogsData) => void;
+	readonly writeTraces: (data: TraceData) => void;
+}): void {
+	const startedAtNanos =
+		BigInt(
+			DateTime.toEpochMillis(
+				DateTime.makeUnsafe(session.descriptor.startedAtIso),
+			),
+		) * 1_000_000n;
+	const exportedAt = DateTime.nowUnsafe();
+	const exportedAtIso = DateTime.formatIso(exportedAt);
+	const exportedAtNanos =
+		BigInt(DateTime.toEpochMillis(exportedAt)) * 1_000_000n;
+	const startupAttributes = OtlpResource.entriesToAttributes([
+		["effect2d.session.id", session.descriptor.sessionId],
+		["effect2d.telemetry.event", "session-start"],
+		["effect2d.time_iso", exportedAtIso],
+	]);
+
+	session.writeLogs({
+		resourceLogs: [
+			{
+				resource: session.resource,
+				scopeLogs: [
+					{
+						scope: session.scope,
+						logRecords: [
+							{
+								attributes: startupAttributes,
+								body: {
+									stringValue: `Gameplay telemetry session started for ${session.descriptor.gameId}.`,
+								},
+								droppedAttributesCount: 0,
+								observedTimeUnixNano: String(exportedAtNanos),
+								severityNumber: severityNumberByLevel.Info,
+								severityText: "Info",
+								timeUnixNano: String(exportedAtNanos),
+							},
+						],
+					},
+				],
+			},
+		],
+	});
+
+	session.writeTraces({
+		resourceSpans: [
+			{
+				resource: session.resource,
+				scopeSpans: [
+					{
+						scope: session.scope,
+						spans: [
+							{
+								attributes: startupAttributes,
+								droppedAttributesCount: 0,
+								droppedEventsCount: 0,
+								droppedLinksCount: 0,
+								endTimeUnixNano: String(exportedAtNanos),
+								events: [],
+								kind: spanKindToOtelKind.internal,
+								links: [],
+								name: "GameplayTelemetry.session-start",
+								parentSpanId: undefined,
+								spanId: generateTelemetryId(16),
+								startTimeUnixNano: String(startedAtNanos),
+								status: { code: 1 },
+								traceId: generateTelemetryId(32),
+							},
+						],
+					},
+				],
+			},
+		],
+	});
+}
+
+function makeTelemetrySessionDurationMetric(options: {
+	readonly exportedAt: DateTime.DateTime;
+	readonly exportedAtIso: string;
+	readonly session: {
+		readonly descriptor: GameplayTelemetrySessionDescriptor;
+		readonly metricsStartTimeUnixNano: string;
+	};
+	readonly timeUnixNano: string;
+}): ExportedMetric {
+	return {
+		description:
+			"Elapsed gameplay telemetry session duration in milliseconds exported as a heartbeat gauge.",
+		gauge: {
+			dataPoints: [
+				{
+					attributes: OtlpResource.entriesToAttributes(
+						Object.entries({
+							"effect2d.start_time_iso":
+								options.session.descriptor.startedAtIso,
+							"effect2d.telemetry.metric_kind": "heartbeat",
+							"effect2d.time_iso": options.exportedAtIso,
+							unit: "ms",
+						}),
+					),
+					asDouble: Math.max(
+						0,
+						DateTime.toEpochMillis(options.exportedAt) -
+							DateTime.toEpochMillis(
+								DateTime.makeUnsafe(options.session.descriptor.startedAtIso),
+							),
+					),
+					startTimeUnixNano: options.session.metricsStartTimeUnixNano,
+					timeUnixNano: options.timeUnixNano,
+				},
+			],
+		},
+		name: telemetrySessionDurationMetricName,
+		unit: "ms",
+	};
 }
 
 function makeGameplayTelemetryTracer(session: {

@@ -33,8 +33,8 @@ easier to keep growing.
  [SaveCoordinator](./llms/save.md#save-savecoordinator)
 - Supporting data models such as room content, save documents, camera state,
  input bindings, and audio cue definitions
-- Native integration points such as [NativeBoundary](./llms/native.md#native-nativeboundary) and
- [makeSkiaNativeBoundaryLayer](./llms/native.md#native-makeskianativeboundarylayer) for playable desktop builds
+- Native integration points such as [makeSkiaNativeBoundaryLayer](./llms/native.md#native-makeskianativeboundarylayer) for
+ playable desktop builds
 
 ## If you know Effect, you already know a lot
 

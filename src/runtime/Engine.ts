@@ -19,7 +19,7 @@ import {
  * This service intentionally stays narrow:
  *
  * - `config` exposes the validated engine configuration
- * - `launch()` delegates to the active {@link NativeBoundary}
+ * - `launch()` delegates to the active native runtime boundary
  *
  * Everything else that feels "game-like" lives in sibling services such as
  * {@link Graphics}, {@link Input}, {@link Audio}, {@link SceneDirector}, and

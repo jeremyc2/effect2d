@@ -11,7 +11,6 @@ import {
 	Input,
 	MapRepository,
 	makeRuntimeLayer,
-	NativeBoundary,
 	ResourceTracker,
 	SceneDirector,
 	SceneRegistry,
@@ -19,6 +18,7 @@ import {
 	SequenceEvents,
 	UI,
 } from "../../../src/index.ts";
+import { NativeBoundary } from "../../../src/native/NativeBoundary.ts";
 import { starterRooms } from "./content/StarterRooms.ts";
 import { StarterCoordinator } from "./directors/StarterCoordinator.ts";
 import { StarterGameplayDirector } from "./directors/StarterGameplayDirector.ts";

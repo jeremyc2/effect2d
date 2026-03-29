@@ -158,28 +158,28 @@ Local OTEL-backed telemetry services for playable sessions and sample games.
 ### createGameplayTelemetrySessionDescriptor
 
 - Kind: function
-- Source: `src/debug/GameplayTelemetry.ts:285`
+- Source: `src/debug/GameplayTelemetry.ts:292`
 
 Creates or reuses a gameplay telemetry session directory and manifest.
 
 ### resolveGameplayTelemetrySessionDescriptorFromDirectory
 
 - Kind: function
-- Source: `src/debug/GameplayTelemetry.ts:347`
+- Source: `src/debug/GameplayTelemetry.ts:354`
 
 Reads one telemetry session manifest from a known session directory.
 
 ### resolveLatestGameplayTelemetrySessionDescriptor
 
 - Kind: function
-- Source: `src/debug/GameplayTelemetry.ts:376`
+- Source: `src/debug/GameplayTelemetry.ts:383`
 
 Resolves the most recent telemetry session for the provided game id.
 
 ### appendGameplayCommentaryEntry
 
 - Kind: function
-- Source: `src/debug/GameplayTelemetry.ts:423`
+- Source: `src/debug/GameplayTelemetry.ts:430`
 
 Appends one timestamped gameplay commentary entry to the active session.
 

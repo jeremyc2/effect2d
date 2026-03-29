@@ -508,8 +508,11 @@ describe("GameplayTelemetry", () => {
 						logRecords[0]?.resourceLogs[0]?.scopeLogs[0]?.logRecords[0]
 							?.attributes;
 					assertDefined(firstLogAttributes);
-					const firstTrace =
-						traceRecords[0]?.resourceSpans[0]?.scopeSpans[0]?.spans[0];
+					const exportedTraces = traceRecords.flatMap(
+						(traceBatch) =>
+							traceBatch.resourceSpans[0]?.scopeSpans[0]?.spans ?? [],
+					);
+					const firstTrace = exportedTraces[0];
 					assertDefined(firstTrace);
 					const exportedMetrics = metricRecords.flatMap(
 						(metricBatch) =>
@@ -529,8 +532,10 @@ describe("GameplayTelemetry", () => {
 						),
 					).toBeTrue();
 					expect(
-						firstTrace.attributes.some(
-							(attribute) => attribute.key === "effect2d.start_time_iso",
+						exportedTraces.some((trace) =>
+							trace.attributes.some(
+								(attribute) => attribute.key === "effect2d.start_time_iso",
+							),
 						),
 					).toBeTrue();
 					expect(
@@ -619,8 +624,13 @@ describe("GameplayTelemetry", () => {
 					const logRecords = yield* readTelemetryLogBatches(
 						resolvedDescriptor.logsFilePath,
 					);
-					const forwardedRecord =
-						logRecords[0]?.resourceLogs[0]?.scopeLogs[0]?.logRecords[0];
+					const exportedLogRecords = logRecords.flatMap(
+						(logBatch) =>
+							logBatch.resourceLogs[0]?.scopeLogs[0]?.logRecords ?? [],
+					);
+					const forwardedRecord = exportedLogRecords.find((record) =>
+						record.body.stringValue?.includes("Overlay-visible log entry."),
+					);
 					assertDefined(forwardedRecord);
 
 					expect(forwardedRecord.body.stringValue).toContain(

@@ -11,7 +11,6 @@ import {
 	MapRepository,
 	makeRuntimeLayer,
 	makeSkiaNativeBoundaryLayer,
-	NativeBoundary,
 	ResourceTracker,
 	SceneDirector,
 	SceneRegistry,
@@ -19,6 +18,7 @@ import {
 	SequenceEvents,
 	UI,
 } from "../../../src/index.ts";
+import { NativeBoundary } from "../../../src/native/NativeBoundary.ts";
 import { beaconRunRooms } from "./content/BeaconRunRooms.ts";
 import { BeaconRunCoordinator } from "./directors/BeaconRunCoordinator.ts";
 import { BeaconRunGameplayDirector } from "./directors/BeaconRunGameplayDirector.ts";
@@ -296,7 +296,7 @@ export const beaconRunProgram = Effect.gen(function* () {
 });
 
 export const playableBeaconRunProgram = Effect.gen(function* () {
-	const nativeBoundary = yield* NativeBoundary;
+	const engine = yield* Engine;
 	yield* beaconRunBootstrap;
-	yield* nativeBoundary.initialize(beaconRunConfig.gameId);
+	yield* engine.launch();
 });

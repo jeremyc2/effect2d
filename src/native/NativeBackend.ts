@@ -61,13 +61,13 @@ export interface NativeBackendDiagnostics {
 }
 
 /**
- * Low-level native runtime adapter used by {@link NativeBoundary}.
+ * Low-level native runtime adapter used by the internal native boundary.
  *
  * @public
  *
  * Most games do not implement or consume `NativeBackend` directly. Instead
  * they use a helper such as {@link makeSkiaNativeBoundaryLayer}, which wires a
- * concrete backend into {@link NativeBoundary}. This service exists so the
+ * concrete backend into the internal native boundary. This service exists so the
  * engine can separate authored frame production from platform-specific window,
  * input, rendering, and audio work.
  */

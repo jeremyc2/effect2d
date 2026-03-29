@@ -21,7 +21,7 @@ then call `engine.launch()` or use [engineProgram](./llms/runtime.md#runtime-eng
 This service intentionally stays narrow:
 
 - `config` exposes the validated engine configuration
-- `launch()` delegates to the active [NativeBoundary](./llms/native.md#native-nativeboundary)
+- `launch()` delegates to the active native runtime boundary
 
 Everything else that feels "game-like" lives in sibling services such as
 [Graphics](./llms/graphics.md#graphics-graphics), [Input](./llms/input.md#input-input), [Audio](./llms/audio.md#audio-audio), [SceneDirector](./llms/scene.md#scene-scenedirector), and

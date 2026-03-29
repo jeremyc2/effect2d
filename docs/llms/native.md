@@ -49,13 +49,13 @@ that need to inspect renderer, audio, timing, and window state together.
 - Kind: service
 - Source: `src/native/NativeBackend.ts:63`
 
-Low-level native runtime adapter used by [NativeBoundary](./llms/native.md#native-nativeboundary).
+Low-level native runtime adapter used by the internal native boundary.
 
 
 
 Most games do not implement or consume `NativeBackend` directly. Instead
 they use a helper such as [makeSkiaNativeBoundaryLayer](./llms/native.md#native-makeskianativeboundarylayer), which wires a
-concrete backend into [NativeBoundary](./llms/native.md#native-nativeboundary). This service exists so the
+concrete backend into the internal native boundary. This service exists so the
 engine can separate authored frame production from platform-specific window,
 input, rendering, and audio work.
 
@@ -68,36 +68,6 @@ input, rendering, and audio work.
 - `presentFrame: ( frame: FrameSnapshot, ) => Effect.Effect<void, EngineLaunchError>`
 - `syncAudio: ( snapshot: AudioSnapshot, ) => Effect.Effect<ReadonlyArray<string>, EngineLaunchError>`
 - `waitForNextFrame: Effect.Effect<void, EngineLaunchError>`
-
-## NativeBoundary
-
-### NativeBoundary
-
-- Kind: service
-- Source: `src/native/NativeBoundary.ts:12`
-
-The playable bridge between authored game services and a concrete native
-runtime.
-
-
-
-`NativeBoundary` owns the real-time launch loop for a native build. It is
-responsible for:
-
-- opening the native backend
-- collecting native input events and applying them to [Input](./llms/input.md#input-input)
-- asking the active [NativeFrameSource](./llms/native.md#native-nativeframesource) for the next frame
-- synchronizing authored audio state with the backend
-- presenting frames and waiting for the next step
-
-Most application code does not implement this service directly. Instead it
-uses helpers such as [makeSkiaNativeBoundaryLayer](./llms/native.md#native-makeskianativeboundarylayer).
-
-#### Methods
-
-- `diagnostics: Effect.Effect<NativeBackendDiagnostics>`
-- `initialize: ( gameId: string, ) => Effect.Effect<void, EngineLaunchError>`
-- `shutdown: Effect.Effect<void>`
 
 ## NativeFrameSource
 
@@ -142,7 +112,7 @@ Builds the Skia implementation of [NativeBackend](./llms/native.md#native-native
 ### makeSkiaNativeBoundaryLayer
 
 - Kind: function
-- Source: `src/native/SkiaNativeBackend.ts:1360`
+- Source: `src/native/SkiaNativeBackend.ts:1369`
 
-Builds a ready-to-use [NativeBoundary](./llms/native.md#native-nativeboundary) backed by a Skia window and
+Builds a ready-to-use native playable boundary backed by a Skia window and
 renderer.

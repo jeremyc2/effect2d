@@ -13,8 +13,6 @@ import { NativeFrameSource } from "./NativeFrameSource.ts";
  * The playable bridge between authored game services and a concrete native
  * runtime.
  *
- * @public
- *
  * `NativeBoundary` owns the real-time launch loop for a native build. It is
  * responsible for:
  *

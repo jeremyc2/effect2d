@@ -8,12 +8,12 @@ import {
 	Input,
 	makeRuntimeLayer,
 	makeSkiaNativeBoundaryLayer,
-	NativeBoundary,
 	ResourceTracker,
 	SceneCamera,
 	SceneDirector,
 	SceneRegistry,
 } from "../../../src/index.ts";
+import { NativeBoundary } from "../../../src/native/NativeBoundary.ts";
 import { CavernGameplayDirector } from "./directors/CavernGameplayDirector.ts";
 import { CavernPresentationDirector } from "./directors/CavernPresentationDirector.ts";
 import { cavernBindings } from "./input/CavernBindings.ts";
@@ -206,7 +206,7 @@ export const cavernProgram = Effect.gen(function* () {
 });
 
 export const playableCavernProgram = Effect.gen(function* () {
-	const nativeBoundary = yield* NativeBoundary;
+	const engine = yield* Engine;
 	yield* cavernBootstrap;
-	yield* nativeBoundary.initialize(cavernConfig.gameId);
+	yield* engine.launch();
 });

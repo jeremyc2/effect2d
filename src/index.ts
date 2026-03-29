@@ -30,8 +30,8 @@
  *   {@link SaveCoordinator}
  * - Supporting data models such as room content, save documents, camera state,
  *   input bindings, and audio cue definitions
- * - Native integration points such as {@link NativeBoundary} and
- *   {@link makeSkiaNativeBoundaryLayer} for playable desktop builds
+ * - Native integration points such as {@link makeSkiaNativeBoundaryLayer} for
+ *   playable desktop builds
  *
  * ## If you know Effect, you already know a lot
  *

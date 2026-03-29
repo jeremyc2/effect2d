@@ -1051,7 +1051,6 @@ export function makeSkiaNativeBackendLayer({
 					});
 
 					window.on("close", () => {
-						App.quit();
 						void runFork(
 							resetAudioRuntime().pipe(
 								Effect.andThen(markWindowClosed()),
@@ -1141,6 +1140,16 @@ export function makeSkiaNativeBackendLayer({
 					}
 
 					yield* markWindowClosed();
+					if (App.running) {
+						yield* Effect.try({
+							try: () => App.quit(),
+							catch: (cause) =>
+								new EngineLaunchError({
+									module: "native",
+									reason: `Failed to quit the Skia app loop: ${String(cause)}`,
+								}),
+						});
+					}
 				}).pipe(
 					Effect.catchCause((cause) =>
 						recordError(`Failed to close the native backend: ${String(cause)}`),
@@ -1358,7 +1367,7 @@ export function makeSkiaNativeBackendLayer({
 }
 
 /**
- * Builds a ready-to-use {@link NativeBoundary} backed by a Skia window and
+ * Builds a ready-to-use native playable boundary backed by a Skia window and
  * renderer.
  *
  * @public
