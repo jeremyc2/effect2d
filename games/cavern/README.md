@@ -1,13 +1,14 @@
 # Cavern
 
-`games/cavern` is the direct port track for the adjacent Lua `cavern` project.
+Inspired by the adjacent Lua `cavern` project (../../../cavern).
+
+For additional resources, copy/paste assets and get insiration from the original game.
 
 Current scope:
 
 - authentic Cavern native title/menu layout
 - Cavern fonts, menu music, and menu icons
-- first overworld shell with native player movement
-- engine-native desktop window at Cavern's authored resolution
+- Native player movement
 
 Run it with:
 
