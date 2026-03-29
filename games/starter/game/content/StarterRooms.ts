@@ -6,7 +6,7 @@ import {
 	defineRoomMetadata,
 	defineRoomObject,
 	defineTilePlane,
-} from "../../../src/maps/index.ts";
+} from "../../../../src/maps/index.ts";
 
 const overworldTerrainTiles = [
 	1, 1, 1, 1, 1, 1, 1, 2, 1, 0, 0, 0, 0, 0, 1, 2, 1, 0, 0, 0, 0, 0, 1, 2, 1, 0,

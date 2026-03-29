@@ -3736,7 +3736,7 @@ yield* logger.info(&quot;Loaded room&quot;, { roomId: &quot;cavern-entrance&quot
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#debug-gameplaytelemetrysessiondescriptor">src/debug/GameplayTelemetry.ts:59</a>
+										<a class="doc-source" href="#debug-gameplaytelemetrysessiondescriptor">src/debug/GameplayTelemetry.ts:77</a>
 									</div>
 									<h4>GameplayTelemetrySessionDescriptor</h4>
 									<div class="prose"><p>File locations and session metadata for one gameplay telemetry capture.</p>
@@ -3750,7 +3750,7 @@ yield* logger.info(&quot;Loaded room&quot;, { roomId: &quot;cavern-entrance&quot
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#debug-gameplaytelemetrylayeroptions">src/debug/GameplayTelemetry.ts:78</a>
+										<a class="doc-source" href="#debug-gameplaytelemetrylayeroptions">src/debug/GameplayTelemetry.ts:96</a>
 									</div>
 									<h4>GameplayTelemetryLayerOptions</h4>
 									<div class="prose"><p>Configuration for the engine gameplay telemetry session layer.</p>
@@ -3764,7 +3764,7 @@ yield* logger.info(&quot;Loaded room&quot;, { roomId: &quot;cavern-entrance&quot
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#debug-gameplaycommentaryentry">src/debug/GameplayTelemetry.ts:93</a>
+										<a class="doc-source" href="#debug-gameplaycommentaryentry">src/debug/GameplayTelemetry.ts:111</a>
 									</div>
 									<h4>GameplayCommentaryEntry</h4>
 									<div class="prose"><p>A single timestamped gameplay commentary entry written alongside telemetry data.</p>
@@ -3778,7 +3778,7 @@ yield* logger.info(&quot;Loaded room&quot;, { roomId: &quot;cavern-entrance&quot
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-service">service</span>
-										<a class="doc-source" href="#debug-gameplaytelemetrysession">src/debug/GameplayTelemetry.ts:130</a>
+										<a class="doc-source" href="#debug-gameplaytelemetrysession">src/debug/GameplayTelemetry.ts:148</a>
 									</div>
 									<h4>GameplayTelemetrySession</h4>
 									<div class="prose"><p>Local OTEL-backed telemetry services for playable sessions and sample games.</p>
@@ -3855,7 +3855,7 @@ yield* logger.info(&quot;Loaded room&quot;, { roomId: &quot;cavern-entrance&quot
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-function">function</span>
-										<a class="doc-source" href="#debug-creategameplaytelemetrysessiondescriptor">src/debug/GameplayTelemetry.ts:267</a>
+										<a class="doc-source" href="#debug-creategameplaytelemetrysessiondescriptor">src/debug/GameplayTelemetry.ts:285</a>
 									</div>
 									<h4>createGameplayTelemetrySessionDescriptor</h4>
 									<div class="prose"><p>Creates or reuses a gameplay telemetry session directory and manifest.</p>
@@ -3869,7 +3869,7 @@ yield* logger.info(&quot;Loaded room&quot;, { roomId: &quot;cavern-entrance&quot
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-function">function</span>
-										<a class="doc-source" href="#debug-resolvegameplaytelemetrysessiondescriptorfromdirectory">src/debug/GameplayTelemetry.ts:329</a>
+										<a class="doc-source" href="#debug-resolvegameplaytelemetrysessiondescriptorfromdirectory">src/debug/GameplayTelemetry.ts:347</a>
 									</div>
 									<h4>resolveGameplayTelemetrySessionDescriptorFromDirectory</h4>
 									<div class="prose"><p>Reads one telemetry session manifest from a known session directory.</p>
@@ -3883,7 +3883,7 @@ yield* logger.info(&quot;Loaded room&quot;, { roomId: &quot;cavern-entrance&quot
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-function">function</span>
-										<a class="doc-source" href="#debug-resolvelatestgameplaytelemetrysessiondescriptor">src/debug/GameplayTelemetry.ts:358</a>
+										<a class="doc-source" href="#debug-resolvelatestgameplaytelemetrysessiondescriptor">src/debug/GameplayTelemetry.ts:376</a>
 									</div>
 									<h4>resolveLatestGameplayTelemetrySessionDescriptor</h4>
 									<div class="prose"><p>Resolves the most recent telemetry session for the provided game id.</p>
@@ -3897,7 +3897,7 @@ yield* logger.info(&quot;Loaded room&quot;, { roomId: &quot;cavern-entrance&quot
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-function">function</span>
-										<a class="doc-source" href="#debug-appendgameplaycommentaryentry">src/debug/GameplayTelemetry.ts:405</a>
+										<a class="doc-source" href="#debug-appendgameplaycommentaryentry">src/debug/GameplayTelemetry.ts:423</a>
 									</div>
 									<h4>appendGameplayCommentaryEntry</h4>
 									<div class="prose"><p>Appends one timestamped gameplay commentary entry to the active session.</p>
@@ -5305,7 +5305,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-function">function</span>
-										<a class="doc-source" href="#maps-getroomobjects">src/maps/MapQueries.ts:8</a>
+										<a class="doc-source" href="#maps-getroomobjects">src/maps/MapQueries.ts:22</a>
 									</div>
 									<h4>getRoomObjects</h4>
 									<div class="prose"><p>Returns every authored object across all object planes in a room. Use this when plane boundaries do not matter to the query you are writing.</p>
@@ -5319,7 +5319,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-function">function</span>
-										<a class="doc-source" href="#maps-getroomobjectbyid">src/maps/MapQueries.ts:13</a>
+										<a class="doc-source" href="#maps-getroomobjectbyid">src/maps/MapQueries.ts:27</a>
 									</div>
 									<h4>getRoomObjectById</h4>
 									<div class="prose"><p>Finds one authored room object by id.</p>
@@ -5333,7 +5333,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-function">function</span>
-										<a class="doc-source" href="#maps-getroomobjectsbykind">src/maps/MapQueries.ts:21</a>
+										<a class="doc-source" href="#maps-getroomobjectsbykind">src/maps/MapQueries.ts:35</a>
 									</div>
 									<h4>getRoomObjectsByKind</h4>
 									<div class="prose"><p>Filters room objects by authored <code>kind</code>, which is useful for game-specific object families in addition to the built-in helpers below.</p>
@@ -5347,7 +5347,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-function">function</span>
-										<a class="doc-source" href="#maps-getroomspawnpoints">src/maps/MapQueries.ts:29</a>
+										<a class="doc-source" href="#maps-getroomspawnpoints">src/maps/MapQueries.ts:43</a>
 									</div>
 									<h4>getRoomSpawnPoints</h4>
 									<div class="prose"><p>Returns all authored spawn points in a room.</p>
@@ -5361,7 +5361,7 @@ value that can be validated, queried, serialized, and loaded into gameplay.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-function">function</span>
-										<a class="doc-source" href="#maps-getroomtransitionzones">src/maps/MapQueries.ts:36</a>
+										<a class="doc-source" href="#maps-getroomtransitionzones">src/maps/MapQueries.ts:50</a>
 									</div>
 									<h4>getRoomTransitionZones</h4>
 									<div class="prose"><p>Returns all authored transition zones in a room.</p>
@@ -5870,7 +5870,7 @@ authored image and font asset paths here.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-function">function</span>
-										<a class="doc-source" href="#native-makeskianativeboundarylayer">src/native/SkiaNativeBackend.ts:1346</a>
+										<a class="doc-source" href="#native-makeskianativeboundarylayer">src/native/SkiaNativeBackend.ts:1360</a>
 									</div>
 									<h4>makeSkiaNativeBoundaryLayer</h4>
 									<div class="prose"><p>Builds a ready-to-use <a href="#native-nativeboundary">NativeBoundary</a> backed by a Skia window and

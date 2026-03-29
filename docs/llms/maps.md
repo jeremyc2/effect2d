@@ -91,35 +91,35 @@ Indicates that room content could not be serialized or deserialized.
 ### getRoomObjects
 
 - Kind: function
-- Source: `src/maps/MapQueries.ts:8`
+- Source: `src/maps/MapQueries.ts:22`
 
 Returns every authored object across all object planes in a room. Use this when plane boundaries do not matter to the query you are writing.
 
 ### getRoomObjectById
 
 - Kind: function
-- Source: `src/maps/MapQueries.ts:13`
+- Source: `src/maps/MapQueries.ts:27`
 
 Finds one authored room object by id.
 
 ### getRoomObjectsByKind
 
 - Kind: function
-- Source: `src/maps/MapQueries.ts:21`
+- Source: `src/maps/MapQueries.ts:35`
 
 Filters room objects by authored `kind`, which is useful for game-specific object families in addition to the built-in helpers below.
 
 ### getRoomSpawnPoints
 
 - Kind: function
-- Source: `src/maps/MapQueries.ts:29`
+- Source: `src/maps/MapQueries.ts:43`
 
 Returns all authored spawn points in a room.
 
 ### getRoomTransitionZones
 
 - Kind: function
-- Source: `src/maps/MapQueries.ts:36`
+- Source: `src/maps/MapQueries.ts:50`
 
 Returns all authored transition zones in a room.
 

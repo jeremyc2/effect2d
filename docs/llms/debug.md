@@ -120,28 +120,28 @@ yield* logger.info("Loaded room", { roomId: "cavern-entrance" });
 ### GameplayTelemetrySessionDescriptor
 
 - Kind: interface
-- Source: `src/debug/GameplayTelemetry.ts:59`
+- Source: `src/debug/GameplayTelemetry.ts:77`
 
 File locations and session metadata for one gameplay telemetry capture.
 
 ### GameplayTelemetryLayerOptions
 
 - Kind: interface
-- Source: `src/debug/GameplayTelemetry.ts:78`
+- Source: `src/debug/GameplayTelemetry.ts:96`
 
 Configuration for the engine gameplay telemetry session layer.
 
 ### GameplayCommentaryEntry
 
 - Kind: interface
-- Source: `src/debug/GameplayTelemetry.ts:93`
+- Source: `src/debug/GameplayTelemetry.ts:111`
 
 A single timestamped gameplay commentary entry written alongside telemetry data.
 
 ### GameplayTelemetrySession
 
 - Kind: service
-- Source: `src/debug/GameplayTelemetry.ts:130`
+- Source: `src/debug/GameplayTelemetry.ts:148`
 
 Local OTEL-backed telemetry services for playable sessions and sample games.
 
@@ -158,28 +158,28 @@ Local OTEL-backed telemetry services for playable sessions and sample games.
 ### createGameplayTelemetrySessionDescriptor
 
 - Kind: function
-- Source: `src/debug/GameplayTelemetry.ts:267`
+- Source: `src/debug/GameplayTelemetry.ts:285`
 
 Creates or reuses a gameplay telemetry session directory and manifest.
 
 ### resolveGameplayTelemetrySessionDescriptorFromDirectory
 
 - Kind: function
-- Source: `src/debug/GameplayTelemetry.ts:329`
+- Source: `src/debug/GameplayTelemetry.ts:347`
 
 Reads one telemetry session manifest from a known session directory.
 
 ### resolveLatestGameplayTelemetrySessionDescriptor
 
 - Kind: function
-- Source: `src/debug/GameplayTelemetry.ts:358`
+- Source: `src/debug/GameplayTelemetry.ts:376`
 
 Resolves the most recent telemetry session for the provided game id.
 
 ### appendGameplayCommentaryEntry
 
 - Kind: function
-- Source: `src/debug/GameplayTelemetry.ts:405`
+- Source: `src/debug/GameplayTelemetry.ts:423`
 
 Appends one timestamped gameplay commentary entry to the active session.
 

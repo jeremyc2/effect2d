@@ -157,7 +157,7 @@ It is the working plan for the engine. When implementation pressure forces a piv
 
 ## Starter
 
-The canonical starter lives in [starter/README.md](./starter/README.md).
+The canonical starter lives in [games/starter/README.md](./games/starter/README.md).
 
 It shows the intended small-game architecture in code:
 
@@ -175,3 +175,49 @@ The package root export is intended for engine/runtime APIs. Repo-local testing 
 The first real small game pressure-test lives in [games/beacon-run/README.md](./games/beacon-run/README.md).
 
 It exists to prove that `Effect2d` can support a separate game-specific domain and composition root without sliding back into starter-specific assumptions.
+
+## Debugging With OTEL + Commentary
+
+Playable games write local OpenTelemetry data when you launch them through the repo run scripts:
+
+- `bun run:starter`
+- `bun run:beacon-run`
+- `bun run:cavern`
+
+By default sessions land under `.effect2d/otel/<game-id>/...`. Each session directory contains:
+
+- `session.json`
+- `commentary.ndjson`
+- `otel-logs.ndjson`
+- `otel-metrics.ndjson`
+- `otel-traces.ndjson`
+
+### Play + Narrate
+
+Run the game in one terminal:
+
+```bash
+bun run run:beacon-run
+```
+
+Store commentary in another terminal. `live` creates the session immediately, prints the file paths, then keeps recording each line you enter:
+
+```bash
+bun run commentary live --game Effect2d/beacon-run
+```
+
+Or append one note at a time:
+
+```bash
+bun run commentary append --game Effect2d/beacon-run "Room transition felt late after lighting the beacon."
+```
+
+If you want to force a specific session directory, either pass `--session-dir <path>` or set `EFFECT2D_OTEL_SESSION_DIR=<path>` before launching the game.
+
+The `live` command is for continuous narration while you play. `append` is good when you want short deliberate notes tied to exact moments, and it will reuse the latest session for that game unless you point it at a specific one.
+
+### Analyze After The Run
+
+When the run is over, keep the whole session directory. The commentary and OTEL files are meant to be read together: commentary says what the player felt, telemetry says what the engine did.
+
+Use the repo skill [$gameplay-telemetry-analysis](./.agents/skills/gameplay-telemetry-analysis/SKILL.md). Give the agent the finished session directory and ask it to use that skill to analyze the run.

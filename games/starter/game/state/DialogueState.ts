@@ -1,5 +1,5 @@
 import { Effect, Layer, Ref, ServiceMap } from "effect";
-import type { DialoguePage } from "../../../src/ui/UI.ts";
+import type { DialoguePage } from "../../../../src/ui/UI.ts";
 
 export interface ActiveDialogueSnapshot {
 	readonly dialogueId: string;
@@ -50,7 +50,7 @@ export class DialogueState extends ServiceMap.Service<
 		readonly restore: (snapshot: DialogueStateSnapshot) => Effect.Effect<void>;
 		readonly snapshot: Effect.Effect<DialogueStateSnapshot>;
 	}
->()("effect2d/starter/game/state/DialogueState") {
+>()("effect2d/games/starter/game/state/DialogueState") {
 	static readonly layer = Layer.effect(
 		DialogueState,
 		Effect.gen(function* () {

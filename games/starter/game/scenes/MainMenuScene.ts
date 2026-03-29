@@ -1,8 +1,8 @@
 import { Effect } from "effect";
-import type { SceneDefinition } from "../../../src/scene/Scene.ts";
+import type { SceneDefinition } from "../../../../src/scene/Scene.ts";
 
-export const OverworldScene: SceneDefinition = {
-	id: "overworld",
+export const MainMenuScene: SceneDefinition = {
+	id: "main-menu",
 	instantiate: Effect.succeed({
 		draw: () => Effect.void,
 		enter: () => Effect.void,

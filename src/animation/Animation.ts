@@ -17,7 +17,7 @@ import { Effect, Layer, Schema, ServiceMap } from "effect";
  * ```
  */
 export interface AnimationClip<Frame = number> {
-	readonly frames: ReadonlyArray<Frame>;
+	readonly frames: readonly [Frame, ...Array<Frame>];
 	readonly framesPerSecond: number;
 	readonly id: string;
 }
@@ -172,7 +172,7 @@ export function startAnimation<Frame>(
 export function getCurrentAnimationFrame<Frame>(
 	state: AnimationPlaybackState<Frame>,
 ): Frame {
-	return state.clip.frames[state.frameIndex] as Frame;
+	return state.clip.frames[state.frameIndex] ?? state.clip.frames[0];
 }
 
 /** Returns a copy of the state with playback halted at the current frame. @public */
@@ -451,20 +451,17 @@ export function createFlashTween(
 export class AnimationLibrary extends ServiceMap.Service<
 	AnimationLibrary,
 	{
-		readonly clip: <Frame = number>(
+		readonly clip: (
 			clipId: string,
-		) => Effect.Effect<AnimationClip<Frame>, AnimationClipNotFoundError>;
-		readonly start: <Frame = number>(
+		) => Effect.Effect<AnimationClip, AnimationClipNotFoundError>;
+		readonly start: (
 			clipId: string,
 			options?: {
 				readonly direction?: AnimationDirection;
 				readonly mode?: AnimationPlaybackMode;
 				readonly speed?: number;
 			},
-		) => Effect.Effect<
-			AnimationPlaybackState<Frame>,
-			AnimationClipNotFoundError
-		>;
+		) => Effect.Effect<AnimationPlaybackState, AnimationClipNotFoundError>;
 	}
 >()("effect2d/animation/Animation/AnimationLibrary") {
 	static readonly layer = (
@@ -473,20 +470,18 @@ export class AnimationLibrary extends ServiceMap.Service<
 		Layer.sync(AnimationLibrary, () => {
 			const clipsById = new Map(clips.map((clip) => [clip.id, clip]));
 
-			const clip = Effect.fn("AnimationLibrary.clip")(function* <
-				Frame = number,
-			>(clipId: string) {
+			const clip = Effect.fn("AnimationLibrary.clip")(function* (
+				clipId: string,
+			) {
 				const animationClip = clipsById.get(clipId);
 				if (animationClip === undefined) {
 					return yield* new AnimationClipNotFoundError({ clipId });
 				}
 
-				return animationClip as AnimationClip<Frame>;
+				return animationClip;
 			});
 
-			const start = Effect.fn("AnimationLibrary.start")(function* <
-				Frame = number,
-			>(
+			const start = Effect.fn("AnimationLibrary.start")(function* (
 				clipId: string,
 				options?: {
 					readonly direction?: AnimationDirection;
@@ -494,7 +489,7 @@ export class AnimationLibrary extends ServiceMap.Service<
 					readonly speed?: number;
 				},
 			) {
-				const animationClip = yield* clip<Frame>(clipId);
+				const animationClip = yield* clip(clipId);
 				return startAnimation(animationClip, options);
 			});
 

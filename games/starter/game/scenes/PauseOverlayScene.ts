@@ -1,5 +1,5 @@
 import { Effect } from "effect";
-import type { SceneDefinition } from "../../../src/scene/Scene.ts";
+import type { SceneDefinition } from "../../../../src/scene/Scene.ts";
 
 export const PauseOverlayScene: SceneDefinition = {
 	id: "pause-overlay",

@@ -56,6 +56,24 @@ const severityNumberByLevel = {
 	Warn: 13,
 } as const;
 
+type ExportedMetric =
+	MetricsData["resourceMetrics"][number]["scopeMetrics"][number]["metrics"][number];
+type ExportedMetricGauge = NonNullable<ExportedMetric["gauge"]>;
+type ExportedMetricHistogram = NonNullable<ExportedMetric["histogram"]>;
+type ExportedMetricSum = NonNullable<ExportedMetric["sum"]>;
+
+function isKnownSeverityLevel(
+	level: string,
+): level is keyof typeof severityNumberByLevel {
+	return Object.hasOwn(severityNumberByLevel, level);
+}
+
+function getSeverityNumber(
+	level: string,
+): 0 | (typeof severityNumberByLevel)[keyof typeof severityNumberByLevel] {
+	return isKnownSeverityLevel(level) ? severityNumberByLevel[level] : 0;
+}
+
 /**
  * File locations and session metadata for one gameplay telemetry capture.
  *
@@ -622,7 +640,7 @@ const shutdownGameplayTelemetryWriter: (
 ) => Effect.Effect<void, PlatformError.PlatformError, FileSystem.FileSystem> =
 	Effect.fnUntraced(function* (writer: GameplayTelemetryWriter) {
 		const pending = yield* Effect.match(Queue.takeAll(writer.queue), {
-			onFailure: () => [] as Array<string>,
+			onFailure: (): Array<string> => [],
 			onSuccess: (lines) => Array.from(lines),
 		});
 		if (pending.length > 0) {
@@ -692,6 +710,7 @@ function makeGameplayTelemetryLogger(session: {
 		const message = Array.isArray(options.message)
 			? options.message
 			: [options.message];
+		const severityText = String(options.logLevel);
 		const logRecord = {
 			attributes,
 			body: OtlpResource.unknownToAttributeValue(
@@ -699,11 +718,8 @@ function makeGameplayTelemetryLogger(session: {
 			),
 			droppedAttributesCount: 0,
 			observedTimeUnixNano: String(timestampNanos),
-			severityNumber:
-				severityNumberByLevel[
-					options.logLevel as keyof typeof severityNumberByLevel
-				] ?? 0,
-			severityText: options.logLevel,
+			severityNumber: getSeverityNumber(severityText),
+			severityText,
 			timeUnixNano: String(timestampNanos),
 			...(options.fiber.currentSpan === undefined
 				? {}
@@ -756,7 +772,7 @@ function flushGameplayTelemetryMetrics(
 	const timeUnixNano = String(
 		BigInt(DateTime.toEpochMillis(exportedAt)) * 1_000_000n,
 	);
-	const metricsByName = new Map<string, Record<string, unknown>>();
+	const metricsByName = new Map<string, ExportedMetric>();
 
 	for (const snapshot of snapshots) {
 		const unit =
@@ -770,7 +786,7 @@ function flushGameplayTelemetryMetrics(
 				"effect2d.time_iso": exportedAtIso,
 			}),
 		);
-		const existingMetric = metricsByName.get(snapshot.id) ?? {
+		const existingMetric: ExportedMetric = metricsByName.get(snapshot.id) ?? {
 			description: snapshot.description,
 			name: snapshot.id,
 			unit,
@@ -778,13 +794,7 @@ function flushGameplayTelemetryMetrics(
 
 		switch (snapshot.type) {
 			case "Counter": {
-				const sum = (existingMetric["sum"] as
-					| {
-							aggregationTemporality: number;
-							dataPoints: Array<Record<string, unknown>>;
-							isMonotonic: boolean;
-					  }
-					| undefined) ?? {
+				const sum: ExportedMetricSum = existingMetric.sum ?? {
 					aggregationTemporality: otelCumulativeAggregationTemporality,
 					dataPoints: [],
 					isMonotonic: snapshot.state.incremental,
@@ -801,15 +811,13 @@ function flushGameplayTelemetryMetrics(
 								asDouble: snapshot.state.count,
 							}),
 				});
-				existingMetric["sum"] = sum;
+				existingMetric.sum = sum;
 				break;
 			}
 			case "Gauge": {
-				const gauge = (existingMetric["gauge"] as
-					| {
-							dataPoints: Array<Record<string, unknown>>;
-					  }
-					| undefined) ?? { dataPoints: [] };
+				const gauge: ExportedMetricGauge = existingMetric.gauge ?? {
+					dataPoints: [],
+				};
 				gauge.dataPoints.push({
 					attributes,
 					startTimeUnixNano: session.metricsStartTimeUnixNano,
@@ -822,7 +830,7 @@ function flushGameplayTelemetryMetrics(
 								asDouble: snapshot.state.value,
 							}),
 				});
-				existingMetric["gauge"] = gauge;
+				existingMetric.gauge = gauge;
 				break;
 			}
 			case "Histogram": {
@@ -843,12 +851,7 @@ function flushGameplayTelemetryMetrics(
 					previousBucketCount = cumulativeCount;
 				}
 
-				const histogram = (existingMetric["histogram"] as
-					| {
-							aggregationTemporality: number;
-							dataPoints: Array<Record<string, unknown>>;
-					  }
-					| undefined) ?? {
+				const histogram: ExportedMetricHistogram = existingMetric.histogram ?? {
 					aggregationTemporality: otelCumulativeAggregationTemporality,
 					dataPoints: [],
 				};
@@ -863,7 +866,7 @@ function flushGameplayTelemetryMetrics(
 					sum: snapshot.state.sum,
 					timeUnixNano,
 				});
-				existingMetric["histogram"] = histogram;
+				existingMetric.histogram = histogram;
 				break;
 			}
 			case "Frequency":
@@ -878,7 +881,7 @@ function flushGameplayTelemetryMetrics(
 		return;
 	}
 
-	session.writeMetrics({
+	const metricsData: MetricsData = {
 		resourceMetrics: [
 			{
 				resource: session.resource,
@@ -890,7 +893,8 @@ function flushGameplayTelemetryMetrics(
 				],
 			},
 		],
-	} as unknown as MetricsData);
+	};
+	session.writeMetrics(metricsData);
 }
 
 function makeGameplayTelemetryTracer(session: {

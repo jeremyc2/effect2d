@@ -1,12 +1,12 @@
 import { Effect, Layer, Ref, ServiceMap } from "effect";
-import { recordRoomTransition } from "../../../src/debug/GameplayMetrics.ts";
+import { recordRoomTransition } from "../../../../src/debug/GameplayMetrics.ts";
 import {
 	getRoomObjectById as getRoomObjectByIdInContent,
 	MapRepository,
 	type MapValidationError,
 	type RoomContent,
 	type RoomObject,
-} from "../../../src/index.ts";
+} from "../../../../src/index.ts";
 import { WorldState } from "./WorldState.ts";
 
 export class RoomState extends ServiceMap.Service<
@@ -28,7 +28,7 @@ export class RoomState extends ServiceMap.Service<
 		) => Effect.Effect<RoomObject, MapValidationError>;
 		readonly snapshot: Effect.Effect<RoomContent>;
 	}
->()("effect2d/starter/game/state/RoomState") {
+>()("effect2d/games/starter/game/state/RoomState") {
 	static readonly layer = Layer.effect(
 		RoomState,
 		Effect.gen(function* () {

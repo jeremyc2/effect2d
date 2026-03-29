@@ -1,5 +1,5 @@
 import { Effect, Layer, ServiceMap } from "effect";
-import { defineAnimationClip } from "../../../src/animation/Animation.ts";
+import { defineAnimationClip } from "../../../../src/animation/Animation.ts";
 import {
 	advanceAnimation,
 	DebugOverlay,
@@ -16,8 +16,8 @@ import {
 	startAnimation,
 	UI,
 	type UnknownFontError,
-} from "../../../src/index.ts";
-import type { MapValidationError } from "../../../src/maps/MapError.ts";
+} from "../../../../src/index.ts";
+import type { MapValidationError } from "../../../../src/maps/MapError.ts";
 import { DialogueState } from "../state/DialogueState.ts";
 import { GameplayState } from "../state/GameplayState.ts";
 import { PlayerState } from "../state/PlayerState.ts";
@@ -134,7 +134,7 @@ export class StarterPresentationDirector extends ServiceMap.Service<
 			StarterPresentationDirectorFailure
 		>;
 	}
->()("effect2d/starter/game/directors/StarterPresentationDirector") {
+>()("effect2d/games/starter/game/directors/StarterPresentationDirector") {
 	static readonly layer = Layer.effect(
 		StarterPresentationDirector,
 		Effect.gen(function* () {

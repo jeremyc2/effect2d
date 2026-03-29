@@ -1,0 +1,4 @@
+interface:
+  display_name: "Gameplay Telemetry Analysis"
+  short_description: "Analyze one finished Effect2d telemetry session with commentary."
+  default_prompt: "Analyze one finished Effect2d gameplay telemetry session by correlating commentary with session.json, otel logs, metrics, and traces, then produce findings and suggested follow-up."

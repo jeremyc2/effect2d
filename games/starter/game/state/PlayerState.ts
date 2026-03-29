@@ -1,5 +1,5 @@
 import { Effect, Layer, Ref, ServiceMap } from "effect";
-import type { CameraVector } from "../../../src/graphics/Camera.ts";
+import type { CameraVector } from "../../../../src/graphics/Camera.ts";
 
 export type FacingDirection = "down" | "left" | "right" | "up";
 
@@ -27,7 +27,7 @@ export class PlayerState extends ServiceMap.Service<
 		readonly setFacing: (facing: FacingDirection) => Effect.Effect<void>;
 		readonly snapshot: Effect.Effect<PlayerSnapshot>;
 	}
->()("effect2d/starter/game/state/PlayerState") {
+>()("effect2d/games/starter/game/state/PlayerState") {
 	static readonly layer = Layer.effect(
 		PlayerState,
 		Effect.gen(function* () {

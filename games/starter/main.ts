@@ -1,5 +1,5 @@
 import { Effect, Layer } from "effect";
-import { GameplayTelemetrySession } from "../src/index.ts";
+import { GameplayTelemetrySession } from "../../src/index.ts";
 import {
 	StarterGameLive,
 	starterConfig,

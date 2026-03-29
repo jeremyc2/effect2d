@@ -566,7 +566,7 @@ export function makeSkiaNativeBackendLayer({
 					diagnosticsSnapshot(frameDelayMillis),
 				);
 
-				let appLaunchPromise: Promise<undefined> | null = null;
+				let appLaunchInFlight = false;
 				let audioContext: AudioContext | null = null;
 				let masterGain: GainNode | null = null;
 				let musicBusGain: GainNode | null = null;
@@ -930,13 +930,27 @@ export function makeSkiaNativeBackendLayer({
 					App.eventLoop = "node";
 					App.fps = Math.max(1, Math.round(1000 / frameDelayMillis));
 
-					if (!App.running && appLaunchPromise === null) {
-						appLaunchPromise = App.launch().catch((cause) => {
-							void runFork(
-								recordError(`Skia app loop failed: ${String(cause)}`),
-							);
-							throw cause;
-						});
+					if (!App.running && !appLaunchInFlight) {
+						appLaunchInFlight = true;
+						void runFork(
+							Effect.tryPromise({
+								try: () => App.launch(),
+								catch: (cause) =>
+									new EngineLaunchError({
+										module: "native",
+										reason: `Skia app loop failed: ${String(cause)}`,
+									}),
+							}).pipe(
+								Effect.catch((error: EngineLaunchError) =>
+									recordError(error.reason),
+								),
+								Effect.ensuring(
+									Effect.sync(() => {
+										appLaunchInFlight = false;
+									}),
+								),
+							),
+						);
 					}
 
 					const window = new Window({

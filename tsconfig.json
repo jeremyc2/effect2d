@@ -99,7 +99,7 @@
 			}
 		]
 	},
-	"include": ["src/**/*", "scripts/**/*", "starter/**/*", "games/**/*"],
+	"include": ["src/**/*", "scripts/**/*", "games/**/*"],
 	"exclude": ["reference_repositories/**/*"],
 	"$schema": "./node_modules/@effect/language-service/schema.json"
 }

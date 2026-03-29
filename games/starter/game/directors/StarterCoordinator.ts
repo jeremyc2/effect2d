@@ -2,14 +2,14 @@ import { Effect, Layer, ServiceMap } from "effect";
 import {
 	EngineLogger,
 	type InvalidLogMessageError,
-} from "../../../src/debug/EngineLogger.ts";
+} from "../../../../src/debug/EngineLogger.ts";
 import {
 	type InvalidResourceRecordError,
 	ResourceTracker,
 	type UnknownTrackedResourceError,
-} from "../../../src/debug/ResourceTracker.ts";
-import type { MapValidationError } from "../../../src/maps/MapError.ts";
-import { SequenceEvents } from "../../../src/sequence/Sequence.ts";
+} from "../../../../src/debug/ResourceTracker.ts";
+import type { MapValidationError } from "../../../../src/maps/MapError.ts";
+import { SequenceEvents } from "../../../../src/sequence/Sequence.ts";
 import { DebugSettingsState } from "../state/DebugSettingsState.ts";
 import { DialogueState } from "../state/DialogueState.ts";
 import { GameplayState } from "../state/GameplayState.ts";
@@ -31,7 +31,7 @@ export class StarterCoordinator extends ServiceMap.Service<
 		readonly recordSaveCompleted: (slotId: string) => Effect.Effect<void>;
 		readonly recordSceneChange: (sceneId: string) => Effect.Effect<void>;
 	}
->()("effect2d/starter/game/directors/StarterCoordinator") {
+>()("effect2d/games/starter/game/directors/StarterCoordinator") {
 	static readonly layer = Layer.effect(
 		StarterCoordinator,
 		Effect.gen(function* () {

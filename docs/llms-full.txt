@@ -836,28 +836,28 @@ yield* logger.info("Loaded room", { roomId: "cavern-entrance" });
 ### GameplayTelemetrySessionDescriptor
 
 - Kind: interface
-- Source: `src/debug/GameplayTelemetry.ts:59`
+- Source: `src/debug/GameplayTelemetry.ts:77`
 
 File locations and session metadata for one gameplay telemetry capture.
 
 ### GameplayTelemetryLayerOptions
 
 - Kind: interface
-- Source: `src/debug/GameplayTelemetry.ts:78`
+- Source: `src/debug/GameplayTelemetry.ts:96`
 
 Configuration for the engine gameplay telemetry session layer.
 
 ### GameplayCommentaryEntry
 
 - Kind: interface
-- Source: `src/debug/GameplayTelemetry.ts:93`
+- Source: `src/debug/GameplayTelemetry.ts:111`
 
 A single timestamped gameplay commentary entry written alongside telemetry data.
 
 ### GameplayTelemetrySession
 
 - Kind: service
-- Source: `src/debug/GameplayTelemetry.ts:130`
+- Source: `src/debug/GameplayTelemetry.ts:148`
 
 Local OTEL-backed telemetry services for playable sessions and sample games.
 
@@ -874,28 +874,28 @@ Local OTEL-backed telemetry services for playable sessions and sample games.
 ### createGameplayTelemetrySessionDescriptor
 
 - Kind: function
-- Source: `src/debug/GameplayTelemetry.ts:267`
+- Source: `src/debug/GameplayTelemetry.ts:285`
 
 Creates or reuses a gameplay telemetry session directory and manifest.
 
 ### resolveGameplayTelemetrySessionDescriptorFromDirectory
 
 - Kind: function
-- Source: `src/debug/GameplayTelemetry.ts:329`
+- Source: `src/debug/GameplayTelemetry.ts:347`
 
 Reads one telemetry session manifest from a known session directory.
 
 ### resolveLatestGameplayTelemetrySessionDescriptor
 
 - Kind: function
-- Source: `src/debug/GameplayTelemetry.ts:358`
+- Source: `src/debug/GameplayTelemetry.ts:376`
 
 Resolves the most recent telemetry session for the provided game id.
 
 ### appendGameplayCommentaryEntry
 
 - Kind: function
-- Source: `src/debug/GameplayTelemetry.ts:405`
+- Source: `src/debug/GameplayTelemetry.ts:423`
 
 Appends one timestamped gameplay commentary entry to the active session.
 
@@ -1557,35 +1557,35 @@ Indicates that room content could not be serialized or deserialized.
 ### getRoomObjects
 
 - Kind: function
-- Source: `src/maps/MapQueries.ts:8`
+- Source: `src/maps/MapQueries.ts:22`
 
 Returns every authored object across all object planes in a room. Use this when plane boundaries do not matter to the query you are writing.
 
 ### getRoomObjectById
 
 - Kind: function
-- Source: `src/maps/MapQueries.ts:13`
+- Source: `src/maps/MapQueries.ts:27`
 
 Finds one authored room object by id.
 
 ### getRoomObjectsByKind
 
 - Kind: function
-- Source: `src/maps/MapQueries.ts:21`
+- Source: `src/maps/MapQueries.ts:35`
 
 Filters room objects by authored `kind`, which is useful for game-specific object families in addition to the built-in helpers below.
 
 ### getRoomSpawnPoints
 
 - Kind: function
-- Source: `src/maps/MapQueries.ts:29`
+- Source: `src/maps/MapQueries.ts:43`
 
 Returns all authored spawn points in a room.
 
 ### getRoomTransitionZones
 
 - Kind: function
-- Source: `src/maps/MapQueries.ts:36`
+- Source: `src/maps/MapQueries.ts:50`
 
 Returns all authored transition zones in a room.
 
@@ -1816,7 +1816,7 @@ Builds the Skia implementation of [NativeBackend](./llms/native.md#native-native
 ### makeSkiaNativeBoundaryLayer
 
 - Kind: function
-- Source: `src/native/SkiaNativeBackend.ts:1346`
+- Source: `src/native/SkiaNativeBackend.ts:1360`
 
 Builds a ready-to-use [NativeBoundary](./llms/native.md#native-nativeboundary) backed by a Skia window and
 renderer.

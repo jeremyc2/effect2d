@@ -12,5 +12,5 @@ Current scope:
 Run it with:
 
 ```sh
-bun run cavern:native
+bun run:cavern
 ```

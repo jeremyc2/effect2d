@@ -24,6 +24,12 @@ It demonstrates:
 
 The current entry point is [main.ts](./main.ts).
 
+Run it from the repo root with:
+
+```bash
+bun run:starter
+```
+
 The important composition root is [StarterGame.ts](./game/StarterGame.ts).
 The main coordination example is [StarterCoordinator.ts](./game/directors/StarterCoordinator.ts).
 The gameplay slice example is [StarterGameplayDirector.ts](./game/directors/StarterGameplayDirector.ts).

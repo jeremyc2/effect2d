@@ -8,8 +8,8 @@ import {
 	ResourceTracker,
 	SaveCoordinator,
 	SceneDirector,
-} from "../src/index.ts";
-import { runLayerEffect } from "../src/testing/runEffectTest.ts";
+} from "../../src/index.ts";
+import { runLayerEffect } from "../../src/testing/runEffectTest.ts";
 import { StarterCoordinator } from "./game/directors/StarterCoordinator.ts";
 import { StarterGameplayDirector } from "./game/directors/StarterGameplayDirector.ts";
 import { StarterPresentationDirector } from "./game/directors/StarterPresentationDirector.ts";

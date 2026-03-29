@@ -1,4 +1,4 @@
-import type { ActionBinding } from "../../../src/input/Input.ts";
+import type { ActionBinding } from "../../../../src/input/Input.ts";
 
 export const starterBindings = [
 	{

@@ -1,6 +1,6 @@
 import { Effect, Layer, ServiceMap } from "effect";
-import type { CollisionBody } from "../../../src/collision/CollisionWorld.ts";
-import type { CameraVector } from "../../../src/graphics/Camera.ts";
+import type { CollisionBody } from "../../../../src/collision/CollisionWorld.ts";
+import type { CameraVector } from "../../../../src/graphics/Camera.ts";
 import {
 	CollisionWorld,
 	Cutscene,
@@ -20,8 +20,8 @@ import {
 	type UnknownFontError,
 	type UnknownInputActionError,
 	type WrongAudioCueKindError,
-} from "../../../src/index.ts";
-import type { MapValidationError } from "../../../src/maps/MapError.ts";
+} from "../../../../src/index.ts";
+import type { MapValidationError } from "../../../../src/maps/MapError.ts";
 import { DialogueState } from "../state/DialogueState.ts";
 import { GameplayState } from "../state/GameplayState.ts";
 import { PlayerState } from "../state/PlayerState.ts";
@@ -82,7 +82,7 @@ export class StarterGameplayDirector extends ServiceMap.Service<
 			StarterGameplayDirectorFailure
 		>;
 	}
->()("effect2d/starter/game/directors/StarterGameplayDirector") {
+>()("effect2d/games/starter/game/directors/StarterGameplayDirector") {
 	static readonly layer = Layer.effect(
 		StarterGameplayDirector,
 		Effect.gen(function* () {

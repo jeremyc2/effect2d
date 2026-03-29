@@ -1,5 +1,5 @@
 import { Effect, Layer, ServiceMap } from "effect";
-import type { SaveParticipant } from "../../../src/save/SaveDocument.ts";
+import type { SaveParticipant } from "../../../../src/save/SaveDocument.ts";
 import { DebugSettingsState } from "../state/DebugSettingsState.ts";
 import { DialogueState } from "../state/DialogueState.ts";
 import { GameplayState } from "../state/GameplayState.ts";
@@ -11,7 +11,7 @@ export class StarterSaveParticipants extends ServiceMap.Service<
 	{
 		readonly all: Effect.Effect<ReadonlyArray<SaveParticipant>>;
 	}
->()("effect2d/starter/game/save/StarterSaveParticipants") {
+>()("effect2d/games/starter/game/save/StarterSaveParticipants") {
 	static readonly layer = Layer.effect(
 		StarterSaveParticipants,
 		Effect.gen(function* () {

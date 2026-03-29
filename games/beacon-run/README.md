@@ -24,7 +24,7 @@ The composition root is [BeaconRunGame.ts](./game/BeaconRunGame.ts).
 From the repo root:
 
 ```bash
-bun run beacon-run:native
+bun run:beacon-run
 ```
 
 Controls:

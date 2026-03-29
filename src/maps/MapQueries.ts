@@ -5,6 +5,20 @@ import type {
 	TransitionZone,
 } from "./MapContent.ts";
 
+function isSpawnPoint(entry: RoomObject): entry is SpawnPoint {
+	return (
+		entry.kind === "spawn-point" &&
+		typeof entry.metadata["spawnId"] === "string"
+	);
+}
+
+function isTransitionZone(entry: RoomObject): entry is TransitionZone {
+	return (
+		entry.kind === "transition-zone" &&
+		typeof entry.metadata["targetRoomId"] === "string"
+	);
+}
+
 /** Returns every authored object across all object planes in a room. Use this when plane boundaries do not matter to the query you are writing. @public */
 export function getRoomObjects(room: RoomContent): ReadonlyArray<RoomObject> {
 	return room.objectPlanes.flatMap((plane) => plane.entries);
@@ -30,15 +44,12 @@ export function getRoomObjectsByKind(
 export function getRoomSpawnPoints(
 	room: RoomContent,
 ): ReadonlyArray<SpawnPoint> {
-	return getRoomObjectsByKind(room, "spawn-point") as ReadonlyArray<SpawnPoint>;
+	return getRoomObjects(room).filter(isSpawnPoint);
 }
 
 /** Returns all authored transition zones in a room. @public */
 export function getRoomTransitionZones(
 	room: RoomContent,
 ): ReadonlyArray<TransitionZone> {
-	return getRoomObjectsByKind(
-		room,
-		"transition-zone",
-	) as ReadonlyArray<TransitionZone>;
+	return getRoomObjects(room).filter(isTransitionZone);
 }

@@ -18,7 +18,7 @@ import {
 	Sequence,
 	SequenceEvents,
 	UI,
-} from "../../src/index.ts";
+} from "../../../src/index.ts";
 import { starterRooms } from "./content/StarterRooms.ts";
 import { StarterCoordinator } from "./directors/StarterCoordinator.ts";
 import { StarterGameplayDirector } from "./directors/StarterGameplayDirector.ts";
@@ -216,49 +216,49 @@ export const starterBootstrap = Effect.gen(function* () {
 		defaultLoop: true,
 		defaultPitch: 1,
 		defaultVolume: 0.7,
-		sourcePath: "starter/audio/music/starter-theme.ogg",
+		sourcePath: "games/starter/audio/music/starter-theme.ogg",
 	});
 	yield* audio.loadSound({
 		cueId: "menu-confirm",
 		defaultLoop: false,
 		defaultPitch: 1,
 		defaultVolume: 0.7,
-		sourcePath: "starter/audio/sfx/menu-confirm.wav",
+		sourcePath: "games/starter/audio/sfx/menu-confirm.wav",
 	});
 	yield* audio.loadSound({
 		cueId: "pause-toggle",
 		defaultLoop: false,
 		defaultPitch: 1,
 		defaultVolume: 0.6,
-		sourcePath: "starter/audio/sfx/pause-toggle.wav",
+		sourcePath: "games/starter/audio/sfx/pause-toggle.wav",
 	});
 	yield* audio.loadSound({
 		cueId: "pickup-lantern",
 		defaultLoop: false,
 		defaultPitch: 1,
 		defaultVolume: 0.8,
-		sourcePath: "starter/audio/sfx/pickup-lantern.wav",
+		sourcePath: "games/starter/audio/sfx/pickup-lantern.wav",
 	});
 	yield* audio.loadSound({
 		cueId: "room-transition",
 		defaultLoop: false,
 		defaultPitch: 1,
 		defaultVolume: 0.75,
-		sourcePath: "starter/audio/sfx/room-transition.wav",
+		sourcePath: "games/starter/audio/sfx/room-transition.wav",
 	});
 	yield* audio.loadSound({
 		cueId: "slime-hit",
 		defaultLoop: false,
 		defaultPitch: 1,
 		defaultVolume: 0.8,
-		sourcePath: "starter/audio/sfx/slime-hit.wav",
+		sourcePath: "games/starter/audio/sfx/slime-hit.wav",
 	});
 	yield* audio.playMusic("starter-theme", { loop: true });
 	yield* ui.loadFont({
 		fontId: "ui-body",
 		glyphWidth: 8,
 		lineHeight: 12,
-		sourcePath: "starter/fonts/ui-body.ttf",
+		sourcePath: "games/starter/fonts/ui-body.ttf",
 	});
 
 	const debugSettings = yield* debugSettingsState.snapshot;

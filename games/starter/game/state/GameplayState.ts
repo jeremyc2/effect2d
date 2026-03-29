@@ -1,5 +1,5 @@
 import { Effect, Layer, Ref, ServiceMap } from "effect";
-import type { CameraVector } from "../../../src/graphics/Camera.ts";
+import type { CameraVector } from "../../../../src/graphics/Camera.ts";
 
 export interface GameplaySnapshot {
 	readonly enemyDefeated: boolean;
@@ -47,7 +47,7 @@ export class GameplayState extends ServiceMap.Service<
 		readonly restore: (snapshot: GameplaySnapshot) => Effect.Effect<void>;
 		readonly snapshot: Effect.Effect<GameplaySnapshot>;
 	}
->()("effect2d/starter/game/state/GameplayState") {
+>()("effect2d/games/starter/game/state/GameplayState") {
 	static readonly layer = Layer.effect(
 		GameplayState,
 		Effect.gen(function* () {
