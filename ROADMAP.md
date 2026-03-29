@@ -49,7 +49,6 @@
 - [x] Implement transforms, color tinting, blend controls, and draw order handling.
 - [x] Implement a camera transform model for world-to-screen rendering.
 - [x] Add render command recording so the user-facing API stays stable while the backend evolves.
-- [ ] Add basic batching strategy for common 2D draw paths.
 - [x] Add typed rendering errors where operations can fail meaningfully.
 - [x] Add built-in visual effects support for fades, flashes, tinting, and simple screen effects without depending on custom shaders.
 
@@ -206,11 +205,6 @@
 - [x] Start a small real game on top of `Effect2d`.
 - [x] Reuse the canonical engine architecture instead of inventing a separate one.
 - [x] Let real game needs reveal the next engine gaps.
-- [x] Refine maps and room content APIs under real usage.
-- [ ] Refine save participants under real usage.
-- [ ] Refine scene and script ergonomics under real usage.
-- [ ] Refine debug tooling under real usage.
-- [ ] Decide what belongs in engine core versus game userland based on pressure from the real game.
 
 ## Milestone Completion Criteria
 
@@ -224,10 +218,3 @@
 - [x] A debug overlay exists.
 - [x] At least one scripted sequence is implemented as Effect.
 - [x] The architecture feels strong enough to build a real game on it.
-
-### After 0.1
-
-- [x] Begin a real small game immediately.
-- [ ] Evolve the engine under pressure from that game instead of polishing in abstraction.
-- [ ] Keep the core small and capability-focused.
-- [ ] Continue rejecting non-goals that would distort the architecture.
