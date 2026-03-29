@@ -220,4 +220,4 @@ The `live` command is for continuous narration while you play. `append` is good 
 
 When the run is over, keep the whole session directory. The commentary and OTEL files are meant to be read together: commentary says what the player felt, telemetry says what the engine did.
 
-Use the repo skill [$gameplay-telemetry-analysis](./.agents/skills/gameplay-telemetry-analysis/SKILL.md). Give the agent the finished session directory and ask it to use that skill to analyze the run.
+Use the repo skill [gameplay-telemetry-analysis](./.agents/skills/gameplay-telemetry-analysis/SKILL.md). Give the agent the finished session directory and ask it to use that skill to analyze the run.
