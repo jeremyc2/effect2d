@@ -67,9 +67,9 @@ const cavernSceneRegistryLayer = SceneRegistry.layer([
 	CavernOverworldScene,
 ]);
 
-const cavernSceneDirectorLayer = SceneDirector.layer(
-	cavernConfig.startScene,
-).pipe(Layer.provide(cavernSceneRegistryLayer));
+const cavernSceneDirectorLayer = SceneDirector.layer({
+	startSceneId: cavernConfig.startScene,
+}).pipe(Layer.provide(cavernSceneRegistryLayer));
 
 const cavernGameplayDirectorLayer = CavernGameplayDirector.layer.pipe(
 	Layer.provide(
@@ -210,12 +210,6 @@ export const cavernBootstrap = Effect.gen(function* () {
 });
 
 export const cavernProgram = Effect.gen(function* () {
-	const engine = yield* Engine;
-	yield* cavernBootstrap;
-	yield* engine.launch();
-});
-
-export const playableCavernProgram = Effect.gen(function* () {
 	const engine = yield* Engine;
 	yield* cavernBootstrap;
 	yield* engine.launch();

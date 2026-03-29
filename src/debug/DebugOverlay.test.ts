@@ -43,7 +43,7 @@ describe("DebugOverlay", () => {
 			EngineLogger.layer,
 			ResourceTracker.layer,
 			RuntimeClock.layer(60),
-			SceneDirector.layer("overworld").pipe(
+			SceneDirector.layer({ startSceneId: "overworld" }).pipe(
 				Layer.provide(SceneRegistry.layer([makeScene("overworld")])),
 			),
 		);
@@ -147,7 +147,7 @@ describe("DebugOverlay", () => {
 			EngineLogger.layer,
 			ResourceTracker.layer,
 			RuntimeClock.layer(60),
-			SceneDirector.layer("overworld").pipe(
+			SceneDirector.layer({ startSceneId: "overworld" }).pipe(
 				Layer.provide(SceneRegistry.layer([makeScene("overworld")])),
 			),
 		);

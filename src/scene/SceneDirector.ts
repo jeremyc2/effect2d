@@ -111,7 +111,7 @@ export class SceneDirector extends ServiceMap.Service<
 		readonly handleInput: Effect.Effect<void, SceneStackEmptyError>;
 	}
 >()("effect2d/scene/SceneDirector") {
-	static readonly layer = (startSceneId: SceneId) =>
+	static readonly layer = ({ startSceneId }: { startSceneId: SceneId }) =>
 		Layer.effect(
 			SceneDirector,
 			Effect.gen(function* () {

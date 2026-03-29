@@ -26,9 +26,9 @@ const makeSequenceLayer = () => {
 		makeScene("overworld"),
 		makeScene("pause"),
 	]);
-	const sceneDirectorLayer = SceneDirector.layer("overworld").pipe(
-		Layer.provide(sceneRegistryLayer),
-	);
+	const sceneDirectorLayer = SceneDirector.layer({
+		startSceneId: "overworld",
+	}).pipe(Layer.provide(sceneRegistryLayer));
 	const dependencies = Layer.mergeAll(
 		Audio.layer,
 		Graphics.layer,

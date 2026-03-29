@@ -3,7 +3,7 @@ import { GameplayTelemetrySession } from "../../src/index.ts";
 import {
 	CavernPlayableLive,
 	cavernConfig,
-	playableCavernProgram,
+	cavernProgram,
 } from "./game/CavernGame.ts";
 
 const cavernTelemetryLayer = GameplayTelemetrySession.observabilityLayer({
@@ -22,7 +22,7 @@ await Effect.runPromise(
 	Effect.scoped(
 		Effect.gen(function* () {
 			const services = yield* Layer.build(cavernMainLayer);
-			return yield* Effect.provideServices(playableCavernProgram, services);
+			return yield* Effect.provideServices(cavernProgram, services);
 		}),
 	).pipe(
 		Effect.annotateLogs({

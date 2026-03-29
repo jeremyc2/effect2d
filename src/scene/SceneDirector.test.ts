@@ -21,7 +21,7 @@ describe("SceneDirector", () => {
 		const trace: Array<string> = [];
 		const overworld = makeScene("overworld", trace);
 		const pause = makeScene("pause", trace);
-		const layer = SceneDirector.layer("overworld").pipe(
+		const layer = SceneDirector.layer({ startSceneId: "overworld" }).pipe(
 			Layer.provide(SceneRegistry.layer([overworld, pause])),
 		);
 
@@ -88,7 +88,7 @@ describe("SceneDirector", () => {
 			}),
 		};
 		const pause = makeScene("pause", trace);
-		const layer = SceneDirector.layer("overworld").pipe(
+		const layer = SceneDirector.layer({ startSceneId: "overworld" }).pipe(
 			Layer.provide(SceneRegistry.layer([overworld, pause])),
 		);
 
