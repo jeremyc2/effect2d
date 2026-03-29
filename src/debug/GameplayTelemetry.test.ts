@@ -584,6 +584,41 @@ describe("GameplayTelemetry", () => {
 		);
 	});
 
+	test("streams startup telemetry before the gameplay scope closes", async () => {
+		await runBunTest(
+			Effect.scoped(
+				Effect.gen(function* () {
+					const fs = yield* FileSystem.FileSystem;
+					const outputRootDirectory = yield* fs.makeTempDirectoryScoped({
+						prefix: "effect2d-telemetry-streaming-",
+					});
+
+					yield* runWithLayer(
+						GameplayTelemetrySession.observabilityLayer({
+							gameId: "Effect2d/test-streaming",
+							outputRootDirectory,
+						}),
+						Effect.gen(function* () {
+							const session = yield* GameplayTelemetrySession;
+
+							yield* Effect.sleep("50 millis");
+
+							const logsContents = yield* fs.readFileString(
+								session.descriptor.logsFilePath,
+							);
+							const tracesContents = yield* fs.readFileString(
+								session.descriptor.tracesFilePath,
+							);
+
+							expect(logsContents.length).toBeGreaterThan(0);
+							expect(tracesContents.length).toBeGreaterThan(0);
+						}),
+					);
+				}),
+			),
+		);
+	});
+
 	test("forwards EngineLogger entries into the OTEL log file", async () => {
 		await runBunTest(
 			Effect.scoped(

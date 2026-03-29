@@ -15,6 +15,7 @@ import {
 	Random,
 	Schedule,
 	Schema,
+	type Scope,
 	ServiceMap,
 	Tracer,
 } from "effect";
@@ -140,9 +141,9 @@ const LatestGameplayTelemetrySessionSchema = Schema.Struct({
 });
 
 interface GameplayTelemetryWriter {
-	readonly fiber: Fiber.Fiber<void, unknown>;
 	readonly filePath: string;
-	readonly queue: Queue.Queue<string>;
+	readonly queue: Queue.Queue<string, Cause.Done>;
+	readonly workerFiber: Fiber.Fiber<void, PlatformError.PlatformError>;
 }
 
 /**
@@ -543,7 +544,7 @@ const createGameplayTelemetrySessionRuntime: (
 ) => Effect.Effect<
 	GameplayTelemetrySessionRuntime,
 	PlatformError.PlatformError | Schema.SchemaError,
-	FileSystem.FileSystem | Path.Path
+	FileSystem.FileSystem | Path.Path | Scope.Scope
 > = Effect.fnUntraced(function* (options: GameplayTelemetryLayerOptions) {
 	const descriptor = yield* createGameplayTelemetrySessionDescriptor(options);
 	const logsWriter = yield* makeGameplayTelemetryWriter(
@@ -588,13 +589,13 @@ const createGameplayTelemetrySessionRuntime: (
 		scope,
 		tracesWriter,
 		writeLogs: (data: LogsData) => {
-			Queue.offerUnsafe(logsWriter.queue, formatJsonLine(data));
+			appendTelemetryLine(logsWriter, data);
 		},
 		writeMetrics: (data: MetricsData) => {
-			Queue.offerUnsafe(metricsWriter.queue, formatJsonLine(data));
+			appendTelemetryLine(metricsWriter, data);
 		},
 		writeTraces: (data: TraceData) => {
-			Queue.offerUnsafe(tracesWriter.queue, formatJsonLine(data));
+			appendTelemetryLine(tracesWriter, data);
 		},
 	};
 });
@@ -615,50 +616,33 @@ const makeGameplayTelemetryWriter: (
 ) => Effect.Effect<
 	GameplayTelemetryWriter,
 	PlatformError.PlatformError,
-	FileSystem.FileSystem
+	FileSystem.FileSystem | Scope.Scope
 > = Effect.fnUntraced(function* (filePath: string) {
-	const queue = yield* Queue.unbounded<string>();
-	const fiber = yield* writeGameplayTelemetryQueue(queue, filePath).pipe(
-		Effect.forkChild,
+	const queue = yield* Queue.unbounded<string, Cause.Done>();
+	const workerFiber = yield* Effect.forever(
+		Effect.flatMap(Queue.take(queue), (line) =>
+			appendTextLineToFile(filePath, line),
+		),
+	).pipe(
+		Effect.catchIf(Cause.isDone, () => Effect.void),
+		Effect.forkScoped,
 	);
 
 	return {
-		fiber,
 		filePath,
 		queue,
+		workerFiber,
 	};
 });
 
-const writeGameplayTelemetryQueue: (
-	queue: Queue.Queue<string>,
-	filePath: string,
-) => Effect.Effect<void, PlatformError.PlatformError, FileSystem.FileSystem> =
-	Effect.fnUntraced(function* (queue: Queue.Queue<string>, filePath: string) {
-		const fs = yield* FileSystem.FileSystem;
-		const line = yield* Queue.take(queue);
-		yield* fs.writeFileString(filePath, line, {
-			flag: "a+",
-		});
-		yield* writeGameplayTelemetryQueue(queue, filePath);
-	});
-
 const shutdownGameplayTelemetryWriter: (
 	writer: GameplayTelemetryWriter,
-) => Effect.Effect<void, PlatformError.PlatformError, FileSystem.FileSystem> =
-	Effect.fnUntraced(function* (writer: GameplayTelemetryWriter) {
-		const pending = yield* Effect.match(Queue.takeAll(writer.queue), {
-			onFailure: (): Array<string> => [],
-			onSuccess: (lines) => Array.from(lines),
-		});
-		if (pending.length > 0) {
-			const fs = yield* FileSystem.FileSystem;
-			yield* fs.writeFileString(writer.filePath, pending.join(""), {
-				flag: "a+",
-			});
-		}
-		yield* Queue.shutdown(writer.queue);
-		yield* Fiber.interrupt(writer.fiber);
-	});
+) => Effect.Effect<void, PlatformError.PlatformError> = Effect.fnUntraced(
+	function* (writer: GameplayTelemetryWriter) {
+		yield* Queue.end(writer.queue);
+		yield* Fiber.join(writer.workerFiber);
+	},
+);
 
 const appendJsonLineToFile: (
 	filePath: string,
@@ -671,8 +655,26 @@ const appendJsonLineToFile: (
 		});
 	});
 
+const appendTextLineToFile: (
+	filePath: string,
+	value: string,
+) => Effect.Effect<void, PlatformError.PlatformError, FileSystem.FileSystem> =
+	Effect.fnUntraced(function* (filePath: string, value: string) {
+		const fs = yield* FileSystem.FileSystem;
+		yield* fs.writeFileString(filePath, value, {
+			flag: "a+",
+		});
+	});
+
 function formatJsonLine(value: unknown): string {
 	return `${Formatter.formatJson(value)}\n`;
+}
+
+function appendTelemetryLine(
+	writer: GameplayTelemetryWriter,
+	value: unknown,
+): void {
+	Queue.offerUnsafe(writer.queue, formatJsonLine(value));
 }
 
 function makeGameplayTelemetryLogger(session: {
