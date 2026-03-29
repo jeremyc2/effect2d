@@ -1,15 +1,69 @@
 import { BunRuntime, BunServices } from "@effect/platform-bun";
-import { Effect, Layer, Option, Terminal } from "effect";
+import { Effect, Layer, Option, Queue, type Scope, Terminal } from "effect";
 import { Argument, Command, Flag } from "effect/unstable/cli";
 import packageJson from "../package.json" with { type: "json" };
 import {
 	appendGameplayCommentaryEntry,
 	createGameplayTelemetrySessionDescriptor,
+	resolveLatestGameplayTelemetrySessionDescriptor,
 } from "../src/debug/GameplayTelemetry.ts";
+
+const liveCommentaryPrompt = "> ";
+const clearTerminalLineAnsi = "\r\u001b[2K";
 
 const displayLine = Effect.fnUntraced(function* (text: string) {
 	const terminal = yield* Terminal.Terminal;
 	yield* terminal.display(`${text}\n`).pipe(Effect.orDie);
+});
+
+const redrawLiveCommentaryInput = Effect.fnUntraced(function* (text: string) {
+	const terminal = yield* Terminal.Terminal;
+	yield* terminal
+		.display(`${clearTerminalLineAnsi}${liveCommentaryPrompt}${text}`)
+		.pipe(Effect.orDie);
+});
+
+const readLiveCommentaryLine: () => Effect.Effect<
+	string,
+	Terminal.QuitError,
+	Terminal.Terminal | Scope.Scope
+> = Effect.fnUntraced(function* () {
+	const terminal = yield* Terminal.Terminal;
+	const inputQueue = yield* terminal.readInput;
+	let currentLine = "";
+
+	yield* redrawLiveCommentaryInput(currentLine);
+
+	while (true) {
+		const userInput = yield* Queue.take(inputQueue).pipe(
+			Effect.mapError(() => new Terminal.QuitError({})),
+		);
+
+		if (
+			userInput.key.ctrl &&
+			(userInput.key.name === "c" || userInput.key.name === "d")
+		) {
+			return yield* new Terminal.QuitError({});
+		}
+
+		if (userInput.key.name === "enter" || userInput.key.name === "return") {
+			yield* terminal.display("\n").pipe(Effect.orDie);
+			return currentLine;
+		}
+
+		if (userInput.key.name === "backspace" || userInput.key.name === "delete") {
+			currentLine =
+				currentLine.length === 0 ? currentLine : currentLine.slice(0, -1);
+			yield* redrawLiveCommentaryInput(currentLine);
+			continue;
+		}
+
+		currentLine = Option.match(userInput.input, {
+			onNone: () => currentLine,
+			onSome: (input) => `${currentLine}${input}`,
+		});
+		yield* redrawLiveCommentaryInput(currentLine);
+	}
 });
 
 const gameFlag = Flag.string("game").pipe(
@@ -77,20 +131,28 @@ const liveCommand = Command.make(
 		sessionDir: sessionDirectoryFlag,
 	},
 	Effect.fnUntraced(function* (config) {
-		const descriptor = yield* createGameplayTelemetrySessionDescriptor({
-			gameId: config.game,
-			sessionDirectory: sessionDirectoryValue(config.sessionDir),
-		});
+		const requestedSessionDirectory = sessionDirectoryValue(config.sessionDir);
+		const descriptor =
+			requestedSessionDirectory === undefined
+				? ((yield* resolveLatestGameplayTelemetrySessionDescriptor(
+						config.game,
+					)) ??
+					(yield* createGameplayTelemetrySessionDescriptor({
+						gameId: config.game,
+					})))
+				: yield* createGameplayTelemetrySessionDescriptor({
+						gameId: config.game,
+						sessionDirectory: requestedSessionDirectory,
+					});
 		yield* printSessionDetails(descriptor);
 		yield* displayLine(
 			"Type commentary and press Enter. Press Ctrl+C to stop.",
 		);
 
-		const terminal = yield* Terminal.Terminal;
-		const sessionDirectory = sessionDirectoryValue(config.sessionDir);
+		const sessionDirectory = descriptor.sessionDirectory;
 
 		yield* Effect.forever(
-			terminal.readLine.pipe(
+			readLiveCommentaryLine().pipe(
 				Effect.map((line) => line.trim()),
 				Effect.flatMap((text) =>
 					text.length === 0
