@@ -1,7 +1,7 @@
 import { Effect, Layer } from "effect";
 import { GameplayTelemetrySession } from "../../src/index.ts";
 import {
-	StarterGameLive,
+	StarterPlayableLive,
 	starterConfig,
 	starterProgram,
 } from "./game/StarterGame.ts";
@@ -13,7 +13,10 @@ const starterTelemetryLayer = GameplayTelemetrySession.observabilityLayer({
 	},
 });
 
-const starterMainLayer = Layer.mergeAll(StarterGameLive, starterTelemetryLayer);
+const starterMainLayer = Layer.mergeAll(
+	StarterPlayableLive,
+	starterTelemetryLayer,
+);
 
 await Effect.runPromise(
 	Effect.scoped(

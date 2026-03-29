@@ -10,20 +10,23 @@ import {
 	Graphics,
 	Input,
 	MapRepository,
-	makeRuntimeLayer,
+	makeSkiaNativeBoundaryLayer,
+	RandomSource,
 	ResourceTracker,
+	RuntimeClock,
 	SceneDirector,
 	SceneRegistry,
 	Sequence,
 	SequenceEvents,
 	UI,
 } from "../../../src/index.ts";
-import { NativeBoundary } from "../../../src/native/NativeBoundary.ts";
+import { makeHeadlessNativeBoundaryLayer } from "../../../src/testing/index.ts";
 import { starterRooms } from "./content/StarterRooms.ts";
 import { StarterCoordinator } from "./directors/StarterCoordinator.ts";
 import { StarterGameplayDirector } from "./directors/StarterGameplayDirector.ts";
 import { StarterPresentationDirector } from "./directors/StarterPresentationDirector.ts";
 import { starterBindings } from "./input/StarterBindings.ts";
+import { StarterNativeFrameSourceLive } from "./native/StarterNativeFrameSource.ts";
 import { StarterSaveParticipants } from "./save/StarterSaveParticipants.ts";
 import { MainMenuScene } from "./scenes/MainMenuScene.ts";
 import { OverworldScene } from "./scenes/OverworldScene.ts";
@@ -43,44 +46,7 @@ export const starterConfig = {
 	targetTicksPerSecond: 60,
 };
 
-export const starterNativeBoundaryLayer = Layer.effect(NativeBoundary)(
-	Effect.succeed(
-		NativeBoundary.of({
-			diagnostics: Effect.succeed({
-				audio: {
-					activeSoundCount: 0,
-					backend: "headless",
-					currentMusicCueId: null,
-					supportsLoopingMusic: false,
-					supportsPauseResume: false,
-					supportsPitch: false,
-					supportsVolume: false,
-				},
-				initialized: false,
-				inputEventCount: 0,
-				lastError: null,
-				renderer: {
-					backend: "headless",
-					frameCount: 0,
-					supportsBlendModes: ["alpha"],
-					supportsImages: false,
-					supportsText: false,
-				},
-				timing: {
-					backend: "headless",
-					frameDelayMillis: 0,
-				},
-				window: null,
-			}),
-			initialize: () => Effect.void,
-			shutdown: Effect.void,
-		}),
-	),
-);
-
-const starterRuntimeLayer = makeRuntimeLayer(starterConfig, {
-	nativeBoundaryLayer: starterNativeBoundaryLayer,
-});
+export const starterNativeBoundaryLayer = makeHeadlessNativeBoundaryLayer();
 
 const starterStateLayer = Layer.mergeAll(
 	DebugSettingsState.layer,
@@ -90,6 +56,11 @@ const starterStateLayer = Layer.mergeAll(
 	WorldState.layer,
 );
 
+const starterRuntimeSupportLayer = Layer.mergeAll(
+	RandomSource.layer(starterConfig.randomSeed),
+	RuntimeClock.layer(starterConfig.targetTicksPerSecond),
+);
+
 const starterEngineCapabilityLayer = Layer.mergeAll(
 	Audio.layer,
 	CollisionWorld.layer,
@@ -97,7 +68,7 @@ const starterEngineCapabilityLayer = Layer.mergeAll(
 	Graphics.layer,
 	Input.layer,
 	ResourceTracker.layer,
-	starterRuntimeLayer,
+	starterRuntimeSupportLayer,
 );
 
 const starterCapabilityLayer = Layer.mergeAll(
@@ -182,7 +153,56 @@ const starterPresentationDirectorLayer = StarterPresentationDirector.layer.pipe(
 	),
 );
 
-export const StarterGameLive = Layer.mergeAll(
+const starterNativeFrameSourceLayer = StarterNativeFrameSourceLive.pipe(
+	Layer.provide(
+		Layer.mergeAll(
+			starterGameplayDirectorLayer,
+			starterPresentationDirectorLayer,
+		),
+	),
+);
+
+export const starterPlayableNativeBoundaryLayer = makeSkiaNativeBoundaryLayer({
+	defaultFontPath: "games/beacon-run/assets/fonts/ui-body.ttf",
+	defaultFontSizePx: 12,
+	imageAssetPaths: {
+		"lantern-a": "games/beacon-run/assets/images/beacon-unlit.png",
+		"lantern-b": "games/beacon-run/assets/images/beacon-lit.png",
+		"player-down-a": "games/beacon-run/assets/images/scout-idle.png",
+		"player-down-b": "games/beacon-run/assets/images/scout-idle.png",
+		"player-left-a": "games/beacon-run/assets/images/scout-idle.png",
+		"player-left-b": "games/beacon-run/assets/images/scout-idle.png",
+		"player-right-a": "games/beacon-run/assets/images/scout-idle.png",
+		"player-right-b": "games/beacon-run/assets/images/scout-idle.png",
+		"player-up-a": "games/beacon-run/assets/images/scout-idle.png",
+		"player-up-b": "games/beacon-run/assets/images/scout-idle.png",
+		"room-lantern": "games/beacon-run/assets/images/shrine-room-background.png",
+		"room-overworld":
+			"games/beacon-run/assets/images/field-room-background.png",
+		"slime-idle": "games/beacon-run/assets/images/beacon-unlit.png",
+		"title-screen": "games/beacon-run/assets/images/title-screen.png",
+	},
+	logicalHeight: 768,
+	logicalWidth: 1024,
+	resizable: true,
+	title: "Effect2d: Starter",
+	windowHeight: 768,
+	windowWidth: 1024,
+}).pipe(
+	Layer.provide(
+		Layer.mergeAll(starterCapabilityLayer, starterNativeFrameSourceLayer),
+	),
+);
+
+const starterHeadlessEngineLayer = Engine.layer(starterConfig).pipe(
+	Layer.provide(starterNativeBoundaryLayer),
+);
+
+const starterPlayableEngineLayer = Engine.layer(starterConfig).pipe(
+	Layer.provide(starterPlayableNativeBoundaryLayer),
+);
+
+const starterSharedGameLayer = Layer.mergeAll(
 	starterCapabilityLayer,
 	starterCoordinatorLayer,
 	starterDebugOverlayLayer,
@@ -197,6 +217,17 @@ export const StarterGameLive = Layer.mergeAll(
 	starterUILayer,
 	SequenceEvents.layer,
 	starterSaveParticipantsLayer,
+);
+
+export const StarterGameLive = Layer.mergeAll(
+	starterSharedGameLayer,
+	starterHeadlessEngineLayer,
+);
+
+export const StarterPlayableLive = Layer.mergeAll(
+	starterSharedGameLayer,
+	starterPlayableEngineLayer,
+	starterPlayableNativeBoundaryLayer,
 );
 
 export const starterBootstrap = Effect.gen(function* () {
@@ -216,49 +247,49 @@ export const starterBootstrap = Effect.gen(function* () {
 		defaultLoop: true,
 		defaultPitch: 1,
 		defaultVolume: 0.7,
-		sourcePath: "games/starter/audio/music/starter-theme.ogg",
+		sourcePath: "games/beacon-run/assets/audio/music/beacon-run-theme.mp3",
 	});
 	yield* audio.loadSound({
 		cueId: "menu-confirm",
 		defaultLoop: false,
 		defaultPitch: 1,
 		defaultVolume: 0.7,
-		sourcePath: "games/starter/audio/sfx/menu-confirm.wav",
+		sourcePath: "games/beacon-run/assets/audio/sfx/menu-confirm.wav",
 	});
 	yield* audio.loadSound({
 		cueId: "pause-toggle",
 		defaultLoop: false,
 		defaultPitch: 1,
 		defaultVolume: 0.6,
-		sourcePath: "games/starter/audio/sfx/pause-toggle.wav",
+		sourcePath: "games/beacon-run/assets/audio/sfx/pause-toggle.wav",
 	});
 	yield* audio.loadSound({
 		cueId: "pickup-lantern",
 		defaultLoop: false,
 		defaultPitch: 1,
 		defaultVolume: 0.8,
-		sourcePath: "games/starter/audio/sfx/pickup-lantern.wav",
+		sourcePath: "games/beacon-run/assets/audio/sfx/beacon-ignite.wav",
 	});
 	yield* audio.loadSound({
 		cueId: "room-transition",
 		defaultLoop: false,
 		defaultPitch: 1,
 		defaultVolume: 0.75,
-		sourcePath: "games/starter/audio/sfx/room-transition.wav",
+		sourcePath: "games/beacon-run/assets/audio/sfx/room-transition.wav",
 	});
 	yield* audio.loadSound({
 		cueId: "slime-hit",
 		defaultLoop: false,
 		defaultPitch: 1,
 		defaultVolume: 0.8,
-		sourcePath: "games/starter/audio/sfx/slime-hit.wav",
+		sourcePath: "games/beacon-run/assets/audio/sfx/pause-toggle.wav",
 	});
 	yield* audio.playMusic("starter-theme", { loop: true });
 	yield* ui.loadFont({
 		fontId: "ui-body",
 		glyphWidth: 8,
 		lineHeight: 12,
-		sourcePath: "games/starter/fonts/ui-body.ttf",
+		sourcePath: "games/beacon-run/assets/fonts/ui-body.ttf",
 	});
 
 	const debugSettings = yield* debugSettingsState.snapshot;

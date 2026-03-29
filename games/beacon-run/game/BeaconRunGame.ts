@@ -9,16 +9,17 @@ import {
 	Graphics,
 	Input,
 	MapRepository,
-	makeRuntimeLayer,
 	makeSkiaNativeBoundaryLayer,
+	RandomSource,
 	ResourceTracker,
+	RuntimeClock,
 	SceneDirector,
 	SceneRegistry,
 	Sequence,
 	SequenceEvents,
 	UI,
 } from "../../../src/index.ts";
-import { NativeBoundary } from "../../../src/native/NativeBoundary.ts";
+import { makeHeadlessNativeBoundaryLayer } from "../../../src/testing/index.ts";
 import { beaconRunRooms } from "./content/BeaconRunRooms.ts";
 import { BeaconRunCoordinator } from "./directors/BeaconRunCoordinator.ts";
 import { BeaconRunGameplayDirector } from "./directors/BeaconRunGameplayDirector.ts";
@@ -41,48 +42,16 @@ export const beaconRunConfig = {
 	targetTicksPerSecond: 60,
 };
 
-export const beaconRunNativeBoundaryLayer = Layer.effect(NativeBoundary)(
-	Effect.succeed(
-		NativeBoundary.of({
-			diagnostics: Effect.succeed({
-				audio: {
-					activeSoundCount: 0,
-					backend: "headless",
-					currentMusicCueId: null,
-					supportsLoopingMusic: false,
-					supportsPauseResume: false,
-					supportsPitch: false,
-					supportsVolume: false,
-				},
-				initialized: false,
-				inputEventCount: 0,
-				lastError: null,
-				renderer: {
-					backend: "headless",
-					frameCount: 0,
-					supportsBlendModes: ["alpha"],
-					supportsImages: false,
-					supportsText: false,
-				},
-				timing: {
-					backend: "headless",
-					frameDelayMillis: 0,
-				},
-				window: null,
-			}),
-			initialize: () => Effect.void,
-			shutdown: Effect.void,
-		}),
-	),
-);
-
-const beaconRunRuntimeLayer = makeRuntimeLayer(beaconRunConfig, {
-	nativeBoundaryLayer: beaconRunNativeBoundaryLayer,
-});
+export const beaconRunNativeBoundaryLayer = makeHeadlessNativeBoundaryLayer();
 
 const beaconRunStateLayer = Layer.mergeAll(
 	ExpeditionState.layer,
 	ScoutState.layer,
+);
+
+const beaconRunRuntimeSupportLayer = Layer.mergeAll(
+	RandomSource.layer(beaconRunConfig.randomSeed),
+	RuntimeClock.layer(beaconRunConfig.targetTicksPerSecond),
 );
 
 const beaconRunEngineCapabilityLayer = Layer.mergeAll(
@@ -92,7 +61,7 @@ const beaconRunEngineCapabilityLayer = Layer.mergeAll(
 	Graphics.layer,
 	Input.layer,
 	ResourceTracker.layer,
-	beaconRunRuntimeLayer,
+	beaconRunRuntimeSupportLayer,
 );
 
 const beaconRunCapabilityLayer = Layer.mergeAll(
@@ -206,7 +175,15 @@ const beaconRunSaveParticipantsLayer = BeaconRunSaveParticipants.layer.pipe(
 	Layer.provide(beaconRunStateLayer),
 );
 
-export const BeaconRunLive = Layer.mergeAll(
+const beaconRunHeadlessEngineLayer = Engine.layer(beaconRunConfig).pipe(
+	Layer.provide(beaconRunNativeBoundaryLayer),
+);
+
+const beaconRunPlayableEngineLayer = Engine.layer(beaconRunConfig).pipe(
+	Layer.provide(beaconRunPlayableNativeBoundaryLayer),
+);
+
+const beaconRunSharedGameLayer = Layer.mergeAll(
 	beaconRunCapabilityLayer,
 	beaconRunCoordinatorLayer,
 	beaconRunDebugOverlayLayer,
@@ -222,8 +199,14 @@ export const BeaconRunLive = Layer.mergeAll(
 	beaconRunSaveParticipantsLayer,
 );
 
+export const BeaconRunLive = Layer.mergeAll(
+	beaconRunSharedGameLayer,
+	beaconRunHeadlessEngineLayer,
+);
+
 export const BeaconRunPlayableLive = Layer.mergeAll(
-	BeaconRunLive,
+	beaconRunSharedGameLayer,
+	beaconRunPlayableEngineLayer,
 	beaconRunPlayableNativeBoundaryLayer,
 );
 

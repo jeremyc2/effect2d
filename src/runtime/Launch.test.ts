@@ -1,6 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { Effect, Exit, Layer } from "effect";
+import { Effect, Exit } from "effect";
 import { NativeBoundary } from "../native/NativeBoundary.ts";
+import { makeHeadlessNativeBoundaryLayer } from "../testing/index.ts";
 import { runLayerEffect } from "../testing/runEffectTest.ts";
 import { Engine } from "./Engine.ts";
 import { defaultEngineConfig } from "./EngineConfig.ts";
@@ -12,40 +13,7 @@ import {
 import { RandomSource } from "./RandomSource.ts";
 import { RuntimeClock } from "./RuntimeClock.ts";
 
-const testNativeBoundaryLayer = Layer.effect(NativeBoundary)(
-	Effect.succeed(
-		NativeBoundary.of({
-			diagnostics: Effect.succeed({
-				audio: {
-					activeSoundCount: 0,
-					backend: "test",
-					currentMusicCueId: null,
-					supportsLoopingMusic: false,
-					supportsPauseResume: false,
-					supportsPitch: false,
-					supportsVolume: false,
-				},
-				initialized: false,
-				inputEventCount: 0,
-				lastError: null,
-				renderer: {
-					backend: "test",
-					frameCount: 0,
-					supportsBlendModes: ["alpha"],
-					supportsImages: false,
-					supportsText: false,
-				},
-				timing: {
-					backend: "test",
-					frameDelayMillis: 0,
-				},
-				window: null,
-			}),
-			initialize: () => Effect.void,
-			shutdown: Effect.void,
-		}),
-	),
-);
+const testNativeBoundaryLayer = makeHeadlessNativeBoundaryLayer();
 
 describe("Launch", () => {
 	test("composes engine runtime services into one launch layer", async () => {

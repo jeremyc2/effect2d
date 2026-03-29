@@ -6,14 +6,15 @@ import {
 	EngineLogger,
 	Graphics,
 	Input,
-	makeRuntimeLayer,
 	makeSkiaNativeBoundaryLayer,
+	RandomSource,
 	ResourceTracker,
+	RuntimeClock,
 	SceneCamera,
 	SceneDirector,
 	SceneRegistry,
 } from "../../../src/index.ts";
-import { NativeBoundary } from "../../../src/native/NativeBoundary.ts";
+import { makeHeadlessNativeBoundaryLayer } from "../../../src/testing/index.ts";
 import { CavernGameplayDirector } from "./directors/CavernGameplayDirector.ts";
 import { CavernPresentationDirector } from "./directors/CavernPresentationDirector.ts";
 import { cavernBindings } from "./input/CavernBindings.ts";
@@ -32,49 +33,17 @@ export const cavernConfig = {
 	targetTicksPerSecond: 60,
 };
 
-export const cavernNativeBoundaryLayer = Layer.effect(NativeBoundary)(
-	Effect.succeed(
-		NativeBoundary.of({
-			diagnostics: Effect.succeed({
-				audio: {
-					activeSoundCount: 0,
-					backend: "headless",
-					currentMusicCueId: null,
-					supportsLoopingMusic: false,
-					supportsPauseResume: false,
-					supportsPitch: false,
-					supportsVolume: false,
-				},
-				initialized: false,
-				inputEventCount: 0,
-				lastError: null,
-				renderer: {
-					backend: "headless",
-					frameCount: 0,
-					supportsBlendModes: ["alpha"],
-					supportsImages: false,
-					supportsText: false,
-				},
-				timing: {
-					backend: "headless",
-					frameDelayMillis: 0,
-				},
-				window: null,
-			}),
-			initialize: () => Effect.void,
-			shutdown: Effect.void,
-		}),
-	),
-);
-
-const cavernRuntimeLayer = makeRuntimeLayer(cavernConfig, {
-	nativeBoundaryLayer: cavernNativeBoundaryLayer,
-});
+export const cavernNativeBoundaryLayer = makeHeadlessNativeBoundaryLayer();
 
 const cavernStateLayer = Layer.mergeAll(
 	CavernMenuState.layer,
 	CavernPlayerState.layer,
 	CavernWorldState.layer,
+);
+
+const cavernRuntimeSupportLayer = Layer.mergeAll(
+	RandomSource.layer(cavernConfig.randomSeed),
+	RuntimeClock.layer(cavernConfig.targetTicksPerSecond),
 );
 
 const cavernCapabilityLayer = Layer.mergeAll(
@@ -84,7 +53,7 @@ const cavernCapabilityLayer = Layer.mergeAll(
 	Input.layer,
 	ResourceTracker.layer,
 	SceneCamera.layer(),
-	cavernRuntimeLayer,
+	cavernRuntimeSupportLayer,
 	cavernStateLayer,
 );
 
@@ -164,7 +133,15 @@ export const cavernPlayableNativeBoundaryLayer = makeSkiaNativeBoundaryLayer({
 	),
 );
 
-export const CavernLive = Layer.mergeAll(
+const cavernHeadlessEngineLayer = Engine.layer(cavernConfig).pipe(
+	Layer.provide(cavernNativeBoundaryLayer),
+);
+
+const cavernPlayableEngineLayer = Engine.layer(cavernConfig).pipe(
+	Layer.provide(cavernPlayableNativeBoundaryLayer),
+);
+
+const cavernSharedGameLayer = Layer.mergeAll(
 	cavernCapabilityLayer,
 	cavernGameplayDirectorLayer,
 	cavernPresentationDirectorLayer,
@@ -172,8 +149,14 @@ export const CavernLive = Layer.mergeAll(
 	cavernSceneRegistryLayer,
 );
 
+export const CavernLive = Layer.mergeAll(
+	cavernSharedGameLayer,
+	cavernHeadlessEngineLayer,
+);
+
 export const CavernPlayableLive = Layer.mergeAll(
-	CavernLive,
+	cavernSharedGameLayer,
+	cavernPlayableEngineLayer,
 	cavernPlayableNativeBoundaryLayer,
 );
 

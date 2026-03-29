@@ -43,10 +43,40 @@ export class NativeBoundary extends ServiceMap.Service<
 			const nativeBackend = yield* NativeBackend;
 			const frameSource = yield* NativeFrameSource;
 
+			const awaitInitialized: (
+				remainingPolls: number,
+			) => Effect.Effect<void, EngineLaunchError> = Effect.fn(
+				"NativeBoundary.awaitInitialized",
+			)(function* (remainingPolls: number) {
+				const diagnostics = yield* nativeBackend.diagnostics;
+				if (diagnostics.initialized) {
+					return;
+				}
+
+				if (diagnostics.lastError !== null) {
+					return yield* new EngineLaunchError({
+						module: "native",
+						reason: diagnostics.lastError,
+					});
+				}
+
+				if (remainingPolls <= 0) {
+					return yield* new EngineLaunchError({
+						module: "native",
+						reason:
+							"Native backend did not report an initialized window before launch timed out.",
+					});
+				}
+
+				yield* Effect.sleep("16 millis");
+				return yield* awaitInitialized(remainingPolls - 1);
+			});
+
 			const initialize = Effect.fn("NativeBoundary.initialize")(function* (
 				gameId: string,
 			) {
 				yield* nativeBackend.open(gameId);
+				yield* awaitInitialized(120);
 
 				yield* Effect.gen(function* () {
 					while ((yield* nativeBackend.diagnostics).initialized) {
