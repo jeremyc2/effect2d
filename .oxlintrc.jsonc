@@ -1,0 +1,26 @@
+{
+	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"plugins": [],
+	"categories": {
+		// Turn off all categories. We are letting Biome handle all of the linting and formatting.
+		// Oxlint is only used for the Effect2d custom rules.
+		"correctness": "off",
+		"nursery": "off",
+		"pedantic": "off",
+		"perf": "off",
+		"restriction": "off",
+		"style": "off",
+		"suspicious": "off"
+	},
+	"options": {
+		"reportUnusedDisableDirectives": "error"
+	},
+	"jsPlugins": ["./tools/effect2d-oxlint-plugin.ts"],
+	"rules": {
+		"effect2d/no-type-assertion-except-const": "error",
+		"effect2d/no-throw": "error",
+		"effect2d/no-try-catch": "error",
+		"effect2d/prefer-effect-fn-for-effect-gen": "error"
+	},
+	"ignorePatterns": ["reference_repositories/**"]
+}

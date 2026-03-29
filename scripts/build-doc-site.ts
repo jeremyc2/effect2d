@@ -102,6 +102,23 @@ const toTitleCase = (value: string): string =>
 		)
 		.join(" ");
 
+type JsDocDeclarationKind =
+	| "class"
+	| "const"
+	| "function"
+	| "interface"
+	| "type";
+
+function isJsDocDeclarationKind(value: string): value is JsDocDeclarationKind {
+	return (
+		value === "class" ||
+		value === "const" ||
+		value === "function" ||
+		value === "interface" ||
+		value === "type"
+	);
+}
+
 const readText = (path: string): Effect.Effect<string, DocSiteReadError> =>
 	Effect.tryPromise({
 		try: async () => Bun.file(path).text(),
@@ -279,12 +296,14 @@ const extractPublicEntries = (
 			continue;
 		}
 
-		const declarationKind = declarationMatch[1] as
-			| "class"
-			| "const"
-			| "function"
-			| "interface"
-			| "type";
+		const rawDeclarationKind = declarationMatch[1];
+		if (rawDeclarationKind === undefined) {
+			continue;
+		}
+		if (!isJsDocDeclarationKind(rawDeclarationKind)) {
+			continue;
+		}
+		const declarationKind = rawDeclarationKind;
 		const name = declarationMatch[2];
 		if (name === undefined) {
 			continue;

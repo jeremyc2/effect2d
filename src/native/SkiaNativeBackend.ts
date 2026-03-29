@@ -614,122 +614,122 @@ export function makeSkiaNativeBackendLayer({
 						lastError: reason,
 					}));
 
-				const markWindowClosed = () =>
-					Effect.gen(function* () {
-						currentWindow = null;
-						pendingInputEvents = [];
-						yield* Ref.update(diagnosticsRef, (diagnostics) => ({
-							...diagnostics,
-							initialized: false,
-							window:
-								diagnostics.window === null
-									? null
-									: {
-											...diagnostics.window,
-											isOpen: false,
-										},
-						}));
-					});
+				const markWindowClosed = Effect.fnUntraced(function* () {
+					currentWindow = null;
+					pendingInputEvents = [];
+					yield* Ref.update(diagnosticsRef, (diagnostics) => ({
+						...diagnostics,
+						initialized: false,
+						window:
+							diagnostics.window === null
+								? null
+								: {
+										...diagnostics.window,
+										isOpen: false,
+									},
+					}));
+				});
 
-				const ensureAudioRuntime = () =>
-					Effect.gen(function* () {
-						if (
-							audioContext !== null &&
-							masterGain !== null &&
-							musicBusGain !== null &&
-							sfxBusGain !== null
-						) {
-							return {
-								audioContext,
-								masterGain,
-								musicBusGain,
-								sfxBusGain,
-							};
-						}
+				const ensureAudioRuntime = Effect.fnUntraced(function* () {
+					if (
+						audioContext !== null &&
+						masterGain !== null &&
+						musicBusGain !== null &&
+						sfxBusGain !== null
+					) {
+						return {
+							audioContext,
+							masterGain,
+							musicBusGain,
+							sfxBusGain,
+						};
+					}
 
-						const runtime = yield* Effect.tryPromise({
-							try: async () => {
-								const context = new AudioContext({
-									latencyHint: "playback",
-								});
-								const nextMasterGain = new GainNode(context, { gain: 1 });
-								const nextMusicBusGain = new GainNode(context, { gain: 1 });
-								const nextSfxBusGain = new GainNode(context, { gain: 1 });
-
-								nextMusicBusGain.connect(nextMasterGain);
-								nextSfxBusGain.connect(nextMasterGain);
-								nextMasterGain.connect(context.destination);
-
-								if (context.state === "suspended") {
-									await context.resume();
-								}
-
-								return {
-									audioContext: context,
-									masterGain: nextMasterGain,
-									musicBusGain: nextMusicBusGain,
-									sfxBusGain: nextSfxBusGain,
-								};
-							},
-							catch: (cause) =>
-								new EngineLaunchError({
-									module: "native",
-									reason: `Failed to initialize Web Audio output: ${String(cause)}`,
-								}),
-						});
-
-						audioContext = runtime.audioContext;
-						masterGain = runtime.masterGain;
-						musicBusGain = runtime.musicBusGain;
-						sfxBusGain = runtime.sfxBusGain;
-
-						return runtime;
-					});
-
-				const loadCueBuffer = (cueId: string, sourcePath: string) =>
-					Effect.gen(function* () {
-						const cachedBuffer = decodedCueBuffers.get(cueId);
-						if (cachedBuffer !== undefined) {
-							return cachedBuffer;
-						}
-
-						const inFlight = bufferLoads.get(cueId);
-						if (inFlight !== undefined) {
-							return yield* Effect.tryPromise({
-								try: () => inFlight,
-								catch: (cause) =>
-									new EngineLaunchError({
-										module: "native",
-										reason: `Failed to decode audio cue ${cueId}: ${String(cause)}`,
-									}),
+					const runtime = yield* Effect.tryPromise({
+						try: async () => {
+							const context = new AudioContext({
+								latencyHint: "playback",
 							});
-						}
+							const nextMasterGain = new GainNode(context, { gain: 1 });
+							const nextMusicBusGain = new GainNode(context, { gain: 1 });
+							const nextSfxBusGain = new GainNode(context, { gain: 1 });
 
-						const { audioContext: activeContext } = yield* ensureAudioRuntime();
-						const decodePromise = (async () => {
-							const encodedAudio = await Bun.file(sourcePath).arrayBuffer();
-							return activeContext.decodeAudioData(encodedAudio);
-						})();
-						bufferLoads.set(cueId, decodePromise);
+							nextMusicBusGain.connect(nextMasterGain);
+							nextSfxBusGain.connect(nextMasterGain);
+							nextMasterGain.connect(context.destination);
 
-						const decodedBuffer = yield* Effect.tryPromise({
-							try: () => decodePromise,
+							if (context.state === "suspended") {
+								await context.resume();
+							}
+
+							return {
+								audioContext: context,
+								masterGain: nextMasterGain,
+								musicBusGain: nextMusicBusGain,
+								sfxBusGain: nextSfxBusGain,
+							};
+						},
+						catch: (cause) =>
+							new EngineLaunchError({
+								module: "native",
+								reason: `Failed to initialize Web Audio output: ${String(cause)}`,
+							}),
+					});
+
+					audioContext = runtime.audioContext;
+					masterGain = runtime.masterGain;
+					musicBusGain = runtime.musicBusGain;
+					sfxBusGain = runtime.sfxBusGain;
+
+					return runtime;
+				});
+
+				const loadCueBuffer = Effect.fnUntraced(function* (
+					cueId: string,
+					sourcePath: string,
+				) {
+					const cachedBuffer = decodedCueBuffers.get(cueId);
+					if (cachedBuffer !== undefined) {
+						return cachedBuffer;
+					}
+
+					const inFlight = bufferLoads.get(cueId);
+					if (inFlight !== undefined) {
+						return yield* Effect.tryPromise({
+							try: () => inFlight,
 							catch: (cause) =>
 								new EngineLaunchError({
 									module: "native",
 									reason: `Failed to decode audio cue ${cueId}: ${String(cause)}`,
 								}),
-						}).pipe(
-							Effect.ensuring(
-								Effect.sync(() => {
-									bufferLoads.delete(cueId);
-								}),
-							),
-						);
+						});
+					}
 
-						decodedCueBuffers.set(cueId, decodedBuffer);
-						return decodedBuffer;
-					});
+					const { audioContext: activeContext } = yield* ensureAudioRuntime();
+					const decodePromise = (async () => {
+						const encodedAudio = await Bun.file(sourcePath).arrayBuffer();
+						return activeContext.decodeAudioData(encodedAudio);
+					})();
+					bufferLoads.set(cueId, decodePromise);
+
+					const decodedBuffer = yield* Effect.tryPromise({
+						try: () => decodePromise,
+						catch: (cause) =>
+							new EngineLaunchError({
+								module: "native",
+								reason: `Failed to decode audio cue ${cueId}: ${String(cause)}`,
+							}),
+					}).pipe(
+						Effect.ensuring(
+							Effect.sync(() => {
+								bufferLoads.delete(cueId);
+							}),
+						),
+					);
+
+					decodedCueBuffers.set(cueId, decodedBuffer);
+					return decodedBuffer;
+				});
 
 				const clearMusicSource = (disposeGainNode: boolean) => {
 					if (activeMusic === null) {
@@ -781,7 +781,7 @@ export function makeSkiaNativeBackendLayer({
 					return Math.max(0, Math.min(activeMusic.buffer.duration, rawOffset));
 				};
 
-				const startMusicSource = (
+				const startMusicSource = Effect.fnUntraced(function* (
 					cueId: string,
 					buffer: AudioBuffer,
 					options: {
@@ -790,39 +790,38 @@ export function makeSkiaNativeBackendLayer({
 						readonly startOffsetSeconds: number;
 						readonly volume: number;
 					},
-				) =>
-					Effect.gen(function* () {
-						const { audioContext, musicBusGain } = yield* ensureAudioRuntime();
-						const musicGainNode =
-							activeMusic?.gainNode ??
-							new GainNode(audioContext, {
-								gain: clampUnit(options.volume),
-							});
+				) {
+					const { audioContext, musicBusGain } = yield* ensureAudioRuntime();
+					const musicGainNode =
+						activeMusic?.gainNode ??
+						new GainNode(audioContext, {
+							gain: clampUnit(options.volume),
+						});
 
-						if (activeMusic === null) {
-							musicGainNode.connect(musicBusGain);
-						}
-						musicGainNode.gain.value = clampUnit(options.volume);
+					if (activeMusic === null) {
+						musicGainNode.connect(musicBusGain);
+					}
+					musicGainNode.gain.value = clampUnit(options.volume);
 
-						const source = audioContext.createBufferSource();
-						source.buffer = buffer;
-						source.loop = options.loop;
-						source.playbackRate.value = options.pitch;
-						source.connect(musicGainNode);
-						source.start(0, options.startOffsetSeconds);
+					const source = audioContext.createBufferSource();
+					source.buffer = buffer;
+					source.loop = options.loop;
+					source.playbackRate.value = options.pitch;
+					source.connect(musicGainNode);
+					source.start(0, options.startOffsetSeconds);
 
-						activeMusic = {
-							buffer,
-							cueId,
-							gainNode: musicGainNode,
-							loop: options.loop,
-							pitch: options.pitch,
-							source,
-							startedAtSeconds: audioContext.currentTime,
-							startOffsetSeconds: options.startOffsetSeconds,
-							volume: options.volume,
-						};
-					});
+					activeMusic = {
+						buffer,
+						cueId,
+						gainNode: musicGainNode,
+						loop: options.loop,
+						pitch: options.pitch,
+						source,
+						startedAtSeconds: audioContext.currentTime,
+						startOffsetSeconds: options.startOffsetSeconds,
+						volume: options.volume,
+					};
+				});
 
 				const stopActiveSound = (
 					playbackId: string,
@@ -854,7 +853,7 @@ export function makeSkiaNativeBackendLayer({
 					}
 				};
 
-				const startSoundPlayback = (
+				const startSoundPlayback = Effect.fnUntraced(function* (
 					playbackId: string,
 					cueId: string,
 					buffer: AudioBuffer,
@@ -863,82 +862,80 @@ export function makeSkiaNativeBackendLayer({
 						readonly pitch: number;
 						readonly volume: number;
 					},
-				) =>
-					Effect.gen(function* () {
-						const { audioContext, sfxBusGain } = yield* ensureAudioRuntime();
-						const gainNode = new GainNode(audioContext, {
-							gain: clampUnit(options.volume),
-						});
-						gainNode.connect(sfxBusGain);
-
-						const source = audioContext.createBufferSource();
-						source.buffer = buffer;
-						source.loop = options.loop;
-						source.playbackRate.value = options.pitch;
-						source.connect(gainNode);
-						source.onended = () => {
-							if (!activeSounds.has(playbackId) || options.loop) {
-								return;
-							}
-
-							stopActiveSound(playbackId, { markCompleted: true });
-						};
-						source.start();
-
-						activeSounds.set(playbackId, {
-							cueId,
-							gainNode,
-							loop: options.loop,
-							pitch: options.pitch,
-							playbackId,
-							source,
-							volume: options.volume,
-						});
+				) {
+					const { audioContext, sfxBusGain } = yield* ensureAudioRuntime();
+					const gainNode = new GainNode(audioContext, {
+						gain: clampUnit(options.volume),
 					});
+					gainNode.connect(sfxBusGain);
 
-				const resetAudioRuntime = () =>
-					Effect.gen(function* () {
-						for (const playbackId of Array.from(activeSounds.keys())) {
-							stopActiveSound(playbackId);
+					const source = audioContext.createBufferSource();
+					source.buffer = buffer;
+					source.loop = options.loop;
+					source.playbackRate.value = options.pitch;
+					source.connect(gainNode);
+					source.onended = () => {
+						if (!activeSounds.has(playbackId) || options.loop) {
+							return;
 						}
 
-						clearMusicSource(true);
-						completedPlaybackIds = [];
+						stopActiveSound(playbackId, { markCompleted: true });
+					};
+					source.start();
 
-						if (audioContext !== null) {
-							const contextToClose = audioContext;
-							yield* Effect.tryPromise({
-								try: () => contextToClose.close(),
-								catch: (cause) =>
-									new EngineLaunchError({
-										module: "native",
-										reason: `Failed to close Web Audio context: ${String(cause)}`,
-									}),
-							}).pipe(
-								Effect.catch((error: EngineLaunchError) =>
-									recordError(error.reason),
-								),
-							);
-						}
-
-						audioContext = null;
-						masterGain = null;
-						musicBusGain = null;
-						sfxBusGain = null;
-						activeMusic = null;
-						activeSounds = new Map();
-						decodedCueBuffers = new Map();
-						bufferLoads = new Map();
-
-						yield* Ref.update(diagnosticsRef, (diagnostics) => ({
-							...diagnostics,
-							audio: {
-								...diagnostics.audio,
-								activeSoundCount: 0,
-								currentMusicCueId: null,
-							},
-						}));
+					activeSounds.set(playbackId, {
+						cueId,
+						gainNode,
+						loop: options.loop,
+						pitch: options.pitch,
+						playbackId,
+						source,
+						volume: options.volume,
 					});
+				});
+
+				const resetAudioRuntime = Effect.fnUntraced(function* () {
+					for (const playbackId of Array.from(activeSounds.keys())) {
+						stopActiveSound(playbackId);
+					}
+
+					clearMusicSource(true);
+					completedPlaybackIds = [];
+
+					if (audioContext !== null) {
+						const contextToClose = audioContext;
+						yield* Effect.tryPromise({
+							try: () => contextToClose.close(),
+							catch: (cause) =>
+								new EngineLaunchError({
+									module: "native",
+									reason: `Failed to close Web Audio context: ${String(cause)}`,
+								}),
+						}).pipe(
+							Effect.catch((error: EngineLaunchError) =>
+								recordError(error.reason),
+							),
+						);
+					}
+
+					audioContext = null;
+					masterGain = null;
+					musicBusGain = null;
+					sfxBusGain = null;
+					activeMusic = null;
+					activeSounds = new Map();
+					decodedCueBuffers = new Map();
+					bufferLoads = new Map();
+
+					yield* Ref.update(diagnosticsRef, (diagnostics) => ({
+						...diagnostics,
+						audio: {
+							...diagnostics.audio,
+							activeSoundCount: 0,
+							currentMusicCueId: null,
+						},
+					}));
+				});
 
 				const open = Effect.fn("NativeBackend.open")(function* (
 					_gameId: string,

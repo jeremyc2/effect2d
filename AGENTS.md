@@ -1,8 +1,5 @@
 - Comment regexes.
 - ALWAYS run `bun all` after making any changes.
-- Avoid type casts. no ` as ` / ` as unknown as `. prefer narrowing, checks, schema parse. `as const` fine.
-- No JS `throw` / `try` / `catch`. use Effect errors, `Effect.fail`, `Effect.try*`, `Effect.catch*`.
-- For reusable generator-based helpers, prefer `const doThing = Effect.fn(...)` or `Effect.fnUntraced(...)` instead of `function doThing() { return Effect.gen(...) }` or `(args) => Effect.gen(...)`.
 - Use `Effect.fn(...)` when the helper should create an OTEL span, and `Effect.fnUntraced(...)` otherwise.
 - Whenever you add a new export intended for game authors, always add descriptive `@public` JSDoc.
 - Don't be shy about referencing `reference_repositories` folder for ideas/patterns.

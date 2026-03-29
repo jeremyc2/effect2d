@@ -112,7 +112,7 @@ Builds the Skia implementation of [NativeBackend](./llms/native.md#native-native
 ### makeSkiaNativeBoundaryLayer
 
 - Kind: function
-- Source: `src/native/SkiaNativeBackend.ts:1385`
+- Source: `src/native/SkiaNativeBackend.ts:1382`
 
 Builds a ready-to-use native playable boundary backed by a Skia window and
 renderer.

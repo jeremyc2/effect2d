@@ -6,7 +6,7 @@
 		"module": "Preserve",
 		"moduleDetection": "force",
 		"jsx": "react-jsx",
-		"allowJs": true,
+		"allowJs": false,
 		"types": ["bun-types"],
 
 		// Bundler mode
@@ -99,7 +99,7 @@
 			}
 		]
 	},
-	"include": ["src/**/*", "scripts/**/*", "games/**/*"],
+	"include": ["src/**/*", "scripts/**/*", "games/**/*", "tools/**/*"],
 	"exclude": ["reference_repositories/**/*"],
 	"$schema": "./node_modules/@effect/language-service/schema.json"
 }
