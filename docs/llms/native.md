@@ -105,14 +105,14 @@ authored image and font asset paths here.
 ### makeSkiaNativeBackendLayer
 
 - Kind: function
-- Source: `src/native/SkiaNativeBackend.ts:539`
+- Source: `src/native/SkiaNativeBackend.ts:547`
 
 Builds the Skia implementation of [NativeBackend](./llms/native.md#native-nativebackend).
 
 ### makeSkiaNativeBoundaryLayer
 
 - Kind: function
-- Source: `src/native/SkiaNativeBackend.ts:1369`
+- Source: `src/native/SkiaNativeBackend.ts:1385`
 
 Builds a ready-to-use native playable boundary backed by a Skia window and
 renderer.

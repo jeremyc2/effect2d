@@ -62,6 +62,14 @@ export interface SkiaNativeBackendOptions {
 	readonly imageAssetPaths?: Readonly<Record<string, string>>;
 	readonly logicalHeight?: number;
 	readonly logicalWidth?: number;
+	/**
+	 * When upscaling the logical frame to fit the window, whether to snap the
+	 * scale down to a whole number (1×, 2×, …) instead of using the continuous
+	 * aspect-fit factor. Integer scales keep pixel-sized content crisp; fractional
+	 * scales use more of the window but can soften artwork. Downscaling below
+	 * the logical size always uses a fractional scale so the full frame still
+	 * fits. Defaults to true in {@link makeSkiaNativeBackendLayer}.
+	 */
 	readonly preferIntegerScaling?: boolean;
 	readonly resizable?: boolean;
 	readonly title: string;
@@ -553,6 +561,14 @@ export function makeSkiaNativeBackendLayer({
 	windowWidth,
 	logicalHeight = windowHeight,
 	logicalWidth = windowWidth,
+	/**
+	 * When upscaling the logical frame to fit the window, whether to snap the
+	 * scale down to a whole number (1×, 2×, …) instead of using the continuous
+	 * aspect-fit factor. Integer scales keep pixel-sized content crisp; fractional
+	 * scales use more of the window but can soften artwork. Downscaling below
+	 * the logical size always uses a fractional scale so the full frame still
+	 * fits. Defaults to true in {@link makeSkiaNativeBackendLayer}.
+	 */
 	preferIntegerScaling = true,
 	resizable = true,
 }: SkiaNativeBackendOptions): Layer.Layer<NativeBackend, EngineLaunchError> {
