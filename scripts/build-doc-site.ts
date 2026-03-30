@@ -1781,13 +1781,12 @@ const renderHtmlDocument = ({
 
 			@media (max-width: 920px) {
 				.topbar {
-					flex-wrap: wrap;
-					padding: 0.85rem 1rem;
+					flex-wrap: nowrap;
+					padding: 0.75rem 1rem;
 				}
 
 				.topbar-links {
-					width: 100%;
-					justify-content: flex-start;
+					display: none;
 				}
 
 				.layout {
