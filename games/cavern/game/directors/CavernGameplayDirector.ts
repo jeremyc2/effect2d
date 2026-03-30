@@ -1,10 +1,12 @@
-import { Effect, Layer, ServiceMap } from "effect";
+import { Effect, Layer, Result, ServiceMap } from "effect";
+import type * as PlatformError from "effect/PlatformError";
 import {
 	Audio,
 	EngineLogger,
 	Input,
 	type InvalidLogMessageError,
 	RuntimeClock,
+	SaveCoordinator,
 	SceneCamera,
 	SceneDirector,
 	type SceneNotFoundError,
@@ -24,6 +26,10 @@ import {
 	getRoomCameraBounds,
 	getTransitionSpawnPosition,
 } from "../content/CavernWorld.ts";
+import {
+	CavernDiskSave,
+	cavernAutosaveSlotId,
+} from "../save/cavernAutosave.ts";
 import { CavernEnemyState } from "../state/CavernEnemyState.ts";
 import { CavernMenuState } from "../state/CavernMenuState.ts";
 import { CavernPlayerState } from "../state/CavernPlayerState.ts";
@@ -409,6 +415,7 @@ const isPointInsideButton = (
 
 type CavernGameplayDirectorFailure =
 	| InvalidLogMessageError
+	| PlatformError.PlatformError
 	| SceneNotFoundError
 	| SceneStackEmptyError
 	| UnknownAudioCueError
@@ -437,6 +444,8 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 			const runtimeClock = yield* RuntimeClock;
 			const sceneCamera = yield* SceneCamera;
 			const sceneDirector = yield* SceneDirector;
+			const saveCoordinator = yield* SaveCoordinator;
+			const cavernDiskSave = yield* CavernDiskSave;
 
 			const activateMenuButton = Effect.fn(
 				"CavernGameplayDirector.activateMenuButton",
@@ -453,17 +462,36 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 				yield* audio.playSfx("menu-click");
 
 				switch (button.id) {
-					case "new-game":
-					case "continue":
+					case "new-game": {
 						yield* cavernWorldState.reset;
 						yield* cavernEnemyState.reset;
 						yield* cavernPlayerState.moveTo(getCavernRoom("rm1").playerSpawn);
 						yield* cavernPlayerState.setVelocity({ x: 0, y: 0 });
+						yield* saveCoordinator.writeSlot(cavernAutosaveSlotId);
+						yield* cavernDiskSave.flush();
 						yield* sceneDirector.switchTo("overworld");
 						yield* engineLogger.info("Cavern menu advanced to overworld.", {
 							action: button.id,
 						});
 						return;
+					}
+					case "continue": {
+						const outcome = yield* Effect.result(
+							saveCoordinator.restoreSlot(cavernAutosaveSlotId),
+						);
+						if (Result.isFailure(outcome)) {
+							yield* engineLogger.info(
+								"Cavern continue ignored: no autosave on disk.",
+								{},
+							);
+							return;
+						}
+						yield* sceneDirector.switchTo("overworld");
+						yield* engineLogger.info("Cavern menu advanced to overworld.", {
+							action: button.id,
+						});
+						return;
+					}
 					case "sound": {
 						yield* cavernMenuState.toggleSound;
 						const menuSnapshot = yield* cavernMenuState.snapshot;
@@ -743,6 +771,8 @@ export class CavernGameplayDirector extends ServiceMap.Service<
 						),
 					);
 					yield* cavernPlayerState.setVelocity({ x: 0, y: 0 });
+					yield* saveCoordinator.writeSlot(cavernAutosaveSlotId);
+					yield* cavernDiskSave.flush();
 				}
 
 				const updatedPlayerSnapshot = yield* cavernPlayerState.snapshot;

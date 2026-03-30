@@ -22,6 +22,9 @@ export class CavernWorldState extends ServiceMap.Service<
 		readonly beginRoomInstructionsFade: (
 			startedAtMillis: number,
 		) => Effect.Effect<void>;
+		readonly replaceSnapshot: (
+			snapshot: CavernWorldSnapshot,
+		) => Effect.Effect<void>;
 		readonly reset: Effect.Effect<void>;
 		readonly setCurrentRoom: (roomId: CavernRoomId) => Effect.Effect<void>;
 		readonly snapshot: Effect.Effect<CavernWorldSnapshot>;
@@ -65,8 +68,16 @@ export class CavernWorldState extends ServiceMap.Service<
 				Effect.withSpan("CavernWorldState.reset"),
 			);
 
+			const replaceSnapshot = Effect.fnUntraced(function* (
+				snapshot: CavernWorldSnapshot,
+			) {
+				getCavernRoom(snapshot.currentRoomId);
+				yield* Ref.set(stateRef, snapshot);
+			});
+
 			return CavernWorldState.of({
 				beginRoomInstructionsFade,
+				replaceSnapshot,
 				reset,
 				setCurrentRoom,
 				snapshot: Ref.get(stateRef),

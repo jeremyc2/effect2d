@@ -6,10 +6,22 @@
 
 ## SaveCoordinator
 
+### SaveCoordinatorType
+
+- Kind: type
+- Source: `src/save/SaveCoordinator.ts:23`
+
+surface of [SaveCoordinator](./llms/save.md#save-savecoordinator).
+
+Slot methods are typed with `never` on the requirements channel because the
+coordinator re-provides the current `ServiceMap.ServiceMap` to each
+participant effect via `Effect.provideServices` (see `SaveCoordinator.layer`).
+Import/export only touch the in-memory document and also stay `never` there.
+
 ### SaveCoordinatorOptions
 
 - Kind: interface
-- Source: `src/save/SaveCoordinator.ts:68`
+- Source: `src/save/SaveCoordinator.ts:101`
 
 Configuration for building a [SaveCoordinator](./llms/save.md#save-savecoordinator).
 
@@ -22,7 +34,7 @@ persisted formats across released versions.
 ### SaveCoordinator
 
 - Kind: service
-- Source: `src/save/SaveCoordinator.ts:85`
+- Source: `src/save/SaveCoordinator.ts:118`
 
 Coordinates save snapshots, restores, imports, and migrations.
 
@@ -43,14 +55,6 @@ const saveLayer = SaveCoordinator.layer({
  participants: [playerSaveParticipant, worldSaveParticipant],
 });
 ```
-
-#### Methods
-
-- `restoreSlot: ( slotId: SaveSlotId, ) => Effect.Effect<void, SaveSlotNotFoundError>`
-- `exportDocument: Effect.Effect<SaveDocument>`
-- `importDocument: ( document: unknown, ) => Effect.Effect< void, | SaveDocumentDecodeError | SaveMigrationFailedError | SaveMigrationMissingError | SaveMigrationVersionMismatchError >`
-- `snapshotSlot: ( slotId: SaveSlotId, ) => Effect.Effect<SaveSlotDocument>`
-- `writeSlot: (slotId: SaveSlotId) => Effect.Effect<SaveDocument>`
 
 ## SaveDocument
 
@@ -92,8 +96,21 @@ Participates in save capture and restore.
 Each game-owned state service that wants to be saved can expose one
 `SaveParticipant`.
 
+Capture and restore are normal `Effect`s: they almost always **require**
+game services (via `yield*`). Model that by choosing a type parameter `R`
+that is the union of every service those effects may `yield*`. Using plain
+`Effect.Effect<…>` without `R` defaults `R` to `never`, which does **not**
+match real participants.
+
+`SaveCoordinator.layer` reads the current service map and applies
+`Effect.provideServices` to each participant effect so the coordinator’s
+slot methods stay typed with `never` on the requirements channel (no `as`
+needed at call sites).
+
 ```ts
-const playerSaveParticipant: SaveParticipant = {
+type MySaveR = PlayerState | WorldState;
+
+const playerSaveParticipant: SaveParticipant<MySaveR> = {
  key: "player",
  capture: PlayerState.snapshot,
  restore: (state) => PlayerState.restore(state),
@@ -103,21 +120,21 @@ const playerSaveParticipant: SaveParticipant = {
 ### SaveMigration
 
 - Kind: interface
-- Source: `src/save/SaveDocument.ts:53`
+- Source: `src/save/SaveDocument.ts:66`
 
 A typed migration between persisted save versions. Each migration should move the document from exactly one version to the next expected version.
 
 ### SaveSlotDocumentSchema
 
 - Kind: const
-- Source: `src/save/SaveDocument.ts:64`
+- Source: `src/save/SaveDocument.ts:77`
 
 Runtime schema for a single save slot document. Use this when you need Effect Schema decoding outside of [SaveCoordinator](./llms/save.md#save-savecoordinator).
 
 ### SaveDocumentSchema
 
 - Kind: const
-- Source: `src/save/SaveDocument.ts:71`
+- Source: `src/save/SaveDocument.ts:84`
 
 Runtime schema for the top-level save document.
 

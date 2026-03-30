@@ -12,7 +12,7 @@ Use it for progressive disclosure: start with the overview or a module file, the
 ## Core Docs
 
 - [Overview](./llms/overview.md): Package overview, goals, quick-start guidance, and engine fit.
-- [Full Context](./llms-full.txt): One-file Markdown expansion of the full public API for direct ingestion (69 KB).
+- [Full Context](./llms-full.txt): One-file Markdown expansion of the full public API for direct ingestion (70 KB).
 
 ## Modules
 
@@ -26,7 +26,7 @@ Use it for progressive disclosure: start with the overview or a module file, the
 - [Maps](./llms/maps.md): 24 public entries covering maps services, functions, types, interfaces, and errors.
 - [Native](./llms/native.md): 10 public entries covering native services, functions, types, interfaces, and errors.
 - [Runtime](./llms/runtime.md): 13 public entries covering runtime services, functions, types, interfaces, and errors.
-- [Save](./llms/save.md): 16 public entries covering save services, functions, types, interfaces, and errors.
+- [Save](./llms/save.md): 17 public entries covering save services, functions, types, interfaces, and errors.
 - [Scene](./llms/scene.md): 12 public entries covering scene services, functions, types, interfaces, and errors.
 - [Sequence](./llms/sequence.md): 4 public entries covering sequence services, functions, types, interfaces, and errors.
 - [UI](./llms/ui.md): 12 public entries covering ui services, functions, types, interfaces, and errors.

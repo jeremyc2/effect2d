@@ -34,20 +34,33 @@ export interface SaveDocument {
  * Each game-owned state service that wants to be saved can expose one
  * `SaveParticipant`.
  *
+ * Capture and restore are normal `Effect`s: they almost always **require**
+ * game services (via `yield*`). Model that by choosing a type parameter `R`
+ * that is the union of every service those effects may `yield*`. Using plain
+ * `Effect.Effect<…>` without `R` defaults `R` to `never`, which does **not**
+ * match real participants.
+ *
+ * {@link SaveCoordinator.layer} reads the current service map and applies
+ * `Effect.provideServices` to each participant effect so the coordinator’s
+ * slot methods stay typed with `never` on the requirements channel (no `as`
+ * needed at call sites).
+ *
  * ```ts
- * const playerSaveParticipant: SaveParticipant = {
+ * type MySaveR = PlayerState | WorldState;
+ *
+ * const playerSaveParticipant: SaveParticipant<MySaveR> = {
  *   key: "player",
  *   capture: PlayerState.snapshot,
  *   restore: (state) => PlayerState.restore(state),
  * };
  * ```
  */
-export interface SaveParticipant {
-	readonly capture: Effect.Effect<Readonly<Record<string, unknown>>>;
+export interface SaveParticipant<R = never> {
+	readonly capture: Effect.Effect<Readonly<Record<string, unknown>>, never, R>;
 	readonly key: string;
 	readonly restore: (
 		state: Readonly<Record<string, unknown>>,
-	) => Effect.Effect<void>;
+	) => Effect.Effect<void, never, R>;
 }
 
 /** A typed migration between persisted save versions. Each migration should move the document from exactly one version to the next expected version. @public */

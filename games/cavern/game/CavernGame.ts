@@ -20,6 +20,11 @@ import { CavernGameplayDirector } from "./directors/CavernGameplayDirector.ts";
 import { CavernPresentationDirector } from "./directors/CavernPresentationDirector.ts";
 import { cavernBindings } from "./input/CavernBindings.ts";
 import { CavernFrameUpdaterLive } from "./native/CavernFrameUpdater.ts";
+import {
+	CavernDiskSave,
+	cavernPlatformIoLayer,
+	cavernSaveCoordinatorLayer,
+} from "./save/cavernAutosave.ts";
 import { CavernMainMenuScene } from "./scenes/CavernMainMenuScene.ts";
 import { CavernOverworldScene } from "./scenes/CavernOverworldScene.ts";
 import { CavernEnemyState } from "./state/CavernEnemyState.ts";
@@ -37,11 +42,27 @@ export const cavernConfig = {
 
 export const cavernNativeBoundaryLayer = makeHeadlessNativeBoundaryLayer();
 
-const cavernStateLayer = Layer.mergeAll(
+const cavernCoreStateLayer = Layer.mergeAll(
 	CavernEnemyState.layer,
-	CavernMenuState.layer,
 	CavernPlayerState.layer,
 	CavernWorldState.layer,
+);
+
+/** Save coordinator reads the live service map; build it after core state layers. */
+const cavernSaveLayer = cavernSaveCoordinatorLayer.pipe(
+	Layer.provideMerge(cavernCoreStateLayer),
+);
+
+const cavernBaseStateLayer = Layer.mergeAll(
+	CavernMenuState.layer,
+	cavernSaveLayer,
+);
+
+const cavernStateLayer = Layer.mergeAll(
+	cavernBaseStateLayer,
+	CavernDiskSave.layer.pipe(
+		Layer.provide(Layer.mergeAll(cavernPlatformIoLayer, cavernBaseStateLayer)),
+	),
 );
 
 const cavernRuntimeSupportLayer = Layer.mergeAll(
@@ -51,6 +72,7 @@ const cavernRuntimeSupportLayer = Layer.mergeAll(
 
 const cavernCapabilityLayer = Layer.mergeAll(
 	Audio.layer,
+	cavernPlatformIoLayer,
 	EngineLogger.layer,
 	Graphics.layer,
 	Input.layer,
@@ -209,6 +231,8 @@ export const cavernBootstrap = Effect.gen(function* () {
 
 export const cavernProgram = Effect.gen(function* () {
 	const engine = yield* Engine;
+	const cavernDiskSave = yield* CavernDiskSave;
 	yield* cavernBootstrap;
+	yield* cavernDiskSave.loadFromDisk();
 	yield* engine.launch();
 });

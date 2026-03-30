@@ -1,6 +1,7 @@
 import { BunServices } from "@effect/platform-bun";
 import {
 	Cause,
+	type Config,
 	DateTime,
 	Effect,
 	Fiber,
@@ -25,6 +26,10 @@ import { OtlpResource } from "effect/unstable/observability";
 import type { LogsData } from "effect/unstable/observability/OtlpLogger";
 import type { MetricsData } from "effect/unstable/observability/OtlpMetrics";
 import type { TraceData } from "effect/unstable/observability/OtlpTracer";
+import {
+	effect2dOtelRoot,
+	effect2dOtelSessionDir,
+} from "../config/telemetryEnvConfig.ts";
 import {
 	initializeGameplayMetrics,
 	isGameplayMetricId,
@@ -299,20 +304,23 @@ export const createGameplayTelemetrySessionDescriptor: (
 	options: GameplayTelemetryLayerOptions,
 ) => Effect.Effect<
 	GameplayTelemetrySessionDescriptor,
-	PlatformError.PlatformError | Schema.SchemaError,
+	Config.ConfigError | PlatformError.PlatformError | Schema.SchemaError,
 	FileSystem.FileSystem | Path.Path
 > = Effect.fnUntraced(function* (options: GameplayTelemetryLayerOptions) {
 	const path = yield* Path.Path;
 	const startedAt = yield* DateTime.now;
 	const startedAtIso = DateTime.formatIso(startedAt);
 	const sanitizedGameId = sanitizeTelemetryGameId(options.gameId);
+	const maybeOtelRoot = yield* effect2dOtelRoot;
 	const outputRootDirectory = resolveTelemetryRootDirectory(
 		path,
 		options.outputRootDirectory,
+		Option.getOrUndefined(maybeOtelRoot),
 	);
 	const gameDirectory = path.join(outputRootDirectory, sanitizedGameId);
+	const maybeSessionDirFromEnv = yield* effect2dOtelSessionDir;
 	const requestedSessionDirectory =
-		options.sessionDirectory ?? Bun.env["EFFECT2D_OTEL_SESSION_DIR"];
+		options.sessionDirectory ?? Option.getOrUndefined(maybeSessionDirFromEnv);
 
 	if (requestedSessionDirectory !== undefined) {
 		const existingDescriptor =
@@ -393,7 +401,7 @@ export const resolveLatestGameplayTelemetrySessionDescriptor: (
 	},
 ) => Effect.Effect<
 	GameplayTelemetrySessionDescriptor | null,
-	PlatformError.PlatformError | Schema.SchemaError,
+	Config.ConfigError | PlatformError.PlatformError | Schema.SchemaError,
 	FileSystem.FileSystem | Path.Path
 > = Effect.fnUntraced(function* (
 	gameId: string,
@@ -403,9 +411,11 @@ export const resolveLatestGameplayTelemetrySessionDescriptor: (
 ) {
 	const fs = yield* FileSystem.FileSystem;
 	const path = yield* Path.Path;
+	const maybeOtelRoot = yield* effect2dOtelRoot;
 	const outputRootDirectory = resolveTelemetryRootDirectory(
 		path,
 		options?.outputRootDirectory,
+		Option.getOrUndefined(maybeOtelRoot),
 	);
 	const latestSessionFilePath = path.join(
 		outputRootDirectory,
@@ -442,7 +452,7 @@ export const appendGameplayCommentaryEntry: (options: {
 	GameplayCommentaryEntry & {
 		readonly commentaryFilePath: string;
 	},
-	PlatformError.PlatformError | Schema.SchemaError,
+	Config.ConfigError | PlatformError.PlatformError | Schema.SchemaError,
 	FileSystem.FileSystem | Path.Path
 > = Effect.fnUntraced(function* (options: {
 	readonly gameId: string;
@@ -543,7 +553,7 @@ const createGameplayTelemetrySessionRuntime: (
 	options: GameplayTelemetryLayerOptions,
 ) => Effect.Effect<
 	GameplayTelemetrySessionRuntime,
-	PlatformError.PlatformError | Schema.SchemaError,
+	Config.ConfigError | PlatformError.PlatformError | Schema.SchemaError,
 	FileSystem.FileSystem | Path.Path | Scope.Scope
 > = Effect.fnUntraced(function* (options: GameplayTelemetryLayerOptions) {
 	const descriptor = yield* createGameplayTelemetrySessionDescriptor(options);
@@ -602,11 +612,12 @@ const createGameplayTelemetrySessionRuntime: (
 
 function resolveTelemetryRootDirectory(
 	path: Path.Path,
-	outputRootDirectory?: string,
+	outputRootDirectory: string | undefined,
+	otelRootFromEnv: string | undefined,
 ): string {
 	return path.resolve(
 		outputRootDirectory ??
-			Bun.env["EFFECT2D_OTEL_ROOT"] ??
+			otelRootFromEnv ??
 			path.join(process.cwd(), ".effect2d", "otel"),
 	);
 }

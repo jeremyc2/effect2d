@@ -20,6 +20,39 @@ import {
 	SaveSlotNotFoundError,
 } from "./SaveError.ts";
 
+/**
+ * Public surface of {@link SaveCoordinator}.
+ *
+ * Slot methods are typed with `never` on the requirements channel because the
+ * coordinator re-provides the current {@link ServiceMap.ServiceMap} to each
+ * participant effect via {@link Effect.provideServices} (see {@link SaveCoordinator.layer}).
+ * Import/export only touch the in-memory document and also stay `never` there.
+ *
+ * @public
+ */
+export type SaveCoordinatorType = {
+	readonly exportDocument: Effect.Effect<SaveDocument, never, never>;
+	readonly importDocument: (
+		document: unknown,
+	) => Effect.Effect<
+		void,
+		| SaveDocumentDecodeError
+		| SaveMigrationFailedError
+		| SaveMigrationMissingError
+		| SaveMigrationVersionMismatchError,
+		never
+	>;
+	readonly restoreSlot: (
+		slotId: SaveSlotId,
+	) => Effect.Effect<void, SaveSlotNotFoundError, never>;
+	readonly snapshotSlot: (
+		slotId: SaveSlotId,
+	) => Effect.Effect<SaveSlotDocument, never, never>;
+	readonly writeSlot: (
+		slotId: SaveSlotId,
+	) => Effect.Effect<SaveDocument, never, never>;
+};
+
 function createDecodeError(error: unknown): SaveDocumentDecodeError {
 	return new SaveDocumentDecodeError({
 		details: error instanceof Error ? error.message : String(error),
@@ -74,11 +107,11 @@ const applyMigrations = Effect.fn("SaveCoordinator.applyMigrations")(function* (
  * capture and restore. `migrations` is only needed after you start evolving
  * persisted formats across released versions.
  */
-export interface SaveCoordinatorOptions {
+export interface SaveCoordinatorOptions<R = never> {
 	readonly initialDocument?: SaveDocument;
 	readonly migrations?: ReadonlyArray<SaveMigration>;
 	readonly nowMillis?: () => number;
-	readonly participants: ReadonlyArray<SaveParticipant>;
+	readonly participants: ReadonlyArray<SaveParticipant<R>>;
 	readonly version: number;
 }
 
@@ -105,33 +138,15 @@ export interface SaveCoordinatorOptions {
  */
 export class SaveCoordinator extends ServiceMap.Service<
 	SaveCoordinator,
-	{
-		readonly restoreSlot: (
-			slotId: SaveSlotId,
-		) => Effect.Effect<void, SaveSlotNotFoundError>;
-		readonly exportDocument: Effect.Effect<SaveDocument>;
-		readonly importDocument: (
-			document: unknown,
-		) => Effect.Effect<
-			void,
-			| SaveDocumentDecodeError
-			| SaveMigrationFailedError
-			| SaveMigrationMissingError
-			| SaveMigrationVersionMismatchError
-		>;
-		readonly snapshotSlot: (
-			slotId: SaveSlotId,
-		) => Effect.Effect<SaveSlotDocument>;
-		readonly writeSlot: (slotId: SaveSlotId) => Effect.Effect<SaveDocument>;
-	}
+	SaveCoordinatorType
 >()("effect2d/save/SaveCoordinator") {
-	static readonly layer = ({
+	static readonly layer = <R = never>({
 		initialDocument,
 		migrations = [],
 		nowMillis = () => Math.round(performance.timeOrigin + performance.now()),
 		participants,
 		version,
-	}: SaveCoordinatorOptions) =>
+	}: SaveCoordinatorOptions<R>) =>
 		Layer.effect(
 			SaveCoordinator,
 			Effect.gen(function* () {
@@ -146,6 +161,8 @@ export class SaveCoordinator extends ServiceMap.Service<
 						key: duplicateParticipantKey,
 					});
 				}
+
+				const serviceMap = yield* Effect.services<R>();
 
 				const documentRef = yield* Ref.make<SaveDocument>(
 					initialDocument ?? {
@@ -167,7 +184,8 @@ export class SaveCoordinator extends ServiceMap.Service<
 						> = {};
 
 						for (const participant of participants) {
-							participantStates[participant.key] = yield* participant.capture;
+							participantStates[participant.key] =
+								yield* Effect.provideServices(participant.capture, serviceMap);
 						}
 
 						return {
@@ -224,8 +242,11 @@ export class SaveCoordinator extends ServiceMap.Service<
 						}),
 					);
 					for (const participant of participants) {
-						yield* participant.restore(
-							slot.participantStates[participant.key] ?? {},
+						yield* Effect.provideServices(
+							participant.restore(
+								slot.participantStates[participant.key] ?? {},
+							),
+							serviceMap,
 						);
 					}
 					yield* recordSaveRestore(slotId);

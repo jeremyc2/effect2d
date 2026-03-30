@@ -2089,6 +2089,11 @@
 										<div class="nav-file">
 											<a class="nav-file-title" href="#save-savecoordinator-ts">SaveCoordinator</a>
 											
+											<a class="nav-entry" href="#save-savecoordinatortype">
+												<span>SaveCoordinatorType</span>
+												<small class="nav-kind nav-kind-type">type</small>
+											</a>
+										
 											<a class="nav-entry" href="#save-savecoordinatoroptions">
 												<span>SaveCoordinatorOptions</span>
 												<small class="nav-kind nav-kind-interface">interface</small>
@@ -4044,7 +4049,7 @@ yield* logger.info(&quot;Loaded room&quot;, { roomId: &quot;cavern-entrance&quot
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#debug-gameplaytelemetrysessiondescriptor">src/debug/GameplayTelemetry.ts:78</a>
+										<a class="doc-source" href="#debug-gameplaytelemetrysessiondescriptor">src/debug/GameplayTelemetry.ts:83</a>
 									</div>
 									<h4>GameplayTelemetrySessionDescriptor</h4>
 									<div class="prose"><p>File locations and session metadata for one gameplay telemetry capture.</p>
@@ -4058,7 +4063,7 @@ yield* logger.info(&quot;Loaded room&quot;, { roomId: &quot;cavern-entrance&quot
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#debug-gameplaytelemetrylayeroptions">src/debug/GameplayTelemetry.ts:97</a>
+										<a class="doc-source" href="#debug-gameplaytelemetrylayeroptions">src/debug/GameplayTelemetry.ts:102</a>
 									</div>
 									<h4>GameplayTelemetryLayerOptions</h4>
 									<div class="prose"><p>Configuration for the engine gameplay telemetry session layer.</p>
@@ -4072,7 +4077,7 @@ yield* logger.info(&quot;Loaded room&quot;, { roomId: &quot;cavern-entrance&quot
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#debug-gameplaycommentaryentry">src/debug/GameplayTelemetry.ts:112</a>
+										<a class="doc-source" href="#debug-gameplaycommentaryentry">src/debug/GameplayTelemetry.ts:117</a>
 									</div>
 									<h4>GameplayCommentaryEntry</h4>
 									<div class="prose"><p>A single timestamped gameplay commentary entry written alongside telemetry data.</p>
@@ -4086,7 +4091,7 @@ yield* logger.info(&quot;Loaded room&quot;, { roomId: &quot;cavern-entrance&quot
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-service">service</span>
-										<a class="doc-source" href="#debug-gameplaytelemetrysession">src/debug/GameplayTelemetry.ts:149</a>
+										<a class="doc-source" href="#debug-gameplaytelemetrysession">src/debug/GameplayTelemetry.ts:154</a>
 									</div>
 									<h4>GameplayTelemetrySession</h4>
 									<div class="prose"><p>Local OTEL-backed telemetry services for playable sessions and sample games.</p>
@@ -4163,7 +4168,7 @@ yield* logger.info(&quot;Loaded room&quot;, { roomId: &quot;cavern-entrance&quot
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-function">function</span>
-										<a class="doc-source" href="#debug-creategameplaytelemetrysessiondescriptor">src/debug/GameplayTelemetry.ts:293</a>
+										<a class="doc-source" href="#debug-creategameplaytelemetrysessiondescriptor">src/debug/GameplayTelemetry.ts:298</a>
 									</div>
 									<h4>createGameplayTelemetrySessionDescriptor</h4>
 									<div class="prose"><p>Creates or reuses a gameplay telemetry session directory and manifest.</p>
@@ -4177,7 +4182,7 @@ yield* logger.info(&quot;Loaded room&quot;, { roomId: &quot;cavern-entrance&quot
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-function">function</span>
-										<a class="doc-source" href="#debug-resolvegameplaytelemetrysessiondescriptorfromdirectory">src/debug/GameplayTelemetry.ts:355</a>
+										<a class="doc-source" href="#debug-resolvegameplaytelemetrysessiondescriptorfromdirectory">src/debug/GameplayTelemetry.ts:363</a>
 									</div>
 									<h4>resolveGameplayTelemetrySessionDescriptorFromDirectory</h4>
 									<div class="prose"><p>Reads one telemetry session manifest from a known session directory.</p>
@@ -4191,7 +4196,7 @@ yield* logger.info(&quot;Loaded room&quot;, { roomId: &quot;cavern-entrance&quot
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-function">function</span>
-										<a class="doc-source" href="#debug-resolvelatestgameplaytelemetrysessiondescriptor">src/debug/GameplayTelemetry.ts:384</a>
+										<a class="doc-source" href="#debug-resolvelatestgameplaytelemetrysessiondescriptor">src/debug/GameplayTelemetry.ts:392</a>
 									</div>
 									<h4>resolveLatestGameplayTelemetrySessionDescriptor</h4>
 									<div class="prose"><p>Resolves the most recent telemetry session for the provided game id.</p>
@@ -4205,7 +4210,7 @@ yield* logger.info(&quot;Loaded room&quot;, { roomId: &quot;cavern-entrance&quot
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-function">function</span>
-										<a class="doc-source" href="#debug-appendgameplaycommentaryentry">src/debug/GameplayTelemetry.ts:431</a>
+										<a class="doc-source" href="#debug-appendgameplaycommentaryentry">src/debug/GameplayTelemetry.ts:441</a>
 									</div>
 									<h4>appendGameplayCommentaryEntry</h4>
 									<div class="prose"><p>Appends one timestamped gameplay commentary entry to the active session.</p>
@@ -6573,11 +6578,29 @@ giving tools a simple place to read current timing state.</p>
 									
 								<article
 									class="doc-entry"
+									id="save-savecoordinatortype"
+								>
+									<div class="doc-entry-meta">
+										<span class="doc-kind doc-kind-type">type</span>
+										<a class="doc-source" href="#save-savecoordinatortype">src/save/SaveCoordinator.ts:23</a>
+									</div>
+									<h4>SaveCoordinatorType</h4>
+									<div class="prose"><p>surface of <a href="#save-savecoordinator">SaveCoordinator</a>.</p>
+<p>Slot methods are typed with <code>never</code> on the requirements channel because the
+coordinator re-provides the current <code>ServiceMap.ServiceMap</code> to each
+participant effect via <code>Effect.provideServices</code> (see <code>SaveCoordinator.layer</code>).
+Import/export only touch the in-memory document and also stay <code>never</code> there.</p>
+</div>
+									
+								</article>
+							
+								<article
+									class="doc-entry"
 									id="save-savecoordinatoroptions"
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#save-savecoordinatoroptions">src/save/SaveCoordinator.ts:68</a>
+										<a class="doc-source" href="#save-savecoordinatoroptions">src/save/SaveCoordinator.ts:101</a>
 									</div>
 									<h4>SaveCoordinatorOptions</h4>
 									<div class="prose"><p>Configuration for building a <a href="#save-savecoordinator">SaveCoordinator</a>.</p>
@@ -6594,7 +6617,7 @@ persisted formats across released versions.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-service">service</span>
-										<a class="doc-source" href="#save-savecoordinator">src/save/SaveCoordinator.ts:85</a>
+										<a class="doc-source" href="#save-savecoordinator">src/save/SaveCoordinator.ts:118</a>
 									</div>
 									<h4>SaveCoordinator</h4>
 									<div class="prose"><p>Coordinates save snapshots, restores, imports, and migrations.</p>
@@ -6614,53 +6637,6 @@ boring parts:</p>
 </code></pre>
 </div>
 									
-			<section class="service-members">
-				<h5>Methods</h5>
-				<div class="service-member-list">
-					
-								<div class="service-member">
-									<div class="service-member-meta">
-										<span class="doc-kind doc-kind-method">method</span>
-										<strong>restoreSlot</strong>
-									</div>
-									<code>restoreSlot: ( slotId: SaveSlotId, ) =&gt; Effect.Effect&lt;void, SaveSlotNotFoundError&gt;</code>
-								</div>
-							
-								<div class="service-member">
-									<div class="service-member-meta">
-										<span class="doc-kind doc-kind-method">method</span>
-										<strong>exportDocument</strong>
-									</div>
-									<code>exportDocument: Effect.Effect&lt;SaveDocument&gt;</code>
-								</div>
-							
-								<div class="service-member">
-									<div class="service-member-meta">
-										<span class="doc-kind doc-kind-method">method</span>
-										<strong>importDocument</strong>
-									</div>
-									<code>importDocument: ( document: unknown, ) =&gt; Effect.Effect&lt; void, | SaveDocumentDecodeError | SaveMigrationFailedError | SaveMigrationMissingError | SaveMigrationVersionMismatchError &gt;</code>
-								</div>
-							
-								<div class="service-member">
-									<div class="service-member-meta">
-										<span class="doc-kind doc-kind-method">method</span>
-										<strong>snapshotSlot</strong>
-									</div>
-									<code>snapshotSlot: ( slotId: SaveSlotId, ) =&gt; Effect.Effect&lt;SaveSlotDocument&gt;</code>
-								</div>
-							
-								<div class="service-member">
-									<div class="service-member-meta">
-										<span class="doc-kind doc-kind-method">method</span>
-										<strong>writeSlot</strong>
-									</div>
-									<code>writeSlot: (slotId: SaveSlotId) =&gt; Effect.Effect&lt;SaveDocument&gt;</code>
-								</div>
-							
-				</div>
-			</section>
-		
 								</article>
 							
 								</div>
@@ -6729,7 +6705,18 @@ boring parts:</p>
 									<div class="prose"><p>Participates in save capture and restore.</p>
 <p>Each game-owned state service that wants to be saved can expose one
 <code>SaveParticipant</code>.</p>
-<pre><code class="language-ts">const playerSaveParticipant: SaveParticipant = {
+<p>Capture and restore are normal <code>Effect</code>s: they almost always <strong>require</strong>
+game services (via <code>yield*</code>). Model that by choosing a type parameter <code>R</code>
+that is the union of every service those effects may <code>yield*</code>. Using plain
+<code>Effect.Effect&lt;…&gt;</code> without <code>R</code> defaults <code>R</code> to <code>never</code>, which does <strong>not</strong>
+match real participants.</p>
+<p><code>SaveCoordinator.layer</code> reads the current service map and applies
+<code>Effect.provideServices</code> to each participant effect so the coordinator’s
+slot methods stay typed with <code>never</code> on the requirements channel (no <code>as</code>
+needed at call sites).</p>
+<pre><code class="language-ts">type MySaveR = PlayerState | WorldState;
+
+const playerSaveParticipant: SaveParticipant&lt;MySaveR&gt; = {
  key: &quot;player&quot;,
  capture: PlayerState.snapshot,
  restore: (state) =&gt; PlayerState.restore(state),
@@ -6745,7 +6732,7 @@ boring parts:</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-interface">interface</span>
-										<a class="doc-source" href="#save-savemigration">src/save/SaveDocument.ts:53</a>
+										<a class="doc-source" href="#save-savemigration">src/save/SaveDocument.ts:66</a>
 									</div>
 									<h4>SaveMigration</h4>
 									<div class="prose"><p>A typed migration between persisted save versions. Each migration should move the document from exactly one version to the next expected version.</p>
@@ -6759,7 +6746,7 @@ boring parts:</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#save-saveslotdocumentschema">src/save/SaveDocument.ts:64</a>
+										<a class="doc-source" href="#save-saveslotdocumentschema">src/save/SaveDocument.ts:77</a>
 									</div>
 									<h4>SaveSlotDocumentSchema</h4>
 									<div class="prose"><p>Runtime schema for a single save slot document. Use this when you need Effect Schema decoding outside of <a href="#save-savecoordinator">SaveCoordinator</a>.</p>
@@ -6773,7 +6760,7 @@ boring parts:</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-const">const</span>
-										<a class="doc-source" href="#save-savedocumentschema">src/save/SaveDocument.ts:71</a>
+										<a class="doc-source" href="#save-savedocumentschema">src/save/SaveDocument.ts:84</a>
 									</div>
 									<h4>SaveDocumentSchema</h4>
 									<div class="prose"><p>Runtime schema for the top-level save document.</p>

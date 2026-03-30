@@ -22,6 +22,9 @@ export class CavernPlayerState extends ServiceMap.Service<
 	{
 		readonly moveBy: (delta: CameraVector) => Effect.Effect<void>;
 		readonly moveTo: (position: CameraVector) => Effect.Effect<void>;
+		readonly replaceSnapshot: (
+			snapshot: CavernPlayerSnapshot,
+		) => Effect.Effect<void>;
 		readonly setVelocity: (velocity: CameraVector) => Effect.Effect<void>;
 		readonly snapshot: Effect.Effect<CavernPlayerSnapshot>;
 	}
@@ -61,9 +64,16 @@ export class CavernPlayerState extends ServiceMap.Service<
 				}));
 			});
 
+			const replaceSnapshot = Effect.fnUntraced(function* (
+				snapshot: CavernPlayerSnapshot,
+			) {
+				yield* Ref.set(stateRef, snapshot);
+			});
+
 			return CavernPlayerState.of({
 				moveBy,
 				moveTo,
+				replaceSnapshot,
 				setVelocity,
 				snapshot: Ref.get(stateRef),
 			});
