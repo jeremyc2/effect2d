@@ -4,7 +4,7 @@ import { runLayerEffect } from "../testing/runEffectTest.ts";
 import { Audio } from "./Audio.ts";
 
 describe("Audio", () => {
-	test("loads cues, plays music, overlaps sound effects, and snapshots mixer state", async () => {
+	test("loads cues, plays music, overlaps sound effects, and snapshots audio state", async () => {
 		await runLayerEffect(
 			Audio.layer,
 			Effect.gen(function* () {

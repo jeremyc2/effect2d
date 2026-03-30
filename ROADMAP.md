@@ -115,7 +115,7 @@
 - [x] Implement music playback controls.
 - [x] Implement sound effect playback controls.
 - [x] Implement overlapping sound effect playback.
-- [x] Implement mixer buses for `master`, `music`, and `sfx`.
+- [x] Implement `AudioBus` (`master`, `music`, `sfx`).
 - [x] Implement audio resource ownership and teardown.
 - [x] Add convenience helpers for common playback patterns while preserving lower-level handles.
 - [x] Add typed audio errors for load and playback failure modes where meaningful.

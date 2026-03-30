@@ -1,7 +1,7 @@
 import { Effect, Layer, Ref, Schema, ServiceMap } from "effect";
 import { setActiveSfxCount } from "../debug/GameplayMetrics.ts";
 
-/** Logical buses supported by the mixer. @public */
+/** Logical buses supported by the audio service. @public */
 export type AudioBus = "master" | "music" | "sfx";
 
 /** The cue categories understood by the engine.
@@ -48,7 +48,7 @@ export interface SoundPlayback extends MusicPlayback {
 	readonly playbackId: string;
 }
 
-/** A complete snapshot of authored mixer state. @public */
+/** A complete snapshot of authored audio state. @public */
 export interface AudioSnapshot {
 	readonly busVolumes: Readonly<Record<AudioBus, number>>;
 	readonly loadedCues: ReadonlyMap<string, LoadedAudioCue>;

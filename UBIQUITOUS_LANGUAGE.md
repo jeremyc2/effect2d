@@ -150,7 +150,7 @@ Neither term implies seniority or size. If the workflow is defined primarily by 
 | Binding edge | Physical key or button edge (press/release) attached to a **Binding**—not a **Trigger** in the world. | input trigger, trigger (ambiguous) | Coined | 4       | Both     | 7     |
 | Sound effect | Short gameplay audio.                                                                                 | clip only, media asset             | Game   | 4       | Game     | 6     |
 | Music        | Longer background audio.                                                                              | soundtrack only, stream            | Game   | 4       | Game     | 6     |
-| Mixer bus    | Grouped channel (master, music, sfx).                                                                 | audio context, playlist            | Game   | 4       | Both     | 6     |
+| AudioBus     | Logical buses for grouped audio (`master`, `music`, `sfx`); matches the public `AudioBus` type.        | audio context, playlist            | Coined | 4       | Both     | 6     |
 
 
 ## Persistence, testing, and observability

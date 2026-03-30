@@ -11,7 +11,7 @@
 - Kind: type
 - Source: `src/audio/Audio.ts:4`
 
-Logical buses supported by the mixer.
+Logical buses supported by the audio service.
 
 ### AudioCueKind
 
@@ -65,7 +65,7 @@ A single overlapping sound-effect playback instance.
 - Kind: interface
 - Source: `src/audio/Audio.ts:51`
 
-A complete snapshot of authored mixer state.
+A complete snapshot of authored audio state.
 
 ### DuplicateAudioCueError
 
