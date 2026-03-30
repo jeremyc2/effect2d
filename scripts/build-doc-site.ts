@@ -898,8 +898,15 @@ const renderHtmlDocument = ({
 				scroll-margin-top: calc(var(--header-height) + 16px);
 			}
 
+			html {
+				overflow-x: clip;
+				max-width: 100%;
+			}
+
 			body {
 				margin: 0;
+				overflow-x: clip;
+				max-width: 100%;
 				background:
 					linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 24%),
 					var(--hero-glow),
@@ -935,6 +942,9 @@ const renderHtmlDocument = ({
 
 			.app-shell {
 				min-height: 100vh;
+				min-width: 0;
+				max-width: 100%;
+				overflow-x: clip;
 			}
 
 			.topbar {
@@ -1320,6 +1330,8 @@ const renderHtmlDocument = ({
 				margin-top: 2rem;
 				padding-top: 2rem;
 				border-top: 1px solid var(--border);
+				min-width: 0;
+				max-width: 100%;
 			}
 
 			.section-kicker {
@@ -1332,10 +1344,16 @@ const renderHtmlDocument = ({
 				margin-top: 0;
 			}
 
+			.module-section {
+				min-width: 0;
+				max-width: 100%;
+			}
+
 			.module-section > h2 {
 				margin: 0 0 1.2rem;
 				font-size: clamp(2rem, 4.2vw, 3rem);
 				letter-spacing: -0.03em;
+				overflow-wrap: anywhere;
 			}
 
 			.file-group + .file-group {
@@ -1359,9 +1377,12 @@ const renderHtmlDocument = ({
 				display: grid;
 				gap: 1rem;
 				margin-top: 1rem;
+				min-width: 0;
 			}
 
 			.doc-entry {
+				min-width: 0;
+				max-width: 100%;
 				padding: 1rem 1.05rem 1.1rem;
 				border: 1px solid var(--border);
 				background: var(--bg-soft);
@@ -1445,9 +1466,12 @@ const renderHtmlDocument = ({
 				margin: 0.8rem 0 0.7rem;
 				font-size: 1.45rem;
 				letter-spacing: -0.02em;
+				overflow-wrap: anywhere;
 			}
 
 			.prose {
+				min-width: 0;
+				max-width: 100%;
 				color: rgba(243, 239, 228, 0.88);
 				line-height: 1.72;
 				font-size: 1rem;
@@ -1471,9 +1495,12 @@ const renderHtmlDocument = ({
 			.service-member-list {
 				display: grid;
 				gap: 0.7rem;
+				min-width: 0;
 			}
 
 			.service-member {
+				min-width: 0;
+				max-width: 100%;
 				padding: 0.9rem 0.95rem;
 				border: 1px solid rgba(255, 255, 255, 0.08);
 				background: rgba(255, 255, 255, 0.025);
@@ -1489,8 +1516,12 @@ const renderHtmlDocument = ({
 
 			.service-member code {
 				display: block;
+				min-width: 0;
+				max-width: 100%;
+				box-sizing: border-box;
 				padding: 0.75rem 0.8rem;
 				overflow-x: auto;
+				-webkit-overflow-scrolling: touch;
 				border: 1px solid rgba(255, 255, 255, 0.08);
 				background: rgba(7, 14, 10, 0.72);
 				color: #f7f4ea;
@@ -1537,6 +1568,11 @@ const renderHtmlDocument = ({
 				margin-top: 0.42rem;
 			}
 
+			.prose :not(pre) > code {
+				overflow-wrap: anywhere;
+				word-break: break-word;
+			}
+
 			.prose code {
 				padding: 0.1rem 0.32rem;
 				border: 1px solid rgba(255, 255, 255, 0.08);
@@ -1546,6 +1582,9 @@ const renderHtmlDocument = ({
 			}
 
 			.prose pre {
+				min-width: 0;
+				width: 100%;
+				box-sizing: border-box;
 				overflow-x: auto;
 				overflow-y: hidden;
 				max-width: 100%;
@@ -1558,6 +1597,10 @@ const renderHtmlDocument = ({
 			}
 
 			.prose pre code {
+				display: block;
+				width: max-content;
+				min-width: 100%;
+				box-sizing: border-box;
 				padding: 0;
 				border: 0;
 				background: transparent;
@@ -1571,6 +1614,8 @@ const renderHtmlDocument = ({
 
 			.table-scroll {
 				display: block;
+				width: 100%;
+				min-width: 0;
 				max-width: 100%;
 				overflow-x: auto;
 				-webkit-overflow-scrolling: touch;
@@ -1578,6 +1623,7 @@ const renderHtmlDocument = ({
 
 			.table-scroll table {
 				width: max(100%, max-content);
+				max-width: none;
 			}
 
 			.prose th,
@@ -1734,10 +1780,6 @@ const renderHtmlDocument = ({
 			}
 
 			@media (max-width: 920px) {
-				body {
-					overflow-x: clip;
-				}
-
 				.topbar {
 					flex-wrap: wrap;
 					padding: 0.85rem 1rem;
