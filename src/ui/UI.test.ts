@@ -123,11 +123,11 @@ describe("UI", () => {
 				yield* input.setBindings([
 					{
 						action: "menu-down",
-						triggers: [{ key: "ArrowDown", type: "key" }],
+						edges: [{ key: "ArrowDown", type: "key" }],
 					},
 					{
 						action: "menu-confirm",
-						triggers: [{ key: "Enter", type: "key" }],
+						edges: [{ key: "Enter", type: "key" }],
 					},
 				]);
 

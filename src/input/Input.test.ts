@@ -53,11 +53,11 @@ describe("Input", () => {
 				yield* input.setBindings([
 					{
 						action: "pause",
-						triggers: [{ key: "Escape", type: "key" }],
+						edges: [{ key: "Escape", type: "key" }],
 					},
 					{
 						action: "attack",
-						triggers: [{ button: 0, type: "mouse-button" }],
+						edges: [{ button: 0, type: "mouse-button" }],
 					},
 				]);
 
@@ -76,7 +76,7 @@ describe("Input", () => {
 
 				yield* input.bindAction({
 					action: "pause",
-					triggers: [{ key: "Enter", type: "key" }],
+					edges: [{ key: "Enter", type: "key" }],
 				});
 				yield* input.beginFrame;
 				yield* input.applyEvent({

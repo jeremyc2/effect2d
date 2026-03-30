@@ -2,14 +2,14 @@
 
 This document captures the current engine shape before subsystem implementation fills in the details.
 
-## Primary Boundaries
+## Primary boundaries
 
 `Effect2d` starts with one package and strong internal boundaries.
 
 The current subsystem layout is:
 
 - `runtime`: engine startup, fixed-step runtime composition, and launch entry points
-- `native`: the thin capability-level bridge to platform APIs
+- `native`: the **Native boundary** and **Platform backend** bridge to OS APIs
 - `scene`: scene definitions, scene instances, and scene stack orchestration
 - `graphics`: immediate-mode rendering contracts
   - each frame records a fresh list of draw commands from current game state rather than keeping a retained DOM-like tree
@@ -26,21 +26,21 @@ The package root export should stay focused on engine/runtime APIs.
 
 Supporting repo-local utilities such as test helpers may exist under their own internal paths, but they should not automatically become part of the root package surface.
 
-## Native Boundary
+## Native boundary
 
-The native boundary must stay thin.
+The **Native boundary** stays thin. It is the orchestration loop that connects:
 
-The current native runtime is split in two layers:
+- **`PlatformBackend`**: OS-facing adapter (windowing, presentation, input drain, audio device sync, pacing, diagnostics)
+- **`Input`**, **`Audio`**, and **`FrameUpdater`**: game-authored services
 
-- `NativeBackend`: capability-level access to windowing, frame presentation, native input event collection, audio output syncing, timing waits, and backend diagnostics
-- `NativeBoundary`: the orchestration layer that connects `NativeBackend` to `Input`, `Audio`, and `NativeFrameSource`
+The **Frame updater** advances simulation and draw for each frame; the boundary presents it and waits for the next step.
 
 The initial practical implementation is:
 
 - Skia via `skia-canvas` for native windowing, input, and frame presentation
-- `node-web-audio-api` as the in-process native audio output path
+- `node-web-audio-api` as the in-process audio output path
 
-This is intentionally a thin backend contract rather than a second engine hidden under `native`.
+This is intentionally a thin **Platform backend** contract—not a second engine under `native`.
 
 It is allowed to own:
 
@@ -49,7 +49,7 @@ It is allowed to own:
 - low-level frame presentation
 - raw input collection
 - audio device output
-- native timing hooks
+- native timing waits
 
 It is not allowed to own:
 
@@ -65,20 +65,20 @@ It is not allowed to own:
 
 If logic starts drifting downward into `native`, that is an architectural bug.
 
-### Backend Contract
+### Platform backend contract
 
-`NativeBackend` is capability-level on purpose. It owns:
+`PlatformBackend` is capability-level on purpose. It owns:
 
 - `open` / `close` for native resource lifetime
-- `drainInputEvents` for native input event collection
+- `drainInputEvents` for raw input event collection
 - `presentFrame` for low-level frame presentation
 - `syncAudio` for device-facing playback state updates
-- `waitForNextFrame` for timing hooks
+- `waitForNextFrame` for pacing
 - `diagnostics` for backend status and initialization failure visibility
 
 It does not own scene stepping, gameplay rules, save logic, dialogue flow, or game-specific orchestration.
 
-## Runtime Model
+## Runtime model
 
 The engine launch model is Layer-based and Effect-native:
 
@@ -94,28 +94,10 @@ The engine launch model is Layer-based and Effect-native:
 - resources follow scopes by default
 - resource diagnostics should be able to mirror scoped lifetimes instead of relying only on manual release calls
 
-## Error Taxonomy
+## Error taxonomy
 
 Known failures should be modeled as typed errors.
 
-Examples:
+## Observability
 
-- invalid engine configuration
-- failed native startup
-- malformed room content
-- unsupported audio asset
-- invalid save document
-- missing or failed save migrations
-
-The current engine guidance is intentionally simple:
-
-- if we know a failure mode can happen, model it through the typed Effect error channel
-- keep error data Schema-backed so it stays serializable and loggable
-- do not design around defects yet
-- prefer specific migration/decode/load failure types over catch-all path errors when the subsystem can distinguish them
-
-## Current Intent
-
-This structure is intentionally front-loaded before real rendering or windowing work so the next milestones have stable boundaries.
-
-If implementation pressure exposes better boundaries, update this document and [ROADMAP.md](../ROADMAP.md) together.
+Structured logging and optional telemetry should align with engine domains and the ubiquitous language—not ad hoc strings.

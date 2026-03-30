@@ -1,3 +1,3 @@
-export * from "./NativeBackend.ts";
-export * from "./NativeFrameSource.ts";
-export * from "./SkiaNativeBackend.ts";
+export * from "./FrameUpdater.ts";
+export * from "./PlatformBackend.ts";
+export * from "./SkiaPlatformBackend.ts";

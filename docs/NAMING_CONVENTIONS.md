@@ -1,17 +1,14 @@
-# Naming Conventions
+# Naming conventions
 
-This document turns the project glossary into practical naming guidance for code.
+Practical naming aligned with [UBIQUITOUS_LANGUAGE.md](../UBIQUITOUS_LANGUAGE.md). The goal is to keep game-engine vocabulary and Effect-native patterns from drifting into web-app or vague “manager” language.
 
-The goal is to keep names aligned with [UBIQUITOUS_LANGUAGE.md](../UBIQUITOUS_LANGUAGE.md) so we do not accidentally import web-app language into the engine.
-
-## Function And Method Naming
+## Functions and methods
 
 - Use `function` declarations for module top-level functions instead of `const name = (...) => ...`.
-- Top-level utility functions should start with a verb such as `get`, `set`, `create`, `update`, `is`, `has`, `does`, or `format`.
-- Use `method` only for public callable members on Effect services.
-- Service methods should also prefer verb-led names when they perform work or read data.
+- Top-level utilities start with a verb: `get`, `set`, `create`, `update`, `is`, `has`, `does`, `format`, …
+- Prefer verb-led names on service methods that perform work or read state.
 
-## Prefer Game-Engine Terms
+## Prefer engine terms
 
 Use:
 
@@ -19,95 +16,54 @@ Use:
 - `Room`, not `Screen` when the thing is a playable world area
 - `Overlay`, not `Modal`
 - `Actor`, not `Component`
-- `Trigger`, not `ListenerZone`
+- `Trigger`, not `ListenerZone` (for world regions)
+- `BindingEdge`, not `InputTrigger` (for keys/buttons on a binding)
 - `CollisionWorld`, not `PhysicsEngine` unless it really is full physics
-- `Draw`, not `RenderComponent`
+- `Draw`, not `RenderComponent` for the draw phase
 - `Tick` or `Update`, not `ReducerPass`
 - `Binding`, not `Shortcut`
-- `SaveDocument`, not `Snapshot`
-- `Participant`, not `Plugin` when contributing to save/load or similar workflows
-- `Director`, not `Controller` when a service coordinates multiple domains
+- `SaveDocument`, not `Snapshot` for persisted saves
+- `Participant`, not `Plugin` when contributing to coordinated workflows
+- `Director` for cross-domain gameplay orchestration; `Coordinator` for engine workflows such as save/load
+- `SceneLookup` (and the **Lookup** pattern) for id→definition maps—not `Registry`
+- `Repository` for authored world/content loading (e.g. maps)
+- `PlatformBackend` for the low-level native adapter service; `FrameUpdater` for the service that steps simulation and draw per frame
+- `TilePlane` / `ObjectPlane` as type names for the two **authoring plane** shapes in code
 
-## Service Naming
+Avoid:
 
-Service names should describe their gameplay or engine role clearly.
+- `Manager`, `Controller`, `Util`, `Helper`, `Store` unless they are the precise domain word
 
-Prefer:
-
-- `SceneDirector`
-- `SaveCoordinator`
-- `MapRepository`
-- `CollisionWorld`
-- `DebugOverlay`
-
-Avoid vague names like:
-
-- `Manager`
-- `Controller`
-- `Util`
-- `Helper`
-- `Store`
-
-Use those only when they are the most precise domain term.
-
-## Runtime Naming
+## Runtime
 
 Use:
 
-- `launch` for starting the engine runtime
-- `shutdown` for ending the runtime
+- `launch` / `shutdown` for the runtime lifecycle
 - `scope` for ownership boundaries
 - `config` for startup configuration
-- `backend` for low-level implementation details
-- `nativeBoundary` for platform-facing capabilities
+- `nativeBoundary` for the platform-facing orchestration layer
+- `platformBackend` for the swappable OS adapter
 
 Avoid:
 
-- `mount`
-- `hydrate`
-- `provider`
-- `container`
-- `hook`
+- `mount`, `hydrate`, `provider`, `container`, `hook` (web-framework terms)
 
-## State Naming
+## State
 
-For mutable domain services, prefer names that say what domain they own.
+Name mutable domain services after what they own: `PlayerState`, `WorldState`, `InventoryState`. Avoid a single giant `AppState`.
 
-Examples:
-
-- `PlayerState`
-- `InventoryState`
-- `QuestState`
-- `WorldState`
-
-Do not default to one giant `AppState`.
-
-## Drawing And Content Naming
+## Drawing and content
 
 Use:
 
-- `DrawCommand`
-- `Sprite`
-- `SpriteSheet`
-- `TilePlane`
-- `ObjectPlane`
-- `SpawnPoint`
-- `TransitionZone`
-- `Camera`
+- `DrawCommand`, `Sprite`, `SpriteSheet`, `TilePlane`, `ObjectPlane`, `SpawnPoint`, `TransitionZone`, `Camera`
 
 Avoid:
 
-- `Widget`
-- `CanvasComponent`
-- `LayoutBox`
-- `ViewModel`
+- `Widget`, `CanvasComponent`, `LayoutBox`, `ViewModel`
 
-## Consistency Rule
+## When something new appears
 
-When a new concept appears, first check whether the glossary already has a term for it.
-
-If not:
-
-- add the term to [UBIQUITOUS_LANGUAGE.md](../UBIQUITOUS_LANGUAGE.md)
-- use the same term in docs and code
-- update this file if the naming choice affects general conventions
+1. Check [UBIQUITOUS_LANGUAGE.md](../UBIQUITOUS_LANGUAGE.md) for a canonical term.
+2. If the concept is new, add it there first (or agree a change), then name code and docs to match.
+3. Update this file when the choice affects general conventions.

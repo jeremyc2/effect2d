@@ -56,7 +56,7 @@ Declares how a scene is identified and instantiated.
 
 
 In application code you usually author a `SceneDefinition` as a constant and
-register it with `SceneRegistry.layer`.
+provide it through `SceneLookup.layer`.
 
 ```ts
 const titleScene: SceneDefinition = {
@@ -126,10 +126,10 @@ responsible for:
 
 A common pattern is:
 
-- register authored scenes with [SceneRegistry](./llms/scene.md#scene-sceneregistry)
+- provide authored scenes via [SceneLookup](./llms/scene.md#scene-scenelookup)
 - build `SceneDirector.layer(startSceneId)`
 - call `switchTo`, `pushOverlay`, or `popOverlay` from gameplay services
-- let a native frame source call the active scene's update and draw work
+- let the **Frame updater** call the active scene's update and draw work
 
 #### Methods
 
@@ -165,20 +165,19 @@ Indicates that a scene-stack operation required an active scene when none existe
 
 Indicates that code tried to pop an overlay when the overlay stack was empty.
 
-## SceneRegistry
+## SceneLookup
 
-### SceneRegistry
+### SceneLookup
 
 - Kind: service
-- Source: `src/scene/SceneRegistry.ts:5`
+- Source: `src/scene/SceneLookup.ts:5`
 
-A lookup table of authored scene definitions.
+Scene **Lookup**: id → authored [SceneDefinition](./llms/scene.md#scene-scenedefinition).
 
 
 
-The registry is intentionally simple: it answers "which scene definition
-corresponds to this id?" and exposes the complete authored set for tooling or
-diagnostics.
+Intentionally minimal: answers “which definition matches this id?” and exposes
+the full authored set for tooling or diagnostics.
 
 #### Methods
 

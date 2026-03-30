@@ -1,10 +1,10 @@
 import { Effect, Layer, Ref, Schema, ServiceMap } from "effect";
 import { recordInputEvent } from "../debug/GameplayMetrics.ts";
 
-/** Keyboard key identifiers as reported by the active native backend. @public */
+/** Keyboard key identifiers as reported by the active platform backend. @public */
 export type KeyCode = string;
 
-/** Mouse button identifiers as reported by the native backend. @public */
+/** Mouse button identifiers as reported by the platform backend. @public */
 export type MouseButton = number;
 
 /** The latest known mouse or pointer position. @public */
@@ -49,15 +49,16 @@ export type InputEvent =
 	  };
 
 /**
- * A declarative trigger that can activate a named gameplay action.
+ * A **binding edge**: a physical key or mouse button attached to a {@link ActionBinding}.
+ * Not a world **Trigger** (overlap region).
  *
  * @public
  *
- * Available trigger kinds:
+ * Kinds:
  * - `key`
  * - `mouse-button`
  */
-export type InputTrigger =
+export type BindingEdge =
 	| {
 			readonly key: KeyCode;
 			readonly type: "key";
@@ -68,23 +69,22 @@ export type InputTrigger =
 	  };
 
 /**
- * Maps a named gameplay action to one or more low-level triggers.
+ * Maps a named gameplay action to one or more {@link BindingEdge}s.
  *
  * @public
  *
- * This is the point where you translate native details into domain language
- * like `"jump"`, `"pause"`, or `"confirm"`.
+ * Translate device details into domain language (`"jump"`, `"pause"`, …).
  *
  * ```ts
  * const jumpBinding: ActionBinding = {
  *   action: "jump",
- *   triggers: [{ type: "key", key: "Space" }],
+ *   edges: [{ type: "key", key: "Space" }],
  * };
  * ```
  */
 export interface ActionBinding {
 	readonly action: string;
-	readonly triggers: ReadonlyArray<InputTrigger>;
+	readonly edges: ReadonlyArray<BindingEdge>;
 }
 
 /**
@@ -93,7 +93,7 @@ export interface ActionBinding {
  * @public
  *
  * `justPressed` and `justReleased` are edge-triggered for the current frame,
- * while `isPressed` stays true until the trigger is released or consumed.
+ * while `isPressed` stays true until the binding edge is released or consumed.
  */
 export interface ActionState {
 	readonly action: string;
@@ -151,20 +151,18 @@ const initialState: InputState = {
 	},
 };
 
-function getTriggerKey(trigger: InputTrigger): string {
-	return trigger.type === "key"
-		? `key:${trigger.key}`
-		: `mouse:${trigger.button}`;
+function getBindingEdgeKey(edge: BindingEdge): string {
+	return edge.type === "key" ? `key:${edge.key}` : `mouse:${edge.button}`;
 }
 
-const includesTrigger = (
+const includesBindingEdge = (
 	pressedKeys: ReadonlySet<KeyCode>,
 	mouseButtons: ReadonlySet<MouseButton>,
-	trigger: InputTrigger,
+	edge: BindingEdge,
 ): boolean =>
-	trigger.type === "key"
-		? pressedKeys.has(trigger.key)
-		: mouseButtons.has(trigger.button);
+	edge.type === "key"
+		? pressedKeys.has(edge.key)
+		: mouseButtons.has(edge.button);
 
 const bindingState = (
 	state: InputState,
@@ -173,18 +171,18 @@ const bindingState = (
 	ActionState,
 	"consumed" | "isPressed" | "justPressed" | "justReleased"
 > => {
-	const isPressed = binding.triggers.some((trigger) =>
-		includesTrigger(
+	const isPressed = binding.edges.some((edge) =>
+		includesBindingEdge(
 			state.current.pressedKeys,
 			state.current.mouseButtons,
-			trigger,
+			edge,
 		),
 	);
-	const wasPressed = binding.triggers.some((trigger) =>
-		includesTrigger(
+	const wasPressed = binding.edges.some((edge) =>
+		includesBindingEdge(
 			state.previous.pressedKeys,
 			state.previous.mouseButtons,
-			trigger,
+			edge,
 		),
 	);
 
@@ -270,12 +268,12 @@ export class InvalidInputBindingError extends Schema.TaggedErrorClass<InvalidInp
 	},
 ) {}
 
-/** Indicates that one action declared the same trigger more than once. @public */
+/** Indicates that one action declared the same binding edge more than once. @public */
 export class InputBindingConflictError extends Schema.TaggedErrorClass<InputBindingConflictError>()(
 	"InputBindingConflictError",
 	{
 		action: Schema.String,
-		trigger: Schema.String,
+		edge: Schema.String,
 	},
 ) {}
 
@@ -297,24 +295,24 @@ const validateBinding = Effect.fn("Input.validateBinding")(function* (
 		});
 	}
 
-	if (binding.triggers.length === 0) {
+	if (binding.edges.length === 0) {
 		return yield* new InvalidInputBindingError({
 			action: binding.action,
-			reason: "Action bindings must include at least one trigger.",
+			reason: "Action bindings must include at least one binding edge.",
 		});
 	}
 
-	const seenTriggers = new Set<string>();
-	for (const trigger of binding.triggers) {
-		const key = getTriggerKey(trigger);
-		if (seenTriggers.has(key)) {
+	const seenEdges = new Set<string>();
+	for (const edge of binding.edges) {
+		const key = getBindingEdgeKey(edge);
+		if (seenEdges.has(key)) {
 			return yield* new InputBindingConflictError({
 				action: binding.action,
-				trigger: key,
+				edge: key,
 			});
 		}
 
-		seenTriggers.add(key);
+		seenEdges.add(key);
 	}
 
 	return binding;
@@ -325,7 +323,7 @@ const validateBinding = Effect.fn("Input.validateBinding")(function* (
  *
  * @public
  *
- * `Input` bridges the gap between native events and gameplay-friendly action
+ * `Input` bridges **Raw input** and gameplay **Action map** / **Binding** queries.
  * queries. Game authors usually:
  *
  * - declare a set of {@link ActionBinding} values
@@ -451,7 +449,7 @@ export class Input extends ServiceMap.Service<
 				const validated = yield* validateBinding(binding);
 				yield* Effect.annotateCurrentSpan({
 					"effect2d.input.action": validated.action,
-					"effect2d.input.trigger_count": validated.triggers.length,
+					"effect2d.input.edge_count": validated.edges.length,
 				});
 				yield* Ref.update(stateRef, (state) => ({
 					...state,

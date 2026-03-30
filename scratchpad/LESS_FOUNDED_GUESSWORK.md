@@ -14,7 +14,7 @@ Yeah, that’s real. The sample really does park a ton of behavior in `CavernGam
 
 ### 1.3 How much should the engine prescribe? Linter / LSP?
 
-Today the prescription is mostly: Effect, layers, a handful of services, scene registry + director. That is already a shape, but it is still “compose these Legos,” not “fill in this template class.” A custom LSP sounds like a lot of maintenance for a small ecosystem; I would not rush it. A short “patterns we like” doc (or even this scratchpad) probably moves the needle more than lint rules that yell about director naming. If someday the same mistake keeps showing up in every game, *then* a lint rule is worth it.
+Today the prescription is mostly: Effect, layers, a handful of services, scene lookup + director. That is already a shape, but it is still “compose these Legos,” not “fill in this template class.” A custom LSP sounds like a lot of maintenance for a small ecosystem; I would not rush it. A short “patterns we like” doc (or even this scratchpad) probably moves the needle more than lint rules that yell about director naming. If someday the same mistake keeps showing up in every game, *then* a lint rule is worth it.
 
 ---
 

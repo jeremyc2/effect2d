@@ -24,7 +24,7 @@
  *   {@link Engine}, {@link EngineConfig}, {@link defaultEngineConfig},
  *   {@link makeRuntimeLayer}, and {@link engineProgram}
  * - Scene composition primitives such as {@link SceneDefinition},
- *   {@link SceneDirector}, and {@link SceneRegistry}
+ *   {@link SceneDirector}, and {@link SceneLookup}
  * - Core gameplay services including {@link Graphics}, {@link Input},
  *   {@link Audio}, {@link Sequence}, {@link Cutscene}, {@link UI}, and
  *   {@link SaveCoordinator}
@@ -43,7 +43,7 @@
  *
  * - `SceneDirector` decides which scene is active and manages scene lifecycle
  * - `Graphics` records draw commands for the current frame
- * - `Input` turns native keyboard and mouse events into stable action state
+ * - `Input` turns raw keyboard and mouse events into stable action state
  * - `Audio` manages music and overlapping sound effects as typed cues
  * - `Sequence` coordinates timed gameplay beats such as waits, scene switches,
  *   fades, flashes, and audio cues
@@ -62,8 +62,8 @@
  * ## What the engine takes care of
  *
  * - deterministic service wiring through `Layer`
- * - a native launch boundary for desktop windowing, native input event
- *   collection, frame presentation, and audio synchronization
+ * - a **Native boundary** for desktop windowing, raw input collection, frame
+ *   presentation, and audio synchronization
  * - frame recording through an immediate-mode graphics command model, meaning
  *   your game describes what to draw for the current frame right now as a list
  *   of draw commands like "draw this image here" or "draw this text here"
@@ -125,7 +125,7 @@
  *     content/    # authored room data, constants, and encounter tables
  *     directors/  # frame-by-frame gameplay and presentation orchestration
  *     input/      # input binding declarations
- *     native/     # the game's NativeFrameSource wiring
+ *     native/     # the game's FrameUpdater wiring
  *     scenes/     # SceneDefinition values and scene-local bootstrapping
  *     state/      # Effect services that hold mutable game state
  *     MyGame.ts   # the composition root for Layers, bootstrap code, and programs
@@ -138,10 +138,10 @@
  * 1. Start from {@link defaultEngineConfig} and define your `gameId`,
  *    `startScene`, and tick rate.
  * 2. Create state services for the pieces of domain state your game owns.
- * 3. Register authored scenes with {@link SceneRegistry}.
+ * 3. Provide authored scenes through {@link SceneLookup}.
  * 4. Add a gameplay director that reads `Input` and updates state.
  * 5. Add a presentation director that records `Graphics` commands.
- * 6. Expose a `NativeFrameSource` that steps gameplay and renders a frame.
+ * 6. Expose a {@link FrameUpdater} that steps gameplay and renders a frame.
  * 7. Use {@link makeRuntimeLayer} or {@link makeEngineLayer} to compose the
  *    engine with your game's services.
  * 8. Use {@link makeSkiaNativeBoundaryLayer} when you want a playable

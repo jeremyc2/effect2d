@@ -41,7 +41,7 @@ easier to keep growing.
  [Engine](./llms/runtime.md#runtime-engine), [EngineConfig](./llms/runtime.md#runtime-engineconfig), [defaultEngineConfig](./llms/runtime.md#runtime-defaultengineconfig),
  [makeRuntimeLayer](./llms/runtime.md#runtime-makeruntimelayer), and [engineProgram](./llms/runtime.md#runtime-engineprogram)
 - Scene composition primitives such as [SceneDefinition](./llms/scene.md#scene-scenedefinition),
- [SceneDirector](./llms/scene.md#scene-scenedirector), and [SceneRegistry](./llms/scene.md#scene-sceneregistry)
+ [SceneDirector](./llms/scene.md#scene-scenedirector), and [SceneLookup](./llms/scene.md#scene-scenelookup)
 - Core gameplay services including [Graphics](./llms/graphics.md#graphics-graphics), [Input](./llms/input.md#input-input),
  [Audio](./llms/audio.md#audio-audio), [Sequence](./llms/sequence.md#sequence-sequence), [Cutscene](./llms/cutscene.md#cutscene-cutscene), [UI](./llms/ui.md#ui-ui), and
  [SaveCoordinator](./llms/save.md#save-savecoordinator)
@@ -60,7 +60,7 @@ long-lived services:
 
 - `SceneDirector` decides which scene is active and manages scene lifecycle
 - `Graphics` records draw commands for the current frame
-- `Input` turns native keyboard and mouse events into stable action state
+- `Input` turns raw keyboard and mouse events into stable action state
 - `Audio` manages music and overlapping sound effects as typed cues
 - `Sequence` coordinates timed gameplay beats such as waits, scene switches,
  fades, flashes, and audio cues
@@ -79,8 +79,8 @@ Your game code contributes domain-specific services on top of these:
 ## What the engine takes care of
 
 - deterministic service wiring through `Layer`
-- a native launch boundary for desktop windowing, native input event
- collection, frame presentation, and audio synchronization
+- a **Native boundary** for desktop windowing, raw input collection, frame
+ presentation, and audio synchronization
 - frame recording through an immediate-mode graphics command model, meaning
  your game describes what to draw for the current frame right now as a list
  of draw commands like "draw this image here" or "draw this text here"
@@ -142,7 +142,7 @@ games/my-game/
  content/ # authored room data, constants, and encounter tables
  directors/ # frame-by-frame gameplay and presentation orchestration
  input/ # input binding declarations
- native/ # the game's NativeFrameSource wiring
+ native/ # the game's FrameUpdater wiring
  scenes/ # SceneDefinition values and scene-local bootstrapping
  state/ # Effect services that hold mutable game state
  MyGame.ts # the composition root for Layers, bootstrap code, and programs
@@ -155,10 +155,10 @@ games/my-game/
 1. Start from [defaultEngineConfig](./llms/runtime.md#runtime-defaultengineconfig) and define your `gameId`,
  `startScene`, and tick rate.
 2. Create state services for the pieces of domain state your game owns.
-3. Register authored scenes with [SceneRegistry](./llms/scene.md#scene-sceneregistry).
+3. Provide authored scenes through [SceneLookup](./llms/scene.md#scene-scenelookup).
 4. Add a gameplay director that reads `Input` and updates state.
 5. Add a presentation director that records `Graphics` commands.
-6. Expose a `NativeFrameSource` that steps gameplay and renders a frame.
+6. Expose a [FrameUpdater](./llms/native.md#native-frameupdater) that steps gameplay and renders a frame.
 7. Use [makeRuntimeLayer](./llms/runtime.md#runtime-makeruntimelayer) or [makeEngineLayer](./llms/runtime.md#runtime-makeenginelayer) to compose the
  engine with your game's services.
 8. Use [makeSkiaNativeBoundaryLayer](./llms/native.md#native-makeskianativeboundarylayer) when you want a playable
@@ -653,7 +653,7 @@ Returns whether the addressed tile exists and belongs to the provided solid tile
 - Kind: service
 - Source: `src/collision/CollisionWorld.ts:159`
 
-Minimal in-memory collision registry and overlap query service.
+Minimal in-memory collision lookup and overlap query service.
 
 
 
@@ -1340,14 +1340,14 @@ testable log of rendering intent:
 - Kind: type
 - Source: `src/input/Input.ts:4`
 
-Keyboard key identifiers as reported by the active native backend.
+Keyboard key identifiers as reported by the active platform backend.
 
 ### MouseButton
 
 - Kind: type
 - Source: `src/input/Input.ts:7`
 
-Mouse button identifiers as reported by the native backend.
+Mouse button identifiers as reported by the platform backend.
 
 ### PointerPosition
 
@@ -1372,35 +1372,35 @@ Available event variants:
 - `wheel`
 - `text-input`
 
-### InputTrigger
+### BindingEdge
 
 - Kind: type
 - Source: `src/input/Input.ts:51`
 
-A declarative trigger that can activate a named gameplay action.
+A **binding edge**: a physical key or mouse button attached to a [ActionBinding](./llms/input.md#input-actionbinding).
+Not a world **Trigger** (overlap region).
 
 
 
-Available trigger kinds:
+Kinds:
 - `key`
 - `mouse-button`
 
 ### ActionBinding
 
 - Kind: interface
-- Source: `src/input/Input.ts:70`
+- Source: `src/input/Input.ts:71`
 
-Maps a named gameplay action to one or more low-level triggers.
+Maps a named gameplay action to one or more [BindingEdge](./llms/input.md#input-bindingedge)s.
 
 
 
-This is the point where you translate native details into domain language
-like `"jump"`, `"pause"`, or `"confirm"`.
+Translate device details into domain language (`"jump"`, `"pause"`, …).
 
 ```ts
 const jumpBinding: ActionBinding = {
  action: "jump",
- triggers: [{ type: "key", key: "Space" }],
+ edges: [{ type: "key", key: "Space" }],
 };
 ```
 
@@ -1414,7 +1414,7 @@ The derived state of a named gameplay action for the current frame.
 
 
 `justPressed` and `justReleased` are edge-triggered for the current frame,
-while `isPressed` stays true until the trigger is released or consumed.
+while `isPressed` stays true until the binding edge is released or consumed.
 
 ### InputSnapshot
 
@@ -1431,34 +1431,34 @@ to inspect the exact events captured during a frame.
 ### InvalidInputBindingError
 
 - Kind: error
-- Source: `src/input/Input.ts:264`
+- Source: `src/input/Input.ts:262`
 
 Indicates that an action binding is structurally invalid.
 
 ### InputBindingConflictError
 
 - Kind: error
-- Source: `src/input/Input.ts:273`
+- Source: `src/input/Input.ts:271`
 
-Indicates that one action declared the same trigger more than once.
+Indicates that one action declared the same binding edge more than once.
 
 ### UnknownInputActionError
 
 - Kind: error
-- Source: `src/input/Input.ts:282`
+- Source: `src/input/Input.ts:280`
 
 Indicates that code asked for an action that has not been bound.
 
 ### Input
 
 - Kind: service
-- Source: `src/input/Input.ts:323`
+- Source: `src/input/Input.ts:321`
 
 The engine's action-oriented input service.
 
 
 
-`Input` bridges the gap between native events and gameplay-friendly action
+`Input` bridges **Raw input** and gameplay **Action map** / **Binding** queries.
 queries. Game authors usually:
 
 - declare a set of [ActionBinding](./llms/input.md#input-actionbinding) values
@@ -1702,99 +1702,97 @@ Identity helper for room metadata when you want inline authored objects to stay 
 
 > Public Native API.
 
-## NativeBackend
+## FrameUpdater
 
-### NativeWindowSnapshot
-
-- Kind: interface
-- Source: `src/native/NativeBackend.ts:8`
-
-The current native window state exposed by the backend.
-
-### NativeRendererSnapshot
-
-- Kind: interface
-- Source: `src/native/NativeBackend.ts:19`
-
-Renderer capabilities and counters exposed by the native backend.
-
-### NativeAudioOutputSnapshot
-
-- Kind: interface
-- Source: `src/native/NativeBackend.ts:28`
-
-Native audio output capabilities and current playback state.
-
-### NativeTimingSnapshot
-
-- Kind: interface
-- Source: `src/native/NativeBackend.ts:39`
-
-Native frame pacing information exposed by the backend.
-
-### NativeBackendDiagnostics
-
-- Kind: interface
-- Source: `src/native/NativeBackend.ts:45`
-
-A combined diagnostic snapshot for the active native backend.
-
-
-
-This is useful for startup diagnostics, test assertions, and debug screens
-that need to inspect renderer, audio, timing, and window state together.
-
-### NativeBackend
+### FrameUpdater
 
 - Kind: service
-- Source: `src/native/NativeBackend.ts:63`
+- Source: `src/native/FrameUpdater.ts:6`
 
-Low-level native runtime adapter used by the internal native boundary.
+Runs simulation and draw for the next frame before presentation (**Frame updater** in the glossary).
 
 
 
-Most games do not implement or consume `NativeBackend` directly. Instead
-they use a helper such as [makeSkiaNativeBoundaryLayer](./llms/native.md#native-makeskianativeboundarylayer), which wires a
-concrete backend into the internal native boundary. This service exists so the
-engine can separate authored frame production from platform-specific window,
-input, rendering, and audio work.
+Games provide this by composing update and draw into one step that returns a
+[FrameSnapshot](./llms/graphics.md#graphics-framesnapshot).
+
+#### Methods
+
+- `nextFrame: Effect.Effect<FrameSnapshot, EngineLaunchError>`
+
+## PlatformBackend
+
+### PlatformWindowSnapshot
+
+- Kind: interface
+- Source: `src/native/PlatformBackend.ts:8`
+
+Window state exposed by the platform backend.
+
+### PlatformRendererSnapshot
+
+- Kind: interface
+- Source: `src/native/PlatformBackend.ts:19`
+
+Renderer capabilities and counters from the platform backend.
+
+### PlatformAudioOutputSnapshot
+
+- Kind: interface
+- Source: `src/native/PlatformBackend.ts:28`
+
+Audio output capabilities and playback state from the platform backend.
+
+### PlatformTimingSnapshot
+
+- Kind: interface
+- Source: `src/native/PlatformBackend.ts:39`
+
+Frame pacing information from the platform backend.
+
+### PlatformBackendDiagnostics
+
+- Kind: interface
+- Source: `src/native/PlatformBackend.ts:45`
+
+Combined diagnostic snapshot for the active platform backend.
+
+
+
+Startup diagnostics, tests, and debug overlays use this to inspect
+renderer, audio, timing, and window state together.
+
+### PlatformBackend
+
+- Kind: service
+- Source: `src/native/PlatformBackend.ts:63`
+
+Swappable OS-facing adapter: windowing, presentation, input drain, audio device sync.
+
+
+
+Most games do not implement `PlatformBackend` directly. Use
+[makeSkiaNativeBoundaryLayer](./llms/native.md#native-makeskianativeboundarylayer), which wires a concrete backend into the
+**Native boundary** and keeps **Frame updater** work in game land.
 
 #### Methods
 
 - `close: Effect.Effect<void>`
-- `diagnostics: Effect.Effect<NativeBackendDiagnostics>`
+- `diagnostics: Effect.Effect<PlatformBackendDiagnostics>`
 - `drainInputEvents: Effect.Effect< ReadonlyArray<InputEvent>, EngineLaunchError >`
 - `open: (gameId: string) => Effect.Effect<void, EngineLaunchError>`
 - `presentFrame: ( frame: FrameSnapshot, ) => Effect.Effect<void, EngineLaunchError>`
 - `syncAudio: ( snapshot: AudioSnapshot, ) => Effect.Effect<ReadonlyArray<string>, EngineLaunchError>`
 - `waitForNextFrame: Effect.Effect<void, EngineLaunchError>`
 
-## NativeFrameSource
+## SkiaPlatformBackend
 
-### NativeFrameSource
-
-- Kind: service
-- Source: `src/native/NativeFrameSource.ts:6`
-
-Produces the next authored frame for the native runtime.
-
-
-
-Games usually provide this service by composing gameplay and presentation
-directors into one step that returns a [FrameSnapshot](./llms/graphics.md#graphics-framesnapshot).
-
-#### Methods
-
-- `nextFrame: Effect.Effect<FrameSnapshot, EngineLaunchError>`
-
-## SkiaNativeBackend
-
-### SkiaNativeBackendOptions
+### SkiaPlatformBackendOptions
 
 - Kind: interface
-- Source: `src/native/SkiaNativeBackend.ts:38`
+- Source: `src/native/SkiaPlatformBackend.ts:38`
 
-Configuration for the Skia native backend.
+Configuration for the Skia platform backend.
 
 
 
@@ -1802,17 +1800,17 @@ This is the main option bag used by [makeSkiaNativeBoundaryLayer](./llms/native.
 Typical games set window title and size, logical render size, and their
 authored image and font asset paths here.
 
-### makeSkiaNativeBackendLayer
+### makeSkiaPlatformBackendLayer
 
 - Kind: function
-- Source: `src/native/SkiaNativeBackend.ts:547`
+- Source: `src/native/SkiaPlatformBackend.ts:549`
 
-Builds the Skia implementation of [NativeBackend](./llms/native.md#native-nativebackend).
+Builds the Skia implementation of [PlatformBackend](./llms/native.md#native-platformbackend).
 
 ### makeSkiaNativeBoundaryLayer
 
 - Kind: function
-- Source: `src/native/SkiaNativeBackend.ts:1382`
+- Source: `src/native/SkiaPlatformBackend.ts:1387`
 
 Builds a ready-to-use native playable boundary backed by a Skia window and
 renderer.
@@ -2276,7 +2274,7 @@ Declares how a scene is identified and instantiated.
 
 
 In application code you usually author a `SceneDefinition` as a constant and
-register it with `SceneRegistry.layer`.
+provide it through `SceneLookup.layer`.
 
 ```ts
 const titleScene: SceneDefinition = {
@@ -2346,10 +2344,10 @@ responsible for:
 
 A common pattern is:
 
-- register authored scenes with [SceneRegistry](./llms/scene.md#scene-sceneregistry)
+- provide authored scenes via [SceneLookup](./llms/scene.md#scene-scenelookup)
 - build `SceneDirector.layer(startSceneId)`
 - call `switchTo`, `pushOverlay`, or `popOverlay` from gameplay services
-- let a native frame source call the active scene's update and draw work
+- let the **Frame updater** call the active scene's update and draw work
 
 #### Methods
 
@@ -2385,20 +2383,19 @@ Indicates that a scene-stack operation required an active scene when none existe
 
 Indicates that code tried to pop an overlay when the overlay stack was empty.
 
-## SceneRegistry
+## SceneLookup
 
-### SceneRegistry
+### SceneLookup
 
 - Kind: service
-- Source: `src/scene/SceneRegistry.ts:5`
+- Source: `src/scene/SceneLookup.ts:5`
 
-A lookup table of authored scene definitions.
+Scene **Lookup**: id → authored [SceneDefinition](./llms/scene.md#scene-scenedefinition).
 
 
 
-The registry is intentionally simple: it answers "which scene definition
-corresponds to this id?" and exposes the complete authored set for tooling or
-diagnostics.
+Intentionally minimal: answers “which definition matches this id?” and exposes
+the full authored set for tooling or diagnostics.
 
 #### Methods
 

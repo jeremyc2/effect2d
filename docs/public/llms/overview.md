@@ -31,7 +31,7 @@ easier to keep growing.
  [Engine](./llms/runtime.md#runtime-engine), [EngineConfig](./llms/runtime.md#runtime-engineconfig), [defaultEngineConfig](./llms/runtime.md#runtime-defaultengineconfig),
  [makeRuntimeLayer](./llms/runtime.md#runtime-makeruntimelayer), and [engineProgram](./llms/runtime.md#runtime-engineprogram)
 - Scene composition primitives such as [SceneDefinition](./llms/scene.md#scene-scenedefinition),
- [SceneDirector](./llms/scene.md#scene-scenedirector), and [SceneRegistry](./llms/scene.md#scene-sceneregistry)
+ [SceneDirector](./llms/scene.md#scene-scenedirector), and [SceneLookup](./llms/scene.md#scene-scenelookup)
 - Core gameplay services including [Graphics](./llms/graphics.md#graphics-graphics), [Input](./llms/input.md#input-input),
  [Audio](./llms/audio.md#audio-audio), [Sequence](./llms/sequence.md#sequence-sequence), [Cutscene](./llms/cutscene.md#cutscene-cutscene), [UI](./llms/ui.md#ui-ui), and
  [SaveCoordinator](./llms/save.md#save-savecoordinator)
@@ -50,7 +50,7 @@ long-lived services:
 
 - `SceneDirector` decides which scene is active and manages scene lifecycle
 - `Graphics` records draw commands for the current frame
-- `Input` turns native keyboard and mouse events into stable action state
+- `Input` turns raw keyboard and mouse events into stable action state
 - `Audio` manages music and overlapping sound effects as typed cues
 - `Sequence` coordinates timed gameplay beats such as waits, scene switches,
  fades, flashes, and audio cues
@@ -69,8 +69,8 @@ Your game code contributes domain-specific services on top of these:
 ## What the engine takes care of
 
 - deterministic service wiring through `Layer`
-- a native launch boundary for desktop windowing, native input event
- collection, frame presentation, and audio synchronization
+- a **Native boundary** for desktop windowing, raw input collection, frame
+ presentation, and audio synchronization
 - frame recording through an immediate-mode graphics command model, meaning
  your game describes what to draw for the current frame right now as a list
  of draw commands like "draw this image here" or "draw this text here"
@@ -132,7 +132,7 @@ games/my-game/
  content/ # authored room data, constants, and encounter tables
  directors/ # frame-by-frame gameplay and presentation orchestration
  input/ # input binding declarations
- native/ # the game's NativeFrameSource wiring
+ native/ # the game's FrameUpdater wiring
  scenes/ # SceneDefinition values and scene-local bootstrapping
  state/ # Effect services that hold mutable game state
  MyGame.ts # the composition root for Layers, bootstrap code, and programs
@@ -145,10 +145,10 @@ games/my-game/
 1. Start from [defaultEngineConfig](./llms/runtime.md#runtime-defaultengineconfig) and define your `gameId`,
  `startScene`, and tick rate.
 2. Create state services for the pieces of domain state your game owns.
-3. Register authored scenes with [SceneRegistry](./llms/scene.md#scene-sceneregistry).
+3. Provide authored scenes through [SceneLookup](./llms/scene.md#scene-scenelookup).
 4. Add a gameplay director that reads `Input` and updates state.
 5. Add a presentation director that records `Graphics` commands.
-6. Expose a `NativeFrameSource` that steps gameplay and renders a frame.
+6. Expose a [FrameUpdater](./llms/native.md#native-frameupdater) that steps gameplay and renders a frame.
 7. Use [makeRuntimeLayer](./llms/runtime.md#runtime-makeruntimelayer) or [makeEngineLayer](./llms/runtime.md#runtime-makeenginelayer) to compose the
  engine with your game's services.
 8. Use [makeSkiaNativeBoundaryLayer](./llms/native.md#native-makeskianativeboundarylayer) when you want a playable

@@ -1,156 +1,179 @@
-# Ubiquitous Language
+# Ubiquitous language
 
-The "Aliases to Avoid" column is intentionally strict. We use it to prevent multiple names for the same concept from creeping into docs, APIs, variable names, and conversations.
+Shared vocabulary for `Effect2d`. This document is **normative**: it states how we *want* to think and speak about the engine and games built on it—not a mirror of every identifier in the repository.
 
-## Column guide
+The **aliases to avoid** column blocks web-app and generic software language from displacing game-engine terms, and vice versa.
 
+Source code, documentation, examples, and conversation should all use the terms in this document.
 
-| Column       | Meaning                                                                                                                                                                                       |
-| ------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **Origin**   | Where the term comes from: **Game** (common game-development usage), **Software** (broader CS / platforms / patterns), **Coined** (vocabulary we established or reserve in this project).     |
-| **Prolif.**  | Proliferation in *this* repository: **0**–**10**. Higher means the name appears across more modules, tests, and docs; already well established. Estimates; re-score when the codebase shifts. |
-| **Audience** | **Game** (authors shipping a game on the engine), **Engine** (people working on `Effect2d` itself), **Both**.                                                                                 |
-| **Learn**    | How important it is to learn the term early: **0**–**10**. **10** = you will be lost without it; **0** = fine to pick up later or only if you touch that area.                                |
+## How to read the columns
 
 
-## Runtime
+| Column       | Meaning                                                                                                                                         |
+| ------------ | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Origin**   | **Game** (common game-development usage), **Software** (broader CS / platforms / patterns), **Coined** (vocabulary we reserve in this project). |
+| **Prolif.**  | Proliferation in *this* repository: **0**–**10**. Higher means more touchpoints; re-score when the codebase shifts.                             |
+| **Audience** | **Game** (authors shipping a game), **Engine** (people working on `Effect2d`), **Both**.                                                        |
+| **Learn**    | How important the term is early: **0**–**10** (**10** = unavoidable).                                                                           |
 
 
-| Term            | Definition                                                                                                                                                                          | Aliases to Avoid                                                                      | Origin   | Prolif. | Audience | Learn |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- | -------- | ------- | -------- | ----- |
-| Engine          | The reusable runtime and subsystem foundation provided by `Effect2d`.                                                                                                               | app, framework, platform                                                              | Game     | 8       | Both     | 10    |
-| Game            | A userland project built on top of the engine.                                                                                                                                      | app, product                                                                          | Game     | 7       | Both     | 10    |
-| Runtime         | The live executing game process, including the engine and userland services.                                                                                                        | process manager, host app                                                             | Software | 8       | Both     | 9     |
-| Native Boundary | The thin layer that talks to platform capabilities like windowing, rendering, audio devices, and raw input.                                                                         | backend app, core engine, platform layer                                              | Coined   | 6       | Engine   | 7     |
-| Backend         | A low-level implementation behind an engine capability such as rendering or audio output.                                                                                           | provider, adapter layer                                                               | Software | 7       | Engine   | 6     |
-| Native Backend  | The capability-level implementation that owns real device interaction such as opening a window, draining input, presenting frames, syncing audio output, and reporting diagnostics. | mini-engine, platform app                                                             | Coined   | 6       | Engine   | 7     |
-| Frame Source    | The service that supplies the next fully prepared frame for native presentation.                                                                                                    | render loop, scene renderer                                                           | Coined   | 4       | Engine   | 6     |
-| Launch          | Starting the runtime through Effect.                                                                                                                                                | boot app, mount                                                                       | Coined   | 6       | Both     | 8     |
-| Capability      | A low-level engine power exposed through services, such as graphics, audio, input, or filesystem.                                                                                   | utility, helper                                                                       | Software | 5       | Engine   | 6     |
-| Service         | An Effect service that provides engine or game behavior.                                                                                                                            | singleton, context object, manager unless it is specifically a director-style service | Software | 10      | Both     | 10    |
-| Layer           | The composition unit used to assemble engine and game services.                                                                                                                     | setup object, config bundle                                                           | Software | 10      | Both     | 10    |
-| Scope           | The ownership boundary for resources and long-running work.                                                                                                                         | lifetime bucket, cleanup zone                                                         | Software | 7       | Engine   | 7     |
+## Stance
+
+- **Effect** owns composition (**Layer**, **Service**, **Scope**, typed errors). We do not rename those; we use them with engine vocabulary on top.
+- **Native boundary** names the *edge* to the OS. **Platform backend** names the *swappable implementation* behind windowing, presentation, input drain, and audio device sync—not a second “engine inside the engine.”
+- **Director** vs **Coordinator**: both orchestrate multiple services, but see [Director vs Coordinator](#director-vs-coordinator) below—game domains vs engine workflows.
+- **Scene** is a runtime mode with lifecycle; **Room** is authored geography. **Lookup** and **Repository** are deliberate patterns for id→definition maps and authored content storage—not generic “managers.”
+- We reserve **Layer** for Effect composition. Room content uses **authoring planes** (tile grids and object placement), not the word “layer” in the sense of Photoshop or web layout.
+
+### Director vs Coordinator
+
+Use these names so “orchestration” does not blur **game fiction** and **engine protocol**.
+
+- **Director** — Orchestrates **your game’s** concerns across **domains** (simulation vs presentation, combat vs menu, overworld vs pause—whatever boundaries *you* draw). It answers: *what should the game do this frame, and which domain services need to cooperate?* Example pattern: separate gameplay and presentation directors that feed the **Frame updater**.
+- **Coordinator** — Runs a **fixed engine workflow** where several services each own a slice of data and the engine defines the choreography. It answers: *how does this engine feature (save, load, migration) collect and apply contributions in order?* Example: **Save coordinator** merges **Save participant** slices into a **Save document**; the document shape and slot rules are engine-owned, not game-specific fiction.
+
+Neither term implies seniority or size. If the workflow is defined primarily by **your** rules and domains, prefer **Director**. If it is defined primarily by **Effect2d’s** contracts and multi-participant pipelines, prefer **Coordinator**.
+
+## Composition and runtime
 
 
-## Time And Flow
+| Term             | Definition                                                                                                                                                                                                  | Aliases to avoid                                          | Origin   | Prolif. | Audience | Learn |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------- | -------- | ------- | -------- | ----- |
+| Engine           | The reusable runtime foundation and subsystems shipped as `Effect2d`.                                                                                                                                       | app, framework, platform (when meaning the product stack) | Game     | 8       | Both     | 10    |
+| Game             | A userland project built on the engine.                                                                                                                                                                     | app, product                                              | Game     | 7       | Both     | 10    |
+| Runtime          | The live executing process: engine plus game services.                                                                                                                                                      | host app, process manager                                 | Software | 8       | Both     | 9     |
+| Native boundary  | The thin orchestration at the OS edge: window, input drain, frame presentation, audio sync, pacing. It wires **Platform backend**, **Input**, **Audio**, and **Frame updater**—it does not own game rules. | backend app, core engine, platform layer                  | Coined   | 6       | Engine   | 8     |
+| Platform backend | The swappable implementation behind native windowing, drawing, input collection, timing waits, and device audio—everything the OS sees.                                                                     | provider, adapter layer, mini-engine                      | Coined   | 7       | Engine   | 7     |
+| Frame updater    | The service that advances simulation and draw for the next frame before presentation. Lives in game land; invoked by the **Native boundary** loop.                                                          | frame producer, render loop, game loop, scene renderer      | Coined   | 5       | Both     | 8     |
+| Launch           | Starting the runtime through Effect entrypoints.                                                                                                                                                            | boot, mount                                               | Coined   | 6       | Both     | 8     |
+| Service          | An Effect service for engine or game behavior.                                                                                                                                                              | singleton, context object, helper (as a noun)             | Software | 10      | Both     | 10    |
+| Layer            | Effect’s composition unit for assembling services.                                                                                                                                                          | setup object, config bundle                               | Software | 10      | Both     | 10    |
+| Scope            | Ownership boundary for resources and background work.                                                                                                                                                       | lifetime bucket, cleanup zone                             | Software | 7       | Engine   | 7     |
 
 
-| Term           | Definition                                                                   | Aliases to Avoid                  | Origin | Prolif. | Audience | Learn |
-| -------------- | ---------------------------------------------------------------------------- | --------------------------------- | ------ | ------- | -------- | ----- |
-| Simulation     | The advancing game world state.                                              | business logic, app state updates | Game   | 6       | Both     | 8     |
-| Fixed Timestep | A simulation model where update steps advance in stable increments.          | frame-tied update, variable tick  | Game   | 4       | Both     | 7     |
-| Frame          | One render pass of the game.                                                 | render cycle, repaint             | Game   | 8       | Both     | 9     |
-| Tick           | A single simulation step.                                                    | frame, render                     | Game   | 6       | Both     | 8     |
-| Timing Hook    | A native wait or scheduling point that helps pace frame presentation.        | sleep hack, event loop trick      | Coined | 3       | Engine   | 5     |
-| Update         | The simulation phase where game state advances.                              | reducer pass, render prep         | Game   | 7       | Both     | 8     |
-| Draw           | The rendering phase where the frame's visuals are submitted.                 | render component, paint UI        | Game   | 7       | Both     | 8     |
-| Sequence       | An Effect-backed orchestration helper for timed gameplay beats over time.    | workflow, saga, async flow        | Coined | 6       | Both     | 7     |
-| Cutscene       | A cinematic non-interactive scene built from sequences plus UI presentation. | intro, cinematic, storyboard      | Game   | 5       | Game     | 6     |
-| Transition     | A controlled change between scenes, rooms, or overlays.                      | route change, navigation          | Game   | 6       | Both     | 7     |
+## Roles and patterns
 
 
-## World And Content
+| Term        | Definition                                                                                                                     | Aliases to avoid                                                | Origin   | Prolif. | Audience | Learn |
+| ----------- | ------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------- | -------- | ------- | -------- | ----- |
+| Director    | Orchestrates **game** domains you define (e.g. gameplay vs presentation); frames “what the game does” across those boundaries. | controller, manager when cross-domain orchestration is intended | Coined   | 6       | Both     | 7     |
+| Coordinator | Orchestrates an **engine** workflow with fixed rules and multiple contributors (e.g. save/load, participants, document shape). | plugin host, workflow manager                                   | Software | 4       | Both     | 7     |
+| Lookup      | A map from stable ids to definitions (e.g. scene ids).                                                                         | registry, lookup table, dictionary (when naming the pattern)    | Software | 5       | Both     | 7     |
+| Repository  | Loads and holds authored **world** data (e.g. rooms).                                                                          | data access layer, DAO                                          | Software | 4       | Both     | 6     |
+| Participant | A service that contributes one slice of data to a coordinated workflow (e.g. save).                                            | plugin, hook                                                    | Coined   | 5       | Engine   | 6     |
 
 
-| Term            | Definition                                                                                                                                                         | Aliases to Avoid                               | Origin | Prolif. | Audience | Learn |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------- | ------ | ------- | -------- | ----- |
-| World           | The playable game space and its active content.                                                                                                                    | app state tree, data graph                     | Game   | 7       | Both     | 8     |
-| Room            | A discrete authored playable area.                                                                                                                                 | page, screen when it means a world location    | Game   | 7       | Both     | 8     |
-| Scene           | A scoped runtime unit with its own lifecycle, such as gameplay, menu, intro, or pause.                                                                             | page, route, component                         | Game   | 9       | Both     | 9     |
-| Overlay         | A scene layered on top of another scene, such as pause or dialogue.                                                                                                | modal, popover                                 | Game   | 5       | Both     | 7     |
-| Tile Plane      | A grid-based authored plane of room content. We avoid the word "layer" here so `Layer` stays reserved for Effect composition.                                      | tile layer, grid component, layout layer       | Coined | 4       | Both     | 6     |
-| Object Plane    | An authored plane of placed gameplay objects, spawn points, triggers, or markers. We avoid the word "layer" here so `Layer` stays reserved for Effect composition. | object layer, metadata layer, annotation layer | Coined | 4       | Both     | 6     |
-| Trigger         | A non-blocking gameplay region that reacts to overlap or entry.                                                                                                    | event handler zone, listener area              | Game   | 6       | Both     | 7     |
-| Spawn Point     | A designated position for creating an actor, pickup, or scene entry.                                                                                               | mount point, insertion point                   | Game   | 5       | Game     | 7     |
-| Transition Zone | A trigger that causes movement into another room or scene.                                                                                                         | route boundary, page link                      | Coined | 4       | Both     | 6     |
-| Content Model   | The engine-owned representation of authored room and world data.                                                                                                   | schema only, DTO set                           | Coined | 5       | Engine   | 6     |
+## Time and flow
 
 
-## Actors And State
+| Term           | Definition                                                                 | Aliases to avoid                  | Origin | Prolif. | Audience | Learn |
+| -------------- | -------------------------------------------------------------------------- | --------------------------------- | ------ | ------- | -------- | ----- |
+| Simulation     | Advancing **world** state over time.                                       | business logic, app state updates | Game   | 6       | Both     | 8     |
+| Fixed timestep | Simulation steps advance in stable increments.                             | variable tick, frame-tied update  | Game   | 4       | Both     | 7     |
+| Frame          | One full render pass.                                                      | repaint, render cycle             | Game   | 8       | Both     | 9     |
+| Tick           | One simulation step.                                                       | frame, render (when meaning draw) | Game   | 6       | Both     | 8     |
+| Update         | Phase where simulation state advances.                                     | reducer pass, render prep         | Game   | 7       | Both     | 8     |
+| Draw           | Phase where draw commands are recorded for the **Frame**.                  | render component, paint UI        | Game   | 7       | Both     | 8     |
+| Sequence       | Effect-backed orchestration for timed beats (waits, fades, scene changes). | workflow, saga, async flow        | Coined | 6       | Both     | 7     |
+| Cutscene       | Non-interactive cinematic flow built from **Sequence** and presentation.   | intro, cinematic, storyboard      | Game   | 5       | Game     | 6     |
+| Transition     | Controlled change between **Scenes**, **Rooms**, or overlays.              | route change, navigation          | Game   | 6       | Both     | 7     |
 
 
-| Term          | Definition                                                                                  | Aliases to Avoid                                                | Origin   | Prolif. | Audience | Learn |
-| ------------- | ------------------------------------------------------------------------------------------- | --------------------------------------------------------------- | -------- | ------- | -------- | ----- |
-| Actor         | A gameplay thing that acts in the world, such as the player, an enemy, or an NPC.           | component, widget                                               | Game     | 7       | Both     | 8     |
-| State Service | A domain service that owns mutable game state for one part of the game.                     | store unless it is intentionally named as one, reducer          | Coined   | 6       | Both     | 7     |
-| Domain        | A gameplay concern with its own language and rules, such as combat, inventory, or dialogue. | feature slice, module only                                      | Software | 5       | Both     | 6     |
-| Director      | A coordinating service that orchestrates work across multiple domains.                      | controller, manager when cross-domain orchestration is intended | Coined   | 6       | Both     | 7     |
-| Participant   | A service that contributes to a wider engine workflow, such as save/load.                   | plugin, hook                                                    | Coined   | 5       | Engine   | 6     |
-| Resource      | A loaded runtime asset or device-backed object with a real lifetime.                        | plain object, data blob                                         | Software | 7       | Both     | 7     |
-| Cache         | A deliberately long-lived resource store.                                                   | global map, singleton resource pool                             | Software | 5       | Both     | 6     |
+## World and authorship
 
 
-## Rendering
+| Term             | Definition                                                                                                                                                          | Aliases to avoid                       | Origin | Prolif. | Audience | Learn |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------- | ------ | ------- | -------- | ----- |
+| World            | Playable space and what is active in it.                                                                                                                            | app state tree, data graph             | Game   | 7       | Both     | 8     |
+| Room             | A discrete authored playable area.                                                                                                                                  | page, screen (when meaning geography)  | Game   | 7       | Both     | 8     |
+| Scene            | A scoped runtime unit with lifecycle (gameplay, menu, pause, …).                                                                                                    | page, route, component                 | Game   | 9       | Both     | 9     |
+| Scene stack      | Ordered **Scenes**: primary stack plus **Overlays**.                                                                                                                | navigation stack, UI stack             | Coined | 6       | Both     | 8     |
+| Overlay          | A **Scene** layered above another (pause, dialogue, …).                                                                                                             | modal, popover                         | Game   | 5       | Both     | 7     |
+| Authored content | Engine-shaped representation of rooms, objects, and metadata—validated, serializable, owned by the **Repository** pattern.                                          | schema only, DTO set, content model    | Coined | 5       | Both     | 7     |
+| Authoring plane  | A structured slice of **Room** data: either a **tile grid** or a set of placed objects (**Object plane** in code). We avoid calling these “layers” in conversation. | tile layer, layout layer, object layer | Coined | 4       | Both     | 6     |
+| Trigger          | Non-blocking region that reacts to overlap or entry.                                                                                                                | event handler zone, listener area      | Game   | 6       | Both     | 7     |
+| Spawn point      | Authored position for spawning or entry.                                                                                                                            | mount point, insertion point           | Game   | 5       | Game     | 7     |
+| Transition zone  | **Trigger** that moves the player to another **Room** or **Scene**.                                                                                                 | route boundary, link                   | Coined | 4       | Both     | 6     |
 
 
-| Term                     | Definition                                                                      | Aliases to Avoid                                           | Origin   | Prolif. | Audience | Learn |
-| ------------------------ | ------------------------------------------------------------------------------- | ---------------------------------------------------------- | -------- | ------- | -------- | ----- |
-| Immediate-Mode Rendering | A model where draw logic issues rendering commands each frame.                  | retained UI, scene graph rendering                         | Game     | 4       | Both     | 6     |
-| Draw Command             | A single rendering instruction issued during draw.                              | component render, DOM op                                   | Game     | 5       | Both     | 7     |
-| Sprite                   | A drawable 2D image or image region used in gameplay rendering.                 | image component, icon unless it is actually UI iconography | Game     | 6       | Both     | 8     |
-| Sprite Sheet             | A texture containing multiple sprite frames or regions.                         | image bundle                                               | Game     | 4       | Game     | 7     |
-| Animation                | A time-based sequence of visual states such as sprite frames.                   | transition only, motion preset                             | Game     | 6       | Both     | 8     |
-| Tween                    | A value interpolation over time.                                                | animation state machine, CSS transition                    | Game     | 5       | Both     | 6     |
-| Camera                   | The viewport transform that determines how world coordinates map to the screen. | scroll container, viewport component                       | Game     | 7       | Both     | 8     |
-| Canvas2D                 | The immediate drawing surface used by the current native renderer backend.      | browser canvas, DOM canvas                                 | Other    | 5       | Engine   | 6     |
-| Parallax                 | Layered movement at different rates to imply depth.                             | background scroll effect                                   | Game     | 3       | Game     | 5     |
-| Render Target            | An off-screen destination for drawing.                                          | canvas component, buffer view                              | Game     | 4       | Both     | 6     |
-| Window                   | The native desktop surface that receives presented frames and raw player input. | browser tab, page                                          | Software | 5       | Both     | 7     |
+## Actors and state
 
 
-## Collision And Motion
+| Term         | Definition                                                              | Aliases to avoid                                | Origin   | Prolif. | Audience | Learn |
+| ------------ | ----------------------------------------------------------------------- | ----------------------------------------------- | -------- | ------- | -------- | ----- |
+| Actor        | Something that acts in the **World** (player, NPC, …).                  | component, widget                               | Game     | 7       | Both     | 8     |
+| Domain       | A gameplay concern with its own rules (combat, inventory, …).           | feature slice, module (when meaning DDD domain) | Software | 5       | Both     | 6     |
+| Domain state | Mutable state owned by a service for one **Domain** (`PlayerState`, …). | store, reducer, global state                    | Coined   | 6       | Both     | 7     |
+| Resource     | Loaded asset or device-backed object with real lifetime.                | plain object, blob                              | Software | 7       | Both     | 7     |
+| Cache        | Deliberately long-lived resource store.                                 | global map, singleton pool                      | Software | 5       | Both     | 6     |
 
 
-| Term            | Definition                                                                                                                                                  | Aliases to Avoid                     | Origin | Prolif. | Audience | Learn |
-| --------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | ------ | ------- | -------- | ----- |
-| Collision       | A blocking or resolving overlap between gameplay shapes.                                                                                                    | validation, conflict                 | Game   | 7       | Both     | 8     |
-| Trigger Query   | A non-blocking overlap or region check.                                                                                                                     | event lookup, selector               | Coined | 4       | Both     | 6     |
-| Spatial Query   | A world lookup for shapes or actors in an area.                                                                                                             | search filter, query selector        | Game   | 4       | Both     | 6     |
-| AABB            | An axis-aligned bounding box used for simple rectangular collision.                                                                                         | box model, layout box                | Game   | 5       | Both     | 7     |
-| Hitbox          | The shape that deals damage or interaction.                                                                                                                 | attack component, damage zone        | Game   | 4       | Game     | 7     |
-| Hurtbox         | The shape that can receive damage or interaction.                                                                                                           | receiver box, target zone            | Game   | 4       | Game     | 7     |
-| Collision Group | A named gameplay collision category used to control which things interact. We avoid the word "layer" here so `Layer` stays reserved for Effect composition. | collision layer, tag only, CSS layer | Coined | 5       | Both     | 7     |
-| Mask            | A filter that limits which collision groups a shape responds to.                                                                                            | permission list, allowlist only      | Game   | 4       | Both     | 6     |
-| Physics         | Full simulated body behavior such as forces, impulses, and restitution.                                                                                     | collision system                     | Game   | 5       | Both     | 7     |
+## Presentation
 
 
-## Input And Audio
+| Term                     | Definition                                                         | Aliases to avoid                                 | Origin   | Prolif. | Audience | Learn |
+| ------------------------ | ------------------------------------------------------------------ | ------------------------------------------------ | -------- | ------- | -------- | ----- |
+| Immediate-mode rendering | Draw logic issues commands each **Frame**; no retained scene tree. | retained UI, DOM tree rendering                  | Game     | 4       | Both     | 6     |
+| Draw command             | One graphics instruction in the current frame’s list.              | component render, DOM op                         | Game     | 5       | Both     | 7     |
+| Sprite                   | Drawable 2D image or region.                                       | image component, icon (unless it is iconography) | Game     | 6       | Both     | 8     |
+| Sprite sheet             | Texture holding multiple sprite regions.                           | image bundle                                     | Game     | 4       | Game     | 7     |
+| Animation                | Time-based visual states (frames, key poses).                      | motion preset, transition-only                   | Game     | 6       | Both     | 8     |
+| Tween                    | Interpolated value over time.                                      | CSS transition, animation state machine          | Game     | 5       | Both     | 6     |
+| Camera                   | Transform from **World** to screen space.                          | scroll container, viewport component             | Game     | 7       | Both     | 8     |
+| Render target            | Off-screen draw destination.                                       | buffer view, canvas component                    | Game     | 4       | Both     | 6     |
+| Window                   | Native surface that receives frames and raw input.                 | browser tab, page                                | Software | 5       | Both     | 7     |
 
 
-| Term              | Definition                                                                                 | Aliases to Avoid                            | Origin | Prolif. | Audience | Learn |
-| ----------------- | ------------------------------------------------------------------------------------------ | ------------------------------------------- | ------ | ------- | -------- | ----- |
-| Raw Input         | Direct device-level keyboard or mouse state and events.                                    | DOM event, browser event                    | Game   | 5       | Both     | 7     |
-| Action Mapping    | A layer that maps raw inputs to gameplay actions like move, attack, or pause.              | shortcut system, key handler map            | Game   | 4       | Both     | 7     |
-| Binding           | A mapping from one or more inputs to a named action.                                       | hotkey only                                 | Game   | 4       | Game     | 7     |
-| SDL               | The current native windowing and raw input path used by the playable desktop build.        | browser shell, game engine                  | Other  | 4       | Engine   | 5     |
-| Sound Effect      | A short gameplay audio event.                                                              | clip only, media asset                      | Game   | 4       | Game     | 6     |
-| Music             | A longer-running background audio track.                                                   | soundtrack only, media stream               | Game   | 4       | Game     | 6     |
-| Audio Output Path | The concrete native route that turns engine audio state into audible sound on the machine. | media player integration, soundtrack system | Coined | 3       | Engine   | 5     |
-| Mixer Bus         | A controllable audio channel group such as master, music, or sfx.                          | audio context, playlist                     | Game   | 4       | Both     | 6     |
+## Collision and motion
 
 
-## Persistence And Testing
+| Term            | Definition                                                                                  | Aliases to avoid                     | Origin | Prolif. | Audience | Learn |
+| --------------- | ------------------------------------------------------------------------------------------- | ------------------------------------ | ------ | ------- | -------- | ----- |
+| Collision       | Blocking or resolved overlap between shapes.                                                | validation, conflict                 | Game   | 7       | Both     | 8     |
+| World query     | Looking up overlaps, solids, or actors in space (blocking **Collision** vs overlap checks). | spatial query, trigger query (split) | Coined | 4       | Both     | 6     |
+| AABB            | Axis-aligned box for simple collision.                                                      | layout box, box model                | Game   | 5       | Both     | 7     |
+| Hitbox          | Shape that deals damage or interaction.                                                     | attack zone, damage component        | Game   | 4       | Game     | 7     |
+| Hurtbox         | Shape that receives damage or interaction.                                                  | target zone                          | Game   | 4       | Game     | 7     |
+| Collision group | Named category controlling interaction. Not an Effect **Layer**.                            | collision layer, CSS layer           | Coined | 5       | Both     | 7     |
+| Mask            | Filter of which **Collision groups** a shape cares about.                                   | allowlist, tag list                  | Game   | 4       | Both     | 6     |
+| Physics         | Forces, impulses, restitution—not just overlap.                                             | collision system (when it is not)    | Game   | 5       | Both     | 7     |
 
 
-| Term              | Definition                                                                                                            | Aliases to Avoid                    | Origin   | Prolif. | Audience | Learn |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------- | ----------------------------------- | -------- | ------- | -------- | ----- |
-| Save Document     | The versioned JSON data written for one save.                                                                         | snapshot, dump                      | Coined   | 5       | Both     | 7     |
-| Save Participant  | A service that contributes and restores one slice of save data.                                                       | serializer plugin, persistence hook | Coined   | 4       | Engine   | 6     |
-| Slot              | A named save target.                                                                                                  | record, row                         | Software | 4       | Both     | 6     |
-| Seeded Randomness | Randomness driven by an explicit seed for replayability and testing.                                                  | ambient random, Math.random usage   | Software | 4       | Engine   | 6     |
-| Headless Core     | Engine subsystems that can run and be tested without a real window or GPU.                                            | mock app, fake browser mode         | Coined   | 3       | Engine   | 5     |
-| Demo Slice        | A small playable scenario used to validate engine behavior manually.                                                  | end-to-end test app, sandbox page   | Coined   | 2       | Engine   | 3     |
-| Debug Overlay     | Runtime visualization or diagnostics drawn over the game.                                                             | devtools panel, inspector UI        | Game     | 5       | Both     | 5     |
-| Diagnostics       | Structured runtime status information about native services, frame presentation, audio output, or other engine state. | console spam, ad hoc logs           | Software | 5       | Engine   | 5     |
+## Input and audio
 
 
-## Error And Reliability
+| Term         | Definition                                                                                            | Aliases to avoid                   | Origin | Prolif. | Audience | Learn |
+| ------------ | ----------------------------------------------------------------------------------------------------- | ---------------------------------- | ------ | ------- | -------- | ----- |
+| Raw input    | Device-level keys, buttons, pointer, wheel.                                                           | DOM event, browser event           | Game   | 5       | Both     | 7     |
+| Action map   | Maps **Raw input** to named gameplay actions.                                                         | shortcut map, keymap handler       | Game   | 4       | Both     | 7     |
+| Binding      | One action → one or more **Binding edges**.                                                           | hotkey (narrow sense)              | Game   | 4       | Both     | 7     |
+| Binding edge | Physical key or button edge (press/release) attached to a **Binding**—not a **Trigger** in the world. | input trigger, trigger (ambiguous) | Coined | 4       | Both     | 7     |
+| Sound effect | Short gameplay audio.                                                                                 | clip only, media asset             | Game   | 4       | Game     | 6     |
+| Music        | Longer background audio.                                                                              | soundtrack only, stream            | Game   | 4       | Game     | 6     |
+| Mixer bus    | Grouped channel (master, music, sfx).                                                                 | audio context, playlist            | Game   | 4       | Both     | 6     |
 
 
-| Term          | Definition                                                                      | Aliases to Avoid                  | Origin   | Prolif. | Audience | Learn |
-| ------------- | ------------------------------------------------------------------------------- | --------------------------------- | -------- | ------- | -------- | ----- |
-| Typed Error   | An expected failure represented explicitly in Effect.                           | exception, null return            | Software | 6       | Both     | 8     |
-| Determinism   | The property that the same inputs and seed lead to the same simulation results. | consistency only, stable UI       | Software | 4       | Engine   | 6     |
-| Replayability | The ability to reproduce a run from controlled inputs, timing, and randomness.  | browser recording, session replay | Software | 4       | Engine   | 5     |
+## Persistence, testing, and observability
+
+
+| Term              | Definition                                                          | Aliases to avoid               | Origin   | Prolif. | Audience | Learn |
+| ----------------- | ------------------------------------------------------------------- | ------------------------------ | -------- | ------- | -------- | ----- |
+| Save document     | Versioned JSON for one save.                                        | snapshot, dump                 | Coined   | 5       | Both     | 7     |
+| Save participant  | **Participant** for save/load slices.                               | serializer plugin              | Coined   | 4       | Engine   | 6     |
+| Slot              | Named save target.                                                  | record, row                    | Software | 4       | Both     | 6     |
+| Seeded randomness | RNG fixed by seed for tests and replay.                             | Math.random, ambient random    | Software | 4       | Engine   | 6     |
+| Headless runtime  | Engine path without real window/GPU—tests and CI.                   | mock app, fake browser         | Coined   | 3       | Engine   | 5     |
+| Debug overlay     | Diagnostics drawn over the game.                                    | devtools, inspector UI         | Game     | 5       | Both     | 5     |
+| Diagnostics       | Structured status (native, timing, audio, …)—not unstructured logs. | console spam, printf debugging | Software | 5       | Engine   | 5     |
+
+
+## Errors and reliability
+
+
+| Term          | Definition                                                      | Aliases to avoid            | Origin   | Prolif. | Audience | Learn |
+| ------------- | --------------------------------------------------------------- | --------------------------- | -------- | ------- | -------- | ----- |
+| Typed error   | Expected failure in the Effect error channel.                   | exception, null return      | Software | 6       | Both     | 8     |
+| Determinism   | Same inputs and seed → same simulation outcomes.                | consistency, stable UI only | Software | 4       | Engine   | 6     |
+| Replayability | Reproduce a run from inputs, timing, and **Seeded randomness**. | session replay, recording   | Software | 4       | Engine   | 5     |
 
 

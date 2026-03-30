@@ -11,7 +11,7 @@ import {
 	type SceneNotFoundError,
 	SceneStackEmptyError,
 } from "./SceneError.ts";
-import { SceneRegistry } from "./SceneRegistry.ts";
+import { SceneLookup } from "./SceneLookup.ts";
 
 const topScene = (
 	stack: ReadonlyArray<SceneStackEntry>,
@@ -86,10 +86,10 @@ const stackSnapshot = Effect.fn("SceneDirector.stackSnapshot")(function* (
  *
  * A common pattern is:
  *
- * - register authored scenes with {@link SceneRegistry}
+ * - provide authored scenes via {@link SceneLookup}
  * - build `SceneDirector.layer(startSceneId)`
  * - call `switchTo`, `pushOverlay`, or `popOverlay` from gameplay services
- * - let a native frame source call the active scene's update and draw work
+ * - let the **Frame updater** call the active scene's update and draw work
  */
 export class SceneDirector extends ServiceMap.Service<
 	SceneDirector,
@@ -115,8 +115,8 @@ export class SceneDirector extends ServiceMap.Service<
 		Layer.effect(
 			SceneDirector,
 			Effect.gen(function* () {
-				const sceneRegistry = yield* SceneRegistry;
-				const startScene = yield* sceneRegistry.get(startSceneId);
+				const sceneLookup = yield* SceneLookup;
+				const startScene = yield* sceneLookup.get(startSceneId);
 				const startSceneInstance = yield* instantiateScene(startScene);
 				const stack = yield* Ref.make<ReadonlyArray<SceneStackEntry>>([
 					{
@@ -145,7 +145,7 @@ export class SceneDirector extends ServiceMap.Service<
 				const switchTo = Effect.fn("SceneDirector.switchTo")(function* (
 					sceneId: SceneId,
 				) {
-					const nextScene = yield* sceneRegistry.get(sceneId);
+					const nextScene = yield* sceneLookup.get(sceneId);
 					const currentStack = yield* Ref.get(stack);
 					const previousSceneId =
 						currentStack[currentStack.length - 1]?.instance.definition.id ??
@@ -183,7 +183,7 @@ export class SceneDirector extends ServiceMap.Service<
 				const pushOverlay = Effect.fn("SceneDirector.pushOverlay")(function* (
 					sceneId: SceneId,
 				) {
-					const overlayScene = yield* sceneRegistry.get(sceneId);
+					const overlayScene = yield* sceneLookup.get(sceneId);
 					const currentStack = yield* Ref.get(stack);
 					const overlaySceneInstance = yield* instantiateScene(overlayScene);
 					const parentSceneId =

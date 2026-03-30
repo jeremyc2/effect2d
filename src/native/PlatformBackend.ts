@@ -5,8 +5,8 @@ import type { FrameSnapshot } from "../graphics/Graphics.ts";
 import type { InputEvent } from "../input/Input.ts";
 import type { EngineLaunchError } from "../runtime/EngineError.ts";
 
-/** The current native window state exposed by the backend. @public */
-export interface NativeWindowSnapshot {
+/** Window state exposed by the platform backend. @public */
+export interface PlatformWindowSnapshot {
 	readonly backend: string;
 	readonly height: number;
 	readonly isOpen: boolean;
@@ -16,8 +16,8 @@ export interface NativeWindowSnapshot {
 	readonly width: number;
 }
 
-/** Renderer capabilities and counters exposed by the native backend. @public */
-export interface NativeRendererSnapshot {
+/** Renderer capabilities and counters from the platform backend. @public */
+export interface PlatformRendererSnapshot {
 	readonly backend: string;
 	readonly frameCount: number;
 	readonly supportsBlendModes: ReadonlyArray<"add" | "alpha" | "multiply">;
@@ -25,8 +25,8 @@ export interface NativeRendererSnapshot {
 	readonly supportsText: boolean;
 }
 
-/** Native audio output capabilities and current playback state. @public */
-export interface NativeAudioOutputSnapshot {
+/** Audio output capabilities and playback state from the platform backend. @public */
+export interface PlatformAudioOutputSnapshot {
 	readonly activeSoundCount: number;
 	readonly backend: string;
 	readonly currentMusicCueId: string | null;
@@ -36,46 +36,44 @@ export interface NativeAudioOutputSnapshot {
 	readonly supportsVolume: boolean;
 }
 
-/** Native frame pacing information exposed by the backend. @public */
-export interface NativeTimingSnapshot {
+/** Frame pacing information from the platform backend. @public */
+export interface PlatformTimingSnapshot {
 	readonly backend: string;
 	readonly frameDelayMillis: number;
 }
 
 /**
- * A combined diagnostic snapshot for the active native backend.
+ * Combined diagnostic snapshot for the active platform backend.
  *
  * @public
  *
- * This is useful for startup diagnostics, test assertions, and debug screens
- * that need to inspect renderer, audio, timing, and window state together.
+ * Startup diagnostics, tests, and debug overlays use this to inspect
+ * renderer, audio, timing, and window state together.
  */
-export interface NativeBackendDiagnostics {
-	readonly audio: NativeAudioOutputSnapshot;
+export interface PlatformBackendDiagnostics {
+	readonly audio: PlatformAudioOutputSnapshot;
 	readonly initialized: boolean;
 	readonly inputEventCount: number;
 	readonly lastError: string | null;
-	readonly renderer: NativeRendererSnapshot;
-	readonly timing: NativeTimingSnapshot;
-	readonly window: NativeWindowSnapshot | null;
+	readonly renderer: PlatformRendererSnapshot;
+	readonly timing: PlatformTimingSnapshot;
+	readonly window: PlatformWindowSnapshot | null;
 }
 
 /**
- * Low-level native runtime adapter used by the internal native boundary.
+ * Swappable OS-facing adapter: windowing, presentation, input drain, audio device sync.
  *
  * @public
  *
- * Most games do not implement or consume `NativeBackend` directly. Instead
- * they use a helper such as {@link makeSkiaNativeBoundaryLayer}, which wires a
- * concrete backend into the internal native boundary. This service exists so the
- * engine can separate authored frame production from platform-specific window,
- * input, rendering, and audio work.
+ * Most games do not implement `PlatformBackend` directly. Use
+ * {@link makeSkiaNativeBoundaryLayer}, which wires a concrete backend into the
+ * **Native boundary** and keeps **Frame updater** work in game land.
  */
-export class NativeBackend extends ServiceMap.Service<
-	NativeBackend,
+export class PlatformBackend extends ServiceMap.Service<
+	PlatformBackend,
 	{
 		readonly close: Effect.Effect<void>;
-		readonly diagnostics: Effect.Effect<NativeBackendDiagnostics>;
+		readonly diagnostics: Effect.Effect<PlatformBackendDiagnostics>;
 		readonly drainInputEvents: Effect.Effect<
 			ReadonlyArray<InputEvent>,
 			EngineLaunchError
@@ -89,4 +87,4 @@ export class NativeBackend extends ServiceMap.Service<
 		) => Effect.Effect<ReadonlyArray<string>, EngineLaunchError>;
 		readonly waitForNextFrame: Effect.Effect<void, EngineLaunchError>;
 	}
->()("effect2d/native/NativeBackend") {}
+>()("effect2d/native/PlatformBackend") {}

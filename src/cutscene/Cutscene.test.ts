@@ -7,7 +7,7 @@ import { Input } from "../input/Input.ts";
 import { RuntimeClock } from "../runtime/RuntimeClock.ts";
 import type { SceneDefinition, SceneId } from "../scene/Scene.ts";
 import { SceneDirector } from "../scene/SceneDirector.ts";
-import { SceneRegistry } from "../scene/SceneRegistry.ts";
+import { SceneLookup } from "../scene/SceneLookup.ts";
 import { Sequence } from "../sequence/Sequence.ts";
 import { runLayerEffect } from "../testing/runEffectTest.ts";
 import { UI } from "../ui/UI.ts";
@@ -25,13 +25,13 @@ const makeScene = (id: SceneId): SceneDefinition => ({
 });
 
 const makeCutsceneLayer = () => {
-	const sceneRegistryLayer = SceneRegistry.layer([
+	const sceneLookupLayer = SceneLookup.layer([
 		makeScene("overworld"),
 		makeScene("pause"),
 	]);
 	const sceneDirectorLayer = SceneDirector.layer({
 		startSceneId: "overworld",
-	}).pipe(Layer.provide(sceneRegistryLayer));
+	}).pipe(Layer.provide(sceneLookupLayer));
 	const uiDependencies = Layer.mergeAll(Graphics.layer, Input.layer);
 	const dependencies = Layer.mergeAll(
 		Audio.layer,

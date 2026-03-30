@@ -4,99 +4,97 @@
 
 > Public Native API.
 
-## NativeBackend
+## FrameUpdater
 
-### NativeWindowSnapshot
-
-- Kind: interface
-- Source: `src/native/NativeBackend.ts:8`
-
-The current native window state exposed by the backend.
-
-### NativeRendererSnapshot
-
-- Kind: interface
-- Source: `src/native/NativeBackend.ts:19`
-
-Renderer capabilities and counters exposed by the native backend.
-
-### NativeAudioOutputSnapshot
-
-- Kind: interface
-- Source: `src/native/NativeBackend.ts:28`
-
-Native audio output capabilities and current playback state.
-
-### NativeTimingSnapshot
-
-- Kind: interface
-- Source: `src/native/NativeBackend.ts:39`
-
-Native frame pacing information exposed by the backend.
-
-### NativeBackendDiagnostics
-
-- Kind: interface
-- Source: `src/native/NativeBackend.ts:45`
-
-A combined diagnostic snapshot for the active native backend.
-
-
-
-This is useful for startup diagnostics, test assertions, and debug screens
-that need to inspect renderer, audio, timing, and window state together.
-
-### NativeBackend
+### FrameUpdater
 
 - Kind: service
-- Source: `src/native/NativeBackend.ts:63`
+- Source: `src/native/FrameUpdater.ts:6`
 
-Low-level native runtime adapter used by the internal native boundary.
+Runs simulation and draw for the next frame before presentation (**Frame updater** in the glossary).
 
 
 
-Most games do not implement or consume `NativeBackend` directly. Instead
-they use a helper such as [makeSkiaNativeBoundaryLayer](./llms/native.md#native-makeskianativeboundarylayer), which wires a
-concrete backend into the internal native boundary. This service exists so the
-engine can separate authored frame production from platform-specific window,
-input, rendering, and audio work.
+Games provide this by composing update and draw into one step that returns a
+[FrameSnapshot](./llms/graphics.md#graphics-framesnapshot).
+
+#### Methods
+
+- `nextFrame: Effect.Effect<FrameSnapshot, EngineLaunchError>`
+
+## PlatformBackend
+
+### PlatformWindowSnapshot
+
+- Kind: interface
+- Source: `src/native/PlatformBackend.ts:8`
+
+Window state exposed by the platform backend.
+
+### PlatformRendererSnapshot
+
+- Kind: interface
+- Source: `src/native/PlatformBackend.ts:19`
+
+Renderer capabilities and counters from the platform backend.
+
+### PlatformAudioOutputSnapshot
+
+- Kind: interface
+- Source: `src/native/PlatformBackend.ts:28`
+
+Audio output capabilities and playback state from the platform backend.
+
+### PlatformTimingSnapshot
+
+- Kind: interface
+- Source: `src/native/PlatformBackend.ts:39`
+
+Frame pacing information from the platform backend.
+
+### PlatformBackendDiagnostics
+
+- Kind: interface
+- Source: `src/native/PlatformBackend.ts:45`
+
+Combined diagnostic snapshot for the active platform backend.
+
+
+
+Startup diagnostics, tests, and debug overlays use this to inspect
+renderer, audio, timing, and window state together.
+
+### PlatformBackend
+
+- Kind: service
+- Source: `src/native/PlatformBackend.ts:63`
+
+Swappable OS-facing adapter: windowing, presentation, input drain, audio device sync.
+
+
+
+Most games do not implement `PlatformBackend` directly. Use
+[makeSkiaNativeBoundaryLayer](./llms/native.md#native-makeskianativeboundarylayer), which wires a concrete backend into the
+**Native boundary** and keeps **Frame updater** work in game land.
 
 #### Methods
 
 - `close: Effect.Effect<void>`
-- `diagnostics: Effect.Effect<NativeBackendDiagnostics>`
+- `diagnostics: Effect.Effect<PlatformBackendDiagnostics>`
 - `drainInputEvents: Effect.Effect< ReadonlyArray<InputEvent>, EngineLaunchError >`
 - `open: (gameId: string) => Effect.Effect<void, EngineLaunchError>`
 - `presentFrame: ( frame: FrameSnapshot, ) => Effect.Effect<void, EngineLaunchError>`
 - `syncAudio: ( snapshot: AudioSnapshot, ) => Effect.Effect<ReadonlyArray<string>, EngineLaunchError>`
 - `waitForNextFrame: Effect.Effect<void, EngineLaunchError>`
 
-## NativeFrameSource
+## SkiaPlatformBackend
 
-### NativeFrameSource
-
-- Kind: service
-- Source: `src/native/NativeFrameSource.ts:6`
-
-Produces the next authored frame for the native runtime.
-
-
-
-Games usually provide this service by composing gameplay and presentation
-directors into one step that returns a [FrameSnapshot](./llms/graphics.md#graphics-framesnapshot).
-
-#### Methods
-
-- `nextFrame: Effect.Effect<FrameSnapshot, EngineLaunchError>`
-
-## SkiaNativeBackend
-
-### SkiaNativeBackendOptions
+### SkiaPlatformBackendOptions
 
 - Kind: interface
-- Source: `src/native/SkiaNativeBackend.ts:38`
+- Source: `src/native/SkiaPlatformBackend.ts:38`
 
-Configuration for the Skia native backend.
+Configuration for the Skia platform backend.
 
 
 
@@ -104,17 +102,17 @@ This is the main option bag used by [makeSkiaNativeBoundaryLayer](./llms/native.
 Typical games set window title and size, logical render size, and their
 authored image and font asset paths here.
 
-### makeSkiaNativeBackendLayer
+### makeSkiaPlatformBackendLayer
 
 - Kind: function
-- Source: `src/native/SkiaNativeBackend.ts:547`
+- Source: `src/native/SkiaPlatformBackend.ts:549`
 
-Builds the Skia implementation of [NativeBackend](./llms/native.md#native-nativebackend).
+Builds the Skia implementation of [PlatformBackend](./llms/native.md#native-platformbackend).
 
 ### makeSkiaNativeBoundaryLayer
 
 - Kind: function
-- Source: `src/native/SkiaNativeBackend.ts:1382`
+- Source: `src/native/SkiaPlatformBackend.ts:1387`
 
 Builds a ready-to-use native playable boundary backed by a Skia window and
 renderer.

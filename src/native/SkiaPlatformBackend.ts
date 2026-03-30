@@ -21,22 +21,22 @@ import type {
 } from "../graphics/Graphics.ts";
 import type { Input, InputEvent } from "../input/Input.ts";
 import { EngineLaunchError } from "../runtime/EngineError.ts";
-import {
-	type NativeAudioOutputSnapshot,
-	NativeBackend,
-	type NativeBackendDiagnostics,
-	type NativeRendererSnapshot,
-	type NativeTimingSnapshot,
-	type NativeWindowSnapshot,
-} from "./NativeBackend.ts";
+import type { FrameUpdater } from "./FrameUpdater.ts";
 import { NativeBoundary } from "./NativeBoundary.ts";
-import type { NativeFrameSource } from "./NativeFrameSource.ts";
+import {
+	type PlatformAudioOutputSnapshot,
+	PlatformBackend,
+	type PlatformBackendDiagnostics,
+	type PlatformRendererSnapshot,
+	type PlatformTimingSnapshot,
+	type PlatformWindowSnapshot,
+} from "./PlatformBackend.ts";
 
 type SkiaContext2D = ReturnType<Canvas["getContext"]>;
 type LoadedImage = Image;
 
 /**
- * Configuration for the Skia native backend.
+ * Configuration for the Skia platform backend.
  *
  * @public
  *
@@ -44,7 +44,7 @@ type LoadedImage = Image;
  * Typical games set window title and size, logical render size, and their
  * authored image and font asset paths here.
  */
-export interface SkiaNativeBackendOptions {
+export interface SkiaPlatformBackendOptions {
 	readonly defaultFontFamily?: string;
 	readonly defaultFontPath?: string;
 	readonly defaultFontSizePx?: number;
@@ -68,7 +68,7 @@ export interface SkiaNativeBackendOptions {
 	 * aspect-fit factor. Integer scales keep pixel-sized content crisp; fractional
 	 * scales use more of the window but can soften artwork. Downscaling below
 	 * the logical size always uses a fractional scale so the full frame still
-	 * fits. Defaults to true in {@link makeSkiaNativeBackendLayer}.
+	 * fits. Defaults to true in {@link makeSkiaPlatformBackendLayer}.
 	 */
 	readonly preferIntegerScaling?: boolean;
 	readonly resizable?: boolean;
@@ -106,7 +106,7 @@ const white: Color = {
 	red: 1,
 };
 
-function createRendererSnapshot(): NativeRendererSnapshot {
+function createRendererSnapshot(): PlatformRendererSnapshot {
 	return {
 		backend: "skia",
 		frameCount: 0,
@@ -116,7 +116,7 @@ function createRendererSnapshot(): NativeRendererSnapshot {
 	};
 }
 
-function createAudioSnapshot(): NativeAudioOutputSnapshot {
+function createAudioSnapshot(): PlatformAudioOutputSnapshot {
 	return {
 		activeSoundCount: 0,
 		backend: "node-web-audio-api",
@@ -128,7 +128,9 @@ function createAudioSnapshot(): NativeAudioOutputSnapshot {
 	};
 }
 
-function createTimingSnapshot(frameDelayMillis: number): NativeTimingSnapshot {
+function createTimingSnapshot(
+	frameDelayMillis: number,
+): PlatformTimingSnapshot {
 	return {
 		backend: "effect-sleep",
 		frameDelayMillis,
@@ -137,7 +139,7 @@ function createTimingSnapshot(frameDelayMillis: number): NativeTimingSnapshot {
 
 const diagnosticsSnapshot = (
 	frameDelayMillis: number,
-): NativeBackendDiagnostics => ({
+): PlatformBackendDiagnostics => ({
 	audio: createAudioSnapshot(),
 	initialized: false,
 	inputEventCount: 0,
@@ -502,7 +504,7 @@ const renderFrameToDisplay = (
 const updateWindowSnapshot = (
 	window: Window,
 	title: string,
-): NativeWindowSnapshot => ({
+): PlatformWindowSnapshot => ({
 	backend: "skia-window",
 	height: window.height,
 	isOpen: !window.closed,
@@ -545,11 +547,11 @@ const aspectFitRect = (
 };
 
 /**
- * Builds the Skia implementation of {@link NativeBackend}.
+ * Builds the Skia implementation of {@link PlatformBackend}.
  *
  * @public
  */
-export function makeSkiaNativeBackendLayer({
+export function makeSkiaPlatformBackendLayer({
 	defaultFontFamily = "Effect2d-native",
 	defaultFontPath,
 	defaultFontSizePx = 8,
@@ -567,13 +569,16 @@ export function makeSkiaNativeBackendLayer({
 	 * aspect-fit factor. Integer scales keep pixel-sized content crisp; fractional
 	 * scales use more of the window but can soften artwork. Downscaling below
 	 * the logical size always uses a fractional scale so the full frame still
-	 * fits. Defaults to true in {@link makeSkiaNativeBackendLayer}.
+	 * fits. Defaults to true in {@link makeSkiaPlatformBackendLayer}.
 	 */
 	preferIntegerScaling = true,
 	resizable = true,
-}: SkiaNativeBackendOptions): Layer.Layer<NativeBackend, EngineLaunchError> {
+}: SkiaPlatformBackendOptions): Layer.Layer<
+	PlatformBackend,
+	EngineLaunchError
+> {
 	return Layer.effect(
-		NativeBackend,
+		PlatformBackend,
 		Effect.scoped(
 			Effect.gen(function* () {
 				const services = yield* Effect.services<never>();
@@ -937,7 +942,7 @@ export function makeSkiaNativeBackendLayer({
 					}));
 				});
 
-				const open = Effect.fn("NativeBackend.open")(function* (
+				const open = Effect.fn("PlatformBackend.open")(function* (
 					_gameId: string,
 				) {
 					App.eventLoop = "node";
@@ -1178,31 +1183,31 @@ export function makeSkiaNativeBackendLayer({
 					return drained;
 				});
 
-				const presentFrame = Effect.fn("NativeBackend.presentFrame")(function* (
-					frame: FrameSnapshot,
-				) {
-					const window = currentWindow;
-					if (window === null || window.closed) {
-						return yield* new EngineLaunchError({
-							module: "native",
-							reason:
-								"Cannot present a frame because the native window is closed.",
-						});
-					}
+				const presentFrame = Effect.fn("PlatformBackend.presentFrame")(
+					function* (frame: FrameSnapshot) {
+						const window = currentWindow;
+						if (window === null || window.closed) {
+							return yield* new EngineLaunchError({
+								module: "native",
+								reason:
+									"Cannot present a frame because the native window is closed.",
+							});
+						}
 
-					latestFrame = frame;
+						latestFrame = frame;
 
-					yield* Ref.update(diagnosticsRef, (diagnostics) => ({
-						...diagnostics,
-						renderer: {
-							...diagnostics.renderer,
-							frameCount: diagnostics.renderer.frameCount + 1,
-						},
-						window: updateWindowSnapshot(window, title),
-					}));
-				});
+						yield* Ref.update(diagnosticsRef, (diagnostics) => ({
+							...diagnostics,
+							renderer: {
+								...diagnostics.renderer,
+								frameCount: diagnostics.renderer.frameCount + 1,
+							},
+							window: updateWindowSnapshot(window, title),
+						}));
+					},
+				);
 
-				const syncAudio = Effect.fn("NativeBackend.syncAudio")(function* (
+				const syncAudio = Effect.fn("PlatformBackend.syncAudio")(function* (
 					snapshot: AudioSnapshot,
 				) {
 					const desiredSoundIds = new Set(
@@ -1365,7 +1370,7 @@ export function makeSkiaNativeBackendLayer({
 
 				yield* Effect.addFinalizer(() => close);
 
-				return NativeBackend.of({
+				return PlatformBackend.of({
 					close,
 					diagnostics: Ref.get(diagnosticsRef),
 					drainInputEvents,
@@ -1386,13 +1391,13 @@ export function makeSkiaNativeBackendLayer({
  * @public
  */
 export function makeSkiaNativeBoundaryLayer(
-	options: SkiaNativeBackendOptions,
+	options: SkiaPlatformBackendOptions,
 ): Layer.Layer<
 	NativeBoundary,
 	EngineLaunchError,
-	Audio | Input | NativeFrameSource
+	Audio | Input | FrameUpdater
 > {
 	return NativeBoundary.layer.pipe(
-		Layer.provide(makeSkiaNativeBackendLayer(options)),
+		Layer.provide(makeSkiaPlatformBackendLayer(options)),
 	);
 }

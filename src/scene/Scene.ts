@@ -46,7 +46,7 @@ export interface SceneLifecycle {
  * @public
  *
  * In application code you usually author a `SceneDefinition` as a constant and
- * register it with {@link SceneRegistry.layer}.
+ * provide it through {@link SceneLookup.layer}.
  *
  * ```ts
  * const titleScene: SceneDefinition = {

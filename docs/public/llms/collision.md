@@ -127,7 +127,7 @@ Returns whether the addressed tile exists and belongs to the provided solid tile
 - Kind: service
 - Source: `src/collision/CollisionWorld.ts:159`
 
-Minimal in-memory collision registry and overlap query service.
+Minimal in-memory collision lookup and overlap query service.
 
 
 

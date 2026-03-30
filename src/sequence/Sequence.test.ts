@@ -6,7 +6,7 @@ import { Graphics } from "../graphics/Graphics.ts";
 import { RuntimeClock } from "../runtime/RuntimeClock.ts";
 import type { SceneDefinition, SceneId } from "../scene/Scene.ts";
 import { SceneDirector } from "../scene/SceneDirector.ts";
-import { SceneRegistry } from "../scene/SceneRegistry.ts";
+import { SceneLookup } from "../scene/SceneLookup.ts";
 import { runLayerEffect } from "../testing/runEffectTest.ts";
 import { Sequence, SequenceEvents } from "./Sequence.ts";
 
@@ -22,13 +22,13 @@ const makeScene = (id: SceneId): SceneDefinition => ({
 });
 
 const makeSequenceLayer = () => {
-	const sceneRegistryLayer = SceneRegistry.layer([
+	const sceneLookupLayer = SceneLookup.layer([
 		makeScene("overworld"),
 		makeScene("pause"),
 	]);
 	const sceneDirectorLayer = SceneDirector.layer({
 		startSceneId: "overworld",
-	}).pipe(Layer.provide(sceneRegistryLayer));
+	}).pipe(Layer.provide(sceneLookupLayer));
 	const dependencies = Layer.mergeAll(
 		Audio.layer,
 		Graphics.layer,

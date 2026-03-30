@@ -157,7 +157,7 @@ export function isSolidTileAt(
 }
 
 /**
- * Minimal in-memory collision registry and overlap query service.
+ * Minimal in-memory collision lookup and overlap query service.
  *
  * @public
  *

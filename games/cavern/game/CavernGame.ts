@@ -12,14 +12,14 @@ import {
 	RuntimeClock,
 	SceneCamera,
 	SceneDirector,
-	SceneRegistry,
+	SceneLookup,
 	UI,
 } from "../../../src/index.ts";
 import { makeHeadlessNativeBoundaryLayer } from "../../../src/testing/index.ts";
 import { CavernGameplayDirector } from "./directors/CavernGameplayDirector.ts";
 import { CavernPresentationDirector } from "./directors/CavernPresentationDirector.ts";
 import { cavernBindings } from "./input/CavernBindings.ts";
-import { CavernNativeFrameSourceLive } from "./native/CavernNativeFrameSource.ts";
+import { CavernFrameUpdaterLive } from "./native/CavernFrameUpdater.ts";
 import { CavernMainMenuScene } from "./scenes/CavernMainMenuScene.ts";
 import { CavernOverworldScene } from "./scenes/CavernOverworldScene.ts";
 import { CavernEnemyState } from "./state/CavernEnemyState.ts";
@@ -62,14 +62,14 @@ const cavernCapabilityLayer = Layer.mergeAll(
 
 const cavernUILayer = UI.layer.pipe(Layer.provide(cavernCapabilityLayer));
 
-const cavernSceneRegistryLayer = SceneRegistry.layer([
+const cavernSceneLookupLayer = SceneLookup.layer([
 	CavernMainMenuScene,
 	CavernOverworldScene,
 ]);
 
 const cavernSceneDirectorLayer = SceneDirector.layer({
 	startSceneId: cavernConfig.startScene,
-}).pipe(Layer.provide(cavernSceneRegistryLayer));
+}).pipe(Layer.provide(cavernSceneLookupLayer));
 
 const cavernGameplayDirectorLayer = CavernGameplayDirector.layer.pipe(
 	Layer.provide(
@@ -87,7 +87,7 @@ const cavernPresentationDirectorLayer = CavernPresentationDirector.layer.pipe(
 	),
 );
 
-const cavernNativeFrameSourceLayer = CavernNativeFrameSourceLive.pipe(
+const cavernFrameUpdaterLayer = CavernFrameUpdaterLive.pipe(
 	Layer.provide(
 		Layer.mergeAll(
 			cavernGameplayDirectorLayer,
@@ -141,9 +141,7 @@ export const cavernPlayableNativeBoundaryLayer = makeSkiaNativeBoundaryLayer({
 	windowHeight: 960,
 	windowWidth: 1440,
 }).pipe(
-	Layer.provide(
-		Layer.mergeAll(cavernCapabilityLayer, cavernNativeFrameSourceLayer),
-	),
+	Layer.provide(Layer.mergeAll(cavernCapabilityLayer, cavernFrameUpdaterLayer)),
 );
 
 const cavernHeadlessEngineLayer = Engine.layer(cavernConfig).pipe(
@@ -159,7 +157,7 @@ const cavernSharedGameLayer = Layer.mergeAll(
 	cavernGameplayDirectorLayer,
 	cavernPresentationDirectorLayer,
 	cavernSceneDirectorLayer,
-	cavernSceneRegistryLayer,
+	cavernSceneLookupLayer,
 	cavernUILayer,
 );
 

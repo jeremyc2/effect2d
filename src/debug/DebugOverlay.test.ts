@@ -5,7 +5,7 @@ import { makeCameraState, startCameraShake } from "../graphics/Camera.ts";
 import { RuntimeClock } from "../runtime/RuntimeClock.ts";
 import type { SceneDefinition, SceneId } from "../scene/Scene.ts";
 import { SceneDirector } from "../scene/SceneDirector.ts";
-import { SceneRegistry } from "../scene/SceneRegistry.ts";
+import { SceneLookup } from "../scene/SceneLookup.ts";
 import { runLayerEffect } from "../testing/runEffectTest.ts";
 import { DebugOverlay } from "./DebugOverlay.ts";
 import { EngineLogger } from "./EngineLogger.ts";
@@ -44,7 +44,7 @@ describe("DebugOverlay", () => {
 			ResourceTracker.layer,
 			RuntimeClock.layer(60),
 			SceneDirector.layer({ startSceneId: "overworld" }).pipe(
-				Layer.provide(SceneRegistry.layer([makeScene("overworld")])),
+				Layer.provide(SceneLookup.layer([makeScene("overworld")])),
 			),
 		);
 		const layer = Layer.mergeAll(
@@ -148,7 +148,7 @@ describe("DebugOverlay", () => {
 			ResourceTracker.layer,
 			RuntimeClock.layer(60),
 			SceneDirector.layer({ startSceneId: "overworld" }).pipe(
-				Layer.provide(SceneRegistry.layer([makeScene("overworld")])),
+				Layer.provide(SceneLookup.layer([makeScene("overworld")])),
 			),
 		);
 		const layer = Layer.mergeAll(

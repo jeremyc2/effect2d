@@ -4,18 +4,18 @@ import { Effect, Layer, Ref } from "effect";
 import { Audio } from "../audio/Audio.ts";
 import { Input } from "../input/Input.ts";
 import { runLayerEffect } from "../testing/runEffectTest.ts";
-import { NativeBackend } from "./NativeBackend.ts";
+import { FrameUpdater } from "./FrameUpdater.ts";
 import { NativeBoundary } from "./NativeBoundary.ts";
-import { NativeFrameSource } from "./NativeFrameSource.ts";
+import { PlatformBackend } from "./PlatformBackend.ts";
 
 describe("NativeBoundary", () => {
 	test("orchestrates backend input, audio sync, frame presentation, and shutdown", async () => {
 		const providerLayer = Layer.mergeAll(
 			Audio.layer,
 			Input.layer,
-			Layer.effect(NativeFrameSource)(
+			Layer.effect(FrameUpdater)(
 				Effect.succeed(
-					NativeFrameSource.of({
+					FrameUpdater.of({
 						nextFrame: Effect.succeed({
 							commands: [],
 							isOpen: false,
@@ -24,13 +24,13 @@ describe("NativeBoundary", () => {
 					}),
 				),
 			),
-			Layer.effect(NativeBackend)(
+			Layer.effect(PlatformBackend)(
 				Effect.gen(function* () {
 					const presentedFrames = yield* Ref.make(0);
 					const syncedAudio = yield* Ref.make(0);
 					const openRef = yield* Ref.make(false);
 
-					return NativeBackend.of({
+					return PlatformBackend.of({
 						close: Ref.set(openRef, false),
 						diagnostics: Ref.get(openRef).pipe(
 							Effect.map((initialized) => ({

@@ -1,5 +1,5 @@
 import { Effect, Exit, Layer } from "effect";
-import { EngineLaunchError, NativeFrameSource } from "../../../../src/index.ts";
+import { EngineLaunchError, FrameUpdater } from "../../../../src/index.ts";
 import { CavernGameplayDirector } from "../directors/CavernGameplayDirector.ts";
 import { CavernPresentationDirector } from "../directors/CavernPresentationDirector.ts";
 
@@ -10,8 +10,8 @@ function createEngineLaunchError(reason: string) {
 	});
 }
 
-export const CavernNativeFrameSourceLive = Layer.effect(
-	NativeFrameSource,
+export const CavernFrameUpdaterLive = Layer.effect(
+	FrameUpdater,
 	Effect.gen(function* () {
 		const gameplayDirector = yield* CavernGameplayDirector;
 		const presentationDirector = yield* CavernPresentationDirector;
@@ -30,7 +30,7 @@ export const CavernNativeFrameSourceLive = Layer.effect(
 			return renderExit.value;
 		});
 
-		return NativeFrameSource.of({
+		return FrameUpdater.of({
 			nextFrame,
 		});
 	}),

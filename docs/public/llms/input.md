@@ -11,14 +11,14 @@
 - Kind: type
 - Source: `src/input/Input.ts:4`
 
-Keyboard key identifiers as reported by the active native backend.
+Keyboard key identifiers as reported by the active platform backend.
 
 ### MouseButton
 
 - Kind: type
 - Source: `src/input/Input.ts:7`
 
-Mouse button identifiers as reported by the native backend.
+Mouse button identifiers as reported by the platform backend.
 
 ### PointerPosition
 
@@ -43,35 +43,35 @@ Available event variants:
 - `wheel`
 - `text-input`
 
-### InputTrigger
+### BindingEdge
 
 - Kind: type
 - Source: `src/input/Input.ts:51`
 
-A declarative trigger that can activate a named gameplay action.
+A **binding edge**: a physical key or mouse button attached to a [ActionBinding](./llms/input.md#input-actionbinding).
+Not a world **Trigger** (overlap region).
 
 
 
-Available trigger kinds:
+Kinds:
 - `key`
 - `mouse-button`
 
 ### ActionBinding
 
 - Kind: interface
-- Source: `src/input/Input.ts:70`
+- Source: `src/input/Input.ts:71`
 
-Maps a named gameplay action to one or more low-level triggers.
+Maps a named gameplay action to one or more [BindingEdge](./llms/input.md#input-bindingedge)s.
 
 
 
-This is the point where you translate native details into domain language
-like `"jump"`, `"pause"`, or `"confirm"`.
+Translate device details into domain language (`"jump"`, `"pause"`, …).
 
 ```ts
 const jumpBinding: ActionBinding = {
  action: "jump",
- triggers: [{ type: "key", key: "Space" }],
+ edges: [{ type: "key", key: "Space" }],
 };
 ```
 
@@ -85,7 +85,7 @@ The derived state of a named gameplay action for the current frame.
 
 
 `justPressed` and `justReleased` are edge-triggered for the current frame,
-while `isPressed` stays true until the trigger is released or consumed.
+while `isPressed` stays true until the binding edge is released or consumed.
 
 ### InputSnapshot
 
@@ -102,34 +102,34 @@ to inspect the exact events captured during a frame.
 ### InvalidInputBindingError
 
 - Kind: error
-- Source: `src/input/Input.ts:264`
+- Source: `src/input/Input.ts:262`
 
 Indicates that an action binding is structurally invalid.
 
 ### InputBindingConflictError
 
 - Kind: error
-- Source: `src/input/Input.ts:273`
+- Source: `src/input/Input.ts:271`
 
-Indicates that one action declared the same trigger more than once.
+Indicates that one action declared the same binding edge more than once.
 
 ### UnknownInputActionError
 
 - Kind: error
-- Source: `src/input/Input.ts:282`
+- Source: `src/input/Input.ts:280`
 
 Indicates that code asked for an action that has not been bound.
 
 ### Input
 
 - Kind: service
-- Source: `src/input/Input.ts:323`
+- Source: `src/input/Input.ts:321`
 
 The engine's action-oriented input service.
 
 
 
-`Input` bridges the gap between native events and gameplay-friendly action
+`Input` bridges **Raw input** and gameplay **Action map** / **Binding** queries.
 queries. Game authors usually:
 
 - declare a set of [ActionBinding](./llms/input.md#input-actionbinding) values

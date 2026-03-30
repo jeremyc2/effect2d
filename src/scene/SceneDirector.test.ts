@@ -3,7 +3,7 @@ import { Effect, Layer } from "effect";
 import { runLayerEffect } from "../testing/runEffectTest.ts";
 import type { SceneDefinition, SceneId } from "./Scene.ts";
 import { SceneDirector } from "./SceneDirector.ts";
-import { SceneRegistry } from "./SceneRegistry.ts";
+import { SceneLookup } from "./SceneLookup.ts";
 
 const makeScene = (id: SceneId, trace: Array<string>): SceneDefinition => ({
 	id,
@@ -22,7 +22,7 @@ describe("SceneDirector", () => {
 		const overworld = makeScene("overworld", trace);
 		const pause = makeScene("pause", trace);
 		const layer = SceneDirector.layer({ startSceneId: "overworld" }).pipe(
-			Layer.provide(SceneRegistry.layer([overworld, pause])),
+			Layer.provide(SceneLookup.layer([overworld, pause])),
 		);
 
 		await runLayerEffect(
@@ -89,7 +89,7 @@ describe("SceneDirector", () => {
 		};
 		const pause = makeScene("pause", trace);
 		const layer = SceneDirector.layer({ startSceneId: "overworld" }).pipe(
-			Layer.provide(SceneRegistry.layer([overworld, pause])),
+			Layer.provide(SceneLookup.layer([overworld, pause])),
 		);
 
 		await runLayerEffect(
