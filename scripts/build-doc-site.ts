@@ -481,7 +481,12 @@ const renderMarkdown = (markdown: string): string =>
 		.replace(
 			externalAnchorRegex,
 			'<a href="$1" target="_blank" rel="noopener noreferrer">',
-		);
+		)
+		.replace(/<table\b[^>]*>/gi, '<div class="table-scroll">$&')
+		.replace(/<\/table>/gi, "</table></div>");
+
+/** Stroke chevron drawn symmetrically in the viewBox so it centers in the 1em flex box (unlike border L-shapes). */
+const detailsChevronSvg = `<svg class="details-chevron-svg" width="1em" height="1em" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M6 9l6 6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 
 const renderHero = (): string => `
 	<section class="hero">
@@ -1067,6 +1072,8 @@ const renderHtmlDocument = ({
 				display: grid;
 				grid-template-columns: 300px minmax(0, 1fr) 240px;
 				gap: 0;
+				min-width: 0;
+				width: 100%;
 			}
 
 			.sidebar,
@@ -1201,6 +1208,8 @@ const renderHtmlDocument = ({
 
 			.main {
 				padding: 1.8rem 2rem 5rem;
+				min-width: 0;
+				max-width: 100%;
 			}
 
 			.hero {
@@ -1428,6 +1437,8 @@ const renderHtmlDocument = ({
 
 			.doc-source {
 				font-size: 0.84rem;
+				overflow-wrap: anywhere;
+				min-width: 0;
 			}
 
 			.doc-entry h4 {
@@ -1440,6 +1451,7 @@ const renderHtmlDocument = ({
 				color: rgba(243, 239, 228, 0.88);
 				line-height: 1.72;
 				font-size: 1rem;
+				overflow-wrap: break-word;
 			}
 
 			.service-members {
@@ -1534,7 +1546,10 @@ const renderHtmlDocument = ({
 			}
 
 			.prose pre {
-				overflow: auto;
+				overflow-x: auto;
+				overflow-y: hidden;
+				max-width: 100%;
+				-webkit-overflow-scrolling: touch;
 				padding: 0.95rem 1rem;
 				border: 1px solid var(--border);
 				background:
@@ -1550,7 +1565,19 @@ const renderHtmlDocument = ({
 
 			.prose table {
 				width: 100%;
+				max-width: 100%;
 				border-collapse: collapse;
+			}
+
+			.table-scroll {
+				display: block;
+				max-width: 100%;
+				overflow-x: auto;
+				-webkit-overflow-scrolling: touch;
+			}
+
+			.table-scroll table {
+				width: max(100%, max-content);
 			}
 
 			.prose th,
@@ -1596,6 +1623,102 @@ const renderHtmlDocument = ({
 				}
 			}
 
+			.sidebar-details {
+				margin: 0;
+			}
+
+			.sidebar-summary {
+				display: none;
+				align-items: center;
+				justify-content: space-between;
+				gap: 0.75rem;
+				list-style: none;
+				cursor: pointer;
+				margin: 0 0 0.75rem;
+				padding: 0.85rem 1rem;
+				border: 1px solid var(--border);
+				border-radius: 12px;
+				background: var(--bg-elevated);
+				font-family:
+					"Berkeley Mono", "SFMono-Regular", Consolas, "Liberation Mono",
+					Menlo, monospace;
+				font-size: 0.76rem;
+				font-weight: 700;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--muted);
+			}
+
+			.sidebar-summary::-webkit-details-marker {
+				display: none;
+			}
+
+			.sidebar-summary-chevron,
+			.on-this-page-summary-chevron {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				width: 1em;
+				height: 1em;
+				flex-shrink: 0;
+				opacity: 0.75;
+				color: inherit;
+			}
+
+			.sidebar-summary-chevron .details-chevron-svg,
+			.on-this-page-summary-chevron .details-chevron-svg {
+				display: block;
+				width: 100%;
+				height: 100%;
+				transform: rotate(0deg);
+				transition: transform 180ms ease;
+			}
+
+			.sidebar-details[open] .sidebar-summary-chevron .details-chevron-svg,
+			.on-this-page-details[open] .on-this-page-summary-chevron .details-chevron-svg {
+				transform: rotate(180deg);
+			}
+
+			.on-this-page-mobile {
+				display: none;
+				margin: 0.5rem 0;
+			}
+
+			.on-this-page-details {
+				margin: 0;
+			}
+
+			.on-this-page-summary {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				gap: 0.75rem;
+				list-style: none;
+				cursor: pointer;
+				margin: 0;
+				padding: 0.75rem 0.95rem;
+				border: 1px solid var(--border);
+				border-radius: 12px;
+				background: rgba(18, 20, 30, 0.72);
+				font-family:
+					"Berkeley Mono", "SFMono-Regular", Consolas, "Liberation Mono",
+					Menlo, monospace;
+				font-size: 0.74rem;
+				font-weight: 700;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--muted);
+			}
+
+			.on-this-page-summary::-webkit-details-marker {
+				display: none;
+			}
+
+			.on-this-page-mobile .toc {
+				margin-top: 0.65rem;
+				padding: 0 0.15rem 0.35rem;
+			}
+
 			@media (max-width: 1180px) {
 				.layout {
 					grid-template-columns: 280px minmax(0, 1fr);
@@ -1604,11 +1727,20 @@ const renderHtmlDocument = ({
 				.aside {
 					display: none;
 				}
+
+				.on-this-page-mobile {
+					display: block;
+				}
 			}
 
 			@media (max-width: 920px) {
+				body {
+					overflow-x: clip;
+				}
+
 				.topbar {
 					flex-wrap: wrap;
+					padding: 0.85rem 1rem;
 				}
 
 				.topbar-links {
@@ -1617,22 +1749,58 @@ const renderHtmlDocument = ({
 				}
 
 				.layout {
-					grid-template-columns: 1fr;
+					display: flex;
+					flex-direction: column;
+					grid-template-columns: unset;
+				}
+
+				.main {
+					order: -1;
+					padding: 1rem 1rem 3.5rem;
 				}
 
 				.sidebar,
 				.aside {
 					position: static;
 					height: auto;
+					max-height: none;
 					border: 0;
 				}
 
 				.sidebar {
-					padding-bottom: 0;
+					order: 0;
+					padding: 0 1rem 1.25rem;
 				}
 
-				.main {
-					padding-top: 1rem;
+				.sidebar-summary {
+					display: flex;
+				}
+
+				.sidebar-details .sidebar-label {
+					position: absolute;
+					width: 1px;
+					height: 1px;
+					padding: 0;
+					margin: -1px;
+					overflow: hidden;
+					clip: rect(0, 0, 0, 0);
+					white-space: nowrap;
+					border: 0;
+				}
+
+				.hero {
+					padding: 1.5rem 1.1rem 1.6rem;
+				}
+
+				.doc-entry-meta {
+					flex-direction: column;
+					align-items: flex-start;
+				}
+			}
+
+			@media (min-width: 921px) {
+				.sidebar-summary {
+					display: none;
 				}
 			}
 
@@ -1691,16 +1859,31 @@ const renderHtmlDocument = ({
 			</header>
 			<div class="layout">
 				<aside class="sidebar">
-					<div class="sidebar-inner">
-						<p class="sidebar-label">Navigation</p>
-						<nav id="sidebar-nav">
-							<a class="nav-group-title" href="#introduction">Overview</a>
-							${renderSidebar(modules)}
-						</nav>
-					</div>
+					<details id="sidebar-nav-details" class="sidebar-details">
+						<summary class="sidebar-summary">
+							<span class="sidebar-summary-title">Navigation</span>
+							<span class="sidebar-summary-chevron" aria-hidden="true">${detailsChevronSvg}</span>
+						</summary>
+						<div class="sidebar-inner">
+							<p class="sidebar-label">Navigation</p>
+							<nav id="sidebar-nav">
+								<a class="nav-group-title" href="#introduction">Overview</a>
+								${renderSidebar(modules)}
+							</nav>
+						</div>
+					</details>
 				</aside>
 				<main class="main">
 					${renderHero()}
+					<nav class="on-this-page-mobile" aria-label="On this page">
+						<details class="on-this-page-details" id="on-this-page-details">
+							<summary class="on-this-page-summary">
+								<span>On this page</span>
+								<span class="on-this-page-summary-chevron" aria-hidden="true">${detailsChevronSvg}</span>
+							</summary>
+							${renderOnThisPage(modules)}
+						</details>
+					</nav>
 					${renderPackageDocumentation(packageDocs, slugBySymbol)}
 					<section class="content-section" id="modules">
 						<div class="section-kicker">Reference</div>
@@ -1751,6 +1934,41 @@ const renderHtmlDocument = ({
 					scrollToHashTarget();
 				});
 			});
+
+			const sidebarDetails = document.getElementById("sidebar-nav-details");
+			const wideNavMq = window.matchMedia("(min-width: 921px)");
+			const syncSidebarDetailsOpen = () => {
+				if (sidebarDetails instanceof HTMLDetailsElement) {
+					sidebarDetails.open = wideNavMq.matches;
+				}
+			};
+			syncSidebarDetailsOpen();
+			wideNavMq.addEventListener("change", syncSidebarDetailsOpen);
+
+			if (sidebarDetails instanceof HTMLDetailsElement) {
+				sidebarDetails.addEventListener("click", (event) => {
+					const link =
+						event.target instanceof Element
+							? event.target.closest("a[href^='#']")
+							: null;
+					if (link && !wideNavMq.matches) {
+						sidebarDetails.open = false;
+					}
+				});
+			}
+
+			const onThisPageDetails = document.getElementById("on-this-page-details");
+			if (onThisPageDetails instanceof HTMLDetailsElement) {
+				onThisPageDetails.addEventListener("click", (event) => {
+					const link =
+						event.target instanceof Element
+							? event.target.closest("a[href^='#']")
+							: null;
+					if (link) {
+						onThisPageDetails.open = false;
+					}
+				});
+			}
 		</script>
 	</body>
 </html>
