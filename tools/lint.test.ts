@@ -1,37 +1,51 @@
-// Avoid type assertions (`as`); use narrowing, checks, or schema parse.
-
+import { describe, expect, test } from "bun:test";
 import { Effect } from "effect";
 
-// oxlint-disable-next-line effect2d/no-type-assertion-except-const
-const as = "test" as string;
-// oxlint-disable-next-line effect2d/no-type-assertion-except-const
-const asUnknownAs = "test" as unknown as string;
-// "'as const' is allowed"
-const asConst = "test" as const;
-
-// oxlint-disable-next-line effect2d/no-try-catch
-try {
-	// oxlint-disable-next-line effect2d/no-throw
-	throw new Error("test");
-} catch {}
-
-// oxlint-disable-next-line effect2d/prefer-effect-fn-for-effect-gen
-function doBadGenerator() {
-	return Effect.gen(function* () {
-		yield* Effect.log("test");
-		return yield* Effect.succeed("test");
+describe("lint fixtures", () => {
+	test("Oxlint forbids type assertions except `as const` (if we hadn't used oxlint-disable-next-line)", () => {
+		// oxlint-disable-next-line effect2d/no-type-assertion-except-const
+		const as = "test" as string;
+		expect(as).toBe("test");
 	});
-}
-// oxlint-disable-next-line effect2d/prefer-effect-fn-for-effect-gen
-const doBadGeneratorArrow = () =>
-	Effect.gen(function* () {
-		yield* Effect.log("test");
-		return yield* Effect.succeed("test");
+	test("Oxlint forbids `as unknown as` type assertions (if we hadn't used oxlint-disable-next-line)", () => {
+		// oxlint-disable-next-line effect2d/no-type-assertion-except-const
+		const asUnknownAs = "test" as unknown as string;
+		expect(asUnknownAs).toBe("test");
 	});
-
-// @effect-diagnostics globalConsole:off Only using console logging here to avoid linting errors. Normally we would not use console, but we use it here to avoid 'no unused variables' Biome errors above.
-console.log(asConst);
-console.log(as);
-console.log(asUnknownAs);
-console.log(doBadGenerator);
-console.log(doBadGeneratorArrow);
+	test("Oxlint allows `as const` type assertions", () => {
+		const asConst = "test" as const;
+		expect(asConst).toBe("test");
+	});
+	test("Oxlint forbids throw (if we hadn't used oxlint-disable-next-line)", () => {
+		const throwing = () => {
+			// oxlint-disable-next-line effect2d/no-throw
+			throw new Error();
+		};
+		expect(throwing).toThrow();
+	});
+	test("Oxlint forbids try/catch (if we hadn't used oxlint-disable-next-line)", () => {
+		// oxlint-disable-next-line effect2d/no-try-catch
+		try {
+		} catch {}
+	});
+	test("Oxlint forbids functions that return effect.gen (if we hadn't used oxlint-disable-next-line)", () => {
+		// oxlint-disable-next-line effect2d/prefer-effect-fn-for-effect-gen
+		function doBadGenerator() {
+			return Effect.gen(function* () {
+				yield* Effect.log("test");
+				return yield* Effect.succeed("test");
+			});
+		}
+		expect(doBadGenerator).toBeInstanceOf(Function);
+	});
+	test("Oxlint forbids arrow functions that return effect.gen (if we hadn't used oxlint-disable-next-line)", () => {
+		// oxlint-disable-next-line effect2d/prefer-effect-fn-for-effect-gen
+		const doBadGeneratorArrow = () => {
+			return Effect.gen(function* () {
+				yield* Effect.log("test");
+				return yield* Effect.succeed("test");
+			});
+		};
+		expect(doBadGeneratorArrow).toBeInstanceOf(Function);
+	});
+});
