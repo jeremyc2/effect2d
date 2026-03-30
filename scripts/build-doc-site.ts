@@ -857,6 +857,7 @@ const renderHtmlDocument = ({
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" href="favicon.svg" type="image/svg+xml" sizes="any" />
 		<title>Effect2d User Guide · v${escapeHtml(version)}</title>
 		<meta name="description" content="${escapeHtml(packageDocs.summary)}" />
 		<meta name="effect2d:version" content="${escapeHtml(version)}" />
