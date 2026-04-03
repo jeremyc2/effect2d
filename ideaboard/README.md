@@ -1,4 +1,4 @@
-# Scratchpad
+# Ideaboard
 
 Low-stakes **brainstorm** space for Effect2d: half-baked worries, gut reactions, and back-and-forth. Nothing here needs to be defensible in court. The name **less founded** and this folder are the point: vibes over receipts.
 
