@@ -74,6 +74,7 @@
 					"missingEffectServiceDependency": "error",
 					"multipleEffectProvide": "error",
 					"nodeBuiltinImport": "error",
+					"nonObjectEffectServiceType": "error",
 					"outdatedApi": "error",
 					"outdatedEffectCodegen": "error",
 					"overriddenSchemaConstructor": "error",
