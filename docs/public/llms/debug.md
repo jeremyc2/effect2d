@@ -122,28 +122,28 @@ yield* logger.info("Loaded room", { roomId: "cavern-entrance" });
 ### GameplayTelemetrySessionDescriptor
 
 - Kind: interface
-- Source: `src/debug/GameplayTelemetry.ts:83`
+- Source: `src/debug/GameplayTelemetry.ts:84`
 
 File locations and session metadata for one gameplay telemetry capture.
 
 ### GameplayTelemetryLayerOptions
 
 - Kind: interface
-- Source: `src/debug/GameplayTelemetry.ts:102`
+- Source: `src/debug/GameplayTelemetry.ts:103`
 
 Configuration for the engine gameplay telemetry session layer.
 
 ### GameplayCommentaryEntry
 
 - Kind: interface
-- Source: `src/debug/GameplayTelemetry.ts:117`
+- Source: `src/debug/GameplayTelemetry.ts:118`
 
 A single timestamped gameplay commentary entry written alongside telemetry data.
 
 ### GameplayTelemetrySession
 
 - Kind: service
-- Source: `src/debug/GameplayTelemetry.ts:154`
+- Source: `src/debug/GameplayTelemetry.ts:155`
 
 Local OTEL-backed telemetry services for playable sessions and sample games.
 
@@ -160,28 +160,28 @@ Local OTEL-backed telemetry services for playable sessions and sample games.
 ### createGameplayTelemetrySessionDescriptor
 
 - Kind: function
-- Source: `src/debug/GameplayTelemetry.ts:298`
+- Source: `src/debug/GameplayTelemetry.ts:305`
 
 Creates or reuses a gameplay telemetry session directory and manifest.
 
 ### resolveGameplayTelemetrySessionDescriptorFromDirectory
 
 - Kind: function
-- Source: `src/debug/GameplayTelemetry.ts:363`
+- Source: `src/debug/GameplayTelemetry.ts:370`
 
 Reads one telemetry session manifest from a known session directory.
 
 ### resolveLatestGameplayTelemetrySessionDescriptor
 
 - Kind: function
-- Source: `src/debug/GameplayTelemetry.ts:392`
+- Source: `src/debug/GameplayTelemetry.ts:399`
 
 Resolves the most recent telemetry session for the provided game id.
 
 ### appendGameplayCommentaryEntry
 
 - Kind: function
-- Source: `src/debug/GameplayTelemetry.ts:441`
+- Source: `src/debug/GameplayTelemetry.ts:448`
 
 Appends one timestamped gameplay commentary entry to the active session.
 

@@ -4,6 +4,7 @@ import {
 	type Config,
 	DateTime,
 	Effect,
+	Exit,
 	Fiber,
 	FileSystem,
 	Formatter,
@@ -270,6 +271,12 @@ interface GameplayTelemetrySpan extends Tracer.Span {
 	readonly export: (span: GameplayTelemetrySpan) => void;
 	readonly links: Array<Tracer.SpanLink>;
 	status: Tracer.SpanStatus;
+}
+
+function isEndedGameplayTelemetrySpanStatus(
+	status: Tracer.SpanStatus,
+): status is Extract<Tracer.SpanStatus, { readonly endTime: bigint }> {
+	return "endTime" in status;
 }
 
 export function sanitizeTelemetryGameId(gameId: string): string {
@@ -1055,7 +1062,7 @@ function makeGameplayTelemetryTracer(session: {
 	readonly writeTraces: (data: TraceData) => void;
 }): Tracer.Tracer {
 	const exportSpan = (span: GameplayTelemetrySpan) => {
-		if (!span.sampled || span.status._tag !== "Ended") {
+		if (!span.sampled || !isEndedGameplayTelemetrySpanStatus(span.status)) {
 			return;
 		}
 
@@ -1099,7 +1106,7 @@ function makeGameplayTelemetryTracer(session: {
 			readonly message?: string;
 		} = { code: 1 };
 
-		if (span.status.exit._tag === "Failure") {
+		if (Exit.isFailure(span.status.exit)) {
 			if (Cause.hasInterruptsOnly(span.status.exit.cause)) {
 				otelStatus = {
 					code: 1,
