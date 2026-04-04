@@ -21,6 +21,7 @@
 		"effect2d/no-throw": "error",
 		"effect2d/no-try-catch": "error",
 		"effect2d/no-error-class": "error",
+		"effect2d/no-then-chain": "error",
 		"effect2d/no-promise-global": "error",
 		"effect2d/no-tag-property-access": "error",
 		"effect2d/prefer-schema-tagged-error-class": "error",

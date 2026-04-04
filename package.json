@@ -31,7 +31,7 @@
 		"@effect/tsgo": "^0.2.1",
 		"@oxlint/plugins": "^1.58.0",
 		"@types/bun": "latest",
-		"@typescript/native-preview": "^7.0.0-dev.20260403.1",
+		"@typescript/native-preview": "^7.0.0-dev.20260404.1",
 		"oxlint": "^1.58.0"
 	},
 	"trustedDependencies": [

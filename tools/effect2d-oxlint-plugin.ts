@@ -170,6 +170,20 @@ function getCalledMemberName(
 	}
 }
 
+function isThenCall(node: ESTree.CallExpression): boolean {
+	const callee =
+		node.callee.type === "ChainExpression"
+			? node.callee.expression
+			: node.callee;
+	if (callee.type !== "MemberExpression" || callee.computed) {
+		return false;
+	}
+	if (callee.property.type !== "Identifier") {
+		return false;
+	}
+	return callee.property.name === "then";
+}
+
 function isEffectCatchCall(node: ESTree.CallExpression): boolean {
 	const callee =
 		node.callee.type === "ChainExpression"
@@ -357,6 +371,30 @@ const noErrorClass = defineRule({
 	},
 });
 
+const noThenChain = defineRule({
+	meta: {
+		type: "problem",
+		docs: {
+			description:
+				"Disallow `.then()` chaining; use `await` at edges or Effect-native composition instead.",
+		},
+		schema: [],
+		messages: {
+			noThenChain:
+				"Do not chain `.then()`. Use `await` at edges or Effect-native composition instead.",
+		},
+	},
+	create(context: Context) {
+		return {
+			CallExpression(node: ESTree.CallExpression) {
+				if (isThenCall(node)) {
+					context.report({ node, messageId: "noThenChain" });
+				}
+			},
+		};
+	},
+});
+
 const noPromiseGlobal = defineRule({
 	meta: {
 		type: "problem",
@@ -513,6 +551,7 @@ export default definePlugin({
 		"no-throw": noThrow,
 		"no-try-catch": noTryCatch,
 		"no-error-class": noErrorClass,
+		"no-then-chain": noThenChain,
 		"no-promise-global": noPromiseGlobal,
 		"no-tag-property-access": noTagPropertyAccess,
 		"prefer-schema-tagged-error-class": preferSchemaTaggedErrorClass,

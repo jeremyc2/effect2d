@@ -42,6 +42,11 @@ describe("lint fixtures", () => {
 		// oxlint-disable-next-line effect2d/no-try-catch
 		expect(wrapper.finally()).toBe("done");
 	});
+	test("Oxlint forbids `.then()` chains (if we hadn't used oxlint-disable-next-line)", () => {
+		const effectPromise = Effect.runPromise(Effect.succeed("done"));
+		// oxlint-disable-next-line effect2d/no-then-chain
+		expect(effectPromise.then((value) => value)).resolves.toBe("done");
+	});
 	test("Oxlint forbids the built-in Promise constructor (if we hadn't used oxlint-disable-next-line)", () => {
 		// oxlint-disable-next-line effect2d/no-promise-global
 		const promise = new Promise<string>((resolve) => resolve("ok"));
