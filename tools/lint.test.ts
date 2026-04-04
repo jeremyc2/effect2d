@@ -86,6 +86,12 @@ describe("lint fixtures", () => {
 		// oxlint-disable-next-line effect2d/no-tag-property-access
 		expect(value["_tag"]).toBe("Failure");
 	});
+	test("Oxlint allows `Effect.catch(...)`", () => {
+		const recovered = Effect.catch(Effect.fail("boom"), () =>
+			Effect.succeed("ok"),
+		);
+		expect(recovered).toBeDefined();
+	});
 	test("Oxlint forbids functions that return effect.gen (if we hadn't used oxlint-disable-next-line)", () => {
 		// oxlint-disable-next-line effect2d/prefer-effect-fn-for-effect-gen
 		function doBadGenerator() {

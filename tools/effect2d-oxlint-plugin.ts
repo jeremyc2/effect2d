@@ -170,6 +170,24 @@ function getCalledMemberName(
 	}
 }
 
+function isEffectCatchCall(node: ESTree.CallExpression): boolean {
+	const callee =
+		node.callee.type === "ChainExpression"
+			? node.callee.expression
+			: node.callee;
+	if (callee.type !== "MemberExpression" || callee.computed) {
+		return false;
+	}
+	if (
+		callee.object.type !== "Identifier" ||
+		callee.object.name !== "Effect" ||
+		callee.property.type !== "Identifier"
+	) {
+		return false;
+	}
+	return callee.property.name === "catch";
+}
+
 function isTagPropertyAccess(node: ESTree.MemberExpression): boolean {
 	if (node.computed) {
 		return node.property.type === "Literal" && node.property.value === "_tag";
@@ -283,6 +301,9 @@ const noTryCatch = defineRule({
 				context.report({ node, messageId: "noTry" });
 			},
 			CallExpression(node: ESTree.CallExpression) {
+				if (isEffectCatchCall(node)) {
+					return;
+				}
 				if (getCalledMemberName(node) !== undefined) {
 					context.report({ node, messageId: "noTry" });
 				}
