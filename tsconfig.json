@@ -22,6 +22,8 @@
 		"noUncheckedIndexedAccess": true,
 		"noImplicitOverride": true,
 
+		"erasableSyntaxOnly": true,
+
 		// Some stricter flags (disabled by default)
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
