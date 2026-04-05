@@ -11,3 +11,16 @@ _(Human-edited only. Number your concerns so responses in `LESS_FOUNDED_GUESSWOR
    2. If overutilized: What is it about that part of the library that leads to it being overutilized?
 3. In which ways could the game engine be simplified without compromising on its core principles?
 4. How can the docs be improved?
+
+## UPDATE Apr 4:
+
+I've been learning about ECS (Entity Component System) and researching the best way to fold it into an Effect codebase. Based on what I've read:
+
+Entity: Just an empty gmae object with an ID.
+Component: Features or abilities that can be added to entities.
+System: Update loop. Iterates over entities and updates them based on their components.
+
+Where `Entity + Components` is an Effect Schema stitched together of many different sub-schemas.
+And a system is an Effect Service, of course.
+
+Disclaimer: I know we have it in the README.md that building an ECS engine is a non-goal. But I think maybe we should reconsider.
