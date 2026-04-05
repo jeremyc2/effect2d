@@ -23,4 +23,24 @@ System: Update loop. Iterates over entities and updates them based on their comp
 Where `Entity + Components` is an Effect Schema stitched together of many different sub-schemas.
 And a system is an Effect Service, of course.
 
+```ts
+import { Schema } from "effect";
+
+const jumpComponentSchema = Schema.Struct({
+   kind: Schema.Literal("jump"),
+   jumpForce: Schema.Number,
+});
+
+const inventoryComponentSchema = Schema.Struct({
+   kind: Schema.Literal("inventory"),
+   items: Schema.Array(Schema.String),
+});
+
+const playerEntitySchema = Schema.Struct({
+   kind: Schema.Literal("player"),
+   jump: jumpComponentSchema.pipe(Schema.optional),
+   inventory: inventoryComponentSchema.pipe(Schema.optional),
+});
+```
+
 Disclaimer: I know we have it in the README.md that building an ECS engine is a non-goal. But I think maybe we should reconsider.
