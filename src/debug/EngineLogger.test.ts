@@ -4,8 +4,8 @@ import { runLayerEffect } from "../testing/runEffectTest.ts";
 import { EngineLogger } from "./EngineLogger.ts";
 
 describe("EngineLogger", () => {
-	test("records ordered structured log entries", async () => {
-		await runLayerEffect(
+	test("records ordered structured log entries", () =>
+		runLayerEffect(
 			EngineLogger.layer,
 			Effect.gen(function* () {
 				const logger = yield* EngineLogger;
@@ -36,6 +36,5 @@ describe("EngineLogger", () => {
 					},
 				]);
 			}),
-		);
-	});
+		));
 });

@@ -38,7 +38,7 @@ const body: CollisionBody = {
 };
 
 describe("DebugOverlay", () => {
-	test("captures frame timing, scene stack, and authored debug diagnostics", async () => {
+	test("captures frame timing, scene stack, and authored debug diagnostics", () => {
 		const dependencies = Layer.mergeAll(
 			EngineLogger.layer,
 			ResourceTracker.layer,
@@ -52,7 +52,7 @@ describe("DebugOverlay", () => {
 			DebugOverlay.layer.pipe(Layer.provide(dependencies)),
 		);
 
-		await runLayerEffect(
+		return runLayerEffect(
 			layer,
 			Effect.gen(function* () {
 				const runtimeClock = yield* RuntimeClock;
@@ -142,7 +142,7 @@ describe("DebugOverlay", () => {
 		);
 	});
 
-	test("toggles visibility without losing collected diagnostics", async () => {
+	test("toggles visibility without losing collected diagnostics", () => {
 		const dependencies = Layer.mergeAll(
 			EngineLogger.layer,
 			ResourceTracker.layer,
@@ -156,7 +156,7 @@ describe("DebugOverlay", () => {
 			DebugOverlay.layer.pipe(Layer.provide(dependencies)),
 		);
 
-		await runLayerEffect(
+		return runLayerEffect(
 			layer,
 			Effect.gen(function* () {
 				const debugOverlay = yield* DebugOverlay;

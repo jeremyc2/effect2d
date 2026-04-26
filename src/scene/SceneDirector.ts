@@ -1,4 +1,4 @@
-import { Effect, Exit, Layer, Ref, Scope, ServiceMap } from "effect";
+import { Context, Effect, Exit, Layer, Ref, Scope } from "effect";
 import type {
 	SceneDefinition,
 	SceneId,
@@ -91,7 +91,7 @@ const stackSnapshot = Effect.fn("SceneDirector.stackSnapshot")(function* (
  * - call `switchTo`, `pushOverlay`, or `popOverlay` from gameplay services
  * - let the **Frame updater** call the active scene's update and draw work
  */
-export class SceneDirector extends ServiceMap.Service<
+export class SceneDirector extends Context.Service<
 	SceneDirector,
 	{
 		readonly currentScene: Effect.Effect<SceneDefinition, SceneStackEmptyError>;

@@ -53,8 +53,8 @@ const makeCutsceneLayer = () => {
 };
 
 describe("Cutscene", () => {
-	test("prepares and advances dialogue pages through the cinematic helper", async () => {
-		await runLayerEffect(
+	test("prepares and advances dialogue pages through the cinematic helper", () =>
+		runLayerEffect(
 			makeCutsceneLayer(),
 			Effect.gen(function* () {
 				const cutscene = yield* Cutscene;
@@ -79,11 +79,10 @@ describe("Cutscene", () => {
 				expect(firstPage.hasNextPage).toBe(true);
 				expect(firstPage.isComplete).toBe(false);
 			}),
-		);
-	});
+		));
 
-	test("fails when asked for a dialogue page that does not exist", async () => {
-		await runLayerEffect(
+	test("fails when asked for a dialogue page that does not exist", () =>
+		runLayerEffect(
 			makeCutsceneLayer(),
 			Effect.gen(function* () {
 				const cutscene = yield* Cutscene;
@@ -111,6 +110,5 @@ describe("Cutscene", () => {
 				expect(failure.pageCount).toBe(1);
 				expect(failure.pageIndex).toBe(2);
 			}),
-		);
-	});
+		));
 });

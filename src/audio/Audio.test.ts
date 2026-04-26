@@ -4,8 +4,8 @@ import { runLayerEffect } from "../testing/runEffectTest.ts";
 import { Audio } from "./Audio.ts";
 
 describe("Audio", () => {
-	test("loads cues, plays music, overlaps sound effects, and snapshots audio state", async () => {
-		await runLayerEffect(
+	test("loads cues, plays music, overlaps sound effects, and snapshots audio state", () =>
+		runLayerEffect(
 			Audio.layer,
 			Effect.gen(function* () {
 				const audio = yield* Audio;
@@ -53,11 +53,10 @@ describe("Audio", () => {
 				expect(snapshot.sounds[1]?.pitch).toBe(1.2);
 				expect(snapshot.busVolumes.music).toBe(0.5);
 			}),
-		);
-	});
+		));
 
-	test("supports pausing music and stopping individual sound handles", async () => {
-		await runLayerEffect(
+	test("supports pausing music and stopping individual sound handles", () =>
+		runLayerEffect(
 			Audio.layer,
 			Effect.gen(function* () {
 				const audio = yield* Audio;
@@ -91,11 +90,10 @@ describe("Audio", () => {
 				yield* audio.stopAll;
 				expect(yield* audio.music).toBeNull();
 			}),
-		);
-	});
+		));
 
-	test("fails when the wrong cue kind is played", async () => {
-		const exit = await runLayerEffect(
+	test("fails when the wrong cue kind is played", () =>
+		runLayerEffect(
 			Audio.layer,
 			Effect.gen(function* () {
 				const audio = yield* Audio;
@@ -108,10 +106,8 @@ describe("Audio", () => {
 					sourcePath: "audio/sfx/explosion.wav",
 				});
 
-				return yield* Effect.exit(audio.playMusic("explosion"));
+				const exit = yield* Effect.exit(audio.playMusic("explosion"));
+				expect(Exit.isFailure(exit)).toBe(true);
 			}),
-		);
-
-		expect(Exit.isFailure(exit)).toBe(true);
-	});
+		));
 });

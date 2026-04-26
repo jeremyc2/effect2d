@@ -1,4 +1,4 @@
-import { Effect, Layer, ServiceMap } from "effect";
+import { Context, Effect, Layer } from "effect";
 import { NativeBoundary } from "../native/NativeBoundary.ts";
 import type { EngineConfig } from "./EngineConfig.ts";
 import {
@@ -25,7 +25,7 @@ import {
  * {@link Graphics}, {@link Input}, {@link Audio}, {@link SceneDirector}, and
  * your own game-specific state services.
  */
-export class Engine extends ServiceMap.Service<
+export class Engine extends Context.Service<
 	Engine,
 	{
 		readonly config: EngineConfig;

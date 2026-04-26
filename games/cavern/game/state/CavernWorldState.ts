@@ -1,4 +1,4 @@
-import { Effect, Layer, Ref, ServiceMap } from "effect";
+import { Context, Effect, Layer, Ref } from "effect";
 import { recordRoomTransition } from "../../../../src/debug/GameplayMetrics.ts";
 import {
 	type CavernRoomId,
@@ -16,7 +16,7 @@ const initialCavernWorldSnapshot: CavernWorldSnapshot = {
 	roomInstructionsFadeStartedAtMillis: null,
 };
 
-export class CavernWorldState extends ServiceMap.Service<
+export class CavernWorldState extends Context.Service<
 	CavernWorldState,
 	{
 		readonly beginRoomInstructionsFade: (

@@ -1,4 +1,4 @@
-import { Effect, Layer, Random, ServiceMap } from "effect";
+import { Context, Effect, Layer, Random } from "effect";
 
 /**
  * A thin deterministic randomness service for authored gameplay logic.
@@ -8,7 +8,7 @@ import { Effect, Layer, Random, ServiceMap } from "effect";
  * Use this instead of calling `Math.random()` directly when you want gameplay
  * tests and recordings to be reproducible from a seed.
  */
-export class RandomSource extends ServiceMap.Service<
+export class RandomSource extends Context.Service<
 	RandomSource,
 	{
 		readonly seed: number | string | undefined;

@@ -1,4 +1,4 @@
-import { Effect, Layer, Ref, ServiceMap } from "effect";
+import { Context, Effect, Layer, Ref } from "effect";
 import type { CollisionBody } from "../collision/CollisionWorld.ts";
 import type {
 	CameraBounds,
@@ -129,7 +129,7 @@ function formatDrawModel(
 	};
 }
 
-export class DebugOverlay extends ServiceMap.Service<
+export class DebugOverlay extends Context.Service<
 	DebugOverlay,
 	{
 		readonly captureSnapshot: Effect.Effect<DebugOverlaySnapshot>;

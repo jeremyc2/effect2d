@@ -147,7 +147,7 @@ function isJsDocDeclarationKind(value: string): value is JsDocDeclarationKind {
 
 const readText = (path: string): Effect.Effect<string, DocSiteReadError> =>
 	Effect.tryPromise({
-		try: async () => Bun.file(path).text(),
+		try: () => Bun.file(path).text(),
 		catch: (cause) => new DocSiteReadError({ cause, path }),
 	});
 
@@ -156,9 +156,7 @@ const writeText = (
 	value: string,
 ): Effect.Effect<void, DocSiteWriteError> =>
 	Effect.tryPromise({
-		try: async () => {
-			await Bun.write(path, value);
-		},
+		try: () => Bun.write(path, value),
 		catch: (cause) => new DocSiteWriteError({ cause, path }),
 	});
 
@@ -291,9 +289,10 @@ const makeInlineLinks = (
 ): string =>
 	markdown
 		// Turn inline code mentions of LÖVE/LÖVE 2D into one canonical external link.
-		.replace(/`(LÖVE(?: 2D)?)`/g, (_match, label: string) => {
-			return `[${label}](${loveWebsiteUrl})`;
-		})
+		.replace(
+			/`(LÖVE(?: 2D)?)`/g,
+			(_match, label: string) => `[${label}](${loveWebsiteUrl})`,
+		)
 		.replace(tsDocLinkRegex, (_match, target: string, label?: string) => {
 			const resolvedLabel = (label ?? target).trim();
 			const slug = slugBySymbol.get(target);
@@ -365,7 +364,10 @@ function getDocumentedKind(
 		return declarationKind;
 	}
 
-	if (source.includes(`export class ${name} extends ServiceMap.Service<`)) {
+	if (
+		source.includes(`export class ${name} extends Context.Service<`) ||
+		source.includes(`export class ${name} extends ServiceMap.Service<`)
+	) {
 		return "service";
 	}
 
@@ -398,8 +400,13 @@ function extractServiceMembers(
 	readonly name: string;
 	readonly signature: string;
 }> {
-	const classSignature = `export class ${className} extends ServiceMap.Service<`;
-	const classStart = source.indexOf(classSignature);
+	const classSignatures = [
+		`export class ${className} extends Context.Service<`,
+		`export class ${className} extends ServiceMap.Service<`,
+	];
+	const classStart = classSignatures
+		.map((classSignature) => source.indexOf(classSignature))
+		.find((index) => index !== -1);
 	if (classStart === -1) {
 		return [];
 	}
@@ -660,9 +667,10 @@ function makeLlmsInlineLinks(
 	return (
 		markdown
 			// Turn inline code mentions of LÖVE/LÖVE 2D into one canonical external link.
-			.replace(/`(LÖVE(?: 2D)?)`/g, (_match, label: string) => {
-				return `[${label}](${loveWebsiteUrl})`;
-			})
+			.replace(
+				/`(LÖVE(?: 2D)?)`/g,
+				(_match, label: string) => `[${label}](${loveWebsiteUrl})`,
+			)
 			.replace(tsDocLinkRegex, (_match, target: string, label?: string) => {
 				const resolvedLabel = (label ?? target).trim();
 				const href = linkBySymbol.get(target);
@@ -2023,7 +2031,7 @@ const main = Effect.gen(function* () {
 	const sourceFileGlob = new Glob("src/**/*.ts");
 	const availableSourceFiles = new Set(
 		yield* Effect.tryPromise({
-			try: async () =>
+			try: () =>
 				Array.fromAsync(sourceFileGlob.scan({ cwd: ".", onlyFiles: true })),
 			catch: (cause) =>
 				new DocSiteScanError({

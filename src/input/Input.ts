@@ -1,4 +1,4 @@
-import { Effect, Layer, Ref, Schema, ServiceMap } from "effect";
+import { Context, Effect, Layer, Ref, Schema } from "effect";
 import { recordInputEvent } from "../debug/GameplayMetrics.ts";
 
 /** Keyboard key identifiers as reported by the active platform backend. @public */
@@ -335,7 +335,7 @@ const validateBinding = Effect.fn("Input.validateBinding")(function* (
  * The service keeps frame transitions explicit through `beginFrame`, which lets
  * tests and native boundaries drive input deterministically.
  */
-export class Input extends ServiceMap.Service<
+export class Input extends Context.Service<
 	Input,
 	{
 		readonly actionState: (

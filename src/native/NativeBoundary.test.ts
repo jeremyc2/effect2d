@@ -9,7 +9,7 @@ import { NativeBoundary } from "./NativeBoundary.ts";
 import { PlatformBackend } from "./PlatformBackend.ts";
 
 describe("NativeBoundary", () => {
-	test("orchestrates backend input, audio sync, frame presentation, and shutdown", async () => {
+	test("orchestrates backend input, audio sync, frame presentation, and shutdown", () => {
 		const providerLayer = Layer.mergeAll(
 			Audio.layer,
 			Input.layer,
@@ -87,7 +87,7 @@ describe("NativeBoundary", () => {
 			),
 		);
 
-		await runLayerEffect(
+		return runLayerEffect(
 			Layer.mergeAll(
 				providerLayer,
 				NativeBoundary.layer.pipe(Layer.provide(providerLayer)),

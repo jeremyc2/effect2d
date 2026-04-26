@@ -1,4 +1,4 @@
-import { Clock, Duration, Effect, Layer, Ref, ServiceMap } from "effect";
+import { Clock, Context, Duration, Effect, Layer, Ref } from "effect";
 import { recordFrameTime } from "../debug/GameplayMetrics.ts";
 
 /**
@@ -47,7 +47,7 @@ const initialRuntimeClockState: RuntimeClockState = {
  * This keeps frame pacing and diagnostics reproducible in tests while still
  * giving tools a simple place to read current timing state.
  */
-export class RuntimeClock extends ServiceMap.Service<
+export class RuntimeClock extends Context.Service<
 	RuntimeClock,
 	{
 		readonly currentTimeMillis: Effect.Effect<number>;

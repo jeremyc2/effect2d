@@ -43,24 +43,25 @@ const sampleRoom = defineRoom({
 });
 
 describe("MapSerialization", () => {
-	test("round-trips valid room content through JSON", async () => {
-		const roundTrippedRoom = await runEffectTest(
+	test("round-trips valid room content through JSON", () =>
+		runEffectTest(
 			Effect.gen(function* () {
 				const serializedRoom = yield* serializeRoom(sampleRoom);
-				return yield* deserializeRoom(serializedRoom);
+				const roundTrippedRoom = yield* deserializeRoom(serializedRoom);
+				expect(roundTrippedRoom).toEqual(sampleRoom);
 			}),
-		);
+		));
 
-		expect(roundTrippedRoom).toEqual(sampleRoom);
-	});
+	test("rejects malformed serialized room content", () =>
+		Effect.runPromise(
+			Effect.gen(function* () {
+				const result = yield* Effect.exit(
+					deserializeRoom(
+						'{"id":"broken-room","metadata":{},"tilePlanes":[],"objectPlanes":[{"id":"objects","entries":[{"id":"bad-transition","kind":"transition-zone","metadata":{},"height":8,"width":8,"x":0,"y":0}]}]}',
+					),
+				);
 
-	test("rejects malformed serialized room content", async () => {
-		const result = await Effect.runPromiseExit(
-			deserializeRoom(
-				'{"id":"broken-room","metadata":{},"tilePlanes":[],"objectPlanes":[{"id":"objects","entries":[{"id":"bad-transition","kind":"transition-zone","metadata":{},"height":8,"width":8,"x":0,"y":0}]}]}',
-			),
-		);
-
-		expect(Exit.isFailure(result)).toBe(true);
-	});
+				expect(Exit.isFailure(result)).toBe(true);
+			}),
+		));
 });

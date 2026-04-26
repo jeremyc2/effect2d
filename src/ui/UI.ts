@@ -1,4 +1,4 @@
-import { Effect, Layer, Ref, Schema, ServiceMap } from "effect";
+import { Context, Effect, Layer, Ref, Schema } from "effect";
 import type { CameraVector } from "../graphics/Camera.ts";
 import {
 	type Color,
@@ -290,7 +290,7 @@ const layoutFromLines = (
  * of dialogue boxes, framed panels, bitmap-font measurement, and menu
  * navigation so your game code can stay focused on its own state machine.
  */
-export class UI extends ServiceMap.Service<
+export class UI extends Context.Service<
 	UI,
 	{
 		readonly drawCursor: (

@@ -1,4 +1,4 @@
-import { Effect, Layer, Ref, ServiceMap } from "effect";
+import { Context, Effect, Layer, Ref } from "effect";
 import type { CameraVector } from "../../../../src/graphics/Camera.ts";
 import {
 	type CavernRoomId,
@@ -27,7 +27,7 @@ const makeRoomEnemySnapshots = (
 const initialCavernEnemySnapshots =
 	makeRoomEnemySnapshots(cavernStartingRoomId);
 
-export class CavernEnemyState extends ServiceMap.Service<
+export class CavernEnemyState extends Context.Service<
 	CavernEnemyState,
 	{
 		readonly enterRoom: (roomId: CavernRoomId) => Effect.Effect<void>;

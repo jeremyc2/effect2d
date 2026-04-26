@@ -1,4 +1,4 @@
-import { Effect, Layer, Ref, ServiceMap } from "effect";
+import { Context, Effect, Layer, Ref } from "effect";
 
 /** A 2D point or vector used by the camera API. World and screen coordinates both use this shape. @public */
 export interface CameraVector {
@@ -275,7 +275,7 @@ export function getWorldPositionFromScreen(
  *
  * If your scene needs a camera at all, this is usually the service you inject.
  */
-export class SceneCamera extends ServiceMap.Service<
+export class SceneCamera extends Context.Service<
 	SceneCamera,
 	{
 		readonly follow: (target: CameraVector | null) => Effect.Effect<void>;

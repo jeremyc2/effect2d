@@ -41,7 +41,7 @@ export interface SaveDocument {
  * match real participants.
  *
  * {@link SaveCoordinator.layer} reads the current service map and applies
- * `Effect.provideServices` to each participant effect so the coordinator’s
+ * `Effect.provideContext` to each participant effect so the coordinator’s
  * slot methods stay typed with `never` on the requirements channel (no `as`
  * needed at call sites).
  *

@@ -1,4 +1,4 @@
-import { Effect, Layer, Ref, Schema, type Scope, ServiceMap } from "effect";
+import { Context, Effect, Layer, Ref, Schema, type Scope } from "effect";
 import type { ResourceDiagnostic } from "./DebugOverlay.ts";
 
 /**
@@ -83,7 +83,7 @@ export class UnknownTrackedResourceError extends Schema.TaggedErrorClass<Unknown
  * yield* tracker.setLoaded("title-screen");
  * ```
  */
-export class ResourceTracker extends ServiceMap.Service<
+export class ResourceTracker extends Context.Service<
 	ResourceTracker,
 	{
 		readonly fault: (

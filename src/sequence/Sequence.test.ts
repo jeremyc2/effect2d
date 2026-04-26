@@ -45,8 +45,8 @@ const makeSequenceLayer = () => {
 };
 
 describe("Sequence", () => {
-	test("orchestrates timing, audio, fades, and scene flow", async () => {
-		await runLayerEffect(
+	test("orchestrates timing, audio, fades, and scene flow", () =>
+		runLayerEffect(
 			makeSequenceLayer(),
 			Effect.gen(function* () {
 				const audio = yield* Audio;
@@ -99,11 +99,10 @@ describe("Sequence", () => {
 				);
 				expect((yield* sceneDirector.snapshot).activeSceneId).toBe("pause");
 			}),
-		);
-	});
+		));
 
-	test("forks scoped sequences that are canceled when the scope closes", async () => {
-		await runLayerEffect(
+	test("forks scoped sequences that are canceled when the scope closes", () =>
+		runLayerEffect(
 			makeSequenceLayer(),
 			Effect.gen(function* () {
 				const sequence = yield* Sequence;
@@ -121,11 +120,10 @@ describe("Sequence", () => {
 
 				expect(yield* Ref.get(finishedRef)).toBe(true);
 			}),
-		);
-	});
+		));
 
-	test("captures and drains selective typed domain events", async () => {
-		await runLayerEffect(
+	test("captures and drains selective typed domain events", () =>
+		runLayerEffect(
 			makeSequenceLayer(),
 			Effect.gen(function* () {
 				const events = yield* SequenceEvents;
@@ -154,6 +152,5 @@ describe("Sequence", () => {
 				]);
 				expect(yield* events.snapshot).toEqual([]);
 			}),
-		);
-	});
+		));
 });

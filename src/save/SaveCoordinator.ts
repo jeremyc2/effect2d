@@ -1,4 +1,4 @@
-import { Effect, Layer, Ref, Schema, ServiceMap } from "effect";
+import { Context, Effect, Layer, Ref, Schema } from "effect";
 import {
 	recordSaveRestore,
 	recordSaveWrite,
@@ -24,8 +24,8 @@ import {
  * Public surface of {@link SaveCoordinator}.
  *
  * Slot methods are typed with `never` on the requirements channel because the
- * coordinator re-provides the current {@link ServiceMap.ServiceMap} to each
- * participant effect via {@link Effect.provideServices} (see {@link SaveCoordinator.layer}).
+ * coordinator re-provides the current {@link Context.Context} to each
+ * participant effect via {@link Effect.provideContext} (see {@link SaveCoordinator.layer}).
  * Import/export only touch the in-memory document and also stay `never` there.
  *
  * @public
@@ -136,7 +136,7 @@ export interface SaveCoordinatorOptions<R = never> {
  * });
  * ```
  */
-export class SaveCoordinator extends ServiceMap.Service<
+export class SaveCoordinator extends Context.Service<
 	SaveCoordinator,
 	SaveCoordinatorType
 >()("effect2d/save/SaveCoordinator") {
@@ -162,7 +162,7 @@ export class SaveCoordinator extends ServiceMap.Service<
 					});
 				}
 
-				const serviceMap = yield* Effect.services<R>();
+				const serviceMap = yield* Effect.context<R>();
 
 				const documentRef = yield* Ref.make<SaveDocument>(
 					initialDocument ?? {
@@ -184,8 +184,10 @@ export class SaveCoordinator extends ServiceMap.Service<
 						> = {};
 
 						for (const participant of participants) {
-							participantStates[participant.key] =
-								yield* Effect.provideServices(participant.capture, serviceMap);
+							participantStates[participant.key] = yield* Effect.provideContext(
+								participant.capture,
+								serviceMap,
+							);
 						}
 
 						return {
@@ -242,7 +244,7 @@ export class SaveCoordinator extends ServiceMap.Service<
 						}),
 					);
 					for (const participant of participants) {
-						yield* Effect.provideServices(
+						yield* Effect.provideContext(
 							participant.restore(
 								slot.participantStates[participant.key] ?? {},
 							),

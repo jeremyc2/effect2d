@@ -21,8 +21,8 @@ const makeUILayer = () => {
 };
 
 describe("UI", () => {
-	test("loads fonts and measures wrapped text", async () => {
-		await runLayerEffect(
+	test("loads fonts and measures wrapped text", () =>
+		runLayerEffect(
 			makeUILayer(),
 			Effect.gen(function* () {
 				const ui = yield* UI;
@@ -48,11 +48,10 @@ describe("UI", () => {
 				]);
 				expect(wrapped.height).toBe(36);
 			}),
-		);
-	});
+		));
 
-	test("draws dialogue boxes and text blocks through the graphics command model", async () => {
-		await runLayerEffect(
+	test("draws dialogue boxes and text blocks through the graphics command model", () =>
+		runLayerEffect(
 			makeUILayer(),
 			Effect.gen(function* () {
 				const graphics = yield* Graphics;
@@ -110,11 +109,10 @@ describe("UI", () => {
 					frame.commands.some((command) => command.type === "draw-rectangle"),
 				).toBe(true);
 			}),
-		);
-	});
+		));
 
-	test("resolves menu navigation from input actions", async () => {
-		await runLayerEffect(
+	test("resolves menu navigation from input actions", () =>
+		runLayerEffect(
 			makeUILayer(),
 			Effect.gen(function* () {
 				const input = yield* Input;
@@ -150,6 +148,5 @@ describe("UI", () => {
 				expect(result.confirmed).toBe(true);
 				expect(result.moved).toBe(true);
 			}),
-		);
-	});
+		));
 });

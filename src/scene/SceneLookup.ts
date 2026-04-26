@@ -1,4 +1,4 @@
-import { Effect, Layer, ServiceMap } from "effect";
+import { Context, Effect, Layer } from "effect";
 import type { SceneDefinition, SceneId } from "./Scene.ts";
 import { SceneNotFoundError } from "./SceneError.ts";
 
@@ -10,7 +10,7 @@ import { SceneNotFoundError } from "./SceneError.ts";
  * Intentionally minimal: answers “which definition matches this id?” and exposes
  * the full authored set for tooling or diagnostics.
  */
-export class SceneLookup extends ServiceMap.Service<
+export class SceneLookup extends Context.Service<
 	SceneLookup,
 	{
 		readonly all: Effect.Effect<ReadonlyArray<SceneDefinition>>;

@@ -16,8 +16,8 @@ import { RuntimeClock } from "./RuntimeClock.ts";
 const testNativeBoundaryLayer = makeHeadlessNativeBoundaryLayer();
 
 describe("Launch", () => {
-	test("composes engine runtime services into one launch layer", async () => {
-		await runLayerEffect(
+	test("composes engine runtime services into one launch layer", () =>
+		runLayerEffect(
 			makeRuntimeLayer(
 				{
 					...defaultEngineConfig,
@@ -42,22 +42,21 @@ describe("Launch", () => {
 				expect(random.seed).toBe(12345);
 				expect((yield* clock.snapshot()).frameCount).toBe(1);
 			}),
-		);
-	});
+		));
 
-	test("surfaces launch failure from the native boundary through the engine program", async () => {
-		const exit = await runLayerEffect(
+	test("surfaces launch failure from the native boundary through the engine program", () =>
+		runLayerEffect(
 			makeRuntimeLayer(defaultEngineConfig, {
 				nativeBoundaryLayer: NativeBoundary.unimplemented,
 			}),
-			Effect.exit(engineProgram),
-		);
+			Effect.gen(function* () {
+				const exit = yield* Effect.exit(engineProgram);
+				expect(Exit.isFailure(exit)).toBe(true);
+			}),
+		));
 
-		expect(Exit.isFailure(exit)).toBe(true);
-	});
-
-	test("runs the seeded engine program against a runtime layer that exposes the configured seed", async () => {
-		await runLayerEffect(
+	test("runs the seeded engine program against a runtime layer that exposes the configured seed", () =>
+		runLayerEffect(
 			makeRuntimeLayer(
 				{
 					...defaultEngineConfig,
@@ -78,6 +77,5 @@ describe("Launch", () => {
 					}),
 				),
 			),
-		);
-	});
+		));
 });

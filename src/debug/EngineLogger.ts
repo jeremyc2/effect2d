@@ -1,4 +1,4 @@
-import { Effect, Layer, Ref, Schema, ServiceMap } from "effect";
+import { Context, Effect, Layer, Ref, Schema } from "effect";
 
 /**
  * Structured log severities understood by the engine logger.
@@ -97,7 +97,7 @@ export class InvalidLogMessageError extends Schema.TaggedErrorClass<InvalidLogMe
  * yield* logger.info("Loaded room", { roomId: "cavern-entrance" });
  * ```
  */
-export class EngineLogger extends ServiceMap.Service<
+export class EngineLogger extends Context.Service<
 	EngineLogger,
 	{
 		readonly clear: Effect.Effect<void>;

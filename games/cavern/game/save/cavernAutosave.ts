@@ -2,6 +2,7 @@ import * as Os from "node:os";
 import * as BunFileSystem from "@effect/platform-bun/BunFileSystem";
 import * as BunPath from "@effect/platform-bun/BunPath";
 import {
+	Context,
 	Effect,
 	FileSystem,
 	Formatter,
@@ -10,7 +11,6 @@ import {
 	Path,
 	Result,
 	Schema,
-	ServiceMap,
 } from "effect";
 import type * as PlatformError from "effect/PlatformError";
 import {
@@ -124,7 +124,7 @@ export const cavernPlatformIoLayer = Layer.mergeAll(
 	BunPath.layer,
 );
 
-export class CavernDiskSave extends ServiceMap.Service<
+export class CavernDiskSave extends Context.Service<
 	CavernDiskSave,
 	{
 		readonly flush: () => Effect.Effect<

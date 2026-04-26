@@ -1,4 +1,4 @@
-import { Effect, Layer, Schema, ServiceMap } from "effect";
+import { Context, Effect, Layer, Schema } from "effect";
 import type {
 	UnknownAudioCueError,
 	WrongAudioCueKindError,
@@ -66,7 +66,7 @@ const nthDialoguePage = Effect.fn("Cutscene.nthDialoguePage")(function* (
  * scene-sequence operations, but still want to stay inside ordinary Effect
  * programs.
  */
-export class Cutscene extends ServiceMap.Service<
+export class Cutscene extends Context.Service<
 	Cutscene,
 	{
 		readonly advanceDialogue: (

@@ -4,8 +4,8 @@ import { runLayerEffect } from "../testing/runEffectTest.ts";
 import { Graphics } from "./Graphics.ts";
 
 describe("Graphics", () => {
-	test("records immediate-mode draw commands in frame order", async () => {
-		await runLayerEffect(
+	test("records immediate-mode draw commands in frame order", () =>
+		runLayerEffect(
 			Graphics.layer,
 			Effect.gen(function* () {
 				const graphics = yield* Graphics;
@@ -64,19 +64,16 @@ describe("Graphics", () => {
 				]);
 				expect(frame.isOpen).toBe(false);
 			}),
-		);
-	});
+		));
 
-	test("fails on transform stack misuse", async () => {
-		const exit = await runLayerEffect(
+	test("fails on transform stack misuse", () =>
+		runLayerEffect(
 			Graphics.layer,
 			Effect.gen(function* () {
 				const graphics = yield* Graphics;
 				yield* graphics.beginFrame;
-				return yield* Effect.exit(graphics.popTransform);
+				const exit = yield* Effect.exit(graphics.popTransform);
+				expect(Exit.isFailure(exit)).toBe(true);
 			}),
-		);
-
-		expect(Exit.isFailure(exit)).toBe(true);
-	});
+		));
 });

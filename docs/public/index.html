@@ -6114,7 +6114,7 @@ authored image and font asset paths here.</p>
 								>
 									<div class="doc-entry-meta">
 										<span class="doc-kind doc-kind-function">function</span>
-										<a class="doc-source" href="#native-makeskianativeboundarylayer">src/native/SkiaPlatformBackend.ts:1387</a>
+										<a class="doc-source" href="#native-makeskianativeboundarylayer">src/native/SkiaPlatformBackend.ts:1389</a>
 									</div>
 									<h4>makeSkiaNativeBoundaryLayer</h4>
 									<div class="prose"><p>Builds a ready-to-use native playable boundary backed by a Skia window and
@@ -6587,8 +6587,8 @@ giving tools a simple place to read current timing state.</p>
 									<h4>SaveCoordinatorType</h4>
 									<div class="prose"><p>surface of <a href="#save-savecoordinator">SaveCoordinator</a>.</p>
 <p>Slot methods are typed with <code>never</code> on the requirements channel because the
-coordinator re-provides the current <code>ServiceMap.ServiceMap</code> to each
-participant effect via <code>Effect.provideServices</code> (see <code>SaveCoordinator.layer</code>).
+coordinator re-provides the current <code>Context.Context</code> to each
+participant effect via <code>Effect.provideContext</code> (see <code>SaveCoordinator.layer</code>).
 Import/export only touch the in-memory document and also stay <code>never</code> there.</p>
 </div>
 									
@@ -6711,7 +6711,7 @@ that is the union of every service those effects may <code>yield*</code>. Using 
 <code>Effect.Effect&lt;…&gt;</code> without <code>R</code> defaults <code>R</code> to <code>never</code>, which does <strong>not</strong>
 match real participants.</p>
 <p><code>SaveCoordinator.layer</code> reads the current service map and applies
-<code>Effect.provideServices</code> to each participant effect so the coordinator’s
+<code>Effect.provideContext</code> to each participant effect so the coordinator’s
 slot methods stay typed with <code>never</code> on the requirements channel (no <code>as</code>
 needed at call sites).</p>
 <pre><code class="language-ts">type MySaveR = PlayerState | WorldState;

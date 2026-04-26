@@ -4,8 +4,8 @@ import { runLayerEffect } from "../testing/runEffectTest.ts";
 import { ResourceTracker } from "./ResourceTracker.ts";
 
 describe("ResourceTracker", () => {
-	test("tracks resource lifecycle state changes", async () => {
-		await runLayerEffect(
+	test("tracks resource lifecycle state changes", () =>
+		runLayerEffect(
 			ResourceTracker.layer,
 			Effect.gen(function* () {
 				const resourceTracker = yield* ResourceTracker;
@@ -40,12 +40,11 @@ describe("ResourceTracker", () => {
 					},
 				]);
 			}),
-		);
-	});
+		));
 });
 
-test("releases scoped resources automatically when their scope closes", async () => {
-	await runLayerEffect(
+test("releases scoped resources automatically when their scope closes", () =>
+	runLayerEffect(
 		ResourceTracker.layer,
 		Effect.gen(function* () {
 			const resourceTracker = yield* ResourceTracker;
@@ -73,5 +72,4 @@ test("releases scoped resources automatically when their scope closes", async ()
 				},
 			]);
 		}),
-	);
-});
+	));

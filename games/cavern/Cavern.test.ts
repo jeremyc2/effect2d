@@ -1,5 +1,5 @@
 import { describe, expect, it, test } from "bun:test";
-import { Effect, Layer } from "effect";
+import { ConfigProvider, Effect, Layer } from "effect";
 import { Engine, Input, SceneDirector } from "../../src/index.ts";
 import { runLayerEffect } from "../../src/testing/runEffectTest.ts";
 import {
@@ -17,43 +17,53 @@ import { CavernEnemyState } from "./game/state/CavernEnemyState.ts";
 import { CavernPlayerState } from "./game/state/CavernPlayerState.ts";
 import { CavernWorldState } from "./game/state/CavernWorldState.ts";
 
+const cavernTestConfigLayer = ConfigProvider.layer(
+	ConfigProvider.fromUnknown({
+		EFFECT2D: {
+			CAVERN: {
+				SAVE: {
+					DIR: "/tmp/effect2d-cavern-test-save",
+				},
+			},
+		},
+	}),
+);
+
+const CavernTestLive = CavernLive.pipe(Layer.provide(cavernTestConfigLayer));
+
 describe("cavern", () => {
-	it("bootstraps and launches through its own game entry point", async () => {
-		await Effect.runPromise(
+	it("bootstraps and launches through its own game entry point", () =>
+		Effect.runPromise(
 			Effect.scoped(
 				Effect.gen(function* () {
-					const services = yield* Layer.build(CavernLive);
-					yield* Effect.provideServices(cavernProgram, services);
+					const services = yield* Layer.build(CavernTestLive);
+					yield* Effect.provideContext(cavernProgram, services);
 				}),
 			),
-		);
-	});
+		));
 
-	it("loads the Cavern menu slice and engine config", async () => {
-		const result = await Effect.runPromise(
+	it("loads the Cavern menu slice and engine config", () =>
+		Effect.runPromise(
 			Effect.scoped(
-				Layer.build(CavernLive).pipe(
+				Layer.build(CavernTestLive).pipe(
 					Effect.flatMap((services) =>
-						Effect.provideServices(
+						Effect.provideContext(
 							Effect.gen(function* () {
 								const engine = yield* Engine;
 								yield* cavernBootstrap;
-								return engine.config;
+								expect(engine.config.gameId).toBe("Effect2d/cavern");
+								expect(engine.config.startScene).toBe("main-menu");
 							}),
 							services,
 						),
 					),
 				),
 			),
-		);
+		));
 
-		expect(result.gameId).toBe("Effect2d/cavern");
-		expect(result.startScene).toBe("main-menu");
-	});
-
-	test("shows room guidance on entry, hides it after movement, and mirrors the player toward the mouse", async () => {
-		await runLayerEffect(
-			CavernLive,
+	test("shows room guidance on entry, hides it after movement, and mirrors the player toward the mouse", () =>
+		runLayerEffect(
+			CavernTestLive,
 			Effect.gen(function* () {
 				const input = yield* Input;
 				const cavernGameplayDirector = yield* CavernGameplayDirector;
@@ -131,12 +141,11 @@ describe("cavern", () => {
 						.roomInstructionsFadeStartedAtMillis,
 				).toBe(fadeStartedAtMillis);
 			}),
-		);
-	});
+		));
 
-	test("renders room flyers, separates enemies, and lets a fast player transfer more knockback into them", async () => {
-		await runLayerEffect(
-			CavernLive,
+	test("renders room flyers, separates enemies, and lets a fast player transfer more knockback into them", () =>
+		runLayerEffect(
+			CavernTestLive,
 			Effect.gen(function* () {
 				const cavernEnemyState = yield* CavernEnemyState;
 				const cavernGameplayDirector = yield* CavernGameplayDirector;
@@ -251,6 +260,5 @@ describe("cavern", () => {
 					),
 				).toBe(true);
 			}),
-		);
-	});
+		));
 });

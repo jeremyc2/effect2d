@@ -1,4 +1,4 @@
-import { Effect, Layer, Ref, ServiceMap } from "effect";
+import { Context, Effect, Layer, Ref } from "effect";
 import { setCollisionBodyCount } from "../debug/GameplayMetrics.ts";
 
 /** Axis-aligned bounding box collision shape. @public */
@@ -166,7 +166,7 @@ export function isSolidTileAt(
  * It is a good fit for room-scale gameplay where collisions are explicit and
  * testable rather than delegated to a heavyweight physics engine.
  */
-export class CollisionWorld extends ServiceMap.Service<
+export class CollisionWorld extends Context.Service<
 	CollisionWorld,
 	{
 		readonly registerBody: (body: CollisionBody) => Effect.Effect<void>;

@@ -1,4 +1,4 @@
-import { Effect, Layer, Ref, Schema, ServiceMap } from "effect";
+import { Context, Effect, Layer, Ref, Schema } from "effect";
 import type { CameraVector } from "./Camera.ts";
 
 /**
@@ -249,7 +249,7 @@ const appendCommand = Effect.fn("Graphics.appendCommand")(function* (
  * - transforms, tints, blend modes, text, fades, and flashes all share the
  *   same deterministic recording model
  */
-export class Graphics extends ServiceMap.Service<
+export class Graphics extends Context.Service<
 	Graphics,
 	{
 		readonly beginFrame: Effect.Effect<void>;

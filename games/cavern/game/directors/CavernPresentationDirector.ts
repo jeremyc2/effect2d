@@ -1,4 +1,4 @@
-import { Effect, Layer, ServiceMap } from "effect";
+import { Context, Effect, Layer } from "effect";
 import {
 	type FrameSnapshot,
 	Graphics,
@@ -296,7 +296,7 @@ function getVisibleTransitionRectangle(
 	};
 }
 
-export class CavernPresentationDirector extends ServiceMap.Service<
+export class CavernPresentationDirector extends Context.Service<
 	CavernPresentationDirector,
 	{
 		readonly renderFrame: () => Effect.Effect<

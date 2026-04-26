@@ -17,7 +17,7 @@ const makeScene = (id: SceneId, trace: Array<string>): SceneDefinition => ({
 });
 
 describe("SceneDirector", () => {
-	test("runs scene lifecycle hooks for the active scene and overlay stack deterministically", async () => {
+	test("runs scene lifecycle hooks for the active scene and overlay stack deterministically", () => {
 		const trace: Array<string> = [];
 		const overworld = makeScene("overworld", trace);
 		const pause = makeScene("pause", trace);
@@ -25,7 +25,7 @@ describe("SceneDirector", () => {
 			Layer.provide(SceneLookup.layer([overworld, pause])),
 		);
 
-		await runLayerEffect(
+		return runLayerEffect(
 			layer,
 			Effect.gen(function* () {
 				const sceneDirector = yield* SceneDirector;
@@ -49,26 +49,25 @@ describe("SceneDirector", () => {
 						sceneId: "pause",
 					},
 				]);
+				expect(trace).toEqual([
+					"overworld:enter",
+					"overworld:update",
+					"overworld:input",
+					"pause:enter",
+					"pause:update",
+					"pause:input",
+					"overworld:draw",
+					"pause:draw",
+					"pause:exit",
+					"overworld:exit",
+					"pause:enter",
+					"pause:draw",
+				]);
 			}),
 		);
-
-		expect(trace).toEqual([
-			"overworld:enter",
-			"overworld:update",
-			"overworld:input",
-			"pause:enter",
-			"pause:update",
-			"pause:input",
-			"overworld:draw",
-			"pause:draw",
-			"pause:exit",
-			"overworld:exit",
-			"pause:enter",
-			"pause:draw",
-		]);
 	});
 
-	test("closes scene scopes so scene-local background work is canceled on transition", async () => {
+	test("closes scene scopes so scene-local background work is canceled on transition", () => {
 		const trace: Array<string> = [];
 		const overworld: SceneDefinition = {
 			id: "overworld",
@@ -92,18 +91,17 @@ describe("SceneDirector", () => {
 			Layer.provide(SceneLookup.layer([overworld, pause])),
 		);
 
-		await runLayerEffect(
+		return runLayerEffect(
 			layer,
 			Effect.gen(function* () {
 				const sceneDirector = yield* SceneDirector;
 				yield* sceneDirector.switchTo("pause");
+				expect(trace).toEqual([
+					"overworld:exit",
+					"overworld:background-stopped",
+					"pause:enter",
+				]);
 			}),
 		);
-
-		expect(trace).toEqual([
-			"overworld:exit",
-			"overworld:background-stopped",
-			"pause:enter",
-		]);
 	});
 });

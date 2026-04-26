@@ -10,7 +10,7 @@ import {
 } from "./CollisionWorld.ts";
 
 describe("CollisionWorld", () => {
-	test("detects solid overlaps and trigger queries", async () => {
+	test("detects solid overlaps and trigger queries", () => {
 		const playerShape: CollisionShape = {
 			kind: "aabb",
 			shape: {
@@ -52,7 +52,7 @@ describe("CollisionWorld", () => {
 			},
 		};
 
-		await runLayerEffect(
+		return runLayerEffect(
 			CollisionWorld.layer,
 			Effect.gen(function* () {
 				const collisionWorld = yield* CollisionWorld;

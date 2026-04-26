@@ -5,8 +5,8 @@ import { runLayerEffect } from "../testing/runEffectTest.ts";
 import { RuntimeClock } from "./RuntimeClock.ts";
 
 describe("RuntimeClock", () => {
-	test("tracks frame deltas and tick count deterministically", async () => {
-		await runLayerEffect(
+	test("tracks frame deltas and tick count deterministically", () =>
+		runLayerEffect(
 			Layer.mergeAll(RuntimeClock.layer(60), TestClock.layer()),
 			Effect.gen(function* () {
 				const runtimeClock = yield* RuntimeClock;
@@ -42,6 +42,5 @@ describe("RuntimeClock", () => {
 					tickCount: 0,
 				});
 			}),
-		);
-	});
+		));
 });

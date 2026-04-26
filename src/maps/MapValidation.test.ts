@@ -16,7 +16,7 @@ import {
 const isMapValidationError = Schema.is(MapValidationError);
 
 describe("validateRoom", () => {
-	test("accepts valid code-defined room content", async () => {
+	test("accepts valid code-defined room content", () => {
 		const room = defineRoom({
 			id: "start-room",
 			metadata: defineRoomMetadata({
@@ -60,11 +60,15 @@ describe("validateRoom", () => {
 			],
 		});
 
-		const validatedRoom = await Effect.runPromise(validateRoom(room));
-		expect(validatedRoom).toEqual(room);
+		return Effect.runPromise(
+			Effect.gen(function* () {
+				const validatedRoom = yield* validateRoom(room);
+				expect(validatedRoom).toEqual(room);
+			}),
+		);
 	});
 
-	test("rejects transition zones that do not declare a target room", async () => {
+	test("rejects transition zones that do not declare a target room", () => {
 		const room = defineRoom({
 			id: "broken-room",
 			metadata: defineRoomMetadata({}),
@@ -87,25 +91,29 @@ describe("validateRoom", () => {
 			tilePlanes: [],
 		});
 
-		const exit = await Effect.runPromiseExit(validateRoom(room));
-		expect(Exit.isFailure(exit)).toBe(true);
-		if (!Exit.isFailure(exit)) {
-			return;
-		}
+		return Effect.runPromise(
+			Effect.gen(function* () {
+				const exit = yield* Effect.exit(validateRoom(room));
+				expect(Exit.isFailure(exit)).toBe(true);
+				if (!Exit.isFailure(exit)) {
+					return;
+				}
 
-		const failure = Cause.findError(exit.cause);
-		expect(Result.isSuccess(failure)).toBe(true);
-		if (!Result.isSuccess(failure)) {
-			return;
-		}
+				const failure = Cause.findError(exit.cause);
+				expect(Result.isSuccess(failure)).toBe(true);
+				if (!Result.isSuccess(failure)) {
+					return;
+				}
 
-		const isKnownFailure = isMapValidationError(failure.success);
-		expect(isKnownFailure).toBe(true);
-		if (!isKnownFailure) {
-			return;
-		}
+				const isKnownFailure = isMapValidationError(failure.success);
+				expect(isKnownFailure).toBe(true);
+				if (!isKnownFailure) {
+					return;
+				}
 
-		expect(failure.success.roomId).toBe("broken-room");
-		expect(failure.success.reason).toContain("metadata.targetRoomId");
+				expect(failure.success.roomId).toBe("broken-room");
+				expect(failure.success.reason).toContain("metadata.targetRoomId");
+			}),
+		);
 	});
 });

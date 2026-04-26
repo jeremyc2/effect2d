@@ -1,4 +1,4 @@
-import { Effect, Layer, ServiceMap } from "effect";
+import { Context, Effect, Layer } from "effect";
 import type { RoomContent } from "./MapContent.ts";
 import { MapValidationError } from "./MapError.ts";
 import { getRoomObjectById as getRoomObjectByIdInContent } from "./MapQueries.ts";
@@ -9,7 +9,7 @@ import { validateRoom } from "./MapValidation.ts";
  *
  * @public
  */
-export class MapRepository extends ServiceMap.Service<
+export class MapRepository extends Context.Service<
 	MapRepository,
 	{
 		readonly loadRoom: (

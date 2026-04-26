@@ -1,4 +1,4 @@
-import { Effect, Layer, Ref, Schema, ServiceMap } from "effect";
+import { Context, Effect, Layer, Ref, Schema } from "effect";
 import { setActiveSfxCount } from "../debug/GameplayMetrics.ts";
 
 /** Logical buses supported by the audio service. @public */
@@ -210,7 +210,7 @@ const validateBusVolume = Effect.fn("Audio.validateBusVolume")(function* (
  * keeps audio orchestration testable, deterministic, and portable across native
  * backends.
  */
-export class Audio extends ServiceMap.Service<
+export class Audio extends Context.Service<
 	Audio,
 	{
 		readonly completeSound: (playbackId: string) => Effect.Effect<void>;

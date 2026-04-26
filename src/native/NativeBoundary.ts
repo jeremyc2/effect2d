@@ -1,4 +1,4 @@
-import { Effect, Layer, ServiceMap } from "effect";
+import { Context, Effect, Layer } from "effect";
 
 import { Audio } from "../audio/Audio.ts";
 import { Input } from "../input/Input.ts";
@@ -25,7 +25,7 @@ import {
  * Most games do not implement this service directly. Use
  * {@link makeSkiaNativeBoundaryLayer}.
  */
-export class NativeBoundary extends ServiceMap.Service<
+export class NativeBoundary extends Context.Service<
 	NativeBoundary,
 	{
 		readonly diagnostics: Effect.Effect<PlatformBackendDiagnostics>;

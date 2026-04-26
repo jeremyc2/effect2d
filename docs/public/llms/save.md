@@ -14,8 +14,8 @@
 surface of [SaveCoordinator](./llms/save.md#save-savecoordinator).
 
 Slot methods are typed with `never` on the requirements channel because the
-coordinator re-provides the current `ServiceMap.ServiceMap` to each
-participant effect via `Effect.provideServices` (see `SaveCoordinator.layer`).
+coordinator re-provides the current `Context.Context` to each
+participant effect via `Effect.provideContext` (see `SaveCoordinator.layer`).
 Import/export only touch the in-memory document and also stay `never` there.
 
 ### SaveCoordinatorOptions
@@ -103,7 +103,7 @@ that is the union of every service those effects may `yield*`. Using plain
 match real participants.
 
 `SaveCoordinator.layer` reads the current service map and applies
-`Effect.provideServices` to each participant effect so the coordinator’s
+`Effect.provideContext` to each participant effect so the coordinator’s
 slot methods stay typed with `never` on the requirements channel (no `as`
 needed at call sites).
 

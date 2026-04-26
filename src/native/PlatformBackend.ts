@@ -1,4 +1,4 @@
-import { type Effect, ServiceMap } from "effect";
+import { Context, type Effect } from "effect";
 
 import type { AudioSnapshot } from "../audio/Audio.ts";
 import type { FrameSnapshot } from "../graphics/Graphics.ts";
@@ -69,7 +69,7 @@ export interface PlatformBackendDiagnostics {
  * {@link makeSkiaNativeBoundaryLayer}, which wires a concrete backend into the
  * **Native boundary** and keeps **Frame updater** work in game land.
  */
-export class PlatformBackend extends ServiceMap.Service<
+export class PlatformBackend extends Context.Service<
 	PlatformBackend,
 	{
 		readonly close: Effect.Effect<void>;

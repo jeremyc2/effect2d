@@ -1,4 +1,4 @@
-import { Effect, Layer, Ref, ServiceMap } from "effect";
+import { Context, Effect, Layer, Ref } from "effect";
 import type { CameraVector } from "../../../../src/graphics/Camera.ts";
 
 export interface CavernPlayerSnapshot {
@@ -17,7 +17,7 @@ const initialCavernPlayerSnapshot: CavernPlayerSnapshot = {
 	},
 };
 
-export class CavernPlayerState extends ServiceMap.Service<
+export class CavernPlayerState extends Context.Service<
 	CavernPlayerState,
 	{
 		readonly moveBy: (delta: CameraVector) => Effect.Effect<void>;

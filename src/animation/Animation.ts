@@ -1,4 +1,4 @@
-import { Effect, Layer, Schema, ServiceMap } from "effect";
+import { Context, Effect, Layer, Schema } from "effect";
 
 /**
  * Author-time description of a named clip.
@@ -448,7 +448,7 @@ export function createFlashTween(
 	);
 }
 
-export class AnimationLibrary extends ServiceMap.Service<
+export class AnimationLibrary extends Context.Service<
 	AnimationLibrary,
 	{
 		readonly clip: (

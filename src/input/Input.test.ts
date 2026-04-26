@@ -4,8 +4,8 @@ import { runLayerEffect } from "../testing/runEffectTest.ts";
 import { Input } from "./Input.ts";
 
 describe("Input", () => {
-	test("tracks raw keyboard and mouse input with polling and event access", async () => {
-		await runLayerEffect(
+	test("tracks raw keyboard and mouse input with polling and event access", () =>
+		runLayerEffect(
 			Input.layer,
 			Effect.gen(function* () {
 				const input = yield* Input;
@@ -41,11 +41,10 @@ describe("Input", () => {
 				expect(snapshot.wheelDeltaY).toBe(-1);
 				expect(snapshot.textBuffer).toEqual(["a"]);
 			}),
-		);
-	});
+		));
 
-	test("supports action mapping, rebinding, and action consumption", async () => {
-		await runLayerEffect(
+	test("supports action mapping, rebinding, and action consumption", () =>
+		runLayerEffect(
 			Input.layer,
 			Effect.gen(function* () {
 				const input = yield* Input;
@@ -86,6 +85,5 @@ describe("Input", () => {
 
 				expect(yield* input.isActionPressed("pause")).toBe(true);
 			}),
-		);
-	});
+		));
 });

@@ -422,7 +422,7 @@ function runWithLayer<Success, Failure, Services>(
 	return Effect.scoped(
 		Effect.gen(function* () {
 			const services = yield* Layer.build(layer);
-			return yield* Effect.provideServices(effect, services);
+			return yield* Effect.provideContext(effect, services);
 		}),
 	);
 }
@@ -434,15 +434,15 @@ function runBunTest<Success, Failure, Services>(
 		Effect.scoped(
 			Effect.gen(function* () {
 				const services = yield* Layer.build(BunServices.layer);
-				return yield* Effect.provideServices(effect, services);
+				return yield* Effect.provideContext(effect, services);
 			}),
 		),
 	);
 }
 
 describe("GameplayTelemetry", () => {
-	test("writes OTEL-shaped trace, log, and metric records with ISO datetimes", async () => {
-		await runBunTest(
+	test("writes OTEL-shaped trace, log, and metric records with ISO datetimes", () =>
+		runBunTest(
 			Effect.scoped(
 				Effect.gen(function* () {
 					const fs = yield* FileSystem.FileSystem;
@@ -581,11 +581,10 @@ describe("GameplayTelemetry", () => {
 					).toBeTrue();
 				}),
 			),
-		);
-	});
+		));
 
-	test("streams startup telemetry before the gameplay scope closes", async () => {
-		await runBunTest(
+	test("streams startup telemetry before the gameplay scope closes", () =>
+		runBunTest(
 			Effect.scoped(
 				Effect.gen(function* () {
 					const fs = yield* FileSystem.FileSystem;
@@ -616,11 +615,10 @@ describe("GameplayTelemetry", () => {
 					);
 				}),
 			),
-		);
-	});
+		));
 
-	test("forwards EngineLogger entries into the OTEL log file", async () => {
-		await runBunTest(
+	test("forwards EngineLogger entries into the OTEL log file", () =>
+		runBunTest(
 			Effect.scoped(
 				Effect.gen(function* () {
 					const fs = yield* FileSystem.FileSystem;
@@ -704,6 +702,5 @@ describe("GameplayTelemetry", () => {
 					expect(firstCommentaryEntry.text).toContain("overlay log");
 				}),
 			),
-		);
-	});
+		));
 });

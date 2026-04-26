@@ -232,7 +232,7 @@ const commentaryCommand = Command.make("commentary").pipe(
 const program = Effect.scoped(
 	Effect.gen(function* () {
 		const services = yield* Layer.build(BunServices.layer);
-		return yield* Effect.provideServices(
+		return yield* Effect.provideContext(
 			Command.run(commentaryCommand, {
 				version: packageJson.version,
 			}),

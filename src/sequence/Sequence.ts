@@ -1,11 +1,11 @@
 import {
+	Context,
 	Effect,
 	type Fiber,
 	Layer,
 	Ref,
 	Schema,
 	type Scope,
-	ServiceMap,
 } from "effect";
 import {
 	Audio,
@@ -93,7 +93,7 @@ const initialSequenceEventJournalState: SequenceEventJournalState = {
 };
 
 /** A lightweight published-event journal for authored sequences. This is handy when a game wants cutscene-like code to publish notable milestones without coupling directly to every downstream system. @public */
-export class SequenceEvents extends ServiceMap.Service<
+export class SequenceEvents extends Context.Service<
 	SequenceEvents,
 	{
 		readonly clear: Effect.Effect<void>;
@@ -150,7 +150,7 @@ export class SequenceEvents extends ServiceMap.Service<
  * needs to wait fixed steps, switch scenes, play cues, or fork a timed effect,
  * this is usually the service you compose with.
  */
-export class Sequence extends ServiceMap.Service<
+export class Sequence extends Context.Service<
 	Sequence,
 	{
 		readonly fade: (

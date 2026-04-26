@@ -1,4 +1,4 @@
-import { Effect, Layer, Result, ServiceMap } from "effect";
+import { Context, Effect, Layer, Result } from "effect";
 import type * as PlatformError from "effect/PlatformError";
 import {
 	Audio,
@@ -422,7 +422,7 @@ type CavernGameplayDirectorFailure =
 	| UnknownInputActionError
 	| WrongAudioCueKindError;
 
-export class CavernGameplayDirector extends ServiceMap.Service<
+export class CavernGameplayDirector extends Context.Service<
 	CavernGameplayDirector,
 	{
 		readonly stepFrame: () => Effect.Effect<

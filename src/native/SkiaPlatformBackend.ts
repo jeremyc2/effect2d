@@ -581,7 +581,7 @@ export function makeSkiaPlatformBackendLayer({
 		PlatformBackend,
 		Effect.scoped(
 			Effect.gen(function* () {
-				const services = yield* Effect.services<never>();
+				const services = yield* Effect.context<never>();
 				const runFork = Effect.runForkWith(services);
 				const diagnosticsRef = yield* Ref.make(
 					diagnosticsSnapshot(frameDelayMillis),
@@ -651,6 +651,7 @@ export function makeSkiaPlatformBackendLayer({
 					}
 
 					const runtime = yield* Effect.tryPromise({
+						// @effect-diagnostics-next-line asyncFunction:off -- Web Audio resume is Promise-based native interop inside Effect.tryPromise.
 						try: async () => {
 							const context = new AudioContext({
 								latencyHint: "playback",
@@ -711,6 +712,7 @@ export function makeSkiaPlatformBackendLayer({
 					}
 
 					const { audioContext: activeContext } = yield* ensureAudioRuntime();
+					// @effect-diagnostics-next-line asyncFunction:off -- Bun file reads and Web Audio decoding are Promise-based native interop.
 					const decodePromise = (async () => {
 						const encodedAudio = await Bun.file(sourcePath).arrayBuffer();
 						return activeContext.decodeAudioData(encodedAudio);

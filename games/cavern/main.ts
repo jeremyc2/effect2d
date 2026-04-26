@@ -18,11 +18,11 @@ const cavernMainLayer = Layer.mergeAll(
 	cavernTelemetryLayer,
 );
 
-await Effect.runPromise(
+Effect.runPromise(
 	Effect.scoped(
 		Effect.gen(function* () {
 			const services = yield* Layer.build(cavernMainLayer);
-			return yield* Effect.provideServices(cavernProgram, services);
+			return yield* Effect.provideContext(cavernProgram, services);
 		}),
 	).pipe(
 		Effect.annotateLogs({

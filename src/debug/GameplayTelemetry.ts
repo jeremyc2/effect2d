@@ -2,6 +2,7 @@ import { BunServices } from "@effect/platform-bun";
 import {
 	Cause,
 	type Config,
+	Context,
 	DateTime,
 	Effect,
 	Exit,
@@ -18,7 +19,6 @@ import {
 	Schedule,
 	Schema,
 	type Scope,
-	ServiceMap,
 	Tracer,
 } from "effect";
 import type * as PlatformError from "effect/PlatformError";
@@ -157,7 +157,7 @@ interface GameplayTelemetryWriter {
  *
  * @public
  */
-export class GameplayTelemetrySession extends ServiceMap.Service<
+export class GameplayTelemetrySession extends Context.Service<
 	GameplayTelemetrySession,
 	{
 		readonly descriptor: GameplayTelemetrySessionDescriptor;
@@ -224,7 +224,7 @@ export class GameplayTelemetrySession extends ServiceMap.Service<
 		const metricsLayer = Layer.effectDiscard(
 			Effect.gen(function* () {
 				const session = yield* GameplayTelemetrySession;
-				const services = yield* Effect.services<never>();
+				const services = yield* Effect.context<never>();
 
 				yield* initializeGameplayMetrics;
 				yield* Effect.addFinalizer(() =>
@@ -787,7 +787,7 @@ function flushGameplayTelemetryMetrics(
 		};
 		readonly writeMetrics: (data: MetricsData) => void;
 	},
-	services: ServiceMap.ServiceMap<never>,
+	services: Context.Context<never>,
 ): void {
 	const snapshots = Metric.snapshotUnsafe(services).filter((snapshot) =>
 		isGameplayMetricId(snapshot.id),
@@ -1211,7 +1211,7 @@ function makeGameplayTelemetryTracer(session: {
 }
 
 function makeGameplayTelemetrySpan(options: {
-	readonly annotations: ServiceMap.ServiceMap<never>;
+	readonly annotations: Context.Context<never>;
 	readonly export: (span: GameplayTelemetrySpan) => void;
 	readonly kind: Tracer.SpanKind;
 	readonly links: ReadonlyArray<Tracer.SpanLink>;

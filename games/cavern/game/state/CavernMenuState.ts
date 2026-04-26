@@ -1,4 +1,4 @@
-import { Effect, Layer, Ref, ServiceMap } from "effect";
+import { Context, Effect, Layer, Ref } from "effect";
 
 export interface CavernMenuSnapshot {
 	readonly hoveredIndex: number | null;
@@ -12,7 +12,7 @@ const initialCavernMenuSnapshot: CavernMenuSnapshot = {
 	soundOn: true,
 };
 
-export class CavernMenuState extends ServiceMap.Service<
+export class CavernMenuState extends Context.Service<
 	CavernMenuState,
 	{
 		readonly setHoveredIndex: (
