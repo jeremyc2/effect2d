@@ -1,0 +1,8 @@
+[submodule "reference_repositories/effect-smol"]
+	path = reference_repositories/effect-smol
+	url = https://github.com/Effect-TS/effect-smol.git
+	branch = main
+[submodule "reference_repositories/love"]
+	path = reference_repositories/love
+	url = https://github.com/love2d/love.git
+	branch = main
