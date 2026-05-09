@@ -1,0 +1,4 @@
+interface:
+  display_name: "Update Dependencies"
+  short_description: "Update dependencies."
+  default_prompt: "Update dependencies and review migration guides or changelogs for the updates."
