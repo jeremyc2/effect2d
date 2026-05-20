@@ -899,21 +899,21 @@ Creates or reuses a gameplay telemetry session directory and manifest.
 ### resolveGameplayTelemetrySessionDescriptorFromDirectory
 
 - Kind: function
-- Source: `src/debug/GameplayTelemetry.ts:370`
+- Source: `src/debug/GameplayTelemetry.ts:371`
 
 Reads one telemetry session manifest from a known session directory.
 
 ### resolveLatestGameplayTelemetrySessionDescriptor
 
 - Kind: function
-- Source: `src/debug/GameplayTelemetry.ts:399`
+- Source: `src/debug/GameplayTelemetry.ts:400`
 
 Resolves the most recent telemetry session for the provided game id.
 
 ### appendGameplayCommentaryEntry
 
 - Kind: function
-- Source: `src/debug/GameplayTelemetry.ts:448`
+- Source: `src/debug/GameplayTelemetry.ts:449`
 
 Appends one timestamped gameplay commentary entry to the active session.
 

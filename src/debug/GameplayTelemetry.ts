@@ -3,6 +3,7 @@ import {
 	Cause,
 	type Config,
 	Context,
+	Crypto,
 	DateTime,
 	Effect,
 	Exit,
@@ -15,7 +16,6 @@ import {
 	Option,
 	Path,
 	Queue,
-	Random,
 	Schedule,
 	Schema,
 	type Scope,
@@ -312,9 +312,10 @@ export const createGameplayTelemetrySessionDescriptor: (
 ) => Effect.Effect<
 	GameplayTelemetrySessionDescriptor,
 	Config.ConfigError | PlatformError.PlatformError | Schema.SchemaError,
-	FileSystem.FileSystem | Path.Path
+	Crypto.Crypto | FileSystem.FileSystem | Path.Path
 > = Effect.fnUntraced(function* (options: GameplayTelemetryLayerOptions) {
 	const path = yield* Path.Path;
+	const crypto = yield* Crypto.Crypto;
 	const startedAt = yield* DateTime.now;
 	const startedAtIso = DateTime.formatIso(startedAt);
 	const sanitizedGameId = sanitizeTelemetryGameId(options.gameId);
@@ -339,7 +340,7 @@ export const createGameplayTelemetrySessionDescriptor: (
 		}
 	}
 
-	const sessionId = options.sessionId ?? (yield* Random.nextUUIDv4);
+	const sessionId = options.sessionId ?? (yield* crypto.randomUUIDv4);
 	const sessionDirectory = path.resolve(
 		requestedSessionDirectory ??
 			path.join(
@@ -460,7 +461,7 @@ export const appendGameplayCommentaryEntry: (options: {
 		readonly commentaryFilePath: string;
 	},
 	Config.ConfigError | PlatformError.PlatformError | Schema.SchemaError,
-	FileSystem.FileSystem | Path.Path
+	Crypto.Crypto | FileSystem.FileSystem | Path.Path
 > = Effect.fnUntraced(function* (options: {
 	readonly gameId: string;
 	readonly outputRootDirectory?: string;
@@ -561,7 +562,7 @@ const createGameplayTelemetrySessionRuntime: (
 ) => Effect.Effect<
 	GameplayTelemetrySessionRuntime,
 	Config.ConfigError | PlatformError.PlatformError | Schema.SchemaError,
-	FileSystem.FileSystem | Path.Path | Scope.Scope
+	Crypto.Crypto | FileSystem.FileSystem | Path.Path | Scope.Scope
 > = Effect.fnUntraced(function* (options: GameplayTelemetryLayerOptions) {
 	const descriptor = yield* createGameplayTelemetrySessionDescriptor(options);
 	const logsWriter = yield* makeGameplayTelemetryWriter(
