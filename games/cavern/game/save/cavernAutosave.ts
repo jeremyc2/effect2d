@@ -127,12 +127,8 @@ export const cavernPlatformIoLayer = Layer.mergeAll(
 export class CavernDiskSave extends Context.Service<
 	CavernDiskSave,
 	{
-		readonly flush: () => Effect.Effect<
-			void,
-			PlatformError.PlatformError,
-			never
-		>;
-		readonly loadFromDisk: () => Effect.Effect<
+		readonly flush: Effect.Effect<void, PlatformError.PlatformError, never>;
+		readonly loadFromDisk: Effect.Effect<
 			void,
 			PlatformError.PlatformError,
 			never
@@ -152,19 +148,21 @@ export class CavernDiskSave extends Context.Service<
 			});
 			const filePath = path.join(baseDirectory, "save.json");
 
-			const flush = Effect.fn("CavernDiskSave.flush")(function* () {
-				const document = yield* saveCoordinator.exportDocument;
-				yield* fs.makeDirectory(path.dirname(filePath), {
-					recursive: true,
-				});
-				yield* fs.writeFileString(
-					filePath,
-					`${Formatter.formatJson(document, { space: 2 })}\n`,
-				);
-			});
+			const flush = Effect.withSpan("CavernDiskSave.flush")(
+				Effect.gen(function* () {
+					const document = yield* saveCoordinator.exportDocument;
+					yield* fs.makeDirectory(path.dirname(filePath), {
+						recursive: true,
+					});
+					yield* fs.writeFileString(
+						filePath,
+						`${Formatter.formatJson(document, { space: 2 })}\n`,
+					);
+				}),
+			);
 
-			const loadFromDisk = Effect.fn("CavernDiskSave.loadFromDisk")(
-				function* () {
+			const loadFromDisk = Effect.withSpan("CavernDiskSave.loadFromDisk")(
+				Effect.gen(function* () {
 					const exists = yield* fs.exists(filePath);
 					if (!exists) {
 						return;
@@ -185,7 +183,7 @@ export class CavernDiskSave extends Context.Service<
 							`Cavern save could not be imported: ${String(importOutcome.failure)}`,
 						);
 					}
-				},
+				}),
 			);
 
 			return CavernDiskSave.of({

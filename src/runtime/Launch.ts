@@ -83,7 +83,7 @@ export function makeRuntimeLayer(
 export const engineProgram: Effect.Effect<void, EngineLaunchError, Engine> =
 	Effect.gen(function* () {
 		const engine = yield* Engine;
-		yield* engine.launch();
+		yield* engine.launch;
 	});
 
 /**

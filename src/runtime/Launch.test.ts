@@ -1,7 +1,7 @@
 import { describe, expect, test } from "bun:test";
 import { Effect, Exit } from "effect";
 import { NativeBoundary } from "../native/NativeBoundary.ts";
-import { makeHeadlessNativeBoundaryLayer } from "../testing/index.ts";
+import { headlessNativeBoundaryLayer } from "../testing/index.ts";
 import { runLayerEffect } from "../testing/runEffectTest.ts";
 import { Engine } from "./Engine.ts";
 import { defaultEngineConfig } from "./EngineConfig.ts";
@@ -13,7 +13,7 @@ import {
 import { RandomSource } from "./RandomSource.ts";
 import { RuntimeClock } from "./RuntimeClock.ts";
 
-const testNativeBoundaryLayer = makeHeadlessNativeBoundaryLayer();
+const testNativeBoundaryLayer = headlessNativeBoundaryLayer;
 
 describe("Launch", () => {
 	test("composes engine runtime services into one launch layer", () =>
@@ -35,12 +35,12 @@ describe("Launch", () => {
 				const random = yield* RandomSource;
 				const clock = yield* RuntimeClock;
 
-				yield* engine.launch();
-				yield* clock.beginFrame();
+				yield* engine.launch;
+				yield* clock.beginFrame;
 
 				expect(engine.config.gameId).toBe("Effect2d/test-game");
 				expect(random.seed).toBe(12345);
-				expect((yield* clock.snapshot()).frameCount).toBe(1);
+				expect((yield* clock.snapshot).frameCount).toBe(1);
 			}),
 		));
 

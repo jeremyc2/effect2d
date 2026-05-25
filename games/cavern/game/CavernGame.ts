@@ -15,7 +15,7 @@ import {
 	SceneLookup,
 	UI,
 } from "../../../src/index.ts";
-import { makeHeadlessNativeBoundaryLayer } from "../../../src/testing/index.ts";
+import { headlessNativeBoundaryLayer } from "../../../src/testing/index.ts";
 import { CavernGameplayDirector } from "./directors/CavernGameplayDirector.ts";
 import { CavernPresentationDirector } from "./directors/CavernPresentationDirector.ts";
 import { cavernBindings } from "./input/CavernBindings.ts";
@@ -40,7 +40,7 @@ export const cavernConfig = {
 	targetTicksPerSecond: 60,
 };
 
-export const cavernNativeBoundaryLayer = makeHeadlessNativeBoundaryLayer();
+export const cavernNativeBoundaryLayer = headlessNativeBoundaryLayer;
 
 const cavernCoreStateLayer = Layer.mergeAll(
 	CavernEnemyState.layer,
@@ -233,6 +233,6 @@ export const cavernProgram = Effect.gen(function* () {
 	const engine = yield* Engine;
 	const cavernDiskSave = yield* CavernDiskSave;
 	yield* cavernBootstrap;
-	yield* cavernDiskSave.loadFromDisk();
-	yield* engine.launch();
+	yield* cavernDiskSave.loadFromDisk;
+	yield* engine.launch;
 });

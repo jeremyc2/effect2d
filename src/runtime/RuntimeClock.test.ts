@@ -11,7 +11,7 @@ describe("RuntimeClock", () => {
 			Effect.gen(function* () {
 				const runtimeClock = yield* RuntimeClock;
 
-				expect(yield* runtimeClock.snapshot()).toEqual({
+				expect(yield* runtimeClock.snapshot).toEqual({
 					fixedTickMillis: 1_000 / 60,
 					frameCount: 0,
 					lastFrameDeltaMillis: 0,
@@ -19,12 +19,12 @@ describe("RuntimeClock", () => {
 					tickCount: 0,
 				});
 
-				yield* runtimeClock.beginFrame();
+				yield* runtimeClock.beginFrame;
 				yield* TestClock.adjust(16);
-				yield* runtimeClock.advanceTick();
-				yield* runtimeClock.beginFrame();
+				yield* runtimeClock.advanceTick;
+				yield* runtimeClock.beginFrame;
 
-				expect(yield* runtimeClock.snapshot()).toEqual({
+				expect(yield* runtimeClock.snapshot).toEqual({
 					fixedTickMillis: 1_000 / 60,
 					frameCount: 2,
 					lastFrameDeltaMillis: 16,
@@ -32,9 +32,9 @@ describe("RuntimeClock", () => {
 					tickCount: 1,
 				});
 
-				yield* runtimeClock.reset();
+				yield* runtimeClock.reset;
 
-				expect(yield* runtimeClock.snapshot()).toEqual({
+				expect(yield* runtimeClock.snapshot).toEqual({
 					fixedTickMillis: 1_000 / 60,
 					frameCount: 0,
 					lastFrameDeltaMillis: 0,

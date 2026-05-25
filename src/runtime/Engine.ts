@@ -29,7 +29,7 @@ export class Engine extends Context.Service<
 	Engine,
 	{
 		readonly config: EngineConfig;
-		readonly launch: () => Effect.Effect<void, EngineLaunchError>;
+		readonly launch: Effect.Effect<void, EngineLaunchError>;
 	}
 >()("effect2d/runtime/Engine") {
 	static readonly layer = (config: EngineConfig) =>
@@ -51,22 +51,24 @@ export class Engine extends Context.Service<
 				}
 
 				const nativeBoundary = yield* NativeBoundary;
-				const launch = Effect.fn("Engine.launch")(function* () {
-					yield* Effect.annotateCurrentSpan({
-						"effect2d.engine.game_id": config.gameId,
-						"effect2d.engine.random_seed": config.randomSeed,
-						"effect2d.engine.start_scene": config.startScene,
-						"effect2d.engine.target_tps": config.targetTicksPerSecond,
-					});
-					yield* Effect.logInfo("Launching engine runtime.").pipe(
-						Effect.annotateLogs({
+				const launch = Effect.withSpan("Engine.launch")(
+					Effect.gen(function* () {
+						yield* Effect.annotateCurrentSpan({
 							"effect2d.engine.game_id": config.gameId,
+							"effect2d.engine.random_seed": config.randomSeed,
 							"effect2d.engine.start_scene": config.startScene,
 							"effect2d.engine.target_tps": config.targetTicksPerSecond,
-						}),
-					);
-					yield* nativeBoundary.initialize(config.gameId);
-				});
+						});
+						yield* Effect.logInfo("Launching engine runtime.").pipe(
+							Effect.annotateLogs({
+								"effect2d.engine.game_id": config.gameId,
+								"effect2d.engine.start_scene": config.startScene,
+								"effect2d.engine.target_tps": config.targetTicksPerSecond,
+							}),
+						);
+						yield* nativeBoundary.initialize(config.gameId);
+					}),
+				);
 
 				return Engine.of({
 					config,

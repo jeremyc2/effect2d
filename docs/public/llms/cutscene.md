@@ -49,7 +49,7 @@ programs.
 - `play: <Success, Failure, Requirements>( effect: Effect.Effect<Success, Failure, Requirements>, ) => Effect.Effect<Success, Failure, Requirements>`
 - `playMusicCue: ( cueId: string, ) => Effect.Effect<void, UnknownAudioCueError | WrongAudioCueKindError>`
 - `playSoundCue: ( cueId: string, ) => Effect.Effect<string, UnknownAudioCueError | WrongAudioCueKindError>`
-- `popOverlayScene: () => Effect.Effect< void, OverlayStackUnderflowError | SceneStackEmptyError >`
+- `popOverlayScene: Effect.Effect< void, OverlayStackUnderflowError | SceneStackEmptyError >`
 - `prepareDialogue: ( options: DialogueScriptOptions, ) => Effect.Effect<ReadonlyArray<DialoguePage>, UnknownFontError>`
 - `pushOverlayScene: ( sceneId: SceneId, ) => Effect.Effect<void, SceneNotFoundError | SceneStackEmptyError>`
 - `run: ( effects: ReadonlyArray<Effect.Effect<void>>, ) => Effect.Effect<void>`

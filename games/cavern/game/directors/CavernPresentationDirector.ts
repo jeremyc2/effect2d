@@ -299,7 +299,7 @@ function getVisibleTransitionRectangle(
 export class CavernPresentationDirector extends Context.Service<
 	CavernPresentationDirector,
 	{
-		readonly renderFrame: () => Effect.Effect<
+		readonly renderFrame: Effect.Effect<
 			FrameSnapshot,
 			CavernPresentationDirectorFailure
 		>;
@@ -336,8 +336,8 @@ export class CavernPresentationDirector extends Context.Service<
 				}
 			});
 
-			const drawMenu = Effect.fn("CavernPresentationDirector.drawMenu")(
-				function* () {
+			const drawMenu = Effect.withSpan("CavernPresentationDirector.drawMenu")(
+				Effect.gen(function* () {
 					const menuSnapshot = yield* cavernMenuState.snapshot;
 					yield* graphics.clear(menuBackground);
 					yield* drawTiledBackground();
@@ -418,7 +418,7 @@ export class CavernPresentationDirector extends Context.Service<
 							text: selectedButton.description,
 						});
 					}
-				},
+				}),
 			);
 
 			const drawWorldTileBand = Effect.fn(
@@ -503,425 +503,432 @@ export class CavernPresentationDirector extends Context.Service<
 				}
 			});
 
-			const drawOverworld = Effect.fn(
+			const drawOverworld = Effect.withSpan(
 				"CavernPresentationDirector.drawOverworld",
-			)(function* () {
-				const enemySnapshot = yield* cavernEnemyState.snapshot;
-				const playerSnapshot = yield* cavernPlayerState.snapshot;
-				const worldSnapshot = yield* cavernWorldState.snapshot;
-				const room = getCavernRoom(worldSnapshot.currentRoomId);
-				const camera = yield* sceneCamera.snapshot;
-				const pointer = yield* input.pointerPosition;
-				const nowMillis = yield* runtimeClock.currentTimeMillis;
-				const instructionOverlayOpacity = getInstructionOverlayOpacity(
-					nowMillis,
-					worldSnapshot.roomInstructionsFadeStartedAtMillis,
-				);
-				const pointerHasMoved = pointer.x !== 0 || pointer.y !== 0;
-				const playerCenterX =
-					playerSnapshot.position.x + playerRenderSize.width / 2;
-				const playerFacesLeft =
-					pointerHasMoved &&
-					screenPointToWorldX(pointer.x, camera) < playerCenterX;
-				yield* graphics.clear(menuBackground);
-				yield* drawCameraParallax();
-				yield* graphics.pushTransform({
-					rotationRadians: 0,
-					scaleX: camera.zoom,
-					scaleY: camera.zoom,
-					translation: {
-						x: cavernViewport.width / 2 - camera.position.x * camera.zoom,
-						y: cavernViewport.height / 2 - camera.position.y * camera.zoom,
-					},
-				});
-				yield* graphics.drawRectangle(
-					{ x: room.bounds.x, y: room.bounds.y },
-					{
-						height: room.bounds.height,
-						width: room.bounds.width,
-					},
-					"fill",
-					roomFill,
-				);
-				for (
-					let x = room.bounds.x + tileSize;
-					x < room.bounds.x + room.bounds.width;
-					x += tileSize * 2
-				) {
-					yield* graphics.drawLine(
-						{ x, y: room.bounds.y },
-						{ x, y: room.bounds.y + room.bounds.height },
-						roomGrid,
+			)(
+				Effect.gen(function* () {
+					const enemySnapshot = yield* cavernEnemyState.snapshot;
+					const playerSnapshot = yield* cavernPlayerState.snapshot;
+					const worldSnapshot = yield* cavernWorldState.snapshot;
+					const room = getCavernRoom(worldSnapshot.currentRoomId);
+					const camera = yield* sceneCamera.snapshot;
+					const pointer = yield* input.pointerPosition;
+					const nowMillis = yield* runtimeClock.currentTimeMillis;
+					const instructionOverlayOpacity = getInstructionOverlayOpacity(
+						nowMillis,
+						worldSnapshot.roomInstructionsFadeStartedAtMillis,
 					);
-				}
-				for (
-					let y = room.bounds.y + tileSize;
-					y < room.bounds.y + room.bounds.height;
-					y += tileSize * 2
-				) {
-					yield* graphics.drawLine(
-						{ x: room.bounds.x, y },
-						{ x: room.bounds.x + room.bounds.width, y },
-						roomGrid,
-					);
-				}
-				for (const decoration of room.decorations) {
-					yield* graphics.drawRectangle(
-						{
-							x: decoration.rectangle.x,
-							y: decoration.rectangle.y,
-						},
-						{
-							height: decoration.rectangle.height,
-							width: decoration.rectangle.width,
-						},
-						"fill",
-						decoration.color,
-					);
-				}
-
-				const visibleTransitions = room.transitions.map((transition) =>
-					getVisibleTransitionRectangle(transition, room),
-				);
-
-				const leftEdgeTransitions = visibleTransitions.filter(
-					(transition) => transition.x <= room.bounds.x,
-				);
-				const rightEdgeTransitions = visibleTransitions.filter(
-					(transition) =>
-						transition.x + transition.width >=
-						room.bounds.x + room.bounds.width,
-				);
-				const topEdgeTransitions = visibleTransitions.filter(
-					(transition) => transition.y <= room.bounds.y,
-				);
-				const bottomEdgeTransitions = visibleTransitions.filter(
-					(transition) =>
-						transition.y + transition.height >=
-						room.bounds.y + room.bounds.height,
-				);
-
-				yield* drawWorldTileBand(
-					room.bounds.x,
-					room.bounds.y,
-					room.bounds.x + room.bounds.width,
-					true,
-					topEdgeTransitions,
-				);
-				yield* drawWorldTileBand(
-					room.bounds.x,
-					room.bounds.y + room.bounds.height - tileSize,
-					room.bounds.x + room.bounds.width,
-					true,
-					bottomEdgeTransitions,
-				);
-				yield* drawWorldTileBand(
-					room.bounds.x,
-					room.bounds.y,
-					room.bounds.y + room.bounds.height,
-					false,
-					leftEdgeTransitions,
-				);
-				yield* drawWorldTileBand(
-					room.bounds.x + room.bounds.width - tileSize,
-					room.bounds.y,
-					room.bounds.y + room.bounds.height,
-					false,
-					rightEdgeTransitions,
-				);
-
-				for (const visibleTransition of visibleTransitions) {
-					const outerGlowPadding = getTransitionGlowPadding(
-						visibleTransition,
-						room,
-					);
-					const innerGlowPadding = {
-						x: Math.round(outerGlowPadding.x * 0.5),
-						y: Math.round(outerGlowPadding.y * 0.5),
-					};
-					const coreGlowPadding = {
-						x: Math.round(outerGlowPadding.x * 0.25),
-						y: Math.round(outerGlowPadding.y * 0.25),
-					};
-
-					yield* graphics.drawRectangle(
-						{
-							x: visibleTransition.x - outerGlowPadding.x,
-							y: visibleTransition.y - outerGlowPadding.y,
-						},
-						{
-							height: visibleTransition.height + outerGlowPadding.y * 2,
-							width: visibleTransition.width + outerGlowPadding.x * 2,
-						},
-						"fill",
-						exitGlowOuter,
-					);
-					yield* graphics.drawRectangle(
-						{
-							x: visibleTransition.x - innerGlowPadding.x,
-							y: visibleTransition.y - innerGlowPadding.y,
-						},
-						{
-							height: visibleTransition.height + innerGlowPadding.y * 2,
-							width: visibleTransition.width + innerGlowPadding.x * 2,
-						},
-						"fill",
-						exitGlowInner,
-					);
-					yield* graphics.drawRectangle(
-						{
-							x: visibleTransition.x - coreGlowPadding.x,
-							y: visibleTransition.y - coreGlowPadding.y,
-						},
-						{
-							height: visibleTransition.height + coreGlowPadding.y * 2,
-							width: visibleTransition.width + coreGlowPadding.x * 2,
-						},
-						"fill",
-						{
-							alpha: 0.22,
-							blue: 0.54,
-							green: 0.84,
-							red: 0.8,
-						},
-					);
-					yield* graphics.drawRectangle(
-						{ x: visibleTransition.x, y: visibleTransition.y },
-						{
-							height: visibleTransition.height,
-							width: visibleTransition.width,
-						},
-						"fill",
-						exitFill,
-					);
-					yield* graphics.drawRectangle(
-						{ x: visibleTransition.x, y: visibleTransition.y },
-						{
-							height: visibleTransition.height,
-							width: visibleTransition.width,
-						},
-						"stroke",
-						exitStroke,
-					);
-					yield* graphics.drawText({
-						align: "center",
-						fontId: "intro-font",
-						position: {
-							x: visibleTransition.x + visibleTransition.width / 2,
-							y: visibleTransition.y + visibleTransition.height / 2 - 20,
-						},
-						text: "EXIT",
-					});
-				}
-
-				for (const enemy of enemySnapshot) {
-					const wingFrameOne = Math.floor(nowMillis / 120) % 2 === 0;
-					const wingImageId = wingFrameOne
-						? "enemy-flyer-wing-1"
-						: "enemy-flyer-wing-2";
-					const wingSize = wingFrameOne
-						? flyerWingFrameOneSize
-						: flyerWingFrameTwoSize;
-					const enemyCenter = {
-						x: enemy.position.x + flyerRenderSize.width / 2,
-						y: enemy.position.y + flyerRenderSize.height / 2,
-					};
-					const playerCenter = {
-						x: playerSnapshot.position.x + playerRenderSize.width / 2,
-						y: playerSnapshot.position.y + playerRenderSize.height / 2,
-					};
-					const lookDirection = normalizeVector({
-						x: playerCenter.x - enemyCenter.x,
-						y: playerCenter.y - enemyCenter.y,
-					});
-					const eyeOffset = {
-						x: lookDirection.x * 14,
-						y: lookDirection.y * 14,
-					};
-
-					yield* graphics.setTint({
-						alpha: 0.314,
-						blue: 1,
-						green: 1,
-						red: 1,
-					});
-					yield* graphics.drawImage(
-						wingImageId,
-						{
-							x: enemyCenter.x - wingSize.width / 2,
-							y: enemyCenter.y - wingSize.height / 2 - (wingFrameOne ? 24 : 19),
-						},
-						wingSize,
-					);
-					yield* graphics.setTint({
-						alpha: 1,
-						blue: 1,
-						green: 1,
-						red: 1,
-					});
+					const pointerHasMoved = pointer.x !== 0 || pointer.y !== 0;
+					const playerCenterX =
+						playerSnapshot.position.x + playerRenderSize.width / 2;
+					const playerFacesLeft =
+						pointerHasMoved &&
+						screenPointToWorldX(pointer.x, camera) < playerCenterX;
+					yield* graphics.clear(menuBackground);
+					yield* drawCameraParallax();
 					yield* graphics.pushTransform({
-						rotationRadians: getFlyerAngle(enemyCenter, playerCenter),
-						scaleX: 1,
-						scaleY: 1,
-						translation: enemyCenter,
-					});
-					yield* graphics.drawImage(
-						"enemy-flyer-body",
-						{
-							x: -flyerRenderSize.width / 2,
-							y: -flyerRenderSize.height / 2,
+						rotationRadians: 0,
+						scaleX: camera.zoom,
+						scaleY: camera.zoom,
+						translation: {
+							x: cavernViewport.width / 2 - camera.position.x * camera.zoom,
+							y: cavernViewport.height / 2 - camera.position.y * camera.zoom,
 						},
-						flyerRenderSize,
-					);
-					yield* graphics.popTransform;
-					yield* graphics.drawImage(
-						"enemy-flyer-eye",
-						{
-							x: enemyCenter.x - flyerEyeSize.width / 2 + eyeOffset.x,
-							y: enemyCenter.y - flyerEyeSize.height / 2 + eyeOffset.y,
-						},
-						flyerEyeSize,
-					);
-				}
-
-				yield* graphics.pushTransform({
-					rotationRadians: 0,
-					scaleX: playerFacesLeft ? -1 : 1,
-					scaleY: 1,
-					translation: {
-						x:
-							playerSnapshot.position.x +
-							(playerFacesLeft ? playerRenderSize.width : 0),
-						y: playerSnapshot.position.y,
-					},
-				});
-				yield* graphics.drawImage("player-new", { x: 0, y: 0 });
-				yield* graphics.popTransform;
-				yield* graphics.popTransform;
-				yield* graphics.drawRectangle(
-					{
-						x: cavernViewport.width / 2 - 260,
-						y: 18,
-					},
-					{
-						height: 44,
-						width: 520,
-					},
-					"fill",
-					roomLabelFill,
-				);
-				yield* graphics.drawRectangle(
-					{
-						x: cavernViewport.width / 2 - 260,
-						y: 18,
-					},
-					{
-						height: 44,
-						width: 520,
-					},
-					"stroke",
-					roomLabelStroke,
-				);
-				yield* graphics.drawText({
-					align: "center",
-					fontId: "menu-message",
-					position: {
-						x: cavernViewport.width / 2,
-						y: 24,
-					},
-					text: room.name,
-				});
-				if (instructionOverlayOpacity > 0) {
-					const instructionPanelWidth = 840;
-					const instructionPanelTextWidth = 760;
-					const instructionPanelX =
-						cavernViewport.width / 2 - instructionPanelWidth / 2;
-					const instructionPanelY = 72;
-					const instructionTitleY = 84;
-					const instructionBodyY = 114;
-					const instructionBodyText =
-						"Head toward the glowing EXIT doors. Esc returns to menu.";
-					const instructionBodyLayout = yield* ui.wrapText(
-						"intro-font",
-						instructionBodyText,
-						instructionPanelTextWidth,
-					);
-					const instructionPanelHeight =
-						instructionBodyY -
-						instructionPanelY +
-						instructionBodyLayout.height +
-						10;
-					yield* graphics.setTint({
-						alpha: instructionOverlayOpacity,
-						blue: 1,
-						green: 1,
-						red: 1,
 					});
 					yield* graphics.drawRectangle(
+						{ x: room.bounds.x, y: room.bounds.y },
 						{
-							x: instructionPanelX,
-							y: instructionPanelY,
-						},
-						{
-							height: instructionPanelHeight,
-							width: instructionPanelWidth,
+							height: room.bounds.height,
+							width: room.bounds.width,
 						},
 						"fill",
-						overlayFill,
+						roomFill,
+					);
+					for (
+						let x = room.bounds.x + tileSize;
+						x < room.bounds.x + room.bounds.width;
+						x += tileSize * 2
+					) {
+						yield* graphics.drawLine(
+							{ x, y: room.bounds.y },
+							{ x, y: room.bounds.y + room.bounds.height },
+							roomGrid,
+						);
+					}
+					for (
+						let y = room.bounds.y + tileSize;
+						y < room.bounds.y + room.bounds.height;
+						y += tileSize * 2
+					) {
+						yield* graphics.drawLine(
+							{ x: room.bounds.x, y },
+							{ x: room.bounds.x + room.bounds.width, y },
+							roomGrid,
+						);
+					}
+					for (const decoration of room.decorations) {
+						yield* graphics.drawRectangle(
+							{
+								x: decoration.rectangle.x,
+								y: decoration.rectangle.y,
+							},
+							{
+								height: decoration.rectangle.height,
+								width: decoration.rectangle.width,
+							},
+							"fill",
+							decoration.color,
+						);
+					}
+
+					const visibleTransitions = room.transitions.map((transition) =>
+						getVisibleTransitionRectangle(transition, room),
+					);
+
+					const leftEdgeTransitions = visibleTransitions.filter(
+						(transition) => transition.x <= room.bounds.x,
+					);
+					const rightEdgeTransitions = visibleTransitions.filter(
+						(transition) =>
+							transition.x + transition.width >=
+							room.bounds.x + room.bounds.width,
+					);
+					const topEdgeTransitions = visibleTransitions.filter(
+						(transition) => transition.y <= room.bounds.y,
+					);
+					const bottomEdgeTransitions = visibleTransitions.filter(
+						(transition) =>
+							transition.y + transition.height >=
+							room.bounds.y + room.bounds.height,
+					);
+
+					yield* drawWorldTileBand(
+						room.bounds.x,
+						room.bounds.y,
+						room.bounds.x + room.bounds.width,
+						true,
+						topEdgeTransitions,
+					);
+					yield* drawWorldTileBand(
+						room.bounds.x,
+						room.bounds.y + room.bounds.height - tileSize,
+						room.bounds.x + room.bounds.width,
+						true,
+						bottomEdgeTransitions,
+					);
+					yield* drawWorldTileBand(
+						room.bounds.x,
+						room.bounds.y,
+						room.bounds.y + room.bounds.height,
+						false,
+						leftEdgeTransitions,
+					);
+					yield* drawWorldTileBand(
+						room.bounds.x + room.bounds.width - tileSize,
+						room.bounds.y,
+						room.bounds.y + room.bounds.height,
+						false,
+						rightEdgeTransitions,
+					);
+
+					for (const visibleTransition of visibleTransitions) {
+						const outerGlowPadding = getTransitionGlowPadding(
+							visibleTransition,
+							room,
+						);
+						const innerGlowPadding = {
+							x: Math.round(outerGlowPadding.x * 0.5),
+							y: Math.round(outerGlowPadding.y * 0.5),
+						};
+						const coreGlowPadding = {
+							x: Math.round(outerGlowPadding.x * 0.25),
+							y: Math.round(outerGlowPadding.y * 0.25),
+						};
+
+						yield* graphics.drawRectangle(
+							{
+								x: visibleTransition.x - outerGlowPadding.x,
+								y: visibleTransition.y - outerGlowPadding.y,
+							},
+							{
+								height: visibleTransition.height + outerGlowPadding.y * 2,
+								width: visibleTransition.width + outerGlowPadding.x * 2,
+							},
+							"fill",
+							exitGlowOuter,
+						);
+						yield* graphics.drawRectangle(
+							{
+								x: visibleTransition.x - innerGlowPadding.x,
+								y: visibleTransition.y - innerGlowPadding.y,
+							},
+							{
+								height: visibleTransition.height + innerGlowPadding.y * 2,
+								width: visibleTransition.width + innerGlowPadding.x * 2,
+							},
+							"fill",
+							exitGlowInner,
+						);
+						yield* graphics.drawRectangle(
+							{
+								x: visibleTransition.x - coreGlowPadding.x,
+								y: visibleTransition.y - coreGlowPadding.y,
+							},
+							{
+								height: visibleTransition.height + coreGlowPadding.y * 2,
+								width: visibleTransition.width + coreGlowPadding.x * 2,
+							},
+							"fill",
+							{
+								alpha: 0.22,
+								blue: 0.54,
+								green: 0.84,
+								red: 0.8,
+							},
+						);
+						yield* graphics.drawRectangle(
+							{ x: visibleTransition.x, y: visibleTransition.y },
+							{
+								height: visibleTransition.height,
+								width: visibleTransition.width,
+							},
+							"fill",
+							exitFill,
+						);
+						yield* graphics.drawRectangle(
+							{ x: visibleTransition.x, y: visibleTransition.y },
+							{
+								height: visibleTransition.height,
+								width: visibleTransition.width,
+							},
+							"stroke",
+							exitStroke,
+						);
+						yield* graphics.drawText({
+							align: "center",
+							fontId: "intro-font",
+							position: {
+								x: visibleTransition.x + visibleTransition.width / 2,
+								y: visibleTransition.y + visibleTransition.height / 2 - 20,
+							},
+							text: "EXIT",
+						});
+					}
+
+					for (const enemy of enemySnapshot) {
+						const wingFrameOne = Math.floor(nowMillis / 120) % 2 === 0;
+						const wingImageId = wingFrameOne
+							? "enemy-flyer-wing-1"
+							: "enemy-flyer-wing-2";
+						const wingSize = wingFrameOne
+							? flyerWingFrameOneSize
+							: flyerWingFrameTwoSize;
+						const enemyCenter = {
+							x: enemy.position.x + flyerRenderSize.width / 2,
+							y: enemy.position.y + flyerRenderSize.height / 2,
+						};
+						const playerCenter = {
+							x: playerSnapshot.position.x + playerRenderSize.width / 2,
+							y: playerSnapshot.position.y + playerRenderSize.height / 2,
+						};
+						const lookDirection = normalizeVector({
+							x: playerCenter.x - enemyCenter.x,
+							y: playerCenter.y - enemyCenter.y,
+						});
+						const eyeOffset = {
+							x: lookDirection.x * 14,
+							y: lookDirection.y * 14,
+						};
+
+						yield* graphics.setTint({
+							alpha: 0.314,
+							blue: 1,
+							green: 1,
+							red: 1,
+						});
+						yield* graphics.drawImage(
+							wingImageId,
+							{
+								x: enemyCenter.x - wingSize.width / 2,
+								y:
+									enemyCenter.y -
+									wingSize.height / 2 -
+									(wingFrameOne ? 24 : 19),
+							},
+							wingSize,
+						);
+						yield* graphics.setTint({
+							alpha: 1,
+							blue: 1,
+							green: 1,
+							red: 1,
+						});
+						yield* graphics.pushTransform({
+							rotationRadians: getFlyerAngle(enemyCenter, playerCenter),
+							scaleX: 1,
+							scaleY: 1,
+							translation: enemyCenter,
+						});
+						yield* graphics.drawImage(
+							"enemy-flyer-body",
+							{
+								x: -flyerRenderSize.width / 2,
+								y: -flyerRenderSize.height / 2,
+							},
+							flyerRenderSize,
+						);
+						yield* graphics.popTransform;
+						yield* graphics.drawImage(
+							"enemy-flyer-eye",
+							{
+								x: enemyCenter.x - flyerEyeSize.width / 2 + eyeOffset.x,
+								y: enemyCenter.y - flyerEyeSize.height / 2 + eyeOffset.y,
+							},
+							flyerEyeSize,
+						);
+					}
+
+					yield* graphics.pushTransform({
+						rotationRadians: 0,
+						scaleX: playerFacesLeft ? -1 : 1,
+						scaleY: 1,
+						translation: {
+							x:
+								playerSnapshot.position.x +
+								(playerFacesLeft ? playerRenderSize.width : 0),
+							y: playerSnapshot.position.y,
+						},
+					});
+					yield* graphics.drawImage("player-new", { x: 0, y: 0 });
+					yield* graphics.popTransform;
+					yield* graphics.popTransform;
+					yield* graphics.drawRectangle(
+						{
+							x: cavernViewport.width / 2 - 260,
+							y: 18,
+						},
+						{
+							height: 44,
+							width: 520,
+						},
+						"fill",
+						roomLabelFill,
 					);
 					yield* graphics.drawRectangle(
 						{
-							x: instructionPanelX,
-							y: instructionPanelY,
+							x: cavernViewport.width / 2 - 260,
+							y: 18,
 						},
 						{
-							height: instructionPanelHeight,
-							width: instructionPanelWidth,
+							height: 44,
+							width: 520,
 						},
 						"stroke",
-						overlayStroke,
+						roomLabelStroke,
 					);
 					yield* graphics.drawText({
 						align: "center",
-						fontId: "intro-font",
+						fontId: "menu-message",
 						position: {
 							x: cavernViewport.width / 2,
-							y: instructionTitleY,
+							y: 24,
 						},
-						text: "Arrows / WASD move",
+						text: room.name,
 					});
-					yield* ui.drawTextBlock({
-						align: "center",
-						fontId: "intro-font",
-						maxWidth: instructionPanelTextWidth,
-						position: {
-							x: cavernViewport.width / 2 - instructionPanelTextWidth / 2,
-							y: instructionBodyY,
-						},
-						text: instructionBodyText,
-					});
-					yield* graphics.setTint({
-						alpha: 1,
-						blue: 1,
-						green: 1,
-						red: 1,
-					});
-				}
-			});
+					if (instructionOverlayOpacity > 0) {
+						const instructionPanelWidth = 840;
+						const instructionPanelTextWidth = 760;
+						const instructionPanelX =
+							cavernViewport.width / 2 - instructionPanelWidth / 2;
+						const instructionPanelY = 72;
+						const instructionTitleY = 84;
+						const instructionBodyY = 114;
+						const instructionBodyText =
+							"Head toward the glowing EXIT doors. Esc returns to menu.";
+						const instructionBodyLayout = yield* ui.wrapText(
+							"intro-font",
+							instructionBodyText,
+							instructionPanelTextWidth,
+						);
+						const instructionPanelHeight =
+							instructionBodyY -
+							instructionPanelY +
+							instructionBodyLayout.height +
+							10;
+						yield* graphics.setTint({
+							alpha: instructionOverlayOpacity,
+							blue: 1,
+							green: 1,
+							red: 1,
+						});
+						yield* graphics.drawRectangle(
+							{
+								x: instructionPanelX,
+								y: instructionPanelY,
+							},
+							{
+								height: instructionPanelHeight,
+								width: instructionPanelWidth,
+							},
+							"fill",
+							overlayFill,
+						);
+						yield* graphics.drawRectangle(
+							{
+								x: instructionPanelX,
+								y: instructionPanelY,
+							},
+							{
+								height: instructionPanelHeight,
+								width: instructionPanelWidth,
+							},
+							"stroke",
+							overlayStroke,
+						);
+						yield* graphics.drawText({
+							align: "center",
+							fontId: "intro-font",
+							position: {
+								x: cavernViewport.width / 2,
+								y: instructionTitleY,
+							},
+							text: "Arrows / WASD move",
+						});
+						yield* ui.drawTextBlock({
+							align: "center",
+							fontId: "intro-font",
+							maxWidth: instructionPanelTextWidth,
+							position: {
+								x: cavernViewport.width / 2 - instructionPanelTextWidth / 2,
+								y: instructionBodyY,
+							},
+							text: instructionBodyText,
+						});
+						yield* graphics.setTint({
+							alpha: 1,
+							blue: 1,
+							green: 1,
+							red: 1,
+						});
+					}
+				}),
+			);
 
-			const renderFrame = Effect.fn("CavernPresentationDirector.renderFrame")(
-				function* () {
-					yield* runtimeClock.beginFrame();
+			const renderFrame = Effect.withSpan(
+				"CavernPresentationDirector.renderFrame",
+			)(
+				Effect.gen(function* () {
+					yield* runtimeClock.beginFrame;
 					yield* graphics.beginFrame;
 
 					if ((yield* sceneDirector.snapshot).activeSceneId === "main-menu") {
-						yield* drawMenu();
+						yield* drawMenu;
 					} else {
-						yield* drawOverworld();
+						yield* drawOverworld;
 					}
 
 					return yield* graphics.endFrame;
-				},
+				}),
 			);
 
 			return CavernPresentationDirector.of({

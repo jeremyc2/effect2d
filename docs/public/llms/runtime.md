@@ -32,7 +32,7 @@ your own game-specific state services.
 #### Methods
 
 - `config: EngineConfig`
-- `launch: () => Effect.Effect<void, EngineLaunchError>`
+- `launch: Effect.Effect<void, EngineLaunchError>`
 
 ## EngineConfig
 
@@ -219,8 +219,8 @@ giving tools a simple place to read current timing state.
 #### Methods
 
 - `currentTimeMillis: Effect.Effect<number>`
-- `beginFrame: () => Effect.Effect<void>`
-- `advanceTick: () => Effect.Effect<void>`
-- `reset: () => Effect.Effect<void>`
+- `beginFrame: Effect.Effect<void>`
+- `advanceTick: Effect.Effect<void>`
+- `reset: Effect.Effect<void>`
 - `sleepFixedStep: Effect.Effect<void>`
-- `snapshot: () => Effect.Effect<RuntimeTimingSnapshot>`
+- `snapshot: Effect.Effect<RuntimeTimingSnapshot>`

@@ -8,11 +8,11 @@ import { SceneLookup } from "./SceneLookup.ts";
 const makeScene = (id: SceneId, trace: Array<string>): SceneDefinition => ({
 	id,
 	instantiate: Effect.succeed({
-		enter: () => Effect.sync(() => trace.push(`${id}:enter`)),
-		update: () => Effect.sync(() => trace.push(`${id}:update`)),
-		draw: () => Effect.sync(() => trace.push(`${id}:draw`)),
-		exit: () => Effect.sync(() => trace.push(`${id}:exit`)),
-		handleInput: () => Effect.sync(() => trace.push(`${id}:input`)),
+		enter: Effect.sync(() => trace.push(`${id}:enter`)),
+		update: Effect.sync(() => trace.push(`${id}:update`)),
+		draw: Effect.sync(() => trace.push(`${id}:draw`)),
+		exit: Effect.sync(() => trace.push(`${id}:exit`)),
+		handleInput: Effect.sync(() => trace.push(`${id}:input`)),
 	}),
 });
 
@@ -36,7 +36,7 @@ describe("SceneDirector", () => {
 				yield* sceneDirector.updateCurrent;
 				yield* sceneDirector.handleInput;
 				yield* sceneDirector.drawStack;
-				yield* sceneDirector.popOverlay();
+				yield* sceneDirector.popOverlay;
 				yield* sceneDirector.switchTo("pause");
 				yield* sceneDirector.drawStack;
 
@@ -72,18 +72,16 @@ describe("SceneDirector", () => {
 		const overworld: SceneDefinition = {
 			id: "overworld",
 			instantiate: Effect.succeed({
-				enter: () =>
-					Effect.addFinalizer(() =>
-						Effect.sync(() => {
-							trace.push("overworld:background-stopped");
-						}),
-					),
-				update: () => Effect.void,
-				draw: () => Effect.void,
-				exit: () =>
+				enter: Effect.addFinalizer(() =>
 					Effect.sync(() => {
-						trace.push("overworld:exit");
+						trace.push("overworld:background-stopped");
 					}),
+				),
+				update: Effect.void,
+				draw: Effect.void,
+				exit: Effect.sync(() => {
+					trace.push("overworld:exit");
+				}),
 			}),
 		};
 		const pause = makeScene("pause", trace);

@@ -51,11 +51,11 @@ export class RuntimeClock extends Context.Service<
 	RuntimeClock,
 	{
 		readonly currentTimeMillis: Effect.Effect<number>;
-		readonly beginFrame: () => Effect.Effect<void>;
-		readonly advanceTick: () => Effect.Effect<void>;
-		readonly reset: () => Effect.Effect<void>;
+		readonly beginFrame: Effect.Effect<void>;
+		readonly advanceTick: Effect.Effect<void>;
+		readonly reset: Effect.Effect<void>;
 		readonly sleepFixedStep: Effect.Effect<void>;
-		readonly snapshot: () => Effect.Effect<RuntimeTimingSnapshot>;
+		readonly snapshot: Effect.Effect<RuntimeTimingSnapshot>;
 	}
 >()("effect2d/runtime/RuntimeClock") {
 	static readonly layer = (targetTicksPerSecond: number) =>
@@ -65,50 +65,54 @@ export class RuntimeClock extends Context.Service<
 				const state = yield* Ref.make(initialRuntimeClockState);
 				const fixedTickMillis = 1_000 / targetTicksPerSecond;
 
-				const beginFrame = Effect.fn("RuntimeClock.beginFrame")(function* () {
-					const now = yield* Clock.currentTimeMillis;
-					const previousFrameStartedAtMillis = yield* Ref.modify(
-						state,
-						(current) =>
-							[
-								current.lastFrameStartedAtMillis,
-								{
-									frameCount: current.frameCount + 1,
-									lastFrameDeltaMillis:
-										current.lastFrameStartedAtMillis === null
-											? 0
-											: now - current.lastFrameStartedAtMillis,
-									lastFrameStartedAtMillis: now,
-									tickCount: current.tickCount,
-								},
-							] as const,
-					);
-					if (previousFrameStartedAtMillis !== null) {
-						yield* recordFrameTime(now - previousFrameStartedAtMillis);
-					}
-				});
+				const beginFrame = Effect.withSpan("RuntimeClock.beginFrame")(
+					Effect.gen(function* () {
+						const now = yield* Clock.currentTimeMillis;
+						const previousFrameStartedAtMillis = yield* Ref.modify(
+							state,
+							(current) =>
+								[
+									current.lastFrameStartedAtMillis,
+									{
+										frameCount: current.frameCount + 1,
+										lastFrameDeltaMillis:
+											current.lastFrameStartedAtMillis === null
+												? 0
+												: now - current.lastFrameStartedAtMillis,
+										lastFrameStartedAtMillis: now,
+										tickCount: current.tickCount,
+									},
+								] as const,
+						);
+						if (previousFrameStartedAtMillis !== null) {
+							yield* recordFrameTime(now - previousFrameStartedAtMillis);
+						}
+					}),
+				);
 
-				const advanceTick = Effect.fn("RuntimeClock.advanceTick")(function* () {
-					yield* Ref.update(state, (current) => ({
+				const advanceTick = Effect.withSpan("RuntimeClock.advanceTick")(
+					Ref.update(state, (current) => ({
 						...current,
 						tickCount: current.tickCount + 1,
-					}));
-				});
+					})),
+				);
 
-				const reset = Effect.fn("RuntimeClock.reset")(function* () {
-					yield* Ref.set(state, initialRuntimeClockState);
-				});
+				const reset = Effect.withSpan("RuntimeClock.reset")(
+					Ref.set(state, initialRuntimeClockState),
+				);
 
-				const snapshot = Effect.fn("RuntimeClock.snapshot")(function* () {
-					const current = yield* Ref.get(state);
-					return {
-						fixedTickMillis,
-						frameCount: current.frameCount,
-						lastFrameDeltaMillis: current.lastFrameDeltaMillis,
-						lastFrameStartedAtMillis: current.lastFrameStartedAtMillis,
-						tickCount: current.tickCount,
-					};
-				});
+				const snapshot = Effect.withSpan("RuntimeClock.snapshot")(
+					Effect.gen(function* () {
+						const current = yield* Ref.get(state);
+						return {
+							fixedTickMillis,
+							frameCount: current.frameCount,
+							lastFrameDeltaMillis: current.lastFrameDeltaMillis,
+							lastFrameStartedAtMillis: current.lastFrameStartedAtMillis,
+							tickCount: current.tickCount,
+						};
+					}),
+				);
 
 				return RuntimeClock.of({
 					currentTimeMillis: Clock.currentTimeMillis,

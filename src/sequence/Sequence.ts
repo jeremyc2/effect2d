@@ -174,7 +174,7 @@ export class Sequence extends Context.Service<
 		readonly playSoundCue: (
 			cueId: string,
 		) => Effect.Effect<string, UnknownAudioCueError | WrongAudioCueKindError>;
-		readonly popOverlayScene: () => Effect.Effect<
+		readonly popOverlayScene: Effect.Effect<
 			void,
 			OverlayStackUnderflowError | SceneStackEmptyError
 		>;
@@ -260,10 +260,8 @@ export class Sequence extends Context.Service<
 				},
 			);
 
-			const popOverlayScene = Effect.fn("Sequence.popOverlayScene")(
-				function* () {
-					yield* sceneDirector.popOverlay();
-				},
+			const popOverlayScene = Effect.withSpan("Sequence.popOverlayScene")(
+				sceneDirector.popOverlay,
 			);
 
 			const fork = Effect.fn("Sequence.fork")(function* <

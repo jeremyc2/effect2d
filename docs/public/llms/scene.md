@@ -137,7 +137,7 @@ A common pattern is:
 - `snapshot: Effect.Effect<SceneStackSnapshot, SceneStackEmptyError>`
 - `switchTo: ( sceneId: SceneId, ) => Effect.Effect<void, SceneNotFoundError | SceneStackEmptyError>`
 - `pushOverlay: ( sceneId: SceneId, ) => Effect.Effect<void, SceneNotFoundError | SceneStackEmptyError>`
-- `popOverlay: () => Effect.Effect< void, OverlayStackUnderflowError | SceneStackEmptyError >`
+- `popOverlay: Effect.Effect< void, OverlayStackUnderflowError | SceneStackEmptyError >`
 - `updateCurrent: Effect.Effect<void, SceneStackEmptyError>`
 - `drawStack: Effect.Effect<void, SceneStackEmptyError>`
 - `handleInput: Effect.Effect<void, SceneStackEmptyError>`

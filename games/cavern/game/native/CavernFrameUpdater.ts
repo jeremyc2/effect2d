@@ -17,12 +17,12 @@ export const CavernFrameUpdaterLive = Layer.effect(
 		const presentationDirector = yield* CavernPresentationDirector;
 
 		const nextFrame = Effect.gen(function* () {
-			const gameplayExit = yield* Effect.exit(gameplayDirector.stepFrame());
+			const gameplayExit = yield* Effect.exit(gameplayDirector.stepFrame);
 			if (Exit.isFailure(gameplayExit)) {
 				return yield* createEngineLaunchError("Cavern gameplay frame failed.");
 			}
 
-			const renderExit = yield* Effect.exit(presentationDirector.renderFrame());
+			const renderExit = yield* Effect.exit(presentationDirector.renderFrame);
 			if (Exit.isFailure(renderExit)) {
 				return yield* createEngineLaunchError("Cavern render frame failed.");
 			}

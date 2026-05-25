@@ -13,11 +13,11 @@ import { Sequence, SequenceEvents } from "./Sequence.ts";
 const makeScene = (id: SceneId): SceneDefinition => ({
 	id,
 	instantiate: Effect.succeed({
-		enter: () => Effect.void,
-		exit: () => Effect.void,
-		draw: () => Effect.void,
-		handleInput: () => Effect.void,
-		update: () => Effect.void,
+		enter: Effect.void,
+		exit: Effect.void,
+		draw: Effect.void,
+		handleInput: Effect.void,
+		update: Effect.void,
 	}),
 });
 
@@ -94,9 +94,7 @@ describe("Sequence", () => {
 						(sound) => sound.playbackId === playbackId,
 					),
 				).toBe(true);
-				expect((yield* runtimeClock.snapshot()).fixedTickMillis).toBe(
-					1_000 / 60,
-				);
+				expect((yield* runtimeClock.snapshot).fixedTickMillis).toBe(1_000 / 60);
 				expect((yield* sceneDirector.snapshot).activeSceneId).toBe("pause");
 			}),
 		));

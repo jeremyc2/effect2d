@@ -723,7 +723,7 @@ programs.
 - `play: <Success, Failure, Requirements>( effect: Effect.Effect<Success, Failure, Requirements>, ) => Effect.Effect<Success, Failure, Requirements>`
 - `playMusicCue: ( cueId: string, ) => Effect.Effect<void, UnknownAudioCueError | WrongAudioCueKindError>`
 - `playSoundCue: ( cueId: string, ) => Effect.Effect<string, UnknownAudioCueError | WrongAudioCueKindError>`
-- `popOverlayScene: () => Effect.Effect< void, OverlayStackUnderflowError | SceneStackEmptyError >`
+- `popOverlayScene: Effect.Effect< void, OverlayStackUnderflowError | SceneStackEmptyError >`
 - `prepareDialogue: ( options: DialogueScriptOptions, ) => Effect.Effect<ReadonlyArray<DialoguePage>, UnknownFontError>`
 - `pushOverlayScene: ( sceneId: SceneId, ) => Effect.Effect<void, SceneNotFoundError | SceneStackEmptyError>`
 - `run: ( effects: ReadonlyArray<Effect.Effect<void>>, ) => Effect.Effect<void>`
@@ -1849,7 +1849,7 @@ your own game-specific state services.
 #### Methods
 
 - `config: EngineConfig`
-- `launch: () => Effect.Effect<void, EngineLaunchError>`
+- `launch: Effect.Effect<void, EngineLaunchError>`
 
 ## EngineConfig
 
@@ -2036,11 +2036,11 @@ giving tools a simple place to read current timing state.
 #### Methods
 
 - `currentTimeMillis: Effect.Effect<number>`
-- `beginFrame: () => Effect.Effect<void>`
-- `advanceTick: () => Effect.Effect<void>`
-- `reset: () => Effect.Effect<void>`
+- `beginFrame: Effect.Effect<void>`
+- `advanceTick: Effect.Effect<void>`
+- `reset: Effect.Effect<void>`
 - `sleepFixedStep: Effect.Effect<void>`
-- `snapshot: () => Effect.Effect<RuntimeTimingSnapshot>`
+- `snapshot: Effect.Effect<RuntimeTimingSnapshot>`
 
 # Save
 
@@ -2372,7 +2372,7 @@ A common pattern is:
 - `snapshot: Effect.Effect<SceneStackSnapshot, SceneStackEmptyError>`
 - `switchTo: ( sceneId: SceneId, ) => Effect.Effect<void, SceneNotFoundError | SceneStackEmptyError>`
 - `pushOverlay: ( sceneId: SceneId, ) => Effect.Effect<void, SceneNotFoundError | SceneStackEmptyError>`
-- `popOverlay: () => Effect.Effect< void, OverlayStackUnderflowError | SceneStackEmptyError >`
+- `popOverlay: Effect.Effect< void, OverlayStackUnderflowError | SceneStackEmptyError >`
 - `updateCurrent: Effect.Effect<void, SceneStackEmptyError>`
 - `drawStack: Effect.Effect<void, SceneStackEmptyError>`
 - `handleInput: Effect.Effect<void, SceneStackEmptyError>`
@@ -2485,7 +2485,7 @@ this is usually the service you compose with.
 - `fork: <Success, Failure, Requirements>( effect: Effect.Effect<Success, Failure, Requirements>, ) => Effect.Effect< Fiber.Fiber<Success, Failure>, never, Requirements | Scope.Scope >`
 - `playMusicCue: ( cueId: string, ) => Effect.Effect<void, UnknownAudioCueError | WrongAudioCueKindError>`
 - `playSoundCue: ( cueId: string, ) => Effect.Effect<string, UnknownAudioCueError | WrongAudioCueKindError>`
-- `popOverlayScene: () => Effect.Effect< void, OverlayStackUnderflowError | SceneStackEmptyError >`
+- `popOverlayScene: Effect.Effect< void, OverlayStackUnderflowError | SceneStackEmptyError >`
 - `pushOverlayScene: ( sceneId: SceneId, ) => Effect.Effect<void, SceneNotFoundError | SceneStackEmptyError>`
 - `run: ( effects: ReadonlyArray<Effect.Effect<void>>, ) => Effect.Effect<void>`
 - `switchScene: ( sceneId: SceneId, ) => Effect.Effect<void, SceneNotFoundError | SceneStackEmptyError>`

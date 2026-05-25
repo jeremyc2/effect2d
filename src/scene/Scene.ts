@@ -33,11 +33,11 @@ export type SceneStackLevel = "overlay" | "primary";
  * scene exits.
  */
 export interface SceneLifecycle {
-	readonly enter: () => Effect.Effect<void, never, Scope.Scope>;
-	readonly update: () => Effect.Effect<void, never, Scope.Scope>;
-	readonly draw: () => Effect.Effect<void, never, Scope.Scope>;
-	readonly exit: () => Effect.Effect<void, never, Scope.Scope>;
-	readonly handleInput?: () => Effect.Effect<void, never, Scope.Scope>;
+	readonly enter: Effect.Effect<void, never, Scope.Scope>;
+	readonly update: Effect.Effect<void, never, Scope.Scope>;
+	readonly draw: Effect.Effect<void, never, Scope.Scope>;
+	readonly exit: Effect.Effect<void, never, Scope.Scope>;
+	readonly handleInput?: Effect.Effect<void, never, Scope.Scope>;
 }
 
 /**

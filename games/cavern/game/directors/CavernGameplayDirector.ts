@@ -425,10 +425,7 @@ type CavernGameplayDirectorFailure =
 export class CavernGameplayDirector extends Context.Service<
 	CavernGameplayDirector,
 	{
-		readonly stepFrame: () => Effect.Effect<
-			void,
-			CavernGameplayDirectorFailure
-		>;
+		readonly stepFrame: Effect.Effect<void, CavernGameplayDirectorFailure>;
 	}
 >()("effect2d/games/cavern/game/directors/CavernGameplayDirector") {
 	static readonly layer = Layer.effect(
@@ -468,7 +465,7 @@ export class CavernGameplayDirector extends Context.Service<
 						yield* cavernPlayerState.moveTo(getCavernRoom("rm1").playerSpawn);
 						yield* cavernPlayerState.setVelocity({ x: 0, y: 0 });
 						yield* saveCoordinator.writeSlot(cavernAutosaveSlotId);
-						yield* cavernDiskSave.flush();
+						yield* cavernDiskSave.flush;
 						yield* sceneDirector.switchTo("overworld");
 						yield* engineLogger.info("Cavern menu advanced to overworld.", {
 							action: button.id,
@@ -553,246 +550,251 @@ export class CavernGameplayDirector extends Context.Service<
 				}
 			});
 
-			const updateOverworld = Effect.fn(
+			const updateOverworld = Effect.withSpan(
 				"CavernGameplayDirector.updateOverworld",
-			)(function* () {
-				const cancel = yield* input.actionState("menu-cancel");
-				if (cancel.justPressed) {
-					yield* sceneDirector.switchTo("main-menu");
-					return;
-				}
+			)(
+				Effect.gen(function* () {
+					const cancel = yield* input.actionState("menu-cancel");
+					if (cancel.justPressed) {
+						yield* sceneDirector.switchTo("main-menu");
+						return;
+					}
 
-				const worldSnapshot = yield* cavernWorldState.snapshot;
-				const currentRoom = getCavernRoom(worldSnapshot.currentRoomId);
-				yield* Effect.annotateCurrentSpan({
-					"effect2d.game.room_id": currentRoom.id,
-				});
-				const playerSnapshot = yield* cavernPlayerState.snapshot;
-				const moveLeftPressed = (yield* input.actionState("move-left"))
-					.isPressed;
-				const moveRightPressed = (yield* input.actionState("move-right"))
-					.isPressed;
-				const moveUpPressed = (yield* input.actionState("move-up")).isPressed;
-				const moveDownPressed = (yield* input.actionState("move-down"))
-					.isPressed;
-				const isTryingToMove =
-					moveLeftPressed ||
-					moveRightPressed ||
-					moveUpPressed ||
-					moveDownPressed;
-				const inputVector = {
-					x: (moveRightPressed ? 1 : 0) - (moveLeftPressed ? 1 : 0),
-					y: (moveDownPressed ? 1 : 0) - (moveUpPressed ? 1 : 0),
-				};
-				const normalizedInputVector = clampVectorMagnitude(inputVector, 1);
-				const acceleratedVelocity = {
-					x:
-						playerSnapshot.velocity.x +
-						normalizedInputVector.x * accelerationPerFrame,
-					y:
-						playerSnapshot.velocity.y +
-						normalizedInputVector.y * accelerationPerFrame,
-				};
-				const velocityAfterAcceleration = clampVectorMagnitude(
-					acceleratedVelocity,
-					maximumSpeedPerFrame,
-				);
-				const nextPlayerVelocity = isTryingToMove
-					? applyDrag(velocityAfterAcceleration, brakingDragFactor)
-					: applyDrag(playerSnapshot.velocity, idleDragFactor);
-
-				if (isTryingToMove) {
-					yield* cavernWorldState.beginRoomInstructionsFade(
-						yield* runtimeClock.currentTimeMillis,
-					);
-				}
-
-				const nextPlayerPosition = {
-					x: playerSnapshot.position.x + nextPlayerVelocity.x,
-					y: playerSnapshot.position.y + nextPlayerVelocity.y,
-				};
-
-				const unclampedPlayerBody: DynamicBodyState = {
-					id: "player",
-					position: nextPlayerPosition,
-					size: playerSize,
-					velocity: nextPlayerVelocity,
-					velocityCap: maximumSpeedPerFrame,
-				};
-				const clampedPlayerBody = clampBodyToAccessibleArea(
-					unclampedPlayerBody,
-					currentRoom,
-				);
-				let playerBody: DynamicBodyState = {
-					...clampedPlayerBody,
-					velocity: {
-						x:
-							clampedPlayerBody.position.x === nextPlayerPosition.x
-								? nextPlayerVelocity.x
-								: 0,
-						y:
-							clampedPlayerBody.position.y === nextPlayerPosition.y
-								? nextPlayerVelocity.y
-								: 0,
-					},
-				};
-
-				let enemyBodies: ReadonlyArray<DynamicBodyState> =
-					(yield* cavernEnemyState.snapshot).map((enemy) => {
-						const playerCenter = getPlayerVisualCenter(
-							playerBody.position,
-							playerSize,
-						);
-						const enemyCenter = getRectangleCenter(
-							makeRectangle(enemy.position, flyerSize),
-						);
-						const attractionDirection = normalizeVector({
-							x: playerCenter.x - enemyCenter.x,
-							y: playerCenter.y - enemyCenter.y,
-						});
-						const velocity = clampVectorMagnitude(
-							{
-								x:
-									enemy.velocity.x +
-									attractionDirection.x * flyerAccelerationPerFrame,
-								y:
-									enemy.velocity.y +
-									attractionDirection.y * flyerAccelerationPerFrame,
-							},
-							flyerMaximumSpeedPerFrame,
-						);
-
-						return clampBodyToRoom(
-							{
-								id: enemy.id,
-								position: {
-									x: enemy.position.x + velocity.x,
-									y: enemy.position.y + velocity.y,
-								},
-								size: flyerSize,
-								velocity,
-								velocityCap: flyerMaximumSpeedPerFrame,
-							},
-							currentRoom,
-						);
+					const worldSnapshot = yield* cavernWorldState.snapshot;
+					const currentRoom = getCavernRoom(worldSnapshot.currentRoomId);
+					yield* Effect.annotateCurrentSpan({
+						"effect2d.game.room_id": currentRoom.id,
 					});
+					const playerSnapshot = yield* cavernPlayerState.snapshot;
+					const moveLeftPressed = (yield* input.actionState("move-left"))
+						.isPressed;
+					const moveRightPressed = (yield* input.actionState("move-right"))
+						.isPressed;
+					const moveUpPressed = (yield* input.actionState("move-up")).isPressed;
+					const moveDownPressed = (yield* input.actionState("move-down"))
+						.isPressed;
+					const isTryingToMove =
+						moveLeftPressed ||
+						moveRightPressed ||
+						moveUpPressed ||
+						moveDownPressed;
+					const inputVector = {
+						x: (moveRightPressed ? 1 : 0) - (moveLeftPressed ? 1 : 0),
+						y: (moveDownPressed ? 1 : 0) - (moveUpPressed ? 1 : 0),
+					};
+					const normalizedInputVector = clampVectorMagnitude(inputVector, 1);
+					const acceleratedVelocity = {
+						x:
+							playerSnapshot.velocity.x +
+							normalizedInputVector.x * accelerationPerFrame,
+						y:
+							playerSnapshot.velocity.y +
+							normalizedInputVector.y * accelerationPerFrame,
+					};
+					const velocityAfterAcceleration = clampVectorMagnitude(
+						acceleratedVelocity,
+						maximumSpeedPerFrame,
+					);
+					const nextPlayerVelocity = isTryingToMove
+						? applyDrag(velocityAfterAcceleration, brakingDragFactor)
+						: applyDrag(playerSnapshot.velocity, idleDragFactor);
 
-				for (
-					let iteration = 0;
-					iteration < collisionIterations;
-					iteration += 1
-				) {
-					for (
-						let enemyIndex = 0;
-						enemyIndex < enemyBodies.length;
-						enemyIndex += 1
-					) {
-						const enemyBody = enemyBodies[enemyIndex];
-						if (enemyBody === undefined) {
-							continue;
-						}
-						const resolved = resolveBodyCollision(playerBody, enemyBody);
-						playerBody = clampBodyToAccessibleArea(
-							resolved.leftBody,
-							currentRoom,
-						);
-						enemyBodies = replaceEnemyBody(
-							enemyBodies,
-							enemyIndex,
-							clampBodyToRoom(resolved.rightBody, currentRoom),
+					if (isTryingToMove) {
+						yield* cavernWorldState.beginRoomInstructionsFade(
+							yield* runtimeClock.currentTimeMillis,
 						);
 					}
 
+					const nextPlayerPosition = {
+						x: playerSnapshot.position.x + nextPlayerVelocity.x,
+						y: playerSnapshot.position.y + nextPlayerVelocity.y,
+					};
+
+					const unclampedPlayerBody: DynamicBodyState = {
+						id: "player",
+						position: nextPlayerPosition,
+						size: playerSize,
+						velocity: nextPlayerVelocity,
+						velocityCap: maximumSpeedPerFrame,
+					};
+					const clampedPlayerBody = clampBodyToAccessibleArea(
+						unclampedPlayerBody,
+						currentRoom,
+					);
+					let playerBody: DynamicBodyState = {
+						...clampedPlayerBody,
+						velocity: {
+							x:
+								clampedPlayerBody.position.x === nextPlayerPosition.x
+									? nextPlayerVelocity.x
+									: 0,
+							y:
+								clampedPlayerBody.position.y === nextPlayerPosition.y
+									? nextPlayerVelocity.y
+									: 0,
+						},
+					};
+
+					let enemyBodies: ReadonlyArray<DynamicBodyState> =
+						(yield* cavernEnemyState.snapshot).map((enemy) => {
+							const playerCenter = getPlayerVisualCenter(
+								playerBody.position,
+								playerSize,
+							);
+							const enemyCenter = getRectangleCenter(
+								makeRectangle(enemy.position, flyerSize),
+							);
+							const attractionDirection = normalizeVector({
+								x: playerCenter.x - enemyCenter.x,
+								y: playerCenter.y - enemyCenter.y,
+							});
+							const velocity = clampVectorMagnitude(
+								{
+									x:
+										enemy.velocity.x +
+										attractionDirection.x * flyerAccelerationPerFrame,
+									y:
+										enemy.velocity.y +
+										attractionDirection.y * flyerAccelerationPerFrame,
+								},
+								flyerMaximumSpeedPerFrame,
+							);
+
+							return clampBodyToRoom(
+								{
+									id: enemy.id,
+									position: {
+										x: enemy.position.x + velocity.x,
+										y: enemy.position.y + velocity.y,
+									},
+									size: flyerSize,
+									velocity,
+									velocityCap: flyerMaximumSpeedPerFrame,
+								},
+								currentRoom,
+							);
+						});
+
 					for (
-						let leftEnemyIndex = 0;
-						leftEnemyIndex < enemyBodies.length;
-						leftEnemyIndex += 1
+						let iteration = 0;
+						iteration < collisionIterations;
+						iteration += 1
 					) {
 						for (
-							let rightEnemyIndex = leftEnemyIndex + 1;
-							rightEnemyIndex < enemyBodies.length;
-							rightEnemyIndex += 1
+							let enemyIndex = 0;
+							enemyIndex < enemyBodies.length;
+							enemyIndex += 1
 						) {
-							const leftEnemyBody = enemyBodies[leftEnemyIndex];
-							const rightEnemyBody = enemyBodies[rightEnemyIndex];
-							if (leftEnemyBody === undefined || rightEnemyBody === undefined) {
+							const enemyBody = enemyBodies[enemyIndex];
+							if (enemyBody === undefined) {
 								continue;
 							}
-							const resolved = resolveBodyCollision(
-								leftEnemyBody,
-								rightEnemyBody,
+							const resolved = resolveBodyCollision(playerBody, enemyBody);
+							playerBody = clampBodyToAccessibleArea(
+								resolved.leftBody,
+								currentRoom,
 							);
 							enemyBodies = replaceEnemyBody(
 								enemyBodies,
-								leftEnemyIndex,
-								clampBodyToRoom(resolved.leftBody, currentRoom),
-							);
-							enemyBodies = replaceEnemyBody(
-								enemyBodies,
-								rightEnemyIndex,
+								enemyIndex,
 								clampBodyToRoom(resolved.rightBody, currentRoom),
 							);
 						}
+
+						for (
+							let leftEnemyIndex = 0;
+							leftEnemyIndex < enemyBodies.length;
+							leftEnemyIndex += 1
+						) {
+							for (
+								let rightEnemyIndex = leftEnemyIndex + 1;
+								rightEnemyIndex < enemyBodies.length;
+								rightEnemyIndex += 1
+							) {
+								const leftEnemyBody = enemyBodies[leftEnemyIndex];
+								const rightEnemyBody = enemyBodies[rightEnemyIndex];
+								if (
+									leftEnemyBody === undefined ||
+									rightEnemyBody === undefined
+								) {
+									continue;
+								}
+								const resolved = resolveBodyCollision(
+									leftEnemyBody,
+									rightEnemyBody,
+								);
+								enemyBodies = replaceEnemyBody(
+									enemyBodies,
+									leftEnemyIndex,
+									clampBodyToRoom(resolved.leftBody, currentRoom),
+								);
+								enemyBodies = replaceEnemyBody(
+									enemyBodies,
+									rightEnemyIndex,
+									clampBodyToRoom(resolved.rightBody, currentRoom),
+								);
+							}
+						}
 					}
-				}
 
-				yield* cavernEnemyState.setEnemies(
-					enemyBodies.map((enemyBody) => ({
-						id: enemyBody.id,
-						position: enemyBody.position,
-						velocity: enemyBody.velocity,
-					})),
-				);
-				yield* cavernPlayerState.moveTo(playerBody.position);
-				yield* cavernPlayerState.setVelocity(playerBody.velocity);
-
-				const playerRectangle = makeRectangle(
-					playerBody.position,
-					playerBody.size,
-				);
-				const activeTransition = currentRoom.transitions.find((transition) =>
-					doesRectangleIntersect(playerRectangle, transition),
-				);
-
-				if (activeTransition !== undefined) {
-					yield* Effect.annotateCurrentSpan({
-						"effect2d.game.transition_target_room_id":
-							activeTransition.targetRoomId,
-					});
-					const targetRoom = getCavernRoom(activeTransition.targetRoomId);
-					yield* cavernWorldState.setCurrentRoom(targetRoom.id);
-					yield* cavernEnemyState.enterRoom(targetRoom.id);
-					yield* cavernPlayerState.moveTo(
-						getTransitionSpawnPosition(
-							activeTransition,
-							targetRoom,
-							playerBody.position,
-							playerSize,
-						),
+					yield* cavernEnemyState.setEnemies(
+						enemyBodies.map((enemyBody) => ({
+							id: enemyBody.id,
+							position: enemyBody.position,
+							velocity: enemyBody.velocity,
+						})),
 					);
-					yield* cavernPlayerState.setVelocity({ x: 0, y: 0 });
-					yield* saveCoordinator.writeSlot(cavernAutosaveSlotId);
-					yield* cavernDiskSave.flush();
-				}
+					yield* cavernPlayerState.moveTo(playerBody.position);
+					yield* cavernPlayerState.setVelocity(playerBody.velocity);
 
-				const updatedPlayerSnapshot = yield* cavernPlayerState.snapshot;
-				const updatedWorldSnapshot = yield* cavernWorldState.snapshot;
-				const updatedRoom = getCavernRoom(updatedWorldSnapshot.currentRoomId);
-				yield* sceneCamera.setViewport(cavernViewport);
-				yield* sceneCamera.setZoom(cavernCameraZoom);
-				yield* sceneCamera.setBounds(
-					getRoomCameraBounds(updatedRoom, cavernViewport, cavernCameraZoom),
-				);
-				yield* sceneCamera.follow(
-					getPlayerVisualCenter(updatedPlayerSnapshot.position, playerSize),
-				);
-				const deltaSeconds =
-					(yield* runtimeClock.snapshot()).lastFrameDeltaMillis / 1_000;
-				yield* sceneCamera.step(deltaSeconds);
-			});
+					const playerRectangle = makeRectangle(
+						playerBody.position,
+						playerBody.size,
+					);
+					const activeTransition = currentRoom.transitions.find((transition) =>
+						doesRectangleIntersect(playerRectangle, transition),
+					);
 
-			const stepFrame = Effect.fn("CavernGameplayDirector.stepFrame")(
-				function* () {
+					if (activeTransition !== undefined) {
+						yield* Effect.annotateCurrentSpan({
+							"effect2d.game.transition_target_room_id":
+								activeTransition.targetRoomId,
+						});
+						const targetRoom = getCavernRoom(activeTransition.targetRoomId);
+						yield* cavernWorldState.setCurrentRoom(targetRoom.id);
+						yield* cavernEnemyState.enterRoom(targetRoom.id);
+						yield* cavernPlayerState.moveTo(
+							getTransitionSpawnPosition(
+								activeTransition,
+								targetRoom,
+								playerBody.position,
+								playerSize,
+							),
+						);
+						yield* cavernPlayerState.setVelocity({ x: 0, y: 0 });
+						yield* saveCoordinator.writeSlot(cavernAutosaveSlotId);
+						yield* cavernDiskSave.flush;
+					}
+
+					const updatedPlayerSnapshot = yield* cavernPlayerState.snapshot;
+					const updatedWorldSnapshot = yield* cavernWorldState.snapshot;
+					const updatedRoom = getCavernRoom(updatedWorldSnapshot.currentRoomId);
+					yield* sceneCamera.setViewport(cavernViewport);
+					yield* sceneCamera.setZoom(cavernCameraZoom);
+					yield* sceneCamera.setBounds(
+						getRoomCameraBounds(updatedRoom, cavernViewport, cavernCameraZoom),
+					);
+					yield* sceneCamera.follow(
+						getPlayerVisualCenter(updatedPlayerSnapshot.position, playerSize),
+					);
+					const deltaSeconds =
+						(yield* runtimeClock.snapshot).lastFrameDeltaMillis / 1_000;
+					yield* sceneCamera.step(deltaSeconds);
+				}),
+			);
+
+			const stepFrame = Effect.withSpan("CavernGameplayDirector.stepFrame")(
+				Effect.gen(function* () {
 					const activeSceneId = (yield* sceneDirector.snapshot).activeSceneId;
 					yield* Effect.annotateCurrentSpan({
 						"effect2d.game.scene_id": activeSceneId ?? "none",
@@ -802,8 +804,8 @@ export class CavernGameplayDirector extends Context.Service<
 						return;
 					}
 
-					yield* updateOverworld();
-				},
+					yield* updateOverworld;
+				}),
 			);
 
 			return CavernGameplayDirector.of({

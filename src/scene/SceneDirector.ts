@@ -51,7 +51,7 @@ const runInSceneScope = Effect.fn("SceneDirector.runInSceneScope")(function* (
 
 const releaseSceneInstance = Effect.fn("SceneDirector.releaseSceneInstance")(
 	function* (sceneInstance: SceneInstance) {
-		yield* runInSceneScope(sceneInstance, sceneInstance.lifecycle.exit());
+		yield* runInSceneScope(sceneInstance, sceneInstance.lifecycle.exit);
 		yield* Scope.close(sceneInstance.scope, Exit.void);
 	},
 );
@@ -102,7 +102,7 @@ export class SceneDirector extends Context.Service<
 		readonly pushOverlay: (
 			sceneId: SceneId,
 		) => Effect.Effect<void, SceneNotFoundError | SceneStackEmptyError>;
-		readonly popOverlay: () => Effect.Effect<
+		readonly popOverlay: Effect.Effect<
 			void,
 			OverlayStackUnderflowError | SceneStackEmptyError
 		>;
@@ -127,7 +127,7 @@ export class SceneDirector extends Context.Service<
 
 				yield* runInSceneScope(
 					startSceneInstance,
-					startSceneInstance.lifecycle.enter(),
+					startSceneInstance.lifecycle.enter,
 				);
 
 				const currentScene = Ref.get(stack).pipe(
@@ -176,7 +176,7 @@ export class SceneDirector extends Context.Service<
 					]);
 					yield* runInSceneScope(
 						nextSceneInstance,
-						nextSceneInstance.lifecycle.enter(),
+						nextSceneInstance.lifecycle.enter,
 					);
 				});
 
@@ -211,40 +211,43 @@ export class SceneDirector extends Context.Service<
 					]);
 					yield* runInSceneScope(
 						overlaySceneInstance,
-						overlaySceneInstance.lifecycle.enter(),
+						overlaySceneInstance.lifecycle.enter,
 					);
 				});
 
-				const popOverlay = Effect.fn("SceneDirector.popOverlay")(function* () {
-					const currentStack = yield* Ref.get(stack);
-					const currentEntry = yield* topScene(currentStack);
-					yield* Effect.annotateCurrentSpan({
-						"effect2d.scene.overlay_scene": currentEntry.instance.definition.id,
-						"effect2d.scene.transition": "pop-overlay",
-					});
-
-					if (currentEntry.level !== "overlay") {
-						return yield* new OverlayStackUnderflowError({
-							reason:
-								"Cannot pop the primary scene as though it were an overlay.",
-						});
-					}
-
-					yield* Effect.logDebug("Popping overlay scene.").pipe(
-						Effect.annotateLogs({
+				const popOverlay = Effect.withSpan("SceneDirector.popOverlay")(
+					Effect.gen(function* () {
+						const currentStack = yield* Ref.get(stack);
+						const currentEntry = yield* topScene(currentStack);
+						yield* Effect.annotateCurrentSpan({
 							"effect2d.scene.overlay_scene":
 								currentEntry.instance.definition.id,
 							"effect2d.scene.transition": "pop-overlay",
-						}),
-					);
-					yield* releaseSceneInstance(currentEntry.instance);
-					yield* Ref.set(stack, currentStack.slice(0, -1));
-				});
+						});
+
+						if (currentEntry.level !== "overlay") {
+							return yield* new OverlayStackUnderflowError({
+								reason:
+									"Cannot pop the primary scene as though it were an overlay.",
+							});
+						}
+
+						yield* Effect.logDebug("Popping overlay scene.").pipe(
+							Effect.annotateLogs({
+								"effect2d.scene.overlay_scene":
+									currentEntry.instance.definition.id,
+								"effect2d.scene.transition": "pop-overlay",
+							}),
+						);
+						yield* releaseSceneInstance(currentEntry.instance);
+						yield* Ref.set(stack, currentStack.slice(0, -1));
+					}),
+				);
 
 				const updateCurrent = Ref.get(stack).pipe(
 					Effect.flatMap((currentStack) => topScene(currentStack)),
 					Effect.flatMap((entry) =>
-						runInSceneScope(entry.instance, entry.instance.lifecycle.update()),
+						runInSceneScope(entry.instance, entry.instance.lifecycle.update),
 					),
 				);
 
@@ -253,10 +256,7 @@ export class SceneDirector extends Context.Service<
 						Effect.forEach(
 							currentStack,
 							(entry) =>
-								runInSceneScope(
-									entry.instance,
-									entry.instance.lifecycle.draw(),
-								),
+								runInSceneScope(entry.instance, entry.instance.lifecycle.draw),
 							{
 								discard: true,
 							},
@@ -271,7 +271,7 @@ export class SceneDirector extends Context.Service<
 							? Effect.void
 							: runInSceneScope(
 									entry.instance,
-									entry.instance.lifecycle.handleInput(),
+									entry.instance.lifecycle.handleInput,
 								),
 					),
 				);

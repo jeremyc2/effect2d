@@ -14,10 +14,10 @@ import { ResourceTracker } from "./ResourceTracker.ts";
 const makeScene = (id: SceneId): SceneDefinition => ({
 	id,
 	instantiate: Effect.succeed({
-		enter: () => Effect.void,
-		update: () => Effect.void,
-		draw: () => Effect.void,
-		exit: () => Effect.void,
+		enter: Effect.void,
+		update: Effect.void,
+		draw: Effect.void,
+		exit: Effect.void,
 	}),
 });
 
@@ -60,8 +60,8 @@ describe("DebugOverlay", () => {
 				const engineLogger = yield* EngineLogger;
 				const resourceTracker = yield* ResourceTracker;
 
-				yield* runtimeClock.beginFrame();
-				yield* runtimeClock.advanceTick();
+				yield* runtimeClock.beginFrame;
+				yield* runtimeClock.advanceTick;
 				yield* debugOverlay.enable;
 				yield* engineLogger.info("Loaded starting room.", {
 					sceneId: "overworld",

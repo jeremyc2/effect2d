@@ -78,11 +78,11 @@ describe("cavern", () => {
 					key: "Enter",
 					type: "key-down",
 				});
-				yield* cavernGameplayDirector.stepFrame();
+				yield* cavernGameplayDirector.stepFrame;
 
 				expect((yield* sceneDirector.snapshot).activeSceneId).toBe("overworld");
 
-				const introFrame = yield* cavernPresentationDirector.renderFrame();
+				const introFrame = yield* cavernPresentationDirector.renderFrame;
 				expect(
 					introFrame.commands.some(
 						(command) =>
@@ -101,7 +101,7 @@ describe("cavern", () => {
 					type: "mouse-move",
 				});
 
-				const leftFacingFrame = yield* cavernPresentationDirector.renderFrame();
+				const leftFacingFrame = yield* cavernPresentationDirector.renderFrame;
 				expect(
 					leftFacingFrame.commands.some(
 						(command) =>
@@ -115,14 +115,14 @@ describe("cavern", () => {
 					key: "ArrowRight",
 					type: "key-down",
 				});
-				yield* cavernGameplayDirector.stepFrame();
+				yield* cavernGameplayDirector.stepFrame;
 
 				const worldSnapshotAfterMove = yield* cavernWorldState.snapshot;
 				expect(
 					worldSnapshotAfterMove.roomInstructionsFadeStartedAtMillis,
 				).not.toBeNull();
 
-				const movedFrame = yield* cavernPresentationDirector.renderFrame();
+				const movedFrame = yield* cavernPresentationDirector.renderFrame;
 				expect(
 					movedFrame.commands.some(
 						(command) =>
@@ -161,7 +161,7 @@ describe("cavern", () => {
 					key: "Enter",
 					type: "key-down",
 				});
-				yield* cavernGameplayDirector.stepFrame();
+				yield* cavernGameplayDirector.stepFrame;
 
 				expect((yield* sceneDirector.snapshot).activeSceneId).toBe("overworld");
 
@@ -209,7 +209,7 @@ describe("cavern", () => {
 				yield* cavernPlayerState.setVelocity({ x: 35, y: 0 });
 
 				yield* input.beginFrame;
-				yield* cavernGameplayDirector.stepFrame();
+				yield* cavernGameplayDirector.stepFrame;
 
 				const resolvedPlayer = yield* cavernPlayerState.snapshot;
 				const resolvedEnemies = yield* cavernEnemyState.snapshot;
@@ -244,7 +244,7 @@ describe("cavern", () => {
 				expect(resolvedSecondEnemy.velocity.x).toBeGreaterThan(5);
 				expect(resolvedPlayer.velocity.x).toBeGreaterThan(0);
 
-				const frame = yield* cavernPresentationDirector.renderFrame();
+				const frame = yield* cavernPresentationDirector.renderFrame;
 				expect(
 					frame.commands.some(
 						(command) =>

@@ -1,2 +1,2 @@
-export * from "./makeHeadlessNativeBoundaryLayer.ts";
+export * from "./headlessNativeBoundaryLayer.ts";
 export * from "./runEffectTest.ts";

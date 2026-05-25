@@ -211,48 +211,50 @@ export class DebugOverlay extends Context.Service<
 				},
 			);
 
-			const captureSnapshot = Effect.gen(function* () {
-				const state = yield* Ref.get(stateRef);
-				const liveLogs = yield* engineLogger.entries;
-				const trackedResources = yield* resourceTracker.records;
-				const timingSnapshot = yield* runtimeClock.snapshot();
-				const sceneSnapshot = yield* Effect.match(sceneDirector.snapshot, {
-					onFailure: () => ({
-						activeSceneId: null,
-						entries: [],
-					}),
-					onSuccess: (snapshot) => snapshot,
-				});
+			const captureSnapshot = Effect.withSpan("DebugOverlay.captureSnapshot")(
+				Effect.gen(function* () {
+					const state = yield* Ref.get(stateRef);
+					const liveLogs = yield* engineLogger.entries;
+					const trackedResources = yield* resourceTracker.records;
+					const timingSnapshot = yield* runtimeClock.snapshot;
+					const sceneSnapshot = yield* Effect.match(sceneDirector.snapshot, {
+						onFailure: () => ({
+							activeSceneId: null,
+							entries: [],
+						}),
+						onSuccess: (snapshot) => snapshot,
+					});
 
-				return {
-					camera: {
-						bounds: state.cameraState?.bounds ?? null,
-						position: state.cameraState?.position ?? null,
-						shakeActive: state.cameraState?.shake !== null,
-						zoom: state.cameraState?.zoom ?? null,
-					},
-					collisionBodies: state.collisionBodies,
-					enabled: state.enabled,
-					logs: liveLogs,
-					roomMarkers: state.roomMarkers,
-					sceneStack: sceneSnapshot,
-					resources: [
-						...trackedResources.map((resource) => ({
-							id: resource.id,
-							kind: resource.kind,
-							state: resource.state,
-						})),
-						...state.authoredResources,
-					],
-					timing: {
-						fixedTickMillis: timingSnapshot.fixedTickMillis,
-						fps: formatFps(timingSnapshot.lastFrameDeltaMillis),
-						frameCount: timingSnapshot.frameCount,
-						lastFrameDeltaMillis: timingSnapshot.lastFrameDeltaMillis,
-						tickCount: timingSnapshot.tickCount,
-					},
-				} satisfies DebugOverlaySnapshot;
-			});
+					return {
+						camera: {
+							bounds: state.cameraState?.bounds ?? null,
+							position: state.cameraState?.position ?? null,
+							shakeActive: state.cameraState?.shake !== null,
+							zoom: state.cameraState?.zoom ?? null,
+						},
+						collisionBodies: state.collisionBodies,
+						enabled: state.enabled,
+						logs: liveLogs,
+						roomMarkers: state.roomMarkers,
+						sceneStack: sceneSnapshot,
+						resources: [
+							...trackedResources.map((resource) => ({
+								id: resource.id,
+								kind: resource.kind,
+								state: resource.state,
+							})),
+							...state.authoredResources,
+						],
+						timing: {
+							fixedTickMillis: timingSnapshot.fixedTickMillis,
+							fps: formatFps(timingSnapshot.lastFrameDeltaMillis),
+							frameCount: timingSnapshot.frameCount,
+							lastFrameDeltaMillis: timingSnapshot.lastFrameDeltaMillis,
+							tickCount: timingSnapshot.tickCount,
+						},
+					} satisfies DebugOverlaySnapshot;
+				}),
+			);
 
 			const drawModel = captureSnapshot.pipe(
 				Effect.map((snapshot) => formatDrawModel(snapshot)),

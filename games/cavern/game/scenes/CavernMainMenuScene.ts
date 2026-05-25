@@ -4,10 +4,10 @@ import type { SceneDefinition } from "../../../../src/scene/Scene.ts";
 export const CavernMainMenuScene: SceneDefinition = {
 	id: "main-menu",
 	instantiate: Effect.succeed({
-		draw: () => Effect.void,
-		enter: () => Effect.void,
-		exit: () => Effect.void,
-		handleInput: () => Effect.void,
-		update: () => Effect.void,
+		draw: Effect.void,
+		enter: Effect.void,
+		exit: Effect.void,
+		handleInput: Effect.void,
+		update: Effect.void,
 	}),
 };

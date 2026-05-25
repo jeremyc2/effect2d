@@ -90,7 +90,7 @@ export class Cutscene extends Context.Service<
 		readonly playSoundCue: (
 			cueId: string,
 		) => Effect.Effect<string, UnknownAudioCueError | WrongAudioCueKindError>;
-		readonly popOverlayScene: () => Effect.Effect<
+		readonly popOverlayScene: Effect.Effect<
 			void,
 			OverlayStackUnderflowError | SceneStackEmptyError
 		>;
