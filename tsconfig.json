@@ -32,7 +32,6 @@
 			{
 				"name": "@effect/language-service",
 				"ignoreEffectSuggestionsInTscExitCode": false,
-				"missingDiagnosticNextLine": "error",
 				"diagnosticSeverity": {
 					"anyUnknownInErrorContext": "error",
 					"asyncFunction": "error",
@@ -71,6 +70,7 @@
 					"importFromBarrel": "error",
 					"instanceOfSchema": "error",
 					"layerMergeAllWithDependencies": "error",
+					"lazyEffect": "error",
 					"lazyPromiseInEffectSync": "error",
 					"leakingRequirements": "error",
 					"missedPipeableOpportunity": "error",
@@ -80,6 +80,7 @@
 					"missingLayerContext": "error",
 					"missingReturnYieldStar": "error",
 					"missingStarInYieldEffectGen": "error",
+					"multipleCatchTag": "error",
 					"multipleEffectProvide": "error",
 					"nestedEffectGenYield": "error",
 					"newPromise": "error",
@@ -91,6 +92,7 @@
 					"preferSchemaOverJson": "error",
 					"processEnv": "error",
 					"processEnvInEffect": "error",
+					"redundantMapError": "error",
 					"redundantSchemaTagIdentifier": "error",
 					"returnEffectInGen": "error",
 					"runEffectInsideEffect": "error",
@@ -108,6 +110,8 @@
 					"unnecessaryFailYieldableError": "error",
 					"unnecessaryPipe": "error",
 					"unnecessaryPipeChain": "error",
+					"unnecessaryTypeofType": "error",
+					"unsafeEffectTypeAssertion": "error",
 					"unsupportedServiceAccessors": "error"
 				}
 			}
@@ -115,5 +119,5 @@
 	},
 	"include": ["src/**/*", "scripts/**/*", "games/**/*", "tools/**/*"],
 	"exclude": ["reference_repositories/**/*"],
-	"$schema": "./node_modules/@effect/language-service/schema.json"
+	"$schema": "https://raw.githubusercontent.com/Effect-TS/tsgo/refs/heads/main/schema.json"
 }
